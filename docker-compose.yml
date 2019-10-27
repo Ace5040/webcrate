@@ -5,6 +5,7 @@ services:
   sitesbox:
     image: ace5040/sitesbox:latest
     container_name: sitesbox
+    hostname: sitesbox
     restart: always
     dns:
       - 172.31.0.100
@@ -41,6 +42,7 @@ services:
   nginx:
     image: nginx:latest
     container_name: nginx
+    hostname: nginx
     restart: always
     ports:
       - 80:80
@@ -104,6 +106,7 @@ services:
   doctohtml:
     image: ace5040/doctohtml:latest
     container_name: doctohtml
+    hostname: doctohtml
     restart: always
     ports:
       - 3000:3000
@@ -115,6 +118,7 @@ services:
       - 172.31.0.100
     image: ace5040/htmltopdf:latest
     container_name: htmltopdf
+    hostname: htmltopdf
     restart: always
     ports:
       - 3001:3000

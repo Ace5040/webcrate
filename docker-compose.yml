@@ -24,9 +24,6 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ./config/sites:/sites_configs:ro
       - ./config/php-pool-templates:/custom_templates:ro
-      #- ./config/php5-pool-template.conf:/php5-pool-template.conf:ro
-      #- ./config/php7-pool-template.conf:/php7-pool-template.conf:ro
-      #- ./config/php7-pool-template.conf:/php-pool-template.conf:ro
       - ./config/php7.ini:/etc/php/conf.d/user.ini:ro #path to custom php.ini
       - ./config/php5.ini:/etc/php56/conf.d/user.ini:ro #path to custom php.ini v5
       - php5_pools_volume:/etc/php56/php-fpm.d

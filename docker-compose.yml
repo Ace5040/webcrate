@@ -3,8 +3,7 @@ version: '3'
 services:
 
   sitesbox:
-    build: docker
-    image: sitesbox
+    image: ace5040/sitesbox:latest
     hostname: sitesbox
     container_name: sitesbox
     dns:

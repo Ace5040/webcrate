@@ -25,8 +25,9 @@ RUN aurman --noedit --skip_news --skip_new_locations --noconfirm -S php56 php56-
 RUN aurman --noedit --skip_news --skip_new_locations --noconfirm -S drush-launcher
 USER root
 RUN printf "\ninclude=/etc/php56/php-fpm.d/*.conf" >> /etc/php56/php-fpm.conf
-RUN printf "\nopen_basedir = /sites/\n" >> /etc/php/php.ini
-RUN printf "\nopen_basedir = /sites/\n" >> /etc/php56/php.ini
+RUN printf "\nopen_basedir = /sites/:/usr/bin/\n" >> /etc/php/php.ini
+RUN printf "\nopen_basedir = /sites/:/usr/bin/\n" >> /etc/php56/php.ini
+RUN pacman --noconfirm -S iputils
 RUN ssh-keygen -A
 RUN systemctl enable php-fpm
 RUN systemctl enable php56-fpm

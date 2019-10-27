@@ -1,6 +1,6 @@
 FROM archlinux/base
 RUN pacman --noconfirm -Syu
-RUN pacman --noconfirm -S mc nano git unzip sudo fakeroot binutils awk autoconf pkgconf bison gcc patch exim dnsmasq php php-fpm php-gd php-xsl php-intl php-tidy php-imagick composer npm python2 mariadb-clients openssh
+RUN pacman --noconfirm -S mc nano git unzip sudo fakeroot binutils awk autoconf pkgconf bison gcc patch exim dnsmasq php php-fpm php-gd php-xsl php-intl php-tidy php-imagick composer npm python2 mariadb-clients openssh make
 RUN useradd -m -s /bin/bash dev
 RUN usermod -p "dev" dev
 RUN echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo

@@ -5,6 +5,7 @@ services:
   sitesbox:
     image: ace5040/sitesbox:latest
     container_name: sitesbox
+    restart: always
     dns:
       - 172.31.0.100
     ports:
@@ -40,6 +41,7 @@ services:
   nginx:
     image: nginx:latest
     container_name: nginx
+    restart: always
     ports:
       - 80:80
     volumes:
@@ -56,6 +58,7 @@ services:
   mysql5:
     image: mariadb:5
     container_name: mysql5
+    restart: always
     ports:
       - 3305:3306
     environment:
@@ -70,6 +73,7 @@ services:
   mysql:
     image: mariadb:latest
     container_name: mysql
+    restart: always
     ports:
       - 3306:3306
     environment:
@@ -100,6 +104,7 @@ services:
   doctohtml:
     image: ace5040/doctohtml:latest
     container_name: doctohtml
+    restart: always
     ports:
       - 3000:3000
     networks:
@@ -110,6 +115,7 @@ services:
       - 172.31.0.100
     image: ace5040/htmltopdf:latest
     container_name: htmltopdf
+    restart: always
     ports:
       - 3001:3000
     networks:
@@ -118,6 +124,7 @@ services:
   solr:
     image: solr:6
     container_name: solr
+    restart: always
     ports:
      - "8983:8983"
     volumes:

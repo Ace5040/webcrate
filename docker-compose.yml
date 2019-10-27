@@ -1,0 +1,159 @@
+version: '3'
+
+services:
+
+  sitesbox:
+    build: docker
+    image: sitesbox
+    hostname: sitesbox
+    container_name: sitesbox
+    dns:
+      - 172.31.0.100
+    ports:
+      - "2222:22"
+      - 53:53/udp
+    environment:
+      - MODE=${SITESBOX_MODE} #set MODE DEV or PRODUCTION
+      - DEV_MODE_USER_PASS=${DEV_MODE_USER_PASS} #password for dev user (uncomment in DEV mode)
+      - DEV_MODE_USER_UID=${DEV_MODE_USER_UID} #UID for dev user set it to your HOSTs user UID (uncomment in DEV mode)
+      - DEV_MODE_USER_GID=${DEV_MODE_USER_GID} #GID for dev user set it to your HOSTs user GID (uncomment in DEV mode)
+      - DOCKER_HOST_IP=${DOCKER_HOST_IP} #ip for dnsmasq service
+      - SITESBOX_EXTERNAL_DNS_IP=${SITESBOX_EXTERNAL_DNS_IP}
+    volumes:
+      - ${SITES_PATH}:/sites
+      - /etc/localtime:/etc/localtime:ro
+      - ./config/sites:/sites_configs:ro
+      - ./config/php-pool-templates:/custom_templates:ro
+      #- ./config/php5-pool-template.conf:/php5-pool-template.conf:ro
+      #- ./config/php7-pool-template.conf:/php7-pool-template.conf:ro
+      #- ./config/php7-pool-template.conf:/php-pool-template.conf:ro
+      - ./config/php7.ini:/etc/php/conf.d/user.ini:ro #path to custom php.ini
+      - ./config/php5.ini:/etc/php56/conf.d/user.ini:ro #path to custom php.ini v5
+      - php5_pools_volume:/etc/php56/php-fpm.d
+      - php7_pools_volume:/etc/php/php-fpm.d
+      - dnsmasq_hosts_volume:/dnsmasq_hosts
+      - nginx_configs_volume:/nginx_configs
+      - phpmyadmin_volume:/phpmyadmin
+      - phpmyadmin_config_volume:/etc/phpmyadmin
+      - ${PATH_TO_PASSWD_FILE}:/passwd_host:ro #used for PRODUCTION mode only to sync users with host (uncomment in PRODUCTION mode)
+      - ${PATH_TO_SHADOW_FILE}:/shadow_host:ro #used for PRODUCTION mode only to sync passwords with host (uncomment in PRODUCTION mode)
+
+    networks:
+      sitesnet:
+        ipv4_address: 172.31.0.100
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - 80:80
+    volumes:
+      - ${SITES_PATH}:/sites
+      - /etc/localtime:/etc/localtime:ro
+      - nginx_configs_volume:/etc/nginx/conf.d:ro
+      - phpmyadmin_volume:/phpmyadmin
+    depends_on:
+      - "sitesbox"
+    networks:
+      - sitesnet
+    command: /bin/bash -c "sleep 5; exec nginx -g 'daemon off;'"
+
+  mysql5:
+    image: mariadb:5
+    container_name: mysql5
+    ports:
+      - 3305:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql #change password after first run
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${PATH_TO_MYSQL5_DB}:/var/lib/mysql #path to mysql5 databases
+      - ${PATH_TO_MYSQL5_CONFIG}:/etc/mysql/conf.d/user.cnf
+    networks:
+      - sitesnet
+
+  mysql:
+    image: mariadb:latest
+    container_name: mysql
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql #change password after first run
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${PATH_TO_MYSQL_DB}:/var/lib/mysql #path to mysql5 databases
+      - ${PATH_TO_MYSQL_CONFIG}:/etc/mysql/conf.d/user.cnf
+    networks:
+      - sitesnet
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    environment:
+      - PMA_HOSTS=mysql,mysql5
+    restart: always
+    ports:
+      - 8080:80
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /sessions
+      - phpmyadmin_volume:/var/www/html
+      - phpmyadmin_config_volume:/etc/phpmyadmin
+    networks:
+      - sitesnet
+
+  doctohtml:
+    image: ace5040/doctohtml:latest
+    container_name: doctohtml
+    ports:
+      - 3000:3000
+    networks:
+      - sitesnet
+
+  htmltopdf:
+    dns:
+      - 172.31.0.100
+    image: ace5040/htmltopdf:latest
+    container_name: htmltopdf
+    ports:
+      - 3001:3000
+    networks:
+      - sitesnet
+
+  solr:
+    image: solr:6
+    container_name: solr
+    ports:
+     - "8983:8983"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${SOLR_CORES_PATH}:/opt/solr/server/solr/mycores #path to solr cores
+    entrypoint:
+      - docker-entrypoint.sh
+      - solr
+      - -f
+    networks:
+      - sitesnet
+
+volumes:
+  dnsmasq_hosts_volume: {}
+  nginx_configs_volume: {}
+  php5_pools_volume: {}
+  php7_pools_volume: {}
+  phpmyadmin_volume: {}
+  phpmyadmin_config_volume: {}
+  #solution for windows docker hosts to enable both ways symlink support
+  #change all volumes in this yml - ${SITES_PATH}:/sites to - sites:/sites
+  #and uncomment "sites" section below
+  #sites:
+    #driver: local
+    #driver_opts:
+      #type: nfs
+      #o: addr=${DOCKER_HOST_IP},vers=4.1
+      #device: ":/sites" #configure it in nfs server first (hanewin for example)
+
+networks:
+  sitesnet:
+    ipam:
+      config:
+        - subnet: 172.31.0.0/12

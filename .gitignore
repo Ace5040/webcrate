@@ -1,0 +1,14 @@
+.env
+solr/*
+db/mysql/*
+db/mysql5/*
+config/sites/*
+config/php-pool-templates/*
+!config/sites/example.conf
+!config/sites/phpmyadmin.conf
+!config/php-pool-templates/php7-default.conf
+!config/php-pool-templates/php5-default.conf
+!config/php-pool-templates/phpmyadmin.conf
+!db/mysql/.keep
+!db/mysql5/.keep
+!solr/.keep

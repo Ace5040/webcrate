@@ -4,7 +4,6 @@ services:
 
   sitesbox:
     image: ace5040/sitesbox:latest
-    hostname: sitesbox
     container_name: sitesbox
     dns:
       - 172.31.0.100
@@ -152,4 +151,4 @@ networks:
   sitesnet:
     ipam:
       config:
-        - subnet: 172.31.0.0/12
+        - subnet: 172.31.0.0/16

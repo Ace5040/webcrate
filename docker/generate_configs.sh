@@ -22,14 +22,14 @@ if [[ $MODE == "PRODUCTION" ]]; then
             for passwd_data in $(cut -d: -f1,3 /passwd_host); do
                 pu=`cut -d: -f1 <<< $passwd_data`;
                 if [[ $pu == $u && -d "$SITES_PATH/$u" ]]; then
-            	    uid=`cut -d: -f2 <<< $passwd_data`;
-            	    u_exist=`grep -c "^$u:" /etc/passwd`;
-            	    if [[ $u_exist == 0 ]]; then
-                        useradd --no-create-home --uid $uid --home-dir $SITES_PATH/$u $u
-                	usermod -p "$p" $u;
-                	/generate_pool.sh $u $port
-                	port=$(($port + 1));
-                    fi
+                  uid=`cut -d: -f2 <<< $passwd_data`;
+                  u_exist=`grep -c "^$u:" /etc/passwd`;
+                  if [[ $u_exist == 0 ]]; then
+                    useradd --no-create-home --uid $uid --home-dir $SITES_PATH/$u $u
+                  fi
+                  usermod -p "$p" $u;
+                  /generate_pool.sh $u $port
+                  port=$(($port + 1));
                 fi
             done
         fi

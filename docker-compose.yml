@@ -11,7 +11,7 @@ services:
       - 172.31.0.100
     ports:
       - "2222:22"
-      - 53:53/udp
+      - "${DNSMASQ_PORT-5353}:53"
     environment:
       - MODE=${SITESBOX_MODE} #set MODE DEV or PRODUCTION
       - DEV_MODE_USER_PASS=${DEV_MODE_USER_PASS} #password for dev user

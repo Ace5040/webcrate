@@ -37,14 +37,15 @@ RUN curl https://drupalconsole.com/installer -L -o drupal.phar
 RUN mv drupal.phar /bin/drupal
 RUN chmod a+x /bin/drupal
 WORKDIR /
-RUN printf "no-resolv\nno-poll\nno-hosts\naddn-hosts=/dnsmasq_hosts/hosts_nginx\n" > /etc/dnsmasq.conf
+RUN printf "no-resolv\nno-poll\nno-hosts\naddn-hosts=/sitesbox/dnsmasq_hosts/hosts_nginx\n" > /etc/dnsmasq.conf
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod u+x /entrypoint.sh
-COPY generate_configs.sh /generate_configs.sh
-RUN chmod u+x /generate_configs.sh
-COPY generate_hosts.sh /generate_hosts.sh
-RUN chmod u+x /generate_hosts.sh
-COPY generate_pool.sh /generate_pool.sh
-RUN chmod u+x /generate_pool.sh
+RUN mkdir -p /sitesbox
+COPY generate_configs.sh /sitesbox/generate_configs.sh
+RUN chmod u+x /sitesbox/generate_configs.sh
+COPY generate_hosts.sh /sitesbox/generate_hosts.sh
+RUN chmod u+x /sitesbox/generate_hosts.sh
+COPY generate_pool.sh /sitesbox/generate_pool.sh
+RUN chmod u+x /sitesbox/generate_pool.sh
 
 CMD ["/entrypoint.sh"]

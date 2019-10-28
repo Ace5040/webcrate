@@ -15,9 +15,9 @@ fi;
 
 port=${2};
 
-if [[ -f /sites_configs/$u.conf ]]; then
+if [[ -f /sitesbox/sites_configs/$u.conf ]]; then
 
-    php_version_data=`cat /sites_configs/$u.conf | grep '#php'`;
+    php_version_data=`cat /sitesbox/sites_configs/$u.conf | grep '#php'`;
     php=${php_version_data//#php};
 
     if [[ $php == '' ]]; then
@@ -30,10 +30,10 @@ if [[ -f /sites_configs/$u.conf ]]; then
         php_path_prefix='';
     fi;
 
-    if [[ -f /custom_templates/$u.conf ]]; then
-        template_path=/custom_templates/$u.conf
+    if [[ -f /sitesbox/custom_templates/$u.conf ]]; then
+        template_path=/sitesbox/custom_templates/$u.conf
     else
-        template_path="/custom_templates/php$php-default.conf"
+        template_path="/sitesbox/custom_templates/php$php-default.conf"
     fi
 
     cp -rf $template_path /etc/php$php_path_prefix/php-fpm.d/$u.conf
@@ -44,8 +44,8 @@ if [[ -f /sites_configs/$u.conf ]]; then
     sed -i -- "s/%group%/$group/g" /etc/php$php_path_prefix/php-fpm.d/$u.conf
     sed -i -- "s/%pool%/$pool/g" /etc/php$php_path_prefix/php-fpm.d/$u.conf
 
-    cp -rf /sites_configs/$u.conf /nginx_configs/$u.conf
-    sed -i -- "s/%port%/$port/g" /nginx_configs/$u.conf
-    sed -i -- "s/%user%/$u/g" /nginx_configs/$u.conf
+    cp -rf /sitesbox/sites_configs/$u.conf /sitesbox/nginx_configs/$u.conf
+    sed -i -- "s/%port%/$port/g" /sitesbox/nginx_configs/$u.conf
+    sed -i -- "s/%user%/$u/g" /sitesbox/nginx_configs/$u.conf
 
 fi

@@ -14,26 +14,26 @@ services:
       - 53:53/udp
     environment:
       - MODE=${SITESBOX_MODE} #set MODE DEV or PRODUCTION
-      - DEV_MODE_USER_PASS=${DEV_MODE_USER_PASS} #password for dev user (uncomment in DEV mode)
-      - DEV_MODE_USER_UID=${DEV_MODE_USER_UID} #UID for dev user set it to your HOSTs user UID (uncomment in DEV mode)
-      - DEV_MODE_USER_GID=${DEV_MODE_USER_GID} #GID for dev user set it to your HOSTs user GID (uncomment in DEV mode)
+      - DEV_MODE_USER_PASS=${DEV_MODE_USER_PASS} #password for dev user
+      - DEV_MODE_USER_UID=${DEV_MODE_USER_UID} #UID for dev user set it to your HOSTs user UID
+      - DEV_MODE_USER_GID=${DEV_MODE_USER_GID} #GID for dev user set it to your HOSTs user GID
       - DOCKER_HOST_IP=${DOCKER_HOST_IP} #ip for dnsmasq service
       - SITESBOX_EXTERNAL_DNS_IP=${SITESBOX_EXTERNAL_DNS_IP}
     volumes:
       - ${SITES_PATH}:/sites
       - /etc/localtime:/etc/localtime:ro
-      - ./config/sites:/sites_configs:ro
-      - ./config/php-pool-templates:/custom_templates:ro
+      - ./config/sites:/sitesbox/sites_configs:ro
+      - ./config/php-pool-templates:/sitesbox/custom_templates:ro
       - ./config/php7.ini:/etc/php/conf.d/user.ini:ro #path to custom php.ini
       - ./config/php5.ini:/etc/php56/conf.d/user.ini:ro #path to custom php.ini v5
       - php5_pools_volume:/etc/php56/php-fpm.d
       - php7_pools_volume:/etc/php/php-fpm.d
-      - dnsmasq_hosts_volume:/dnsmasq_hosts
-      - nginx_configs_volume:/nginx_configs
+      - dnsmasq_hosts_volume:/sitesbox/dnsmasq_hosts
+      - nginx_configs_volume:/sitesbox/nginx_configs
       - phpmyadmin_volume:/phpmyadmin
       - phpmyadmin_config_volume:/etc/phpmyadmin
-      - ${PATH_TO_PASSWD_FILE}:/passwd_host:ro #used for PRODUCTION mode only to sync users with host (uncomment in PRODUCTION mode)
-      - ${PATH_TO_SHADOW_FILE}:/shadow_host:ro #used for PRODUCTION mode only to sync passwords with host (uncomment in PRODUCTION mode)
+      - ${PATH_TO_PASSWD_FILE}:/sitesbox/passwd_host:ro #used for PRODUCTION mode only to sync users with host
+      - ${PATH_TO_SHADOW_FILE}:/sitesbox/shadow_host:ro #used for PRODUCTION mode only to sync passwords with host
 
     networks:
       sitesnet:

@@ -34,7 +34,6 @@ services:
       - phpmyadmin_config_volume:/etc/phpmyadmin
       - ${PATH_TO_PASSWD_FILE}:/sitesbox/passwd_host:ro #used for PRODUCTION mode only to sync users with host
       - ${PATH_TO_SHADOW_FILE}:/sitesbox/shadow_host:ro #used for PRODUCTION mode only to sync passwords with host
-
     networks:
       sitesnet:
         ipv4_address: 172.31.0.100
@@ -138,6 +137,38 @@ services:
       - docker-entrypoint.sh
       - solr
       - -f
+    networks:
+      - sitesnet
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    #restart: always
+    ports:
+      - "8181:3000"
+    environment:
+      GF_PATHS_DATA: /data
+      GF_PATHS_LOGS: /log
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      #- ./grafana/etc:/etc/grafana
+      - ./grafana/data:/data
+      - ./grafana/log:/log
+    networks:
+      - sitesnet
+
+  influxdb:
+    image: influxdb/influxdb
+    container_name: influxdb
+    #restart: always
+    environment:
+      INFLUXDB_ADMIN_ENABLED: "true"
+    ports:
+      - "8086:8086"
+      - "8083:8083"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      #- ./grafana/influxdb:/var/lib/influxdb
     networks:
       - sitesnet
 

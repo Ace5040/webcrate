@@ -47,5 +47,9 @@ COPY generate_hosts.sh /sitesbox/generate_hosts.sh
 RUN chmod u+x /sitesbox/generate_hosts.sh
 COPY generate_pool.sh /sitesbox/generate_pool.sh
 RUN chmod u+x /sitesbox/generate_pool.sh
+COPY cpu_usage.sh /sitesbox/cpu_usage.sh
+RUN chmod a+x /sitesbox/cpu_usage.sh
+USER dev
+RUN aurman --noedit --skip_news --skip_new_locations --noconfirm -S telegraf-bin
 
 CMD ["/entrypoint.sh"]

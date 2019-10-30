@@ -3,9 +3,9 @@ server {
     listen 80;
     index index.php;
     server_name example.test;
-    root /sites/example/data;
+    root /sites/%user%/data;
     access_log off;
-    error_log /sites/example/logs/error.log;
+    error_log /sites/%user%/logs/error.log;
 
     location / {
 	   try_files $uri @rewrite;

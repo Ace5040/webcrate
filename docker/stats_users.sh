@@ -11,9 +11,8 @@ my @ps = `top -b -n 1 | tail -n +8`;
 my @data;
 
 for (@ps) {
-    my @fields = split /( )* /,;
-    #print Dumper(@fields);
-    my @row = @fields[4, 18, 12];
+    my @fields = split /( )* /,$_,4;
+    my @row = @fields[0, 2, 4];
     push @data, \@row;
 }
 
@@ -34,5 +33,5 @@ for my $row (@data) {
 }
 
 while ( my ($u, $d) = each %users) {
-  printf "cpuperuser,user=%s pcpu=%.1f,rss=%di\n", @{$d};
+  printf "stats_users,user=%s pcpu=%.1f,mem=%di\n", @{$d};
 }

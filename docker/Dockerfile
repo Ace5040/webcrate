@@ -54,9 +54,11 @@ COPY generate_hosts.sh /sitesbox/generate_hosts.sh
 RUN chmod u+x /sitesbox/generate_hosts.sh
 COPY generate_pool.sh /sitesbox/generate_pool.sh
 RUN chmod u+x /sitesbox/generate_pool.sh
-COPY cpu_usage.sh /sitesbox/cpu_usage.sh
-RUN chmod a+x /sitesbox/cpu_usage.sh
-RUN mkdir -p /root/.config/procps
-COPY toprc /root/.config/procps/toprc
+COPY stats_users.sh /sitesbox/stats_users.sh
+RUN chmod a+x /sitesbox/stats_users.sh
+COPY stats_pools.sh /sitesbox/stats_pools.sh
+RUN chmod a+x /sitesbox/stats_pools.sh
+RUN mkdir -p /etc/telegraf/.config/procps
+COPY toprc /etc/telegraf/.config/procps/toprc
 
 CMD ["/entrypoint.sh"]

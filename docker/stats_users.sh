@@ -7,7 +7,7 @@ use feature qw(say);
 use Data::Dumper;
 
 my (@keys, @top);
-my @ps = `top -b -n 1 | tail -n +8`;
+my @ps = `top -w 512 -b -n 1 | tail -n +8`;
 my @data;
 
 for (@ps) {

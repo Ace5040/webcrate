@@ -56,5 +56,7 @@ COPY generate_pool.sh /sitesbox/generate_pool.sh
 RUN chmod u+x /sitesbox/generate_pool.sh
 COPY cpu_usage.sh /sitesbox/cpu_usage.sh
 RUN chmod a+x /sitesbox/cpu_usage.sh
+RUN mkdir -p /root/.config/procps
+COPY toprc /root/.config/procps/toprc
 
 CMD ["/entrypoint.sh"]

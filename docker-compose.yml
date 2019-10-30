@@ -3,6 +3,7 @@ version: '3'
 services:
 
   sitesbox:
+    build: docker
     image: ace5040/sitesbox:latest
     container_name: sitesbox
     hostname: sitesbox
@@ -22,6 +23,7 @@ services:
     volumes:
       - ${SITES_PATH}:/sites
       - /etc/localtime:/etc/localtime:ro
+      - ./config/telegraf:/etc/telegraf/telegraf.d:ro
       - ./config/sites:/sitesbox/sites_configs:ro
       - ./config/php-pool-templates:/sitesbox/custom_templates:ro
       - ./config/php7.ini:/etc/php/conf.d/user.ini:ro #path to custom php.ini
@@ -143,7 +145,7 @@ services:
   grafana:
     image: grafana/grafana
     container_name: grafana
-    #restart: unless-stopped
+    restart: unless-stopped
     ports:
       - "8181:3000"
     environment:
@@ -151,24 +153,21 @@ services:
       GF_PATHS_LOGS: /log
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      #- ./grafana/etc:/etc/grafana
       - ./grafana/data:/data
-      - ./grafana/log:/log
     networks:
       - sitesnet
 
   influxdb:
-    image: influxdb/influxdb
+    image: influxdb:latest
     container_name: influxdb
-    #restart: unless-stopped
+    restart: unless-stopped
     environment:
-      INFLUXDB_ADMIN_ENABLED: "true"
+      INFLUXDB_DB: telegraf
     ports:
       - "8086:8086"
-      - "8083:8083"
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      #- ./grafana/influxdb:/var/lib/influxdb
+      - ./influxdb:/var/lib/influxdb
     networks:
       - sitesnet
 

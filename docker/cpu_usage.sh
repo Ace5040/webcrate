@@ -33,8 +33,6 @@ for my $row (@data) {
 
 }
 
-printf "cpuperuser";
 while ( my ($u, $d) = each %users) {
-  printf ",user=%s pcpu=%.1f rss=%di", @{$d};
+  printf "cpuperuser,user=%s pcpu=%.1f,rss=%di\n", @{$d};
 }
-printf "\n";

@@ -1,6 +1,7 @@
 .env
 solr/*
 grafana/*
+influxdb/*
 sites/*
 db/mysql/*
 db/mysql5/*
@@ -15,3 +16,5 @@ config/php-pool-templates/*
 !db/mysql5/.keep
 !solr/.keep
 !sites/.keep
+!grafana/.keep
+!influxdb/.keep

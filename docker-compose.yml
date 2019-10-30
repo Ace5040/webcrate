@@ -6,7 +6,7 @@ services:
     image: ace5040/sitesbox:latest
     container_name: sitesbox
     hostname: sitesbox
-    restart: always
+    restart: unless-stopped
     dns:
       - 172.31.0.100
     ports:
@@ -42,7 +42,7 @@ services:
     image: nginx:latest
     container_name: nginx
     hostname: nginx
-    restart: always
+    restart: unless-stopped
     ports:
       - 80:80
     volumes:
@@ -59,7 +59,7 @@ services:
   mysql5:
     image: mariadb:5
     container_name: mysql5
-    restart: always
+    restart: unless-stopped
     ports:
       - 3305:3306
     environment:
@@ -74,7 +74,7 @@ services:
   mysql:
     image: mariadb:latest
     container_name: mysql
-    restart: always
+    restart: unless-stopped
     ports:
       - 3306:3306
     environment:
@@ -91,7 +91,7 @@ services:
     container_name: phpmyadmin
     environment:
       - PMA_HOSTS=mysql,mysql5
-    restart: always
+    restart: unless-stopped
     ports:
       - 8080:80
     volumes:
@@ -106,7 +106,7 @@ services:
     image: ace5040/doctohtml:latest
     container_name: doctohtml
     hostname: doctohtml
-    restart: always
+    restart: unless-stopped
     ports:
       - 3000:3000
     networks:
@@ -118,7 +118,7 @@ services:
     image: ace5040/htmltopdf:latest
     container_name: htmltopdf
     hostname: htmltopdf
-    restart: always
+    restart: unless-stopped
     ports:
       - 3001:3000
     networks:
@@ -127,7 +127,7 @@ services:
   solr:
     image: solr:6
     container_name: solr
-    restart: always
+    restart: unless-stopped
     ports:
      - "8983:8983"
     volumes:
@@ -143,7 +143,7 @@ services:
   grafana:
     image: grafana/grafana
     container_name: grafana
-    #restart: always
+    #restart: unless-stopped
     ports:
       - "8181:3000"
     environment:
@@ -160,7 +160,7 @@ services:
   influxdb:
     image: influxdb/influxdb
     container_name: influxdb
-    #restart: always
+    #restart: unless-stopped
     environment:
       INFLUXDB_ADMIN_ENABLED: "true"
     ports:

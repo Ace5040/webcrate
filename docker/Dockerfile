@@ -36,6 +36,9 @@ RUN systemctl enable sshd
 RUN curl https://drupalconsole.com/installer -L -o drupal.phar
 RUN mv drupal.phar /bin/drupal
 RUN chmod a+x /bin/drupal
+USER dev
+RUN aurman --noedit --skip_news --skip_new_locations --noconfirm -S telegraf-bin
+USER root
 WORKDIR /
 RUN printf "no-resolv\nno-poll\nno-hosts\naddn-hosts=/sitesbox/dnsmasq_hosts/hosts_nginx\n" > /etc/dnsmasq.conf
 COPY entrypoint.sh /entrypoint.sh
@@ -49,7 +52,5 @@ COPY generate_pool.sh /sitesbox/generate_pool.sh
 RUN chmod u+x /sitesbox/generate_pool.sh
 COPY cpu_usage.sh /sitesbox/cpu_usage.sh
 RUN chmod a+x /sitesbox/cpu_usage.sh
-USER dev
-RUN aurman --noedit --skip_news --skip_new_locations --noconfirm -S telegraf-bin
 
 CMD ["/entrypoint.sh"]

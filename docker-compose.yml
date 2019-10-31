@@ -24,6 +24,7 @@ services:
     volumes:
       - ${SITES_PATH}:/sites
       - /etc/localtime:/etc/localtime:ro
+      - ./config/crontabs:/var/spool/cron
       - ./config/telegraf:/etc/telegraf/telegraf.d:ro
       - ./config/sites:/sitesbox/sites_configs:ro
       - ./config/php-pool-templates:/sitesbox/custom_templates:ro

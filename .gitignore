@@ -6,6 +6,7 @@ sites/*
 db/mysql/*
 db/mysql5/*
 config/sites/*
+config/crontabs/*
 config/php-pool-templates/*
 !config/sites/example.conf.example
 !config/sites/phpmyadmin.conf
@@ -14,6 +15,7 @@ config/php-pool-templates/*
 !config/php-pool-templates/phpmyadmin.conf
 !db/mysql/.keep
 !db/mysql5/.keep
+!config/crontabs/.keep
 !solr/.keep
 !sites/.keep
 !grafana/.keep

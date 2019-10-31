@@ -47,5 +47,6 @@ if [[ -f /sitesbox/sites_configs/$u.conf ]]; then
     cp -rf /sitesbox/sites_configs/$u.conf /sitesbox/nginx_configs/$u.conf
     sed -i -- "s/%port%/$port/g" /sitesbox/nginx_configs/$u.conf
     sed -i -- "s/%user%/$u/g" /sitesbox/nginx_configs/$u.conf
+    sed -i -- "s/%PHPMYADMIN_DNS_NAME%/$PHPMYADMIN_DNS_NAME/g" /sitesbox/nginx_configs/$u.conf
 
 fi

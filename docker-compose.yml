@@ -18,6 +18,7 @@ services:
       - DEV_MODE_USER_PASS=${DEV_MODE_USER_PASS} #password for dev user
       - DEV_MODE_USER_UID=${DEV_MODE_USER_UID} #UID for dev user set it to your HOSTs user UID
       - DEV_MODE_USER_GID=${DEV_MODE_USER_GID} #GID for dev user set it to your HOSTs user GID
+      - PHPMYADMIN_DNS_NAME=${PHPMYADMIN_DNS_NAME} #phpmyadmin dns name
       - DOCKER_HOST_IP=${DOCKER_HOST_IP} #ip for dnsmasq service
       - SITESBOX_EXTERNAL_DNS_IP=${SITESBOX_EXTERNAL_DNS_IP}
     volumes:

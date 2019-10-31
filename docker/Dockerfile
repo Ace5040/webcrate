@@ -45,6 +45,7 @@ RUN sed -i "s/# database = \"telegraf\"/database = \"telegraf\"/g" /etc/telegraf
 RUN systemctl enable telegraf
 RUN pacman --noconfirm -S cronie
 RUN systemctl enable cronie
+RUN pacman --noconfirm -S inetutils
 WORKDIR /
 RUN printf "no-resolv\nno-poll\nno-hosts\naddn-hosts=/sitesbox/dnsmasq_hosts/hosts_nginx\n" > /etc/dnsmasq.conf
 COPY entrypoint.sh /entrypoint.sh

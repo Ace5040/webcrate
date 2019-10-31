@@ -21,6 +21,7 @@ services:
       - PHPMYADMIN_DNS_NAME=${PHPMYADMIN_DNS_NAME} #phpmyadmin dns name
       - DOCKER_HOST_IP=${DOCKER_HOST_IP} #ip for dnsmasq service
       - SITESBOX_EXTERNAL_DNS_IP=${SITESBOX_EXTERNAL_DNS_IP}
+      - EXIM_PRIMARY_HOSTNAME=${EXIM_PRIMARY_HOSTNAME}
     volumes:
       - ${SITES_PATH}:/sites
       - /etc/localtime:/etc/localtime:ro

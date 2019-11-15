@@ -62,7 +62,7 @@ RUN chmod a+x /sitesbox/stats_users.sh
 COPY stats_pools.sh /sitesbox/stats_pools.sh
 RUN chmod a+x /sitesbox/stats_pools.sh
 RUN mkdir -p /etc/telegraf/.config/procps
-COPY toprc /etc/telegraf/.config/procps/toprc
+RUN rm /etc/mail/exim.conf
 COPY sitesbox_profile.sh /etc/profile.d/sitesbox_profile.sh
-
+COPY toprc /etc/telegraf/.config/procps/toprc
 CMD ["/entrypoint.sh"]

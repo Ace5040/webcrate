@@ -29,8 +29,9 @@ services:
       - ./config/telegraf:/etc/telegraf/telegraf.d:ro
       - ./config/sites:/sitesbox/sites_configs:ro
       - ./config/php-pool-templates:/sitesbox/custom_templates:ro
-      - ./config/php7.ini:/etc/php/conf.d/user.ini:ro #path to custom php.ini
-      - ./config/php5.ini:/etc/php56/conf.d/user.ini:ro #path to custom php.ini v5
+      - ./config/php7.ini:/etc/php/conf.d/user.ini:ro
+      - ./config/php5.ini:/etc/php56/conf.d/user.ini:ro
+      - ./config/exim.conf:/etc/mail/exim.conf
       - php5_pools_volume:/etc/php56/php-fpm.d
       - php7_pools_volume:/etc/php/php-fpm.d
       - dnsmasq_hosts_volume:/sitesbox/dnsmasq_hosts

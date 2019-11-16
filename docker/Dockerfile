@@ -46,6 +46,8 @@ RUN systemctl enable telegraf
 RUN pacman --noconfirm -S cronie
 RUN systemctl enable cronie
 RUN pacman --noconfirm -S inetutils which
+RUN pacman --noconfirm -S ruby
+RUN gem install compass --norc
 WORKDIR /
 RUN printf "no-resolv\nno-poll\nno-hosts\naddn-hosts=/sitesbox/dnsmasq_hosts/hosts_nginx\n" > /etc/dnsmasq.conf
 COPY entrypoint.sh /entrypoint.sh

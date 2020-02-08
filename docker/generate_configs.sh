@@ -6,6 +6,7 @@ SITES_PATH=/sites
 #clean up configs
 rm /sitesbox/nginx_configs/*
 rm /etc/php/php-fpm.d/*
+rm /etc/php73/php-fpm.d/*
 rm /etc/php56/php-fpm.d/*
 
 

@@ -14,6 +14,7 @@ WORKDIR /home/dev/aurman
 RUN gpg --recv-key 465022E743D71E39
 RUN makepkg -scir --noconfirm
 RUN aurman --noedit --skip_news --skip_new_locations --noconfirm -S docker-systemctl-replacement-git
+WORKDIR /home/dev
 RUN git clone https://aur.archlinux.org/php73.git
 RUN gpg --recv-key D66C9593118BCCB6
 WORKDIR /home/dev/php73

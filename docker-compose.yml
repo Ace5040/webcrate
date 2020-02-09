@@ -3,8 +3,8 @@ version: '3'
 services:
 
   sitesbox:
-    #build: docker
-    image: ace5040/sitesbox:stable
+    build: docker
+    #image: ace5040/sitesbox:stable
     container_name: sitesbox
     hostname: sitesbox
     restart: unless-stopped
@@ -33,6 +33,7 @@ services:
       - ./config/php73.ini:/etc/php73/conf.d/user.ini:ro
       - ./config/php5.ini:/etc/php56/conf.d/user.ini:ro
       - ./config/exim.conf:/etc/mail/exim.conf
+      - ./config/letsencrypt:/etc/letsencrypt
       - php7_pools_volume:/etc/php/php-fpm.d
       - php73_pools_volume:/etc/php73/php-fpm.d
       - php5_pools_volume:/etc/php56/php-fpm.d
@@ -53,9 +54,11 @@ services:
     restart: unless-stopped
     ports:
       - 80:80
+      - 443:443
     volumes:
       - ${SITES_PATH}:/sites
       - /etc/localtime:/etc/localtime:ro
+      - ./config/letsencrypt:/etc/letsencrypt:ro
       - nginx_configs_volume:/etc/nginx/conf.d:ro
       - phpmyadmin_volume:/phpmyadmin
     depends_on:

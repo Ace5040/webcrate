@@ -8,6 +8,7 @@ db/mysql5/*
 config/exim.conf
 config/sites/*
 config/crontabs/*
+config/letsencrypt/*
 config/php-pool-templates/*
 !config/sites/example.conf.example
 !config/sites/phpmyadmin.conf
@@ -17,6 +18,7 @@ config/php-pool-templates/*
 !db/mysql/.keep
 !db/mysql5/.keep
 !config/crontabs/.keep
+!config/letsencrypt/.keep
 !solr/.keep
 !sites/.keep
 !grafana/.keep

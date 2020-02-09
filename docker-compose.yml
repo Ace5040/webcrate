@@ -62,7 +62,7 @@ services:
       - "sitesbox"
     networks:
       - sitesnet
-    command: /bin/bash -c "sleep 5; exec nginx -g 'daemon off;'"
+    command: /bin/bash -c "sleep 1; exec nginx -g 'daemon off;'"
 
   mysql5:
     image: mariadb:5
@@ -107,6 +107,29 @@ services:
       - /sessions
       - phpmyadmin_volume:/var/www/html
       - phpmyadmin_config_volume:/etc/phpmyadmin
+    networks:
+      - sitesnet
+
+  postgres:
+    image: postgres
+    container_name: postgres
+    restart: unless-stopped
+    volumes:
+      #- /etc/localtime:/etc/localtime:ro
+      - ${PATH_TO_POSTGRES_DB}:/var/lib/postgresql/data #path to mysql5 databases
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5432:5432
+    networks:
+      - sitesnet
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: unless-stopped
+    ports:
+      - 8081:8080
     networks:
       - sitesnet
 

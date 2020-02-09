@@ -54,6 +54,13 @@ if [[ -f /sitesbox/sites_configs/$u.conf ]]; then
       sed -i -- "s/%path%/$path/g" /etc/php$php_path_prefix/php-fpm.d/$u.conf
       sed -i -- "s/%group%/$group/g" /etc/php$php_path_prefix/php-fpm.d/$u.conf
       sed -i -- "s/%pool%/$pool/g" /etc/php$php_path_prefix/php-fpm.d/$u.conf
+
+    else
+
+      source /sites/$path/app/env/bin/activate
+      gunicorn --daemon --bind :$port --name $path --user $user --group $group --error-logfile /sites/$path/logs/gunicorn-error.log -c /sites/$path/app/gunicorn.conf --chdir /sites/$path/app core.wsgi:application
+      deactivate
+
     fi
 
     cp -rf /sitesbox/sites_configs/$u.conf /sitesbox/nginx_configs/$u.conf

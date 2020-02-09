@@ -1,7 +1,7 @@
 FROM archlinux:latest
 RUN echo "Set disable_coredump false" >> /etc/sudo.conf
 RUN pacman --noconfirm -Syu
-RUN pacman --needed --noconfirm -S git nano openssh base-devel unzip composer npm mariadb-clients dnsmasq mc iputils cronie inetutils which ruby
+RUN pacman --needed --noconfirm -S git nano openssh base-devel unzip composer npm mariadb-clients dnsmasq mc iputils cronie inetutils which ruby certbot python-virtualenv
 RUN pacman --needed --noconfirm -S php php-fpm php-gd php-xsl php-intl php-tidy php-imagick
 RUN useradd -m -s /bin/bash dev
 RUN usermod -p "dev" dev
@@ -9,21 +9,23 @@ RUN echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo
 RUN sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j6\"/g" /etc/makepkg.conf
 USER dev
 WORKDIR /home/dev
-RUN git clone https://aur.archlinux.org/aurman.git
-WORKDIR /home/dev/aurman
-RUN gpg --recv-key 465022E743D71E39
+RUN git clone https://aur.archlinux.org/yay.git
+WORKDIR /home/dev/yay
 RUN makepkg -scir --noconfirm
-RUN aurman --noedit --skip_news --skip_new_locations --noconfirm -S docker-systemctl-replacement-git
 WORKDIR /home/dev
+RUN yay --noeditmenu --nodiffmenu -S docker-systemctl-replacement-git
 RUN git clone https://aur.archlinux.org/php73.git
 RUN gpg --recv-key D66C9593118BCCB6
 WORKDIR /home/dev/php73
 RUN makepkg -scir --noconfirm --nocheck
-RUN aurman --noedit --skip_news --skip_new_locations --noconfirm --pgp_fetch -S php73-imagick
-RUN aurman --noedit --skip_news --skip_new_locations --noconfirm --pgp_fetch -S exim
-RUN aurman --noedit --skip_news --skip_new_locations --noconfirm --pgp_fetch -S php56 php56-fpm php56-gd php56-xsl php56-intl php56-tidy php56-imagick
-RUN aurman --noedit --skip_news --skip_new_locations --noconfirm --pgp_fetch -S drush-launcher telegraf-bin
+RUN yay --noeditmenu --nodiffmenu --noconfirm -S php73-imagick
+RUN gpg --recv-key C2BF0BC433CFC8B3
+RUN yay --noeditmenu --nodiffmenu --noconfirm -S php56 php56-fpm php56-gd php56-xsl php56-intl php56-tidy php56-imagick
+RUN yay --noeditmenu --nodiffmenu --noconfirm -S drush-launcher telegraf-bin
+RUN yay --noeditmenu --nodiffmenu --noconfirm -S pip-tools
 USER root
+RUN pacman --noconfirm -R msmtp-mta
+RUN pacman --noconfirm -S exim
 RUN chown root:root /bin/systemctl3.py
 RUN chmod a+x /bin/systemctl3.py
 RUN mv /bin/systemctl /bin/systemctl_original

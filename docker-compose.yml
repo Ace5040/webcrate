@@ -127,12 +127,14 @@ services:
     networks:
       - sitesnet
 
-  adminer:
-    image: adminer
-    container_name: adminer
+  phppgadmin:
+    image: dockage/phppgadmin
+    container_name: phppgadmin
     restart: unless-stopped
+    environment:
+      - PHP_PG_ADMIN_SERVER_HOST=postgres
     ports:
-      - 8081:8080
+      - 8081:80
     networks:
       - sitesnet
 

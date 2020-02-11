@@ -5,6 +5,7 @@ influxdb/*
 sites/*
 db/mysql/*
 db/mysql5/*
+db/postgres/*
 config/exim.conf
 config/sites/*
 config/crontabs/*

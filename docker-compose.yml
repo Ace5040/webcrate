@@ -65,7 +65,7 @@ services:
       - "sitesbox"
     networks:
       - sitesnet
-    command: /bin/bash -c "sleep 1; exec nginx -g 'daemon off;'"
+    command: /bin/bash -c "sleep 10; exec nginx -g 'daemon off;'"
 
   mysql5:
     image: mariadb:5

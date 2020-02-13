@@ -3,8 +3,8 @@ version: '3'
 services:
 
   sitesbox:
-    build: docker
-    #image: ace5040/sitesbox:stable
+    #build: docker
+    image: ace5040/sitesbox:stable
     container_name: sitesbox
     hostname: sitesbox
     restart: unless-stopped

@@ -37,6 +37,7 @@ RUN systemctl enable php56-fpm
 RUN systemctl enable sshd
 RUN systemctl enable cronie
 RUN systemctl enable telegraf
+RUN systemctl enable exim
 RUN printf "\ninclude=/etc/php56/php-fpm.d/*.conf" >> /etc/php56/php-fpm.conf
 RUN sed -i "s/.*open_basedir =.*/open_basedir =/g" /etc/php/php.ini
 RUN sed -i "s/.*open_basedir =.*/open_basedir =/g" /etc/php73/php.ini
@@ -55,6 +56,7 @@ RUN printf "no-resolv\nno-poll\nno-hosts\naddn-hosts=/sitesbox/dnsmasq_hosts/hos
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod u+x /entrypoint.sh
 RUN mkdir -p /sitesbox
+RUN mkdir -p /sitesbox/bin
 COPY generate_configs.sh /sitesbox/generate_configs.sh
 RUN chmod u+x /sitesbox/generate_configs.sh
 COPY generate_hosts.sh /sitesbox/generate_hosts.sh
@@ -69,4 +71,7 @@ RUN mkdir -p /etc/telegraf/.config/procps
 RUN rm /etc/mail/exim.conf
 COPY sitesbox_profile.sh /etc/profile.d/sitesbox_profile.sh
 COPY toprc /etc/telegraf/.config/procps/toprc
+COPY gunicorn_restart.sh /sitesbox/bin/gunicorn_restart.sh
+RUN chmod a+x /sitesbox/bin/gunicorn_restart.sh
+RUN echo "test -r ~/phpversion.sh && . ~/phpversion.sh" >> /etc/profile
 CMD ["/entrypoint.sh"]

@@ -42,7 +42,7 @@ if [[ -f /sitesbox/sites_configs/$u.conf ]]; then
       fi
 
       if [[ -f /sitesbox/custom_templates/$u.conf ]]; then
-          template_path=/sitesbox/custom_templates/$u.conf
+        template_path=/sitesbox/custom_templates/$u.conf
       else
         template_path="/sitesbox/custom_templates/php$php-default.conf"
       fi
@@ -55,10 +55,13 @@ if [[ -f /sitesbox/sites_configs/$u.conf ]]; then
       sed -i -- "s/%group%/$group/g" /etc/php$php_path_prefix/php-fpm.d/$u.conf
       sed -i -- "s/%pool%/$pool/g" /etc/php$php_path_prefix/php-fpm.d/$u.conf
 
+      test -d /sites/$path && echo "alias php='/bin/php$php_path_prefix'" > /sites/$path/phpversion.sh
+      test -d /sites/$path && echo "alias composer='php /bin/composer'" >> /sites/$path/phpversion.sh
+
     else
 
       source /sites/$path/app/env/bin/activate
-      gunicorn --daemon --bind :$port --name $path --user $user --group $group --error-logfile /sites/$path/logs/gunicorn-error.log -c /sites/$path/app/gunicorn.conf --chdir /sites/$path/app core.wsgi:application
+      sudo -u $user gunicorn --daemon --bind :$port --name $path --user $user --group $group --pid ../tmp/gunicorn.pid --error-logfile ../logs/gunicorn-error.log -c /sites/$path/app/gunicorn.conf.py --chdir /sites/$path/app core.wsgi:application
       deactivate
 
     fi

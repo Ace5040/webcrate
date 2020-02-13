@@ -15,6 +15,7 @@ services:
       - "${DNSMASQ_PORT-5353}:53/udp"
     environment:
       - MODE=${SITESBOX_MODE} #set MODE DEV or PRODUCTION
+      - SITES_PATH=${SITES_PATH}
       - DEV_MODE_USER_PASS=${DEV_MODE_USER_PASS} #password for dev user
       - DEV_MODE_USER_UID=${DEV_MODE_USER_UID} #UID for dev user set it to your HOSTs user UID
       - DEV_MODE_USER_GID=${DEV_MODE_USER_GID} #GID for dev user set it to your HOSTs user GID
@@ -118,8 +119,7 @@ services:
     container_name: postgres
     restart: unless-stopped
     volumes:
-      #- /etc/localtime:/etc/localtime:ro
-      - ${PATH_TO_POSTGRES_DB}:/var/lib/postgresql/data #path to mysql5 databases
+      - ${PATH_TO_POSTGRES_DB}:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: postgres
     ports:

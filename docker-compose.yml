@@ -3,12 +3,12 @@ version: '3'
 services:
 
   utils:
-    build: src/utils
-    #image: ace5040/utils:stable
+    #build: src/utils
+    image: ace5040/utils:stable
     container_name: utils
 
   sitesbox:
-    build: src/sitesbox
+    #build: src/sitesbox
     image: ace5040/sitesbox:stable
     container_name: sitesbox
     hostname: sitesbox
@@ -53,7 +53,7 @@ services:
         ipv4_address: 172.31.0.100
 
   nginx:
-    build: src/nginx
+    #build: src/nginx
     image: ace5040/nginx:stable
     container_name: nginx
     hostname: nginx

@@ -1,7 +1,9 @@
 cd c:\sitesbox
 
+. .\.env
+
 docker run --rm --env-file=%cd%/.env \
-  -v %cd%/var/sites:/sites \
+  -v $SITES_PATH:/sites \
   #-v /etc/passwd:/sitesbox/passwd:ro \
   #-v /etc/shadow:/sitesbox/shadow:ro \
   -v %cd%/sites:/sitesbox/sites_configs:ro \

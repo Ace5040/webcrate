@@ -29,7 +29,7 @@ if [[ $SITESBOX_MODE == "PRODUCTION" ]]; then
                   fi
                   usermod -p "$p" $u > /dev/null 2>&1
                   /sitesbox/generate_pool.sh $u $port
-                  port=$(($0port + 1))
+                  port=$(($port + 1))
                 fi
             done
         fi
@@ -41,8 +41,8 @@ fi
 
 if [[ $SITESBOX_MODE == "DEV" ]]; then
 
-    usermod -u $DEV_MODE_USER_UID dev /dev/null 2>&1
-    groupmod -g $DEV_MODE_USER_GID dev /dev/null 2>&1
+    usermod -u $DEV_MODE_USER_UID dev > /dev/null 2>&1
+    groupmod -g $DEV_MODE_USER_GID dev > /dev/null 2>&1
 
     for i in /sitesbox/sites_configs/*.conf; do
       [ -f "$i" ] || continue

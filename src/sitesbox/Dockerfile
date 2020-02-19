@@ -1,7 +1,7 @@
 FROM archlinux:latest
 RUN echo "Set disable_coredump false" >> /etc/sudo.conf
 RUN pacman --noconfirm -Syu
-RUN pacman --needed --noconfirm -S git nano openssh base-devel unzip composer npm mariadb-clients dnsmasq mc iputils cronie inetutils which ruby certbot python-virtualenv
+RUN pacman --needed --noconfirm -S git nano openssh base-devel unzip composer npm mariadb-clients dnsmasq mc iputils cronie inetutils which ruby python-virtualenv
 RUN pacman --needed --noconfirm -S php php-fpm php-gd php-xsl php-intl php-tidy php-imagick
 RUN useradd -m -s /bin/bash dev
 RUN usermod -p "dev" dev
@@ -59,10 +59,8 @@ RUN mkdir -p /sitesbox
 RUN mkdir -p /sitesbox/bin
 COPY generate_configs.sh /sitesbox/generate_configs.sh
 RUN chmod u+x /sitesbox/generate_configs.sh
-COPY generate_hosts.sh /sitesbox/generate_hosts.sh
-RUN chmod u+x /sitesbox/generate_hosts.sh
-COPY generate_pool.sh /sitesbox/generate_pool.sh
-RUN chmod u+x /sitesbox/generate_pool.sh
+COPY gunicorn_init.sh /sitesbox/gunicorn_init.sh
+RUN chmod u+x /sitesbox/gunicorn_init.sh
 COPY stats_users.sh /sitesbox/stats_users.sh
 RUN chmod a+x /sitesbox/stats_users.sh
 COPY stats_pools.sh /sitesbox/stats_pools.sh

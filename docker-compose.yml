@@ -2,8 +2,13 @@ version: '3'
 
 services:
 
+  utils:
+    build: src/utils
+    #image: ace5040/utils:stable
+    container_name: utils
+
   sitesbox:
-    #build: docker
+    build: src/sitesbox
     image: ace5040/sitesbox:stable
     container_name: sitesbox
     hostname: sitesbox
@@ -22,13 +27,12 @@ services:
       - PHPMYADMIN_DNS_NAME=${PHPMYADMIN_DNS_NAME} #phpmyadmin dns name
       - DOCKER_HOST_IP=${DOCKER_HOST_IP} #ip for dnsmasq service
       - SITESBOX_EXTERNAL_DNS_IP=${SITESBOX_EXTERNAL_DNS_IP}
-      - EXIM_PRIMARY_HOSTNAME=${EXIM_PRIMARY_HOSTNAME}
     volumes:
       - ${SITES_PATH}:/sites
       - /etc/localtime:/etc/localtime:ro
       - ./config/crontabs:/var/spool/cron
       - ./config/telegraf:/etc/telegraf/telegraf.d:ro
-      - ./config/sites:/sitesbox/sites_configs:ro
+      - ./sites:/sitesbox/sites_configs:ro
       - ./config/php-pool-templates:/sitesbox/custom_templates:ro
       - ./config/php7.ini:/etc/php/conf.d/user.ini:ro
       - ./config/php73.ini:/etc/php73/conf.d/user.ini:ro
@@ -42,31 +46,35 @@ services:
       - nginx_configs_volume:/sitesbox/nginx_configs
       - phpmyadmin_volume:/phpmyadmin
       - phpmyadmin_config_volume:/etc/phpmyadmin
-      - ${PATH_TO_PASSWD_FILE}:/sitesbox/passwd_host:ro #used for PRODUCTION mode only to sync users with host
-      - ${PATH_TO_SHADOW_FILE}:/sitesbox/shadow_host:ro #used for PRODUCTION mode only to sync passwords with host
+      - ${PATH_TO_PASSWD_FILE}:/sitesbox/passwd:ro
+      - ${PATH_TO_SHADOW_FILE}:/sitesbox/shadow:ro
     networks:
       sitesnet:
         ipv4_address: 172.31.0.100
 
   nginx:
-    image: nginx:latest
+    build: src/nginx
+    image: ace5040/nginx:stable
     container_name: nginx
     hostname: nginx
     restart: unless-stopped
     ports:
       - 80:80
       - 443:443
+    environment:
+      - SITESBOX_MODE=${SITESBOX_MODE} #set MODE DEV or PRODUCTION
+      - DEV_MODE_USER_GID=${DEV_MODE_USER_GID} #GID for dev user set it to your HOSTs user GID
     volumes:
       - ${SITES_PATH}:/sites
       - /etc/localtime:/etc/localtime:ro
       - ./config/letsencrypt:/etc/letsencrypt:ro
       - nginx_configs_volume:/etc/nginx/conf.d:ro
+      - ${PATH_TO_GROUP_FILE}:/sitesbox/group:ro
       - phpmyadmin_volume:/phpmyadmin
     depends_on:
       - "sitesbox"
     networks:
       - sitesnet
-    command: /bin/bash -c "sleep 10; exec nginx -g 'daemon off;'"
 
   mysql5:
     image: mariadb:5
@@ -187,7 +195,7 @@ services:
       GF_PATHS_LOGS: /log
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ./grafana/data:/data
+      - ./var/grafana/data:/data
     networks:
       - sitesnet
 
@@ -201,7 +209,7 @@ services:
       - "8086:8086"
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ./influxdb:/var/lib/influxdb
+      - ./var/influxdb:/var/lib/influxdb
     networks:
       - sitesnet
 
@@ -213,15 +221,6 @@ volumes:
   php5_pools_volume: {}
   phpmyadmin_volume: {}
   phpmyadmin_config_volume: {}
-  #solution for windows docker hosts to enable both ways symlink support
-  #change all volumes in this yml - ${SITES_PATH}:/sites to - sites:/sites
-  #and uncomment "sites" section below
-  #sites:
-    #driver: local
-    #driver_opts:
-      #type: nfs
-      #o: addr=${DOCKER_HOST_IP},vers=4.1
-      #device: ":/sites" #configure it in nfs server first (hanewin for example)
 
 networks:
   sitesnet:

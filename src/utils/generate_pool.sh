@@ -8,7 +8,7 @@ pool=$u;
 
 u_exist=`grep -c "^$u:" /etc/passwd`;
 
-if [[ $MODE == "DEV" || $u_exist == 0 ]]; then
+if [[ $SITESBOX_MODE == "DEV" || $u_exist == 0 ]]; then
     user='dev';
     group='dev';
 fi;
@@ -47,22 +47,16 @@ if [[ -f /sitesbox/sites_configs/$u.conf ]]; then
         template_path="/sitesbox/custom_templates/php$php-default.conf"
       fi
 
-      cp -rf $template_path /etc/php$php_path_prefix/php-fpm.d/$u.conf
+      cp -rf $template_path /sitesbox/php$php_path_prefix-fpm.d/$u.conf
 
-      sed -i -- "s/%port%/$port/g" /etc/php$php_path_prefix/php-fpm.d/$u.conf
-      sed -i -- "s/%user%/$user/g" /etc/php$php_path_prefix/php-fpm.d/$u.conf
-      sed -i -- "s/%path%/$path/g" /etc/php$php_path_prefix/php-fpm.d/$u.conf
-      sed -i -- "s/%group%/$group/g" /etc/php$php_path_prefix/php-fpm.d/$u.conf
-      sed -i -- "s/%pool%/$pool/g" /etc/php$php_path_prefix/php-fpm.d/$u.conf
+      sed -i -- "s/%port%/$port/g" /sitesbox/php$php_path_prefix-fpm.d/$u.conf
+      sed -i -- "s/%user%/$user/g" /sitesbox/php$php_path_prefix-fpm.d/$u.conf
+      sed -i -- "s/%path%/$path/g" /sitesbox/php$php_path_prefix-fpm.d/$u.conf
+      sed -i -- "s/%group%/$group/g" /sitesbox/php$php_path_prefix-fpm.d/$u.conf
+      sed -i -- "s/%pool%/$pool/g" /sitesbox/php$php_path_prefix-fpm.d/$u.conf
 
       test -d /sites/$path && echo "alias php='/bin/php$php_path_prefix'" > /sites/$path/phpversion.sh
       test -d /sites/$path && echo "alias composer='php /bin/composer'" >> /sites/$path/phpversion.sh
-
-    else
-
-      source /sites/$path/app/env/bin/activate
-      sudo -u $user gunicorn --daemon --bind :$port --name $path --user $user --group $group --pid ../tmp/gunicorn.pid --error-logfile ../logs/gunicorn-error.log -c /sites/$path/app/gunicorn.conf.py --chdir /sites/$path/app core.wsgi:application
-      deactivate
 
     fi
 

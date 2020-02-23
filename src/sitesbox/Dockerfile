@@ -50,6 +50,7 @@ RUN chmod a+x /bin/drupal
 RUN sed -i "s/# urls = \[\"http\:\/\/127\.0\.0\.1\:8086\"\]/urls = \[\"http\:\/\/influxdb\:8086\"\]/g" /etc/telegraf/telegraf.conf
 RUN sed -i "s/# skip_database_creation = false/skip_database_creation = true/g" /etc/telegraf/telegraf.conf
 RUN sed -i "s/# database = \"telegraf\"/database = \"telegraf\"/g" /etc/telegraf/telegraf.conf
+RUN sed -i 's/  interval = "10s"/  interval = "1s"/g' /etc/telegraf/telegraf.conf
 RUN gem install compass --norc
 WORKDIR /
 RUN printf "no-resolv\nno-poll\nno-hosts\naddn-hosts=/sitesbox/dnsmasq_hosts/hosts_nginx\n" > /etc/dnsmasq.conf

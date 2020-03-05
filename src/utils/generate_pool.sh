@@ -57,7 +57,8 @@ if [[ -f /sitesbox/sites_configs/$u.conf ]]; then
 
       test -d /sites/$path && echo "alias php='/bin/php$php_path_prefix'" > /sites/$path/phpversion.sh
       test -d /sites/$path && echo "alias composer='php /bin/composer'" >> /sites/$path/phpversion.sh
-
+      test -d /sites/$path && echo "alias drush='php /usr/sbin/drush'" >> /sites/$path/phpversion.sh
+      test -d /sites/$path && echo "export DRUSH_LAUNCHER_FALLBACK='/bin/php$php_path_prefix ~/.composer/vendor/bin/drush'" >> /sites/$path/phpversion.sh
     fi
 
     cp -rf /sitesbox/sites_configs/$u.conf /sitesbox/nginx_configs/$u.conf

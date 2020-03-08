@@ -1,0 +1,15 @@
+#!/bin/bash
+
+SCRIPT=`realpath $0`
+SCRIPTPATH=`dirname $SCRIPT`
+
+cd $SCRIPTPATH/..
+
+source .env
+
+docker run --rm --env-file=$(pwd)/.env \
+  -v $SITES_PATH:/sites \
+  -v $(pwd)/config/letsencrypt:/etc/letsencrypt \
+  ace5040/utils:stable \
+  certbot renew
+docker restart nginx

@@ -16,5 +16,5 @@ else
     -v $SITES_PATH:/sites \
     -v $(pwd)/config/letsencrypt:/etc/letsencrypt \
     ace5040/utils:stable \
-    certbot certonly --webroot --webroot-path ${1} ${2}
+    certbot certonly --expand --webroot --webroot-path ${1} ${2}
 fi

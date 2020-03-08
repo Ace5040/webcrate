@@ -2,7 +2,7 @@
 
 if [ $# -eq 0 ]
 then
-  echo usage sitesbox-certbot /sites/site-name/web-root "example1.com example2.com ..."
+  echo usage sitesbox-certbot /sites/site-name/web-root "-d example1.com -d example2.com ..."
 else
 
   SCRIPT=`realpath $0`
@@ -16,5 +16,5 @@ else
     -v $SITES_PATH:/sites \
     -v $(pwd)/config/letsencrypt:/etc/letsencrypt \
     ace5040/utils:stable \
-    certbot certonly --webroot --webroot-path ${1} --domains ${2}
+    certbot certonly --webroot --webroot-path ${1} ${2}
 fi

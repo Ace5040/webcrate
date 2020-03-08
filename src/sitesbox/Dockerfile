@@ -73,4 +73,17 @@ COPY toprc /etc/telegraf/.config/procps/toprc
 COPY gunicorn_restart.sh /sitesbox/bin/gunicorn_restart.sh
 RUN chmod a+x /sitesbox/bin/gunicorn_restart.sh
 RUN echo "test -r ~/phpversion.sh && . ~/phpversion.sh" >> /etc/profile
+
+USER dev
+WORKDIR /home/dev
+RUN git clone https://aur.archlinux.org/php72-memcached.git
+WORKDIR /home/dev/php72-memcached
+RUN sed -i 's/php72/php73/g' /home/dev/php72-memcached/PKGBUILD
+RUN sed -i 's/phpize72/phpize73/g' /home/dev/php72-memcached/PKGBUILD
+RUN sed -i 's/php-config72/php-config73/g' /home/dev/php72-memcached/PKGBUILD
+RUN makepkg -scir --noconfirm --nocheck
+RUN yay --noeditmenu --nodiffmenu --noconfirm -S php-memcached php56-memcached
+USER root
+WORKDIR /sitesbox
+
 CMD ["/entrypoint.sh"]

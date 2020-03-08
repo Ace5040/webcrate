@@ -76,6 +76,14 @@ services:
     networks:
       - sitesnet
 
+  memcache:
+    image: memcached
+    container_name: memcache
+    hostname: memcache
+    restart: unless-stopped
+    networks:
+      - sitesnet
+
   mysql5:
     image: mariadb:5
     container_name: mysql5

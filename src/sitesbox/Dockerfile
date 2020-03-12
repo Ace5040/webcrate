@@ -75,6 +75,7 @@ RUN chmod a+x /sitesbox/bin/gunicorn_restart.sh
 RUN echo "test -r ~/phpversion.sh && . ~/phpversion.sh" >> /etc/profile
 
 USER dev
+RUN yay --noeditmenu --nodiffmenu --noconfirm -S tmux
 WORKDIR /home/dev
 RUN git clone https://aur.archlinux.org/php72-memcached.git
 WORKDIR /home/dev/php72-memcached

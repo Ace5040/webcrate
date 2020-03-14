@@ -21,4 +21,4 @@ docker run --rm --env-file=%cd%/.env \
   ace5040/utils:stable \
   /sitesbox/generate_hosts.sh
 
-docker-compose up -d
+docker-compose up --remove-orphans -d

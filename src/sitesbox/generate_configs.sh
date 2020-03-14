@@ -22,6 +22,7 @@ if [[ $MODE == "PRODUCTION" ]]; then
                   if [[ $u_exist == 0 ]]; then
                     useradd --no-create-home --uid $uid --home-dir $SITES_PATH/$u $u
                   fi
+                  usermod -s /bin/fish $u > /dev/null 2>&1
                   usermod -p "$p" $u > /dev/null 2>&1
                   /sitesbox/gunicorn_init.sh $u $port
                   port=$(($port + 1));
@@ -38,6 +39,7 @@ if [[ $MODE == "DEV" ]]; then
 
     usermod -p "$DEV_MODE_USER_PASS" dev > /dev/null 2>&1
     usermod -u $DEV_MODE_USER_UID dev > /dev/null 2>&1
+    usermod -s /bin/fish dev > /dev/null 2>&1
     groupmod -g $DEV_MODE_USER_GID dev > /dev/null 2>&1
 
     for i in /sitesbox/sites_configs/*.conf; do

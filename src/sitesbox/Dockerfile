@@ -2,7 +2,7 @@ FROM archlinux:latest
 RUN echo "Set disable_coredump false" >> /etc/sudo.conf
 RUN pacman --noconfirm -Syu
 RUN pacman --needed --noconfirm -S git nano openssh base-devel unzip composer npm mariadb-clients dnsmasq mc iputils cronie inetutils which ruby python-virtualenv
-RUN pacman --needed --noconfirm -S php php-fpm php-gd php-xsl php-intl php-tidy php-imagick
+RUN pacman --needed --noconfirm -S php php-fpm php-gd php-xsl php-intl php-tidy php-imagick php-memcached
 RUN useradd -m -s /bin/bash dev
 RUN usermod -p "dev" dev
 RUN echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo
@@ -19,10 +19,16 @@ RUN gpg --recv-key D66C9593118BCCB6
 WORKDIR /home/dev/php73
 RUN makepkg -scir --noconfirm --nocheck
 RUN yay --noeditmenu --nodiffmenu --noconfirm -S php73-imagick
+WORKDIR /home/dev
+RUN git clone https://aur.archlinux.org/php72-memcached.git
+WORKDIR /home/dev/php72-memcached
+RUN sed -i 's/php72/php73/g' /home/dev/php72-memcached/PKGBUILD
+RUN sed -i 's/phpize72/phpize73/g' /home/dev/php72-memcached/PKGBUILD
+RUN sed -i 's/php-config72/php-config73/g' /home/dev/php72-memcached/PKGBUILD
+RUN makepkg -scir --noconfirm --nocheck
 RUN gpg --recv-key C2BF0BC433CFC8B3
-RUN yay --noeditmenu --nodiffmenu --noconfirm -S php56 php56-fpm php56-gd php56-xsl php56-intl php56-tidy php56-imagick
-RUN yay --noeditmenu --nodiffmenu --noconfirm -S drush-launcher telegraf-bin
-RUN yay --noeditmenu --nodiffmenu --noconfirm -S pip-tools
+RUN yay --noeditmenu --nodiffmenu --noconfirm -S php56 php56-fpm php56-gd php56-xsl php56-intl php56-tidy php56-imagick php56-memcached
+RUN yay --noeditmenu --nodiffmenu --noconfirm -S drush-launcher telegraf-bin pip-tools tmux fish
 USER root
 RUN pacman --noconfirm -R msmtp-mta
 RUN pacman --noconfirm -S exim
@@ -68,23 +74,18 @@ COPY stats_pools.sh /sitesbox/stats_pools.sh
 RUN chmod a+x /sitesbox/stats_pools.sh
 RUN mkdir -p /etc/telegraf/.config/procps
 RUN rm /etc/mail/exim.conf
-COPY sitesbox_profile.sh /etc/profile.d/sitesbox_profile.sh
+COPY bashrc.sh /etc/profile.d/bashrc.sh
+COPY fishrc.fish /etc/fish/conf.d/fishrc.fish
 COPY toprc /etc/telegraf/.config/procps/toprc
 COPY gunicorn_restart.sh /sitesbox/bin/gunicorn_restart.sh
 RUN chmod a+x /sitesbox/bin/gunicorn_restart.sh
-RUN echo "test -r ~/phpversion.sh && . ~/phpversion.sh" >> /etc/profile
-
-USER dev
-RUN yay --noeditmenu --nodiffmenu --noconfirm -S tmux
-WORKDIR /home/dev
-RUN git clone https://aur.archlinux.org/php72-memcached.git
-WORKDIR /home/dev/php72-memcached
-RUN sed -i 's/php72/php73/g' /home/dev/php72-memcached/PKGBUILD
-RUN sed -i 's/phpize72/phpize73/g' /home/dev/php72-memcached/PKGBUILD
-RUN sed -i 's/php-config72/php-config73/g' /home/dev/php72-memcached/PKGBUILD
-RUN makepkg -scir --noconfirm --nocheck
-RUN yay --noeditmenu --nodiffmenu --noconfirm -S php-memcached php56-memcached
-USER root
+RUN echo ". /etc/profile.d/bashrc.sh" >> /etc/bash.bashrc
+RUN mkdir -p /sitesbox/bin/php
+RUN mkdir -p /sitesbox/bin/php73
+RUN mkdir -p /sitesbox/bin/php56
+RUN ln -s /bin/php /sitesbox/bin/php/php
+RUN ln -s /bin/php73 /sitesbox/bin/php73/php
+RUN ln -s /bin/php56 /sitesbox/bin/php56/php
 WORKDIR /sitesbox
 
 CMD ["/entrypoint.sh"]

@@ -2,13 +2,13 @@ version: '3'
 
 services:
 
-  #utils:
-    #build: src/utils
-    #image: ace5040/utils:stable
-    #container_name: utils
+  utils:
+    build: src/utils
+    image: ace5040/utils:stable
+    container_name: utils
 
   sitesbox:
-    #build: src/sitesbox
+    build: src/sitesbox
     image: ace5040/sitesbox:stable
     container_name: sitesbox
     hostname: sitesbox

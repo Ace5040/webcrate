@@ -5,6 +5,7 @@ var/influxdb/*
 var/sites/*
 var/mysql/*
 var/mysql5/*
+var/postgres
 var/postgres/*
 config/exim.conf
 sites/*

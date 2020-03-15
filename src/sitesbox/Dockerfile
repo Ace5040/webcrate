@@ -86,6 +86,14 @@ RUN mkdir -p /sitesbox/bin/php56
 RUN ln -s /bin/php /sitesbox/bin/php/php
 RUN ln -s /bin/php73 /sitesbox/bin/php73/php
 RUN ln -s /bin/php56 /sitesbox/bin/php56/php
+RUN mkdir -p /sitesbox/fish
+WORKDIR /sitesbox/fish
+RUN git clone https://github.com/oh-my-fish/oh-my-fish
+WORKDIR /sitesbox/fish/oh-my-fish
+RUN bin/install --offline --path=/sitesbox/fish/omf --config=/sitesbox/fish/omfconf
+RUN cp /root/.config/fish/conf.d/omf.fish /etc/fish/conf.d/omf.fish
+RUN fish -C "omf install cbjohnson"
+RUN cp /sitesbox/fish/omf/themes/default/fish_right_prompt.fish /sitesbox/fish/omf/themes/cbjohnson/fish_right_prompt.fish
+COPY fish_prompt.fish /sitesbox/fish/omf/themes/cbjohnson/fish_prompt.fish
 WORKDIR /sitesbox
-
 CMD ["/entrypoint.sh"]

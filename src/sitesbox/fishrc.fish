@@ -1,6 +1,6 @@
-set VISUAL mcedit
+set -x VISUAL mcedit
+set -x DRUSH_LAUNCHER_FALLBACK ~/.composer/vendor/bin/drush
 set PATH /sitesbox/bin $PATH
-set DRUSH_LAUNCHER_FALLBACK ~/.composer/vendor/bin/drush
 set u (basename $PWD)
 set fish_greeting ""
 if test -d $HOME/$u.test

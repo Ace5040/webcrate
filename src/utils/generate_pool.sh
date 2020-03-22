@@ -55,8 +55,8 @@ if [[ -f /sitesbox/sites_configs/$u.conf ]]; then
       sed -i -- "s/%group%/$group/g" /sitesbox/php$php_path_prefix-fpm.d/$u.conf
       sed -i -- "s/%pool%/$pool/g" /sitesbox/php$php_path_prefix-fpm.d/$u.conf
 
-      test -d /sites/$path && echo "PATH=/sitesbox/bin/php$php_path_prefix:$PATH" > /sites/$path/phpversion.sh
-      test -d /sites/$path && echo "set PATH /sitesbox/bin/php$php_path_prefix $PATH" > /sites/$path/phpversion.fish
+      test -d /sites/$path && echo "PATH=/sitesbox/bin/php$php_path_prefix:\$PATH" > /sites/$path/phpversion.sh
+      test -d /sites/$path && echo "set PATH /sitesbox/bin/php$php_path_prefix \$PATH" > /sites/$path/phpversion.fish
     fi
 
     cp -rf /sitesbox/sites_configs/$u.conf /sitesbox/nginx_configs/$u.conf

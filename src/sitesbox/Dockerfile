@@ -14,28 +14,22 @@ WORKDIR /home/dev/yay
 RUN makepkg -scir --noconfirm
 WORKDIR /home/dev
 RUN yay --noeditmenu --nodiffmenu -S docker-systemctl-replacement-git
-RUN git clone https://aur.archlinux.org/php73.git
-RUN gpg --recv-key D66C9593118BCCB6
-WORKDIR /home/dev/php73
-RUN makepkg -scir --noconfirm --nocheck
-RUN yay --noeditmenu --nodiffmenu --noconfirm -S php73-imagick
-WORKDIR /home/dev
-RUN git clone https://aur.archlinux.org/php72-memcached.git
-WORKDIR /home/dev/php72-memcached
-RUN sed -i 's/php72/php73/g' /home/dev/php72-memcached/PKGBUILD
-RUN sed -i 's/phpize72/phpize73/g' /home/dev/php72-memcached/PKGBUILD
-RUN sed -i 's/php-config72/php-config73/g' /home/dev/php72-memcached/PKGBUILD
-RUN makepkg -scir --noconfirm --nocheck
+RUN yay --noeditmenu --nodiffmenu --noconfirm -S --mflags --nocheck php73 php73-fpm php73-gd php73-xsl php73-intl php73-tidy
+RUN yay --noeditmenu --nodiffmenu --noconfirm -S php73-imagick php73-memcached
 RUN gpg --recv-key C2BF0BC433CFC8B3
-RUN yay --noeditmenu --nodiffmenu --noconfirm -S php56 php56-fpm php56-gd php56-xsl php56-intl php56-tidy php56-imagick php56-memcached
+RUN yay --noeditmenu --nodiffmenu --noconfirm -S --mflags --nocheck php56 php56-fpm php56-gd php56-xsl php56-intl php56-tidy
+RUN yay --noeditmenu --nodiffmenu --noconfirm -S --mflags --nocheck php56-imagick php56-memcached
 RUN yay --noeditmenu --nodiffmenu --noconfirm -S drush-launcher telegraf-bin pip-tools tmux fish
+RUN yay --noeditmenu --nodiffmenu --noconfirm -S xdebug php73-xdebug
+RUN yay --noeditmenu --nodiffmenu --noconfirm -S php-intl php73-intl php56-intl
+RUN yay --noeditmenu --nodiffmenu --noconfirm -S symfony-cli
 USER root
-RUN pacman --noconfirm -R msmtp-mta
+RUN pacman --noconfirm -R postfix
 RUN pacman --noconfirm -S exim
-RUN chown root:root /bin/systemctl3.py
-RUN chmod a+x /bin/systemctl3.py
+RUN chown root:root /bin/systemctl.py
+RUN chmod a+x /bin/systemctl.py
 RUN mv /bin/systemctl /bin/systemctl_original
-RUN cp /bin/systemctl3.py /bin/systemctl
+RUN cp /bin/systemctl.py /bin/systemctl
 RUN ssh-keygen -A
 RUN systemctl enable php-fpm
 RUN systemctl enable php73-fpm
@@ -50,9 +44,6 @@ RUN sed -i "s/.*open_basedir =.*/open_basedir =/g" /etc/php73/php.ini
 RUN sed -i "s/.*open_basedir =.*/open_basedir =/g" /etc/php56/php.ini
 RUN sed -i "s/;extension=imagick/extension=imagick/g" /etc/php/conf.d/imagick.ini
 RUN sed -i "s/;extension=imagick/extension=imagick/g" /etc/php73/conf.d/imagick.ini
-RUN curl https://drupalconsole.com/installer -L -o drupal.phar
-RUN mv drupal.phar /bin/drupal
-RUN chmod a+x /bin/drupal
 RUN sed -i "s/# urls = \[\"http\:\/\/127\.0\.0\.1\:8086\"\]/urls = \[\"http\:\/\/influxdb\:8086\"\]/g" /etc/telegraf/telegraf.conf
 RUN sed -i "s/# skip_database_creation = false/skip_database_creation = true/g" /etc/telegraf/telegraf.conf
 RUN sed -i "s/# database = \"telegraf\"/database = \"telegraf\"/g" /etc/telegraf/telegraf.conf
@@ -104,5 +95,11 @@ RUN tar xzvf ioncube_loaders_lin_x86-64_7.4_BETA2.tar.gz
 RUN cp ioncube/ioncube_loader_lin_5.6.so /usr/lib/php56/modules/ioncube_loader_lin.so
 RUN cp ioncube/ioncube_loader_lin_7.3.so /usr/lib/php73/modules/ioncube_loader_lin.so
 RUN cp ioncube_loader_lin_7.4_10.4.0_beta2.so /usr/lib/php/modules/ioncube_loader_lin.so
+RUN rm /etc/php73/conf.d/xdebug.ini
+#USER dev
+#RUN yay --noeditmenu --nodiffmenu --noconfirm -S proftpd
+#USER root
+#COPY proftpd.conf /etc/proftpd.conf
+#RUN systemctl enable proftpd
 WORKDIR /sitesbox
 CMD ["/entrypoint.sh"]

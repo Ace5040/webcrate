@@ -96,6 +96,7 @@ RUN cp ioncube/ioncube_loader_lin_5.6.so /usr/lib/php56/modules/ioncube_loader_l
 RUN cp ioncube/ioncube_loader_lin_7.3.so /usr/lib/php73/modules/ioncube_loader_lin.so
 RUN cp ioncube_loader_lin_7.4_10.4.0_beta2.so /usr/lib/php/modules/ioncube_loader_lin.so
 RUN rm /etc/php73/conf.d/xdebug.ini
+RUN yes | sudo symfony self-update
 #USER dev
 #RUN yay --noeditmenu --nodiffmenu --noconfirm -S proftpd
 #USER root

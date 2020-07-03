@@ -17,7 +17,10 @@ services:
       - 172.31.0.100
     ports:
       - "2222:22"
-      - "${DNSMASQ_PORT-5353}:53/udp"
+#      - "21:21"
+#      - "20:20"
+#      - "30000-30100:30000-30100"
+#      - "${DNSMASQ_PORT-5353}:53/udp"
     environment:
       - MODE=${SITESBOX_MODE} #set MODE DEV or PRODUCTION
       - SITES_PATH=${SITES_PATH}
@@ -33,6 +36,7 @@ services:
       - ./config/crontabs:/var/spool/cron
       - ./config/telegraf:/etc/telegraf/telegraf.d:ro
       - ./sites:/sitesbox/sites_configs:ro
+      - ./config/ssh:/sitesbox/ssh_keys
       - ./config/php-pool-templates:/sitesbox/custom_templates:ro
       - ./config/php7.ini:/etc/php/conf.d/user.ini:ro
       - ./config/php73.ini:/etc/php73/conf.d/user.ini:ro

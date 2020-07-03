@@ -10,6 +10,7 @@ var/postgres/*
 config/exim.conf
 sites/*
 config/crontabs/*
+config/ssh/*
 config/letsencrypt/*
 config/php-pool-templates/*
 !sites/example.conf.example
@@ -18,6 +19,7 @@ config/php-pool-templates/*
 !config/php-pool-templates/php73-default.conf
 !config/php-pool-templates/php5-default.conf
 !config/php-pool-templates/phpmyadmin.conf
+!config/ssh/.keep
 !var/mysql/.keep
 !var/mysql5/.keep
 !config/crontabs/.keep

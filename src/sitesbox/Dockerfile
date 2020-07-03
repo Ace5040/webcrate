@@ -55,6 +55,8 @@ COPY entrypoint.sh /entrypoint.sh
 RUN chmod u+x /entrypoint.sh
 RUN mkdir -p /sitesbox
 RUN mkdir -p /sitesbox/bin
+COPY sync_ssh_keys.sh /sitesbox/sync_ssh_keys.sh
+RUN chmod u+x /sitesbox/sync_ssh_keys.sh
 COPY generate_configs.sh /sitesbox/generate_configs.sh
 RUN chmod u+x /sitesbox/generate_configs.sh
 COPY gunicorn_init.sh /sitesbox/gunicorn_init.sh

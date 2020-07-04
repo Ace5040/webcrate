@@ -21,7 +21,7 @@ RUN yay --noeditmenu --nodiffmenu --noconfirm -S --mflags --nocheck php56 php56-
 RUN yay --noeditmenu --nodiffmenu --noconfirm -S --mflags --nocheck php56-imagick php56-memcached
 RUN yay --noeditmenu --nodiffmenu --noconfirm -S drush-launcher telegraf-bin pip-tools tmux fish
 RUN yay --noeditmenu --nodiffmenu --noconfirm -S xdebug php73-xdebug
-RUN yay --noeditmenu --nodiffmenu --noconfirm -S php-intl php73-intl php56-intl
+RUN yay --noeditmenu --nodiffmenu --noconfirm -S php-intl php73-intl php56-intl php-sqlite php73-sqlite php56-sqlite
 RUN yay --noeditmenu --nodiffmenu --noconfirm -S symfony-cli
 USER root
 RUN pacman --noconfirm -R postfix
@@ -91,12 +91,10 @@ COPY fish_prompt.fish /sitesbox/fish/omf/themes/cbjohnson/fish_prompt.fish
 WORKDIR /root
 RUN pacman -S --needed --noconfirm wget
 RUN wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz
-RUN wget https://www.ioncube.com/php-7.4.0-beta-loaders/ioncube_loaders_lin_x86-64_7.4_BETA2.tar.gz
 RUN tar xzvf ioncube_loaders_lin_x86-64.tar.gz
-RUN tar xzvf ioncube_loaders_lin_x86-64_7.4_BETA2.tar.gz
-RUN cp ioncube/ioncube_loader_lin_5.6.so /usr/lib/php56/modules/ioncube_loader_lin.so
+RUN cp ioncube/ioncube_loader_lin_7.4.so /usr/lib/php/modules/ioncube_loader_lin.so
 RUN cp ioncube/ioncube_loader_lin_7.3.so /usr/lib/php73/modules/ioncube_loader_lin.so
-RUN cp ioncube_loader_lin_7.4_10.4.0_beta2.so /usr/lib/php/modules/ioncube_loader_lin.so
+RUN cp ioncube/ioncube_loader_lin_5.6.so /usr/lib/php56/modules/ioncube_loader_lin.so
 RUN rm /etc/php73/conf.d/xdebug.ini
 RUN yes | sudo symfony self-update
 #USER dev

@@ -20,7 +20,7 @@ services:
 #      - "21:21"
 #      - "20:20"
 #      - "30000-30100:30000-30100"
-#      - "${DNSMASQ_PORT-5353}:53/udp"
+      - "${DNSMASQ_PORT-5353}:53/udp"
     environment:
       - MODE=${SITESBOX_MODE} #set MODE DEV or PRODUCTION
       - SITES_PATH=${SITES_PATH}

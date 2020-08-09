@@ -3,12 +3,12 @@ version: '3'
 services:
 
   utils:
-    build: src/utils
+    #build: src/utils
     image: ace5040/utils:stable
     container_name: utils
 
   sitesbox:
-    build: src/sitesbox
+    #build: src/sitesbox
     image: ace5040/sitesbox:stable
     container_name: sitesbox
     hostname: sitesbox
@@ -17,9 +17,9 @@ services:
       - 172.31.0.100
     ports:
       - "2222:22"
-#      - "21:21"
-#      - "20:20"
-#      - "30000-30100:30000-30100"
+      #- "21:21"
+      #- "20:20"
+      #- "50000-50100:50000-50100"
       - "${DNSMASQ_PORT-5353}:53/udp"
     environment:
       - MODE=${SITESBOX_MODE} #set MODE DEV or PRODUCTION
@@ -36,12 +36,13 @@ services:
       - ./config/crontabs:/var/spool/cron
       - ./config/telegraf:/etc/telegraf/telegraf.d:ro
       - ./sites:/sitesbox/sites_configs:ro
+      #- ./users:/sitesbox/users:ro
       - ./config/ssh:/sitesbox/ssh_keys
       - ./config/php-pool-templates:/sitesbox/custom_templates:ro
-      - ./config/php7.ini:/etc/php/conf.d/user.ini:ro
-      - ./config/php73.ini:/etc/php73/conf.d/user.ini:ro
-      - ./config/php5.ini:/etc/php56/conf.d/user.ini:ro
-      - ./config/exim.conf:/etc/mail/exim.conf
+      - ./config/php/php7.ini:/etc/php/conf.d/user.ini:ro
+      - ./config/php/php73.ini:/etc/php73/conf.d/user.ini:ro
+      - ./config/php/php5.ini:/etc/php56/conf.d/user.ini:ro
+      - ./config/exim/exim.conf:/etc/mail/exim.conf
       - ./config/letsencrypt:/etc/letsencrypt
       - php7_pools_volume:/etc/php/php-fpm.d
       - php73_pools_volume:/etc/php73/php-fpm.d
@@ -53,7 +54,7 @@ services:
       - ${PATH_TO_PASSWD_FILE}:/sitesbox/passwd:ro
       - ${PATH_TO_SHADOW_FILE}:/sitesbox/shadow:ro
     networks:
-      sitesnet:
+      network:
         ipv4_address: 172.31.0.100
 
   nginx:
@@ -78,7 +79,7 @@ services:
     depends_on:
       - "sitesbox"
     networks:
-      - sitesnet
+      - network
 
   memcache:
     image: memcached
@@ -86,7 +87,7 @@ services:
     hostname: memcache
     restart: unless-stopped
     networks:
-      - sitesnet
+      - network
 
   mysql5:
     image: mariadb:5
@@ -101,7 +102,7 @@ services:
       - ${PATH_TO_MYSQL5_DB}:/var/lib/mysql #path to mysql5 databases
       - ${PATH_TO_MYSQL5_CONFIG}:/etc/mysql/conf.d/user.cnf
     networks:
-      - sitesnet
+      - network
 
   mysql:
     image: mariadb:latest
@@ -116,7 +117,7 @@ services:
       - ${PATH_TO_MYSQL_DB}:/var/lib/mysql #path to mysql5 databases
       - ${PATH_TO_MYSQL_CONFIG}:/etc/mysql/conf.d/user.cnf
     networks:
-      - sitesnet
+      - network
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -132,7 +133,7 @@ services:
       - phpmyadmin_volume:/var/www/html
       - phpmyadmin_config_volume:/etc/phpmyadmin
     networks:
-      - sitesnet
+      - network
 
   postgres:
     image: postgres
@@ -145,7 +146,7 @@ services:
     ports:
       - 5432:5432
     networks:
-      - sitesnet
+      - network
 
   phppgadmin:
     image: dockage/phppgadmin
@@ -156,7 +157,7 @@ services:
     ports:
       - 8081:80
     networks:
-      - sitesnet
+      - network
 
   doctohtml:
     image: ace5040/doctohtml:latest
@@ -166,11 +167,12 @@ services:
     ports:
       - 3000:3000
     networks:
-      - sitesnet
+      - network
 
   htmltopdf:
     dns:
       - 172.31.0.100
+    #build: ../projects/htmltopdf
     image: ace5040/htmltopdf:latest
     container_name: htmltopdf
     hostname: htmltopdf
@@ -178,7 +180,7 @@ services:
     ports:
       - 3001:3000
     networks:
-      - sitesnet
+      - network
 
   solr:
     image: solr:6
@@ -194,7 +196,7 @@ services:
       - solr
       - -f
     networks:
-      - sitesnet
+      - network
 
   grafana:
     image: grafana/grafana
@@ -209,7 +211,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ./var/grafana/data:/data
     networks:
-      - sitesnet
+      - network
 
   influxdb:
     image: influxdb:latest
@@ -223,7 +225,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ./var/influxdb:/var/lib/influxdb
     networks:
-      - sitesnet
+      - network
 
 volumes:
   dnsmasq_hosts_volume: {}
@@ -235,7 +237,7 @@ volumes:
   phpmyadmin_config_volume: {}
 
 networks:
-  sitesnet:
+  network:
     ipam:
       config:
         - subnet: 172.31.0.0/16

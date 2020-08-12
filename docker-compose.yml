@@ -46,23 +46,9 @@ services:
       - php5_pools_volume:/etc/php56/php-fpm.d
       - dnsmasq_hosts_volume:/webcrate/dnsmasq_hosts
       - nginx_configs_volume:/webcrate/nginx_configs
-      - nginx_proxy_configs_volume:/webcrate/nginx_proxy_configs
     networks:
       network:
         ipv4_address: 172.31.0.100
-
-  nginx-proxy:
-    image: nginx:stable
-    container_name: nginx-proxy
-    hostname: nginx-proxy
-    restart: unless-stopped
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - nginx_proxy_configs_volume:/etc/nginx/conf.d:ro
-    depends_on:
-      - "nginx"
-    networks:
-      - network
 
   nginx:
     build: src/nginx
@@ -71,8 +57,8 @@ services:
     hostname: nginx
     restart: unless-stopped
     ports:
-      - 80:80
-      - 443:443
+      - "80:80"
+      - "443:443"
     environment:
       - MODE=${WEBCRATE_MODE} #set MODE DEV or PRODUCTION
       - DEV_MODE_USER_GID=${DEV_MODE_USER_GID} #GID for dev user set it to your HOSTs user GID
@@ -232,7 +218,6 @@ services:
 volumes:
   dnsmasq_hosts_volume: {}
   nginx_configs_volume: {}
-  nginx_proxy_configs_volume: {}
   php7_pools_volume: {}
   php73_pools_volume: {}
   php5_pools_volume: {}

@@ -1,9 +1,8 @@
-#php7
 server {
     listen 80;
     index index.php;
-    server_name example.test;
-    root /sites/%user%/data;
+    server_name %domains%;
+    root /sites/%user%/%root-folder%;
     access_log off;
     error_log /sites/%user%/logs/error.log;
 
@@ -19,7 +18,7 @@ server {
       	fastcgi_buffer_size 32k;
       	fastcgi_buffers 4 32k;
       	fastcgi_split_path_info ^(.+?\.php)(/.*)$;
-      	fastcgi_pass sitesbox:%port%;
+      	fastcgi_pass webcrate-core:%port%;
       	fastcgi_index index.php;
       	include fastcgi_params;
         fastcgi_read_timeout 60;

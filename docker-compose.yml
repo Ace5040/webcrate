@@ -2,43 +2,40 @@ version: '3'
 
 services:
 
-  utils:
-    #build: src/utils
-    image: ace5040/utils:stable
-    container_name: utils
+  webcrate-utils:
+    build: src/webcrate-utils
+    image: ace5040/webcrate-utils:stable
+    container_name: webcrate-utils
 
-  sitesbox:
-    #build: src/sitesbox
-    image: ace5040/sitesbox:stable
-    container_name: sitesbox
-    hostname: sitesbox
+  webcrate-core:
+    build: src/webcrate
+    image: ace5040/webcrate:stable
+    container_name: webcrate-core
+    hostname: webcrate-core
     restart: unless-stopped
     dns:
       - 172.31.0.100
     ports:
       - "2222:22"
-      #- "21:21"
-      #- "20:20"
-      #- "50000-50100:50000-50100"
+      - "21:21"
+      - "20:20"
+      - "50000-50100:50000-50100"
       - "${DNSMASQ_PORT-5353}:53/udp"
     environment:
-      - MODE=${SITESBOX_MODE} #set MODE DEV or PRODUCTION
-      - SITES_PATH=${SITES_PATH}
+      - MODE=${WEBCRATE_MODE} #set MODE DEV or PRODUCTION
       - DEV_MODE_USER_PASS=${DEV_MODE_USER_PASS} #password for dev user
       - DEV_MODE_USER_UID=${DEV_MODE_USER_UID} #UID for dev user set it to your HOSTs user UID
       - DEV_MODE_USER_GID=${DEV_MODE_USER_GID} #GID for dev user set it to your HOSTs user GID
-      - PHPMYADMIN_DNS_NAME=${PHPMYADMIN_DNS_NAME} #phpmyadmin dns name
       - DOCKER_HOST_IP=${DOCKER_HOST_IP} #ip for dnsmasq service
-      - SITESBOX_EXTERNAL_DNS_IP=${SITESBOX_EXTERNAL_DNS_IP}
+      - WEBCRATE_EXTERNAL_DNS_IP=${WEBCRATE_EXTERNAL_DNS_IP}
     volumes:
       - ${SITES_PATH}:/sites
       - /etc/localtime:/etc/localtime:ro
       - ./config/crontabs:/var/spool/cron
       - ./config/telegraf:/etc/telegraf/telegraf.d:ro
-      - ./sites:/sitesbox/sites_configs:ro
-      #- ./users:/sitesbox/users:ro
-      - ./config/ssh:/sitesbox/ssh_keys
-      - ./config/php-pool-templates:/sitesbox/custom_templates:ro
+      - ./config/users:/webcrate/users:ro
+      - ./config/ssh:/webcrate/ssh_keys
+      - ./config/php-pool-templates:/webcrate/custom_templates:ro
       - ./config/php/php7.ini:/etc/php/conf.d/user.ini:ro
       - ./config/php/php73.ini:/etc/php73/conf.d/user.ini:ro
       - ./config/php/php5.ini:/etc/php56/conf.d/user.ini:ro
@@ -47,18 +44,28 @@ services:
       - php7_pools_volume:/etc/php/php-fpm.d
       - php73_pools_volume:/etc/php73/php-fpm.d
       - php5_pools_volume:/etc/php56/php-fpm.d
-      - dnsmasq_hosts_volume:/sitesbox/dnsmasq_hosts
-      - nginx_configs_volume:/sitesbox/nginx_configs
-      - phpmyadmin_volume:/phpmyadmin
-      - phpmyadmin_config_volume:/etc/phpmyadmin
-      - ${PATH_TO_PASSWD_FILE}:/sitesbox/passwd:ro
-      - ${PATH_TO_SHADOW_FILE}:/sitesbox/shadow:ro
+      - dnsmasq_hosts_volume:/webcrate/dnsmasq_hosts
+      - nginx_configs_volume:/webcrate/nginx_configs
+      - nginx_proxy_configs_volume:/webcrate/nginx_proxy_configs
     networks:
       network:
         ipv4_address: 172.31.0.100
 
+  nginx-proxy:
+    image: nginx:stable
+    container_name: nginx-proxy
+    hostname: nginx-proxy
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - nginx_proxy_configs_volume:/etc/nginx/conf.d:ro
+    depends_on:
+      - "nginx"
+    networks:
+      - network
+
   nginx:
-    #build: src/nginx
+    build: src/nginx
     image: ace5040/nginx:stable
     container_name: nginx
     hostname: nginx
@@ -67,17 +74,16 @@ services:
       - 80:80
       - 443:443
     environment:
-      - SITESBOX_MODE=${SITESBOX_MODE} #set MODE DEV or PRODUCTION
+      - MODE=${WEBCRATE_MODE} #set MODE DEV or PRODUCTION
       - DEV_MODE_USER_GID=${DEV_MODE_USER_GID} #GID for dev user set it to your HOSTs user GID
     volumes:
       - ${SITES_PATH}:/sites
       - /etc/localtime:/etc/localtime:ro
       - ./config/letsencrypt:/etc/letsencrypt:ro
+      - ./config/users:/webcrate/users:ro
       - nginx_configs_volume:/etc/nginx/conf.d:ro
-      - ${PATH_TO_GROUP_FILE}:/sitesbox/group:ro
-      - phpmyadmin_volume:/phpmyadmin
     depends_on:
-      - "sitesbox"
+      - "webcrate-core"
     networks:
       - network
 
@@ -108,8 +114,6 @@ services:
     image: mariadb:latest
     container_name: mysql
     restart: unless-stopped
-    ports:
-      - 3306:3306
     environment:
       MYSQL_ROOT_PASSWORD: mysql #change password after first run
     volumes:
@@ -125,8 +129,6 @@ services:
     environment:
       - PMA_HOSTS=mysql,mysql5
     restart: unless-stopped
-    ports:
-      - 8080:80
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /sessions
@@ -143,8 +145,6 @@ services:
       - ${PATH_TO_POSTGRES_DB}:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: postgres
-    ports:
-      - 5432:5432
     networks:
       - network
 
@@ -154,8 +154,6 @@ services:
     restart: unless-stopped
     environment:
       - PHP_PG_ADMIN_SERVER_HOST=postgres
-    ports:
-      - 8081:80
     networks:
       - network
 
@@ -165,7 +163,7 @@ services:
     hostname: doctohtml
     restart: unless-stopped
     ports:
-      - 3000:3000
+      - "3000:3000"
     networks:
       - network
 
@@ -178,7 +176,7 @@ services:
     hostname: htmltopdf
     restart: unless-stopped
     ports:
-      - 3001:3000
+      - "3001:3000"
     networks:
       - network
 
@@ -186,6 +184,8 @@ services:
     image: solr:6
     container_name: solr
     restart: unless-stopped
+    logging:
+      driver: none
     ports:
      - "8983:8983"
     volumes:
@@ -202,6 +202,8 @@ services:
     image: grafana/grafana
     container_name: grafana
     restart: unless-stopped
+    logging:
+      driver: none
     ports:
       - "8181:3000"
     environment:
@@ -217,10 +219,10 @@ services:
     image: influxdb:latest
     container_name: influxdb
     restart: unless-stopped
+    logging:
+      driver: none
     environment:
       INFLUXDB_DB: telegraf
-    ports:
-      - "8086:8086"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./var/influxdb:/var/lib/influxdb
@@ -230,6 +232,7 @@ services:
 volumes:
   dnsmasq_hosts_volume: {}
   nginx_configs_volume: {}
+  nginx_proxy_configs_volume: {}
   php7_pools_volume: {}
   php73_pools_volume: {}
   php5_pools_volume: {}

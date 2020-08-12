@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]
+then
+  echo usage sitesbox-user-add username "userpassword"
+else
+
+  SCRIPT=`realpath $0`
+  SCRIPTPATH=`dirname $SCRIPT`
+
+  cd $SCRIPTPATH/..
+
+  source .env
+
+  #docker run --rm --env-file=$(pwd)/.env \
+    #-v ./users:/users \
+    #-v $(pwd)/config/letsencrypt:/etc/letsencrypt \
+    #ace5040/utils:stable \
+    #certbot certonly --expand --webroot --webroot-path ${1} ${2}
+fi

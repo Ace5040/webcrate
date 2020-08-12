@@ -1,7 +1,6 @@
 #!/bin/bash
 
 user=$(whoami);
-path=$user;
 
 gunicorn_pids=`ps aux | grep gunicorn | grep daemon | grep $user | awk '{ print $2 }'`;
 gunicorn_pids_count=`printf "$gunicorn_pids" | wc -l`;

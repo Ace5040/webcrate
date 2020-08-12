@@ -9,21 +9,15 @@ source .env
 
 docker run --rm --env-file=$(pwd)/.env \
   -v $SITES_PATH:/sites \
-  -v /etc/passwd:/sitesbox/passwd:ro \
-  -v /etc/shadow:/sitesbox/shadow:ro \
-  -v $(pwd)/sites:/sitesbox/sites_configs:ro \
-  -v $(pwd)/config/php-pool-templates:/sitesbox/custom_templates:ro \
-  -v sitesbox_nginx_configs_volume:/sitesbox/nginx_configs \
-  -v sitesbox_php7_pools_volume:/sitesbox/php-fpm.d \
-  -v sitesbox_php73_pools_volume:/sitesbox/php73-fpm.d \
-  -v sitesbox_php5_pools_volume:/sitesbox/php56-fpm.d \
-  ace5040/utils:stable \
-  /sitesbox/generate_configs.sh
+  -v $(pwd)/config/users:/webcrate/users:ro \
+  -v $(pwd)/config/php-pool-templates:/webcrate/custom_templates:ro \
+  -v webcrate_nginx_configs_volume:/webcrate/nginx_configs \
+  -v webcrate_nginx_proxy_configs_volume:/webcrate/nginx_proxy_configs \
+  -v webcrate_php7_pools_volume:/webcrate/php-fpm.d \
+  -v webcrate_php73_pools_volume:/webcrate/php73-fpm.d \
+  -v webcrate_php5_pools_volume:/webcrate/php56-fpm.d \
+  -v webcrate_dnsmasq_hosts_volume:/webcrate/dnsmasq_hosts \
+  ace5040/webcrate-utils:stable \
+  /webcrate/parse-users.py
 
-docker run --rm --env-file=$(pwd)/.env \
-  -v sitesbox_dnsmasq_hosts_volume:/sitesbox/dnsmasq_hosts \
-  -v sitesbox_nginx_configs_volume:/sitesbox/nginx_configs:ro \
-  ace5040/utils:stable \
-  /sitesbox/generate_hosts.sh
-
-docker-compose up --remove-orphans -d 
+docker-compose up --remove-orphans -d

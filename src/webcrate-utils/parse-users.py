@@ -9,7 +9,7 @@ with open('/webcrate/users/users.yml', 'r') as f:
   users = munchify(yaml.safe_load(f))
 
 SITES_PATH = '/sites'
-MODE = os.environ.get('MODE', 'DEV')
+MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
 DOCKER_HOST_IP = os.environ.get('DOCKER_HOST_IP', '')
 DEV_MODE_USER_UID = os.environ.get('DEV_MODE_USER_UID', '1000')
 DEV_MODE_USER_PASS = os.environ.get('DEV_MODE_USER_PASS', 'DEV')

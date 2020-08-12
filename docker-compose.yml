@@ -22,7 +22,7 @@ services:
       - "50000-50100:50000-50100"
       - "${DNSMASQ_PORT-5353}:53/udp"
     environment:
-      - MODE=${WEBCRATE_MODE} #set MODE DEV or PRODUCTION
+      - WEBCRATE_MODE=${WEBCRATE_MODE} #set MODE DEV or PRODUCTION
       - DEV_MODE_USER_PASS=${DEV_MODE_USER_PASS} #password for dev user
       - DEV_MODE_USER_UID=${DEV_MODE_USER_UID} #UID for dev user set it to your HOSTs user UID
       - DEV_MODE_USER_GID=${DEV_MODE_USER_GID} #GID for dev user set it to your HOSTs user GID
@@ -60,7 +60,7 @@ services:
       - "80:80"
       - "443:443"
     environment:
-      - MODE=${WEBCRATE_MODE} #set MODE DEV or PRODUCTION
+      - WEBCRATE_MODE=${WEBCRATE_MODE} #set MODE DEV or PRODUCTION
       - DEV_MODE_USER_GID=${DEV_MODE_USER_GID} #GID for dev user set it to your HOSTs user GID
     volumes:
       - ${SITES_PATH}:/sites

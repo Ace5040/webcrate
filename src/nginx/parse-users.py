@@ -9,7 +9,7 @@ with open('/webcrate/users/users.yml') as f:
   users = munchify(yaml.safe_load(f))
 
 SITES_PATH = '/sites'
-MODE = os.environ.get('MODE', 'DEV')
+MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
 DEV_MODE_USER_UID = os.environ.get('DEV_MODE_USER_UID', '1000')
 DEV_MODE_USER_GID = os.environ.get('DEV_MODE_USER_GID', '1000')
 print(f'MODE = {MODE}')
@@ -18,7 +18,7 @@ if MODE == 'PRODUCTION':
   for username,user in users.items():
     user.name = username
     os.system(f'groupadd --gid {user.uid} {user.name}')
-    os.system(f'gpasswd -a nginx $g')
+    os.system(f'gpasswd -a nginx {user.name}')
     print(f'group {user.name} - added')
 
 if MODE == 'DEV':

@@ -26,7 +26,6 @@ if MODE == 'PRODUCTION':
     os.system(f'chown {user.name}:{user.name} {SITES_PATH}/{user.name}')
     password = str(user.password).replace("$", "\$")
     os.system(f'usermod -p {password} {user.name} > /dev/null 2>&1')
-    print(f'usermod -p {password} {user.name} > /dev/null 2>&1')
     if user.backend == 'gunicorn':
       port = CGI_PORT_START_NUMBER + user.uid - UID_START_NUMBER
       os.system(f'source /sites/{user.name}/app/env/bin/activate; sudo -u {user.name} gunicorn --daemon --bind :{port} --name {user.name} --user {user.name} --group {user.name} --pid ../tmp/gunicorn.pid --error-logfile ../logs/gunicorn-error.log -c /sites/{user.name}/app/gunicorn.conf.py --chdir /sites/{user.name}/app core.wsgi:application; deactivate')

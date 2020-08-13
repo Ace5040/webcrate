@@ -50,11 +50,11 @@ services:
       network:
         ipv4_address: 172.31.0.100
 
-  nginx:
-    build: src/nginx
-    image: ace5040/nginx:stable
-    container_name: nginx
-    hostname: nginx
+  webcrate-nginx:
+    build: src/webcrate-nginx
+    image: ace5040/webcrate-nginx:stable
+    container_name: webcrate-nginx
+    hostname: webcrate-nginx
     restart: unless-stopped
     ports:
       - "80:80"

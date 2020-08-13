@@ -1,0 +1,21 @@
+test:
+  uid: 100000
+  password: $6$YYat8G8McjwES7R9$60HCvVeJOAvPts5LdMuz39zSWK.Dov14bvyNB6Hen/R.kBXOHUPFWq27eJsR/.8kXdOC5EEc47W6l.D3sY09k/ #test
+  domains:
+    - test.test
+    - test2.test
+  nginx_config: custom #custom/default/drupal8/drupal7 (custom = test.conf file)
+  root_folder: data #data/web/app etc
+  https: disabled
+  backend: php
+  backend_version: 73 #php version 7 = 7.x, 73 = 7.3.x, 5 = 5.6.x
+testdjango:
+  uid: 100001
+  password:
+  domains:
+    - testdjango.test
+  nginx_config: custom
+  root_folder: app
+  https: disabled
+  backend: gunicorn
+  backend_version: 20 #not used

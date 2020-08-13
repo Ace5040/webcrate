@@ -9,10 +9,10 @@ var/postgres
 var/postgres/*
 config/exim/exim.conf
 config/users/*.conf
+config/users/*.yml
 !config/users/default.conf
 !config/users/drupal8.conf
 !config/users/drupal7.conf
-!config/users/phpmyadmin.conf
 config/crontabs/*
 config/ssh/*
 config/letsencrypt/*

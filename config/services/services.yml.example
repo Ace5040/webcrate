@@ -34,3 +34,4 @@ solr:
   nginx_config: default
   port: 8983
   https: disabled
+

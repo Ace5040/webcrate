@@ -13,6 +13,7 @@ config/users/*.yml
 !config/users/default.conf
 !config/users/drupal8.conf
 !config/users/drupal7.conf
+config/services/*.yml
 config/crontabs/*
 config/ssh/*
 config/letsencrypt/*

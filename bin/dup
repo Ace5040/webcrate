@@ -32,4 +32,4 @@ docker run --rm --env-file=$(pwd)/.env \
   ace5040/webcrate-utils:stable \
   /webcrate/parse-services.py
 
-docker-compose up --remove-orphans -d
+docker-compose --project-name webcrate up --remove-orphans -d

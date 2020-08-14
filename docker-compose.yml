@@ -66,7 +66,6 @@ services:
       - ${SITES_PATH}:/sites
       - ${DOCKER_SOCKET}:/var/run/docker.sock
       - /etc/localtime:/etc/localtime:ro
-      #- ./config/telegraf:/etc/telegraf/telegraf.d:ro
       - ./config/users:/webcrate/users:ro
       - ./config/letsencrypt:/webcrate/letsencrypt
       - ssl_configs_volume:/webcrate/ssl_configs

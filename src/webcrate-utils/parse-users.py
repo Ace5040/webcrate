@@ -13,10 +13,12 @@ MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
 DOCKER_HOST_IP = os.environ.get('DOCKER_HOST_IP', '')
 DEV_MODE_USER_UID = os.environ.get('DEV_MODE_USER_UID', '1000')
 DEV_MODE_USER_PASS = os.environ.get('DEV_MODE_USER_PASS', 'DEV')
+LETSENCRYPT_EMAIL = os.environ.get('LETSENCRYPT_EMAIL', '')
 CGI_PORT_START_NUMBER = 9000
 UID_START_NUMBER = 100000
 
 #clean up configs
+os.system(f'rm /webcrate/ssl_configs/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/nginx_configs/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/nginx_proxy_configs/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/php-fpm.d/* > /dev/null 2>&1')
@@ -72,13 +74,24 @@ for username, user in users.items():
     conf = conf.replace('%user%', user.name)
     conf = conf.replace('%domains%', " ".join(user.domains))
     conf = conf.replace('%port%', str(port))
-    conf = conf.replace('%root-folder%', user.root_folder)
+    conf = conf.replace('%root_folder%', user.root_folder)
 
     with open(f'/webcrate/nginx_configs/{user.name}.conf', 'w') as f:
       f.write(conf)
       f.close()
 
     print(f'nginx config for {user.name} - generated')
+
+    if user.https == 'letsencrypt':
+      if os.path.isdir(f'/webcrate/letsencrypt/live/{user.name}'):
+        with open(f'/webcrate/ssl.conf', 'r') as f:
+          conf = f.read()
+          f.close()
+        conf = conf.replace('%user%', user.name)
+        with open(f'/webcrate/ssl_configs/{user.name}.conf', 'w') as f:
+          f.write(conf)
+          f.close()
+        print(f'ssl config for {user.name} - generated')
 
 if MODE == "DEV":
   with open(f'/webcrate/dnsmasq_hosts/hosts_nginx', 'w') as f:

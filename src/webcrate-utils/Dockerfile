@@ -7,6 +7,7 @@ RUN pip install pyyml munch
 RUN useradd -m -s /bin/bash dev
 RUN usermod -p "dev" dev
 RUN mkdir -p /webcrate
+COPY ssl.conf /webcrate/ssl.conf
 COPY parse-users.py /webcrate/parse-users.py
 RUN chmod u+x /webcrate/parse-users.py
 COPY parse-services.py /webcrate/parse-services.py

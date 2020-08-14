@@ -40,7 +40,6 @@ services:
       - ./config/php/php73.ini:/etc/php73/conf.d/user.ini:ro
       - ./config/php/php5.ini:/etc/php56/conf.d/user.ini:ro
       - ./config/exim/exim.conf:/etc/mail/exim.conf
-      - ./config/letsencrypt:/etc/letsencrypt
       - php7_pools_volume:/etc/php/php-fpm.d
       - php73_pools_volume:/etc/php73/php-fpm.d
       - php5_pools_volume:/etc/php56/php-fpm.d
@@ -49,6 +48,34 @@ services:
     networks:
       network:
         ipv4_address: 172.31.0.100
+
+  webcrate-tools:
+    build: src/webcrate-tools
+    image: ace5040/webcrate-tools:stable
+    container_name: webcrate-tools
+    hostname: webcrate-tools
+    restart: unless-stopped
+    environment:
+      - WEBCRATE_MODE=${WEBCRATE_MODE} #set MODE DEV or PRODUCTION
+      - DEV_MODE_USER_PASS=${DEV_MODE_USER_PASS} #password for dev user
+      - DEV_MODE_USER_UID=${DEV_MODE_USER_UID} #UID for dev user set it to your HOSTs user UID
+      - DEV_MODE_USER_GID=${DEV_MODE_USER_GID} #GID for dev user set it to your HOSTs user GID
+      - DOCKER_HOST_IP=${DOCKER_HOST_IP} #ip for dnsmasq service
+      - WEBCRATE_EXTERNAL_DNS_IP=${WEBCRATE_EXTERNAL_DNS_IP}
+    volumes:
+      - ${SITES_PATH}:/sites
+      - ${DOCKER_SOCKET}:/var/run/docker.sock
+      - /etc/localtime:/etc/localtime:ro
+      #- ./config/telegraf:/etc/telegraf/telegraf.d:ro
+      - ./config/users:/webcrate/users:ro
+      - ./config/letsencrypt:/webcrate/letsencrypt
+      - ssl_configs_volume:/webcrate/ssl_configs
+    depends_on:
+      - "webcrate-core"
+      - "webcrate-nginx"
+    networks:
+      - network
+
 
   webcrate-nginx:
     build: src/webcrate-nginx
@@ -65,8 +92,9 @@ services:
     volumes:
       - ${SITES_PATH}:/sites
       - /etc/localtime:/etc/localtime:ro
-      - ./config/letsencrypt:/etc/letsencrypt:ro
       - ./config/users:/webcrate/users:ro
+      - ./config/letsencrypt:/webcrate/letsencrypt:ro
+      - ssl_configs_volume:/webcrate/ssl_configs:ro
       - nginx_configs_volume:/etc/nginx/conf.d:ro
     depends_on:
       - "webcrate-core"
@@ -218,6 +246,7 @@ services:
 volumes:
   dnsmasq_hosts_volume: {}
   nginx_configs_volume: {}
+  ssl_configs_volume: {}
   php7_pools_volume: {}
   php73_pools_volume: {}
   php5_pools_volume: {}

@@ -11,7 +11,9 @@ docker run --rm --env-file=$(pwd)/.env \
   -v $SITES_PATH:/sites \
   -v $(pwd)/config/users:/webcrate/users:ro \
   -v $(pwd)/config/php-pool-templates:/webcrate/custom_templates:ro \
+  -v $(pwd)/config/letsencrypt:/webcrate/letsencrypt \
   -v webcrate_nginx_configs_volume:/webcrate/nginx_configs \
+  -v webcrate_ssl_configs_volume:/webcrate/ssl_configs \
   -v webcrate_php7_pools_volume:/webcrate/php-fpm.d \
   -v webcrate_php73_pools_volume:/webcrate/php73-fpm.d \
   -v webcrate_php5_pools_volume:/webcrate/php56-fpm.d \
@@ -24,7 +26,9 @@ docker run --rm --env-file=$(pwd)/.env \
   -v $(pwd)/config/users:/webcrate/users:ro \
   -v $(pwd)/config/services:/webcrate/services:ro \
   -v $(pwd)/config/php-pool-templates:/webcrate/custom_templates:ro \
+  -v $(pwd)/config/letsencrypt:/webcrate/letsencrypt \
   -v webcrate_nginx_configs_volume:/webcrate/nginx_configs \
+  -v webcrate_ssl_configs_volume:/webcrate/ssl_configs \
   -v webcrate_php7_pools_volume:/webcrate/php-fpm.d \
   -v webcrate_php73_pools_volume:/webcrate/php73-fpm.d \
   -v webcrate_php5_pools_volume:/webcrate/php56-fpm.d \

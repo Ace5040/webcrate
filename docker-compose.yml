@@ -57,6 +57,7 @@ services:
     restart: unless-stopped
     environment:
       - WEBCRATE_MODE=${WEBCRATE_MODE} #set MODE DEV or PRODUCTION
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL} #set MODE DEV or PRODUCTION
       - DEV_MODE_USER_PASS=${DEV_MODE_USER_PASS} #password for dev user
       - DEV_MODE_USER_UID=${DEV_MODE_USER_UID} #UID for dev user set it to your HOSTs user UID
       - DEV_MODE_USER_GID=${DEV_MODE_USER_GID} #GID for dev user set it to your HOSTs user GID

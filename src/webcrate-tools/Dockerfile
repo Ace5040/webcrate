@@ -24,9 +24,14 @@ WORKDIR /
 RUN mkdir -p /webcrate;
 COPY ssl.conf /webcrate/ssl.conf
 COPY parse-users.py /webcrate/parse-users.py
+COPY certbot-renew.py /webcrate/certbot-renew.py
+COPY certbot-renew-deploy.py /webcrate/certbot-renew-deploy.py
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod a+x /webcrate/parse-users.py; \
+    chmod a+x /webcrate/certbot-renew.py; \
+    chmod a+x /webcrate/certbot-renew-deploy.py; \
     chmod u+x /entrypoint.sh
-RUN echo '*/1 * * * * root /webcrate/parse-users.py' > /etc/cron.d/parse-users
+RUN echo '*/10 * * * * root /webcrate/parse-users.py' > /etc/cron.d/parse-users
+RUN echo '0 6 * * * root /webcrate/certbot-renew.py' > /etc/cron.d/certbot-renew
 WORKDIR /webcrate
 CMD ["/entrypoint.sh"]

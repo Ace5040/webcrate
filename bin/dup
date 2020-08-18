@@ -6,6 +6,7 @@ uid=$(id -u);
 gid=$(id -u);
 WEBCRATE_UID_env="WEBCRATE_UID=$uid "
 WEBCRATE_GID_env="WEBCRATE_GID=$gid "
+if [[ $str == /* ]]; then SITES_FOLDER_ABSOLUTE_PATH=$SITES_PATH; else SITES_FOLDER_ABSOLUTE_PATH=$(pwd)/$SITES_PATH; fi
 
 cd $SCRIPTPATH/..
 source .env
@@ -76,7 +77,8 @@ fi
 docker run --rm --env-file=$(pwd)/.env \
   -e WEBCRATE_UID=$uid \
   -e WEBCRATE_GID=$gid \
-  --mount type=bind,source=$SITES_PATH,target=/sites \
+  -v $SITES_FOLDER_ABSOLUTE_PATH:/sites \
+  -v $(pwd)/$SITES_PATH:/sites:ro \
   -v $(pwd)/config/users:/webcrate/users:ro \
   -v $(pwd)/config/php-pool-templates:/webcrate/custom_templates:ro \
   -v $(pwd)/var/letsencrypt:/webcrate/letsencrypt:ro \

@@ -2,9 +2,11 @@ server {
     listen 80;
     index index.php;
     server_name %domains%;
-    root /sites/%user%/%root-folder%;
+    root /sites/%user%/%root_folder%;
     access_log off;
     error_log /sites/%user%/logs/error.log;
+
+    include /webcrate/ssl_configs/%user%.conf*;
 
     location / {
 	   try_files $uri @rewrite;

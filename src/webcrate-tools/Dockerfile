@@ -1,7 +1,7 @@
 FROM archlinux:latest
 RUN echo "Set disable_coredump false" >> /etc/sudo.conf
 RUN pacman --noconfirm -Syu; \
-    pacman --needed --noconfirm -S base-devel git unzip mariadb-clients cronie python-pip certbot
+    pacman --needed --noconfirm -S base-devel git unzip mariadb-clients postgresql-libs cronie python-pip certbot duplicity;
 RUN useradd -m -s /bin/bash dev; \
     usermod -p "dev" dev; \
     echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo
@@ -26,12 +26,15 @@ COPY ssl.conf /webcrate/ssl.conf
 COPY parse-users.py /webcrate/parse-users.py
 COPY certbot-renew.py /webcrate/certbot-renew.py
 COPY certbot-renew-deploy.py /webcrate/certbot-renew-deploy.py
+COPY backup.py /webcrate/backup.py
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod a+x /webcrate/parse-users.py; \
     chmod a+x /webcrate/certbot-renew.py; \
     chmod a+x /webcrate/certbot-renew-deploy.py; \
+    chmod a+x /webcrate/backup.py; \
     chmod u+x /entrypoint.sh
 RUN echo '*/10 * * * * root /webcrate/parse-users.py' > /etc/cron.d/parse-users
 RUN echo '0 6 * * * root /webcrate/certbot-renew.py' > /etc/cron.d/certbot-renew
+RUN echo '0 4 * * * root /webcrate/backup.py' > /etc/cron.d/certbot-renew
 WORKDIR /webcrate
 CMD ["/entrypoint.sh"]

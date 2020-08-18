@@ -53,10 +53,10 @@ for username,user in users.items():
   else:
     if os.path.exists(f'/webcrate/ssl_configs/{user.name}.conf'):
       reload_needed = True
-      os.system(f'rm /webcrate/ssl_configs/{user.name}.conf');
+      os.system(f'rm /webcrate/ssl_configs/{user.name}.conf')
       print(f'ssl config for {user.name} - removed')
     print(f'ssl config for {user.name} - not present')
 
 if reload_needed:
   print(f'changes detected - reloading nginx config')
-  os.system(f'docker exec webcrate-nginx nginx -s reload');
+  os.system(f'docker exec webcrate-nginx nginx -s reload')

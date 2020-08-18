@@ -10,6 +10,8 @@ with open('/webcrate/services/services.yml', 'r') as f:
 
 MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
 DOCKER_HOST_IP = os.environ.get('DOCKER_HOST_IP', '')
+WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
+WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
 
 print(f'MODE = {MODE}')
 
@@ -38,3 +40,6 @@ if MODE == "DEV":
       service.name = servicename
       f.write(f'{DOCKER_HOST_IP} {" ".join(service.domains)}\n')
     f.close()
+
+os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/nginx_configs')
+os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/dnsmasq_hosts')

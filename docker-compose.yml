@@ -31,10 +31,10 @@ services:
     volumes:
       - ${SITES_PATH}:/sites
       - /etc/localtime:/etc/localtime:ro
-      - ./config/crontabs:/var/spool/cron
+      - ./var/crontabs:/var/spool/cron
       - ./config/telegraf:/etc/telegraf/telegraf.d:ro
       - ./config/users:/webcrate/users:ro
-      - ./config/ssh:/webcrate/ssh_keys
+      - ./var/ssh:/webcrate/ssh_keys
       - ./config/php-pool-templates:/webcrate/custom_templates:ro
       - ./config/php/php7.ini:/etc/php/conf.d/user.ini:ro
       - ./config/php/php73.ini:/etc/php73/conf.d/user.ini:ro
@@ -56,6 +56,8 @@ services:
     hostname: webcrate-tools
     restart: unless-stopped
     environment:
+      - WEBCRATE_UID=${WEBCRATE_UID} #set MODE DEV or PRODUCTION
+      - WEBCRATE_GID=${WEBCRATE_GID} #set MODE DEV or PRODUCTION
       - WEBCRATE_MODE=${WEBCRATE_MODE} #set MODE DEV or PRODUCTION
       - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL} #set MODE DEV or PRODUCTION
       - DEV_MODE_USER_PASS=${DEV_MODE_USER_PASS} #password for dev user
@@ -68,14 +70,18 @@ services:
       - ${DOCKER_SOCKET}:/var/run/docker.sock
       - /etc/localtime:/etc/localtime:ro
       - ./config/users:/webcrate/users:ro
-      - ./config/letsencrypt:/webcrate/letsencrypt
+      - ./var/letsencrypt:/webcrate/letsencrypt
+      - ./var/backup:/webcrate/backup
+      - ./var/duplicity:/webcrate/duplicity
       - ssl_configs_volume:/webcrate/ssl_configs
     depends_on:
       - "webcrate-core"
       - "webcrate-nginx"
+      - "mysql"
+      - "mysql5"
+      - "postgres"
     networks:
       - network
-
 
   webcrate-nginx:
     build: src/webcrate-nginx
@@ -93,7 +99,7 @@ services:
       - ${SITES_PATH}:/sites
       - /etc/localtime:/etc/localtime:ro
       - ./config/users:/webcrate/users:ro
-      - ./config/letsencrypt:/webcrate/letsencrypt:ro
+      - ./var/letsencrypt:/webcrate/letsencrypt:ro
       - ssl_configs_volume:/webcrate/ssl_configs:ro
       - nginx_configs_volume:/etc/nginx/conf.d:ro
     depends_on:
@@ -113,10 +119,11 @@ services:
     image: mariadb:5
     container_name: mysql5
     restart: unless-stopped
+    user: "${WEBCRATE_UID}:${WEBCRATE_GID}"
     ports:
       - 3305:3306
     environment:
-      MYSQL_ROOT_PASSWORD: mysql #change password after first run
+      MYSQL_ROOT_PASSWORD: ${MYSQL5_ROOT_PASSWORD}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${PATH_TO_MYSQL5_DB}:/var/lib/mysql #path to mysql5 databases
@@ -128,10 +135,11 @@ services:
     image: mariadb:latest
     container_name: mysql
     restart: unless-stopped
+    user: "${WEBCRATE_UID}:${WEBCRATE_GID}"
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: mysql #change password after first run
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${PATH_TO_MYSQL_DB}:/var/lib/mysql #path to mysql5 databases
@@ -144,10 +152,12 @@ services:
     container_name: phpmyadmin
     environment:
       - PMA_HOSTS=mysql,mysql5
+      - UPLOAD_LIMIT=2048M
     restart: unless-stopped
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /sessions
+      - ./config/phpmyadmin/php.ini:/usr/local/etc/php/php.ini
       - phpmyadmin_volume:/var/www/html
       - phpmyadmin_config_volume:/etc/phpmyadmin
     networks:
@@ -157,12 +167,13 @@ services:
     image: postgres
     container_name: postgres
     restart: unless-stopped
+    user: "${WEBCRATE_UID}:${WEBCRATE_GID}"
     ports:
       - "5432:5432"
     volumes:
       - ${PATH_TO_POSTGRES_DB}:/var/lib/postgresql/data
     environment:
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     networks:
       - network
 
@@ -202,12 +213,14 @@ services:
     image: solr:6
     container_name: solr
     restart: unless-stopped
+    user: "${WEBCRATE_UID}:${WEBCRATE_GID}"
     logging:
       driver: none
     ports:
      - "8983:8983"
     volumes:
       - /etc/localtime:/etc/localtime:ro
+      - ${SOLR_CORES_PATH}/logs:/opt/solr/server/logs
       - ${SOLR_CORES_PATH}:/opt/solr/server/solr/mycores #path to solr cores
     entrypoint:
       - docker-entrypoint.sh
@@ -220,6 +233,7 @@ services:
     image: grafana/grafana
     container_name: grafana
     restart: unless-stopped
+    user: "${WEBCRATE_UID}:${WEBCRATE_GID}"
     logging:
       driver: none
     ports:
@@ -230,6 +244,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./var/grafana/data:/data
+      - ./var/grafana/log:/log
     networks:
       - network
 
@@ -237,6 +252,7 @@ services:
     image: influxdb:latest
     container_name: influxdb
     restart: unless-stopped
+    user: "${WEBCRATE_UID}:${WEBCRATE_GID}"
     logging:
       driver: none
     environment:

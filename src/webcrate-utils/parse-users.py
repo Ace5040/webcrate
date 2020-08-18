@@ -13,6 +13,8 @@ MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
 DOCKER_HOST_IP = os.environ.get('DOCKER_HOST_IP', '')
 DEV_MODE_USER_UID = os.environ.get('DEV_MODE_USER_UID', '1000')
 DEV_MODE_USER_PASS = os.environ.get('DEV_MODE_USER_PASS', 'DEV')
+WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
+WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
 LETSENCRYPT_EMAIL = os.environ.get('LETSENCRYPT_EMAIL', '')
 CGI_PORT_START_NUMBER = 9000
 UID_START_NUMBER = 100000
@@ -20,7 +22,6 @@ UID_START_NUMBER = 100000
 #clean up configs
 os.system(f'rm /webcrate/ssl_configs/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/nginx_configs/* > /dev/null 2>&1')
-os.system(f'rm /webcrate/nginx_proxy_configs/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/php-fpm.d/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/php73-fpm.d/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/php56-fpm.d/* > /dev/null 2>&1')
@@ -63,6 +64,9 @@ for username, user in users.items():
         f.write(f'set PATH /webcrate/bin/php{php_path_prefix} $PATH')
         f.close()
 
+      os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /sites/{user.name}/phpversion.sh')
+      os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /sites/{user.name}/phpversion.fish')
+
       print(f'php pool for {user.name} - generated')
 
     os.system(f'cp -rf /webcrate/users/{user.name}.conf /webcrate/nginx_configs/{user.name}.conf')
@@ -99,3 +103,10 @@ if MODE == "DEV":
       user.name = username
       f.write(f'{DOCKER_HOST_IP} {" ".join(user.domains)}\n')
     f.close()
+
+os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/ssl_configs')
+os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/nginx_configs')
+os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/php-fpm.d')
+os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/php73-fpm.d')
+os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/php56-fpm.d')
+os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/dnsmasq_hosts')

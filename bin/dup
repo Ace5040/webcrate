@@ -78,7 +78,6 @@ docker run --rm --env-file=$(pwd)/.env \
   -e WEBCRATE_UID=$uid \
   -e WEBCRATE_GID=$gid \
   -v $SITES_FOLDER_ABSOLUTE_PATH:/sites \
-  -v $(pwd)/$SITES_PATH:/sites:ro \
   -v $(pwd)/config/users:/webcrate/users:ro \
   -v $(pwd)/config/php-pool-templates:/webcrate/custom_templates:ro \
   -v $(pwd)/var/letsencrypt:/webcrate/letsencrypt:ro \

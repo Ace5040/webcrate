@@ -10,11 +10,11 @@ with open('/webcrate/users/users.yml') as f:
 
 SITES_PATH = '/sites'
 MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
-DEV_MODE_USER_UID = os.environ.get('DEV_MODE_USER_UID', '1000')
-DEV_MODE_USER_GID = os.environ.get('DEV_MODE_USER_GID', '1000')
+WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
+WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
 DEV_MODE_USER_PASS = os.environ.get('DEV_MODE_USER_PASS', 'DEV')
-CGI_PORT_START_NUMBER = 9000
-UID_START_NUMBER = 100000
+UID_START_NUMBER = os.environ.get('UID_START_NUMBER', '100000')
+CGI_PORT_START_NUMBER = os.environ.get('CGI_PORT_START_NUMBER', '9000')
 
 if MODE == 'PRODUCTION':
   os.system(f'userdel dev > /dev/null 2>&1')
@@ -35,8 +35,8 @@ if MODE == 'DEV':
   stream = os.popen('openssl passwd -6 {DEV_MODE_USER_PASS}')
   dev_password = stream.read().strip()
   os.system(f'usermod -p "{dev_password}" dev > /dev/null 2>&1')
-  os.system(f'usermod -u {DEV_MODE_USER_UID} dev > /dev/null 2>&1')
-  os.system(f'groupmod -g {DEV_MODE_USER_GID} dev > /dev/null 2>&1')
+  os.system(f'usermod -u {WEBCRATE_UID} dev > /dev/null 2>&1')
+  os.system(f'groupmod -g {WEBCRATE_GID} dev > /dev/null 2>&1')
   os.system(f'usermod -s /bin/fish dev > /dev/null 2>&1')
 
   for username,user in users.items():

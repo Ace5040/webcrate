@@ -10,7 +10,6 @@ with open('/webcrate/users/users.yml') as f:
 
 SITES_PATH = '/sites'
 MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
-DEV_MODE_USER_UID = os.environ.get('DEV_MODE_USER_UID', '1000')
 
 for username,user in users.items():
   user.name = username

@@ -24,12 +24,11 @@ services:
     environment:
       - WEBCRATE_UID=${WEBCRATE_UID}
       - WEBCRATE_GID=${WEBCRATE_GID}
-      - WEBCRATE_MODE=${WEBCRATE_MODE} #set MODE DEV or PRODUCTION
-      - DEV_MODE_USER_PASS=${DEV_MODE_USER_PASS} #password for dev user
-      - DEV_MODE_USER_UID=${DEV_MODE_USER_UID} #UID for dev user set it to your HOSTs user UID
-      - DEV_MODE_USER_GID=${DEV_MODE_USER_GID} #GID for dev user set it to your HOSTs user GID
-      - DOCKER_HOST_IP=${DOCKER_HOST_IP} #ip for dnsmasq service
+      - WEBCRATE_MODE=${WEBCRATE_MODE}
+      - DEV_MODE_USER_PASS=${DEV_MODE_USER_PASS}
       - WEBCRATE_EXTERNAL_DNS_IP=${WEBCRATE_EXTERNAL_DNS_IP}
+      - UID_START_NUMBER=${UID_START_NUMBER}
+      - CGI_PORT_START_NUMBER=${CGI_PORT_START_NUMBER}
     volumes:
       - ${SITES_PATH}:/sites
       - /etc/localtime:/etc/localtime:ro
@@ -60,12 +59,8 @@ services:
     environment:
       - WEBCRATE_UID=${WEBCRATE_UID}
       - WEBCRATE_GID=${WEBCRATE_GID}
-      - WEBCRATE_MODE=${WEBCRATE_MODE} #set MODE DEV or PRODUCTION
-      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL} #set MODE DEV or PRODUCTION
-      - DEV_MODE_USER_PASS=${DEV_MODE_USER_PASS} #password for dev user
-      - DEV_MODE_USER_UID=${DEV_MODE_USER_UID} #UID for dev user set it to your HOSTs user UID
-      - DEV_MODE_USER_GID=${DEV_MODE_USER_GID} #GID for dev user set it to your HOSTs user GID
-      - DOCKER_HOST_IP=${DOCKER_HOST_IP} #ip for dnsmasq service
+      - WEBCRATE_MODE=${WEBCRATE_MODE}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
       - WEBCRATE_EXTERNAL_DNS_IP=${WEBCRATE_EXTERNAL_DNS_IP}
     volumes:
       - ${SITES_PATH}:/sites
@@ -95,8 +90,8 @@ services:
       - "80:80"
       - "443:443"
     environment:
-      - WEBCRATE_MODE=${WEBCRATE_MODE} #set MODE DEV or PRODUCTION
-      - DEV_MODE_USER_GID=${DEV_MODE_USER_GID} #GID for dev user set it to your HOSTs user GID
+      - WEBCRATE_MODE=${WEBCRATE_MODE}
+      - WEBCRATE_GID=${WEBCRATE_GID}
     volumes:
       - ${SITES_PATH}:/sites
       - /etc/localtime:/etc/localtime:ro
@@ -128,8 +123,8 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL5_ROOT_PASSWORD}
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${PATH_TO_MYSQL5_DB}:/var/lib/mysql #path to mysql5 databases
-      - ${PATH_TO_MYSQL5_CONFIG}:/etc/mysql/conf.d/user.cnf
+      - ./var/mysql5:/var/lib/mysql
+      - ./config/mysql/mysql5.cnf:/etc/mysql/conf.d/user.cnf
     networks:
       - network
 
@@ -144,8 +139,8 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${PATH_TO_MYSQL_DB}:/var/lib/mysql #path to mysql5 databases
-      - ${PATH_TO_MYSQL_CONFIG}:/etc/mysql/conf.d/user.cnf
+      - ./var/mysql:/var/lib/mysql
+      - ./config/mysql/mysql.cnf:/etc/mysql/conf.d/user.cnf
     networks:
       - network
 
@@ -173,7 +168,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ${PATH_TO_POSTGRES_DB}:/var/lib/postgresql/data
+      - ./var/postgres:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     networks:
@@ -201,7 +196,7 @@ services:
   htmltopdf:
     dns:
       - 172.31.0.100
-    #build: ../projects/htmltopdf
+    build: ../projects/htmltopdf
     image: ace5040/htmltopdf:latest
     container_name: htmltopdf
     hostname: htmltopdf
@@ -222,8 +217,8 @@ services:
      - "8983:8983"
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${SOLR_CORES_PATH}/logs:/opt/solr/server/logs
-      - ${SOLR_CORES_PATH}:/opt/solr/server/solr/mycores #path to solr cores
+      - ./var/solr/logs:/opt/solr/server/logs
+      - ./var/solr/cores:/opt/solr/server/solr/mycores
     entrypoint:
       - docker-entrypoint.sh
       - solr

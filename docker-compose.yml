@@ -22,6 +22,8 @@ services:
       - "50000-50100:50000-50100"
       - "${DNSMASQ_PORT-5353}:53/udp"
     environment:
+      - WEBCRATE_UID=${WEBCRATE_UID}
+      - WEBCRATE_GID=${WEBCRATE_GID}
       - WEBCRATE_MODE=${WEBCRATE_MODE} #set MODE DEV or PRODUCTION
       - DEV_MODE_USER_PASS=${DEV_MODE_USER_PASS} #password for dev user
       - DEV_MODE_USER_UID=${DEV_MODE_USER_UID} #UID for dev user set it to your HOSTs user UID
@@ -56,8 +58,8 @@ services:
     hostname: webcrate-tools
     restart: unless-stopped
     environment:
-      - WEBCRATE_UID=${WEBCRATE_UID} #set MODE DEV or PRODUCTION
-      - WEBCRATE_GID=${WEBCRATE_GID} #set MODE DEV or PRODUCTION
+      - WEBCRATE_UID=${WEBCRATE_UID}
+      - WEBCRATE_GID=${WEBCRATE_GID}
       - WEBCRATE_MODE=${WEBCRATE_MODE} #set MODE DEV or PRODUCTION
       - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL} #set MODE DEV or PRODUCTION
       - DEV_MODE_USER_PASS=${DEV_MODE_USER_PASS} #password for dev user

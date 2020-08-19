@@ -65,3 +65,4 @@ if [[ -f /webcrate/ssh_keys/ssh_host_rsa_key.pub ]];
 fi
 
 chown -R $WEBCRATE_UID:$WEBCRATE_GID /webcrate/ssh_keys
+chown -R root:root /etc/ssh

@@ -5,7 +5,7 @@ datasources:
   # <string, required> datasource type. Required
   type: influxdb
   # <string, required> access mode. direct or proxy. Required
-  access: direct
+  access: proxy
   # <int> org id. will default to orgId 1 if not specified
   orgId: 1
   # <string> url
@@ -15,7 +15,7 @@ datasources:
   # <string> database user, if used
   user:
   # <string> database name, if used
-  database:
+  database: telegraf
   # <bool> enable/disable basic auth
   basicAuth:
   # <string> basic auth username
@@ -25,7 +25,7 @@ datasources:
   # <bool> enable/disable with credentials headers
   withCredentials:
   # <bool> mark as default datasource. Max one per org
-  isDefault:
+  isDefault: 1
   version: 1
   # <bool> allow users to edit datasources from the UI.
   editable: false

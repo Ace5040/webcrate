@@ -5,4 +5,4 @@ SCRIPTPATH=`dirname $SCRIPT`
 
 cd $SCRIPTPATH/..
 
-docker-compose down
+docker-compose --project-name webcrate down

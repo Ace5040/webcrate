@@ -8,8 +8,8 @@ services:
     container_name: webcrate-utils
 
   webcrate-core:
-    build: src/webcrate
-    image: ace5040/webcrate:stable
+    build: src/webcrate-core
+    image: ace5040/webcrate-core:stable
     container_name: webcrate-core
     hostname: webcrate-core
     restart: unless-stopped
@@ -71,8 +71,8 @@ services:
       - ./var/duplicity:/webcrate/duplicity
       - ssl_configs_volume:/webcrate/ssl_configs
     depends_on:
-      #- "webcrate-core"
-      #- "webcrate-nginx"
+      - "webcrate-core"
+      - "webcrate-nginx"
       - "mysql"
       - "mysql5"
       - "postgres"

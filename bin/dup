@@ -38,6 +38,9 @@ POSTGRES_env="POSTGRES_PASSWORD=\"$(initDbFolder 'postgres')\" "
 if [[ ! -d "./var/mysql" ]] ; then
   mkdir -p "./var/mysql"
 fi
+if [[ ! -d "./var/ssh" ]] ; then
+  mkdir -p "./var/ssh"
+fi
 if [[ ! -d "./var/mysql5" ]] ; then
   mkdir -p "./var/mysql5"
 fi
@@ -48,16 +51,16 @@ if [[ ! -d "./var/sites" ]] ; then
   mkdir -p "./var/sites"
 fi
 if [[ ! -d "./var/duplicity" ]] ; then
-  mkdir -p "./var/sites"
+  mkdir -p "./var/duplicity"
 fi
 if [[ ! -d "./var/letsencrypt" ]] ; then
   mkdir -p "./var/letsencrypt"
 fi
 if [[ ! -d "./var/crontabs" ]] ; then
-  mkdir -p "./var/letsencrypt"
+  mkdir -p "./var/crontabs"
 fi
 if [[ ! -d "./var/backup" ]] ; then
-  mkdir -p "./var/letsencrypt"
+  mkdir -p "./var/backup"
 fi
 if [[ ! -d "./var/solr" ]] ; then
   mkdir -p "./var/solr/logs"

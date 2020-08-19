@@ -6,6 +6,8 @@ services:
     build: src/webcrate-utils
     image: ace5040/webcrate-utils:stable
     container_name: webcrate-utils
+    networks:
+      - network
 
   webcrate-core:
     build: src/webcrate-core

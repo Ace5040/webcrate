@@ -2,14 +2,14 @@
 
 SCRIPT=`realpath $0`
 SCRIPTPATH=`dirname $SCRIPT`
+cd $SCRIPTPATH/..
+source .env
+
 uid=$(id -u);
 gid=$(id -u);
 WEBCRATE_UID_env="WEBCRATE_UID=$uid "
 WEBCRATE_GID_env="WEBCRATE_GID=$gid "
-if [[ $str == /* ]]; then SITES_FOLDER_ABSOLUTE_PATH=$SITES_PATH; else SITES_FOLDER_ABSOLUTE_PATH=$(pwd)/$SITES_PATH; fi
-
-cd $SCRIPTPATH/..
-source .env
+if [[ $SITES_PATH == /* ]]; then SITES_FOLDER_ABSOLUTE_PATH=$SITES_PATH; else SITES_FOLDER_ABSOLUTE_PATH=$(pwd)/$SITES_PATH; fi
 
 function generatePassword () {
   pass=`docker run --rm ace5040/webcrate-utils:stable pwgen -nyBs1 -r "\\\`{}|'?:\\$\"\\/" 16 1`
@@ -35,6 +35,12 @@ MYSQL_env="MYSQL_ROOT_PASSWORD=\"$(initDbFolder 'mysql')\" "
 MYSQL5_env="MYSQL5_ROOT_PASSWORD=\"$(initDbFolder 'mysql5')\" "
 POSTGRES_env="POSTGRES_PASSWORD=\"$(initDbFolder 'postgres')\" "
 
+if [[ ! -f "./users.yml" ]] ; then
+  cp ./users.yml.example ./users.yml
+fi
+if [[ ! -f "./services.yml" ]] ; then
+  cp ./services.yml.example ./services.yml
+fi
 if [[ ! -d "./var/mysql" ]] ; then
   mkdir -p "./var/mysql"
 fi
@@ -73,7 +79,7 @@ grafana_password=''
 if [[ ! -d "./var/grafana/data" ]] ; then
   mkdir -p "./var/grafana/data"
   mkdir -p "./var/grafana/log"
-  grafana_password=`docker run --rm ace5040/webcrate-utils:stable pwgen -nyBs1 -r "\\\`{}|'?:\\$\"\\/" 16 1`
+  grafana_password=`docker run --rm ace5040/webcrate-utils:stable pwgen -nyBs1 -r "\\\`{-}|'?:\\$\"\\/" 16 1`
   echo "user=admin" > ./var/secrets/grafana.secret
   echo "password=\"$grafana_password\"" >> ./var/secrets/grafana.secret
 fi
@@ -82,7 +88,8 @@ docker run --rm --env-file=$(pwd)/.env \
   -e WEBCRATE_UID=$uid \
   -e WEBCRATE_GID=$gid \
   -v $SITES_FOLDER_ABSOLUTE_PATH:/sites \
-  -v $(pwd)/config/users:/webcrate/users:ro \
+  -v $(pwd)/users.yml:/webcrate/users.yml:ro \
+  -v $(pwd)/config/nginx-templates:/webcrate/nginx-templates:ro \
   -v $(pwd)/config/php-pool-templates:/webcrate/custom_templates:ro \
   -v $(pwd)/var/letsencrypt:/webcrate/letsencrypt:ro \
   -v webcrate_nginx_configs_volume:/webcrate/nginx_configs \
@@ -95,7 +102,8 @@ docker run --rm --env-file=$(pwd)/.env \
   /webcrate/parse-users.py
 
 docker run --rm --env-file=$(pwd)/.env \
-  -v $(pwd)/config/services:/webcrate/services:ro \
+  -v $(pwd)/services.yml:/webcrate/services.yml:ro \
+  -v $(pwd)/config/nginx-templates:/webcrate/nginx-templates:ro \
   -v webcrate_nginx_configs_volume:/webcrate/nginx_configs \
   -v webcrate_dnsmasq_hosts_volume:/webcrate/dnsmasq_hosts \
   ace5040/webcrate-utils:stable \

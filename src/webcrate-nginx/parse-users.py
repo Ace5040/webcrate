@@ -5,14 +5,14 @@ import yaml
 from munch import munchify
 from pprint import pprint
 
-with open('/webcrate/users/users.yml') as f:
+with open('/webcrate/users.yml') as f:
   users = munchify(yaml.safe_load(f))
 
 SITES_PATH = '/sites'
-MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
+WEBCRATE_MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
-print(f'MODE = {MODE}')
-if MODE == 'PRODUCTION':
+print(f'WEBCRATE_MODE = {WEBCRATE_MODE}')
+if WEBCRATE_MODE == 'PRODUCTION':
   os.system(f'userdel dev > /dev/null 2>&1')
   for username,user in users.items():
     user.name = username
@@ -20,7 +20,7 @@ if MODE == 'PRODUCTION':
     os.system(f'gpasswd -a nginx {user.name}')
     print(f'group {user.name} - added')
 
-if MODE == 'DEV':
+if WEBCRATE_MODE == 'DEV':
   os.system(f'groupadd --gid {WEBCRATE_GID} dev')
   os.system(f'gpasswd -a nginx dev')
   print(f'group dev - added')

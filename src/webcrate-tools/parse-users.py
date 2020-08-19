@@ -5,11 +5,11 @@ import yaml
 from munch import munchify
 from pprint import pprint
 
-with open('/webcrate/users/users.yml') as f:
+with open('/webcrate/users.yml') as f:
   users = munchify(yaml.safe_load(f))
 
 SITES_PATH = '/sites'
-MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
+WEBCRATE_MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
 WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
 LETSENCRYPT_EMAIL = os.environ.get('LETSENCRYPT_EMAIL', '')
 reload_needed = False
@@ -32,7 +32,7 @@ for username,user in users.items():
       if len(domains):
         if not os.path.isdir(path):
           os.system(f'mkdir -p {path}')
-          os.system(f'chown -R {user.uid if MODE == "PRODUCTION" else WEBCRATE_UID}:{user.uid if MODE == "PRODUCTION" else WEBCRATE_UID} {SITES_PATH}/{user.name}/{user.root_folder.split("/")[0]}')
+          os.system(f'chown -R {user.uid if WEBCRATE_MODE == "PRODUCTION" else WEBCRATE_UID}:{user.uid if WEBCRATE_MODE == "PRODUCTION" else WEBCRATE_UID} {SITES_PATH}/{user.name}/{user.root_folder.split("/")[0]}')
         print(path)
         print(f'certbot certonly --config-dir /webcrate/letsencrypt --cert-path /webcrate/letsencrypt --cert-name {user.name} --expand --webroot --webroot-path {path} -d {",".join(domains)}')
         output = os.popen(f'certbot certonly --config-dir /webcrate/letsencrypt --cert-name {user.name} --expand --webroot --webroot-path {path} -d {",".join(domains)}').read()

@@ -34,7 +34,7 @@ services:
       - ${SITES_PATH}:/sites
       - ./var/crontabs:/var/spool/cron
       - ./config/telegraf:/etc/telegraf/telegraf.d:ro
-      - ./config/users:/webcrate/users:ro
+      - ./users.yml:/webcrate/users.yml:ro
       - ./var/ssh:/webcrate/ssh_keys
       - ./config/php-pool-templates:/webcrate/custom_templates:ro
       - ./config/php/php7.ini:/etc/php/conf.d/user.ini:ro
@@ -65,7 +65,7 @@ services:
       - ${SITES_PATH}:/sites
       - ${DOCKER_SOCKET}:/var/run/docker.sock
       - /etc/localtime:/etc/localtime:ro
-      - ./config/users:/webcrate/users:ro
+      - ./users.yml:/webcrate/users.yml:ro
       - ./var/letsencrypt:/webcrate/letsencrypt
       - ./var/backup:/webcrate/backup
       - ./var/duplicity:/webcrate/duplicity
@@ -94,7 +94,7 @@ services:
     volumes:
       - ${SITES_PATH}:/sites
       - /etc/localtime:/etc/localtime:ro
-      - ./config/users:/webcrate/users:ro
+      - ./users.yml:/webcrate/users.yml:ro
       - ./var/letsencrypt:/webcrate/letsencrypt:ro
       - ssl_configs_volume:/webcrate/ssl_configs:ro
       - nginx_configs_volume:/etc/nginx/conf.d:ro

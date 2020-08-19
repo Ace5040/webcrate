@@ -5,10 +5,10 @@ import yaml
 from munch import munchify
 from pprint import pprint
 
-with open('/webcrate/users/users.yml', 'r') as f:
+with open('/webcrate/users.yml', 'r') as f:
   users = munchify(yaml.safe_load(f))
 
-MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
+WEBCRATE_MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
 DOCKER_HOST_IP = os.environ.get('DOCKER_HOST_IP', '')
 WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
@@ -23,11 +23,28 @@ os.system(f'rm /webcrate/php73-fpm.d/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/php56-fpm.d/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/dnsmasq_hosts/* > /dev/null 2>&1')
 
-print(f'MODE = {MODE}')
+print(f'WEBCRATE_MODE = {WEBCRATE_MODE}')
 
 for username, user in users.items():
   user.name = username
   port = CGI_PORT_START_NUMBER + user.uid - UID_START_NUMBER
+
+  if not os.path.isdir(f'/sites/{user.name}'):
+    os.system(f'mkdir -p /sites/{user.name}')
+    os.system(f'chown {WEBCRATE_UID if WEBCRATE_MODE == "DEV" else user.uid }:{WEBCRATE_GID if WEBCRATE_MODE == "DEV" else user.uid } /sites/{user.name}')
+
+  if not os.path.isdir(f'/sites/{user.name}/{user.root_folder}'):
+    os.system(f'mkdir -p /sites/{user.name}/{user.root_folder}')
+    if user.backend == 'php':
+      with open(f'/sites/{user.name}/{user.root_folder}/index.php', 'w') as f:
+        f.write(f'<?php\n')
+        f.write(f'print "Welcome to webcrate. Happy coding!";\n')
+        f.close()
+    os.system(f'chown -R {WEBCRATE_UID if WEBCRATE_MODE == "DEV" else user.uid }:{WEBCRATE_GID if WEBCRATE_MODE == "DEV" else user.uid } /sites/{user.name}/{user.root_folder.split("/")[0]}')
+
+  if not os.path.isdir(f'/sites/{user.name}/log'):
+    os.system(f'mkdir -p /sites/{user.name}/log')
+    os.system(f'chown -R {WEBCRATE_UID if WEBCRATE_MODE == "DEV" else user.uid }:{WEBCRATE_GID if WEBCRATE_MODE == "DEV" else user.uid } /sites/{user.name}/log')
 
   if os.path.isdir(f'/sites/{user.name}'):
     if user.backend == 'php':
@@ -43,8 +60,8 @@ for username, user in users.items():
         f.close()
 
       conf = conf.replace('%port%', str(port))
-      conf = conf.replace('%user%', 'dev' if MODE=='DEV' else user.name)
-      conf = conf.replace('%group%', 'dev' if MODE=='DEV' else user.name)
+      conf = conf.replace('%user%', 'dev' if WEBCRATE_MODE=='DEV' else user.name)
+      conf = conf.replace('%group%', 'dev' if WEBCRATE_MODE=='DEV' else user.name)
       conf = conf.replace('%path%', user.name)
       conf = conf.replace('%pool%', user.name)
 
@@ -65,11 +82,14 @@ for username, user in users.items():
 
       print(f'php pool for {user.name} - generated')
 
-    os.system(f'cp -rf /webcrate/users/{user.name}.conf /webcrate/nginx_configs/{user.name}.conf')
-
-    with open(f'/webcrate/nginx_configs/{user.name}.conf', 'r') as f:
-      conf = f.read()
-      f.close()
+    if os.path.isfile(f'/webcrate/nginx-templates/{user.name}.conf'):
+      with open(f'/webcrate/nginx-templates/{user.name}.conf', 'r') as f:
+        conf = f.read()
+        f.close()
+    else:
+      with open(f'/webcrate/nginx-templates/default-user.conf', 'r') as f:
+        conf = f.read()
+        f.close()
 
     conf = conf.replace('%user%', user.name)
     conf = conf.replace('%domains%', " ".join(user.domains))
@@ -93,7 +113,8 @@ for username, user in users.items():
           f.close()
         print(f'ssl config for {user.name} - generated')
 
-if MODE == "DEV":
+
+if WEBCRATE_MODE == "DEV":
   with open(f'/webcrate/dnsmasq_hosts/hosts_nginx', 'w') as f:
     for username, user in users.items():
       user.name = username

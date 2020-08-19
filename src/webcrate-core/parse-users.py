@@ -5,18 +5,18 @@ import yaml
 from munch import munchify
 from pprint import pprint
 
-with open('/webcrate/users/users.yml') as f:
+with open('/webcrate/users.yml') as f:
   users = munchify(yaml.safe_load(f))
 
 SITES_PATH = '/sites'
-MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
+WEBCRATE_MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
 WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
 DEV_MODE_USER_PASS = os.environ.get('DEV_MODE_USER_PASS', 'DEV')
 UID_START_NUMBER = int(os.environ.get('UID_START_NUMBER', '100000'))
 CGI_PORT_START_NUMBER = int(os.environ.get('CGI_PORT_START_NUMBER', '9000'))
 
-if MODE == 'PRODUCTION':
+if WEBCRATE_MODE == 'PRODUCTION':
   os.system(f'userdel dev > /dev/null 2>&1')
   for username,user in users.items():
     user.name = username
@@ -31,7 +31,7 @@ if MODE == 'PRODUCTION':
       os.system(f'source /sites/{user.name}/app/env/bin/activate; sudo -u {user.name} gunicorn --daemon --bind :{port} --name {user.name} --user {user.name} --group {user.name} --pid ../tmp/gunicorn.pid --error-logfile ../logs/gunicorn-error.log -c /sites/{user.name}/app/gunicorn.conf.py --chdir /sites/{user.name}/app core.wsgi:application; deactivate')
     print(f'{user.name} - created')
 
-if MODE == 'DEV':
+if WEBCRATE_MODE == 'DEV':
   stream = os.popen('openssl passwd -6 {DEV_MODE_USER_PASS}')
   dev_password = stream.read().strip()
   os.system(f'usermod -p "{dev_password}" dev > /dev/null 2>&1')

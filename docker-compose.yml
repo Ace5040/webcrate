@@ -30,8 +30,8 @@ services:
       - UID_START_NUMBER=${UID_START_NUMBER}
       - CGI_PORT_START_NUMBER=${CGI_PORT_START_NUMBER}
     volumes:
-      - ${SITES_PATH}:/sites
       - /etc/localtime:/etc/localtime:ro
+      - ${SITES_PATH}:/sites
       - ./var/crontabs:/var/spool/cron
       - ./config/telegraf:/etc/telegraf/telegraf.d:ro
       - ./config/users:/webcrate/users:ro
@@ -45,7 +45,6 @@ services:
       - php73_pools_volume:/etc/php73/php-fpm.d
       - php5_pools_volume:/etc/php56/php-fpm.d
       - dnsmasq_hosts_volume:/webcrate/dnsmasq_hosts
-      - nginx_configs_volume:/webcrate/nginx_configs
     networks:
       network:
         ipv4_address: 172.31.0.100
@@ -72,8 +71,8 @@ services:
       - ./var/duplicity:/webcrate/duplicity
       - ssl_configs_volume:/webcrate/ssl_configs
     depends_on:
-      - "webcrate-core"
-      - "webcrate-nginx"
+      #- "webcrate-core"
+      #- "webcrate-nginx"
       - "mysql"
       - "mysql5"
       - "postgres"
@@ -153,7 +152,7 @@ services:
     restart: unless-stopped
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /sessions
+      - phpmyadmin_sessions:/sessions
       - ./config/phpmyadmin/php.ini:/usr/local/etc/php/php.ini
       - phpmyadmin_volume:/var/www/html
       - phpmyadmin_config_volume:/etc/phpmyadmin
@@ -180,6 +179,9 @@ services:
     restart: unless-stopped
     environment:
       - PHP_PG_ADMIN_SERVER_HOST=postgres
+    volumes:
+      - phppgadmin_volume:/data
+      - phppgadmin_logs_volume:/var/log
     networks:
       - network
 
@@ -273,6 +275,9 @@ volumes:
   php5_pools_volume: {}
   phpmyadmin_volume: {}
   phpmyadmin_config_volume: {}
+  phpmyadmin_sessions: {}
+  phppgadmin_volume: {}
+  phppgadmin_logs_volume: {}
 
 networks:
   network:

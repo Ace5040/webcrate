@@ -64,6 +64,7 @@ if [[ ! -d "./var/backup" ]] ; then
 fi
 if [[ ! -d "./var/solr" ]] ; then
   mkdir -p "./var/solr/logs"
+  mkdir -p "./var/solr/cores"
 fi
 if [[ ! -d "./var/influxdb" ]] ; then
   mkdir -p "./var/influxdb"

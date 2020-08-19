@@ -13,8 +13,8 @@ MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
 WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
 DEV_MODE_USER_PASS = os.environ.get('DEV_MODE_USER_PASS', 'DEV')
-UID_START_NUMBER = os.environ.get('UID_START_NUMBER', '100000')
-CGI_PORT_START_NUMBER = os.environ.get('CGI_PORT_START_NUMBER', '9000')
+UID_START_NUMBER = int(os.environ.get('UID_START_NUMBER', '100000'))
+CGI_PORT_START_NUMBER = int(os.environ.get('CGI_PORT_START_NUMBER', '9000'))
 
 if MODE == 'PRODUCTION':
   os.system(f'userdel dev > /dev/null 2>&1')

@@ -241,10 +241,12 @@ services:
     environment:
       GF_PATHS_DATA: /data
       GF_PATHS_LOGS: /log
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /home.json
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./var/grafana/data:/data
       - ./var/grafana/log:/log
+      - ./config/grafana/home.json:/home.json
     networks:
       - network
 

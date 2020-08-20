@@ -4,11 +4,12 @@ test:
   domains:
     - test.test
     - test2.test
-  nginx_config: custom #custom/default/drupal8/drupal7 (custom = test.conf file)
-  root_folder: data #data/web/app etc
+  nginx_config: default #default = default-php-user.conf
+  root_folder: data #e.g. data/web
   https: disabled
   backend: php
   backend_version: 73 #php version 7 = 7.x, 73 = 7.3.x, 5 = 5.6.x
+  gunicorn_app_module:
   mysql_db: yes
   mysql5_db: no
   postgresql_db: no
@@ -18,11 +19,12 @@ testdjango:
   password:
   domains:
     - testdjango.test
-  nginx_config: custom
-  root_folder: app
+  nginx_config: default #default = default-gunicorn-user.conf
+  root_folder: app/www
   https: disabled
   backend: gunicorn
-  backend_version: 20 #not used
+  backend_version:
+  gunicorn_app_module: core.wsgi:application
   mysql_db: no
   mysql5_db: no
   postgresql_db: yes

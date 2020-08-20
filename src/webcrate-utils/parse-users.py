@@ -40,6 +40,11 @@ for username, user in users.items():
         f.write(f'<?php\n')
         f.write(f'print "Welcome to webcrate. Happy coding!";\n')
         f.close()
+    if user.backend == 'gunicorn':
+      with open(f'/sites/{user.name}/{user.root_folder}/index.php', 'w') as f:
+        f.write(f'<?php\n')
+        f.write(f'print "Welcome to webcrate. Happy coding!";\n')
+        f.close()
     os.system(f'chown -R {WEBCRATE_UID if WEBCRATE_MODE == "DEV" else user.uid }:{WEBCRATE_GID if WEBCRATE_MODE == "DEV" else user.uid } /sites/{user.name}/{user.root_folder.split("/")[0]}')
 
   if not os.path.isdir(f'/sites/{user.name}/log'):
@@ -87,7 +92,7 @@ for username, user in users.items():
         conf = f.read()
         f.close()
     else:
-      with open(f'/webcrate/nginx-templates/default-user.conf', 'r') as f:
+      with open(f'/webcrate/nginx-templates/default-{user.backend}-user.conf', 'r') as f:
         conf = f.read()
         f.close()
 

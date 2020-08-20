@@ -1,0 +1,37 @@
+phpmyadmin:
+  domains:
+    - phpmyadmin.test
+  nginx_config: default
+  port: 80
+  https: disabled
+phppgadmin:
+  domains:
+    - phppgadmin.test
+  nginx_config: default
+  port: 80
+  https: disabled
+doctohtml:
+  domains:
+    - doctohtml.test
+  nginx_config: default
+  port: 3000
+  https: disabled
+htmltopdf:
+  domains:
+    - htmltopdf.test
+  nginx_config: default
+  port: 3000
+  https: disabled
+grafana:
+  domains:
+    - grafana.test
+  nginx_config: default
+  port: 3000
+  https: disabled
+solr:
+  domains:
+    - solr.test
+  nginx_config: default
+  port: 8983
+  https: disabled
+

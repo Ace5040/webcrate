@@ -41,15 +41,26 @@ for username, user in users.items():
         f.write(f'print "Welcome to webcrate. Happy coding!";\n')
         f.close()
     if user.backend == 'gunicorn':
-      with open(f'/sites/{user.name}/{user.root_folder}/index.php', 'w') as f:
-        f.write(f'<?php\n')
-        f.write(f'print "Welcome to webcrate. Happy coding!";\n')
+      data_folder=user.root_folder.split("/")[0]
+      with open(f'/sites/{user.name}/{data_folder}/app.py', 'w') as f:
+        f.write(f'def app(environ, start_response):\n'
+        f'  data = b"Welcome to webcrate. Happy coding!"\n'
+        f'  start_response("200 OK", [\n'
+        f'  ("Content-Type", "text/plain"),\n'
+        f'  ("Content-Length", str(len(data)))\n'
+        f'  ])\n'
+        f'  return iter([data])\n')
         f.close()
+      os.system(f'cd /sites/{user.name}/{data_folder}; python -m venv env; source ./env/bin/activate; pip install gunicorn; pip freeze > requirements.txt; deactivate')
     os.system(f'chown -R {WEBCRATE_UID if WEBCRATE_MODE == "DEV" else user.uid }:{WEBCRATE_GID if WEBCRATE_MODE == "DEV" else user.uid } /sites/{user.name}/{user.root_folder.split("/")[0]}')
 
   if not os.path.isdir(f'/sites/{user.name}/log'):
     os.system(f'mkdir -p /sites/{user.name}/log')
     os.system(f'chown -R {WEBCRATE_UID if WEBCRATE_MODE == "DEV" else user.uid }:{WEBCRATE_GID if WEBCRATE_MODE == "DEV" else user.uid } /sites/{user.name}/log')
+
+  if not os.path.isdir(f'/sites/{user.name}/tmp'):
+    os.system(f'mkdir -p /sites/{user.name}/tmp')
+    os.system(f'chown -R {WEBCRATE_UID if WEBCRATE_MODE == "DEV" else user.uid }:{WEBCRATE_GID if WEBCRATE_MODE == "DEV" else user.uid } /sites/{user.name}/tmp')
 
   if os.path.isdir(f'/sites/{user.name}'):
     if user.backend == 'php':

@@ -24,7 +24,7 @@ testdjango:
   https: disabled
   backend: gunicorn
   backend_version:
-  gunicorn_app_module: core.wsgi:application
+  gunicorn_app_module: app:app
   mysql_db: no
   mysql5_db: no
   postgresql_db: yes

@@ -29,7 +29,10 @@ if WEBCRATE_MODE == 'PRODUCTION':
     if user.backend == 'gunicorn':
       data_folder=user.root_folder.split("/")[0]
       port = CGI_PORT_START_NUMBER + user.uid - UID_START_NUMBER
-      os.system(f'source /sites/{user.name}/{data_folder}/env/bin/activate; sudo -u {user.name} gunicorn --daemon --bind :{port} --name {user.name} --user {user.name} --group {user.name} --pid ../tmp/gunicorn.pid --error-logfile ../log/gunicorn-error.log -c /sites/{user.name}/{data_folder}/gunicorn.conf.py --chdir /sites/{user.name}/{data_folder} {user.gunicorn_app_module}; deactivate')
+      gunicorn_conf=''
+      if os.path.isfile(f'/sites/{user.name}/{data_folder}/gunicorn.conf.py'):
+        gunicorn_conf=f'-c /sites/{user.name}/{data_folder}/gunicorn.conf.py'
+      os.system(f'source /sites/{user.name}/{data_folder}/env/bin/activate; sudo -u {user.name} gunicorn --daemon --bind :{port} --name {user.name} --user {user.name} --group {user.name} --pid ../tmp/gunicorn.pid --error-logfile ../log/gunicorn-error.log {gunicorn_conf} --chdir /sites/{user.name}/{data_folder} {user.gunicorn_app_module}; deactivate')
     print(f'{user.name} - created')
 
 if WEBCRATE_MODE == 'DEV':
@@ -45,5 +48,8 @@ if WEBCRATE_MODE == 'DEV':
     if user.backend == 'gunicorn':
       data_folder=user.root_folder.split("/")[0]
       port = CGI_PORT_START_NUMBER + user.uid - UID_START_NUMBER
-      os.system(f'source /sites/{user.name}/{data_folder}/env/bin/activate; sudo -u dev gunicorn --daemon --bind :{port} --name {user.name} --user dev --group dev --pid ../tmp/gunicorn.pid --error-logfile ../log/gunicorn-error.log -c /sites/{user.name}/{data_folder}/gunicorn.conf.py --chdir /sites/{user.name}/{data_folder} {user.gunicorn_app_module}; deactivate')
+      gunicorn_conf=''
+      if os.path.isfile(f'/sites/{user.name}/{data_folder}/gunicorn.conf.py'):
+        gunicorn_conf=f'-c /sites/{user.name}/{data_folder}/gunicorn.conf.py'
+      os.system(f'source /sites/{user.name}/{data_folder}/env/bin/activate; sudo -u dev gunicorn --daemon --bind :{port} --name {user.name} --user dev --group dev --pid ../tmp/gunicorn.pid --error-logfile ../log/gunicorn-error.log {gunicorn_conf} --chdir /sites/{user.name}/{data_folder} {user.gunicorn_app_module}; deactivate')
     print(f'{user.name} - parsed')

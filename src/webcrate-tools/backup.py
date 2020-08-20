@@ -5,8 +5,9 @@ import yaml
 from munch import munchify
 from pprint import pprint
 
-with open('/webcrate/users.yml') as f:
+with open('/webcrate/users.yml', 'r') as f:
   users = munchify(yaml.safe_load(f))
+  f.close()
 
 SITES_PATH = '/sites'
 MODE = os.environ.get('WEBCRATE_MODE', 'DEV')

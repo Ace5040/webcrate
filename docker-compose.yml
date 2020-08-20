@@ -70,6 +70,7 @@ services:
       - ./users.yml:/webcrate/users.yml:ro
       - ./var/letsencrypt:/webcrate/letsencrypt
       - ./var/backup:/webcrate/backup
+      - ./var/secrets:/webcrate/secrets
       - ./var/duplicity:/webcrate/duplicity
       - ssl_configs_volume:/webcrate/ssl_configs
     depends_on:
@@ -154,8 +155,9 @@ services:
     restart: unless-stopped
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - phpmyadmin_sessions:/sessions
       - ./config/phpmyadmin/php.ini:/usr/local/etc/php/php.ini
+      - ./config/phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
+      - phpmyadmin_sessions:/sessions
       - phpmyadmin_volume:/var/www/html
       - phpmyadmin_config_volume:/etc/phpmyadmin
     networks:

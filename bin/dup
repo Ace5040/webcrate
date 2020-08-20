@@ -12,7 +12,7 @@ WEBCRATE_GID_env="WEBCRATE_GID=$gid "
 if [[ $SITES_PATH == /* ]]; then SITES_FOLDER_ABSOLUTE_PATH=$SITES_PATH; else SITES_FOLDER_ABSOLUTE_PATH=$(pwd)/$SITES_PATH; fi
 
 function generatePassword () {
-  pass=`docker run --rm ace5040/webcrate-utils:stable pwgen -nyBs1 -r "\\\`{}|'?:\\$\"\\/" 16 1`
+  pass=`docker run --rm ace5040/webcrate-utils:stable /webcrate/pwgen.sh`
   echo "[mysqldump]" > ./var/secrets/$1.cnf
   echo "user=root" >> ./var/secrets/$1.cnf
   echo "password=\"$pass\"" >> ./var/secrets/$1.cnf
@@ -79,7 +79,7 @@ grafana_password=''
 if [[ ! -d "./var/grafana/data" ]] ; then
   mkdir -p "./var/grafana/data"
   mkdir -p "./var/grafana/log"
-  grafana_password=`docker run --rm ace5040/webcrate-utils:stable pwgen -nyBs1 -r "\\\`{-}|'?:\\$\"\\/" 16 1`
+  grafana_password=`docker run --rm ace5040/webcrate-utils:stable /webcrate/pwgen.sh`
   echo "user=admin" > ./var/secrets/grafana.secret
   echo "password=\"$grafana_password\"" >> ./var/secrets/grafana.secret
 fi

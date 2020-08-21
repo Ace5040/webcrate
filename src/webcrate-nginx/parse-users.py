@@ -14,7 +14,6 @@ WEBCRATE_MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
 print(f'WEBCRATE_MODE = {WEBCRATE_MODE}')
 if WEBCRATE_MODE == 'PRODUCTION':
-  os.system(f'userdel dev > /dev/null 2>&1')
   for username,user in users.items():
     user.name = username
     os.system(f'groupadd --gid {user.uid} {user.name}')

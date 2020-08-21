@@ -92,20 +92,20 @@ docker run --rm --env-file=$(pwd)/.env \
   -v $(pwd)/config/nginx-templates:/webcrate/nginx-templates:ro \
   -v $(pwd)/config/php-pool-templates:/webcrate/custom_templates:ro \
   -v $(pwd)/var/letsencrypt:/webcrate/letsencrypt:ro \
-  -v webcrate_nginx_configs_volume:/webcrate/nginx_configs \
-  -v webcrate_ssl_configs_volume:/webcrate/ssl_configs \
-  -v webcrate_php7_pools_volume:/webcrate/php-fpm.d \
-  -v webcrate_php73_pools_volume:/webcrate/php73-fpm.d \
-  -v webcrate_php5_pools_volume:/webcrate/php56-fpm.d \
-  -v webcrate_dnsmasq_hosts_volume:/webcrate/dnsmasq_hosts \
+  -v webcrate_nginx_configs:/webcrate/nginx_configs \
+  -v webcrate_ssl_configs:/webcrate/ssl_configs \
+  -v webcrate_php7_pools:/webcrate/php-fpm.d \
+  -v webcrate_php73_pools:/webcrate/php73-fpm.d \
+  -v webcrate_php5_pools:/webcrate/php56-fpm.d \
+  -v webcrate_dnsmasq_hosts:/webcrate/dnsmasq_hosts \
   ace5040/webcrate-utils:stable \
   /webcrate/parse-users.py
 
 docker run --rm --env-file=$(pwd)/.env \
   -v $(pwd)/services.yml:/webcrate/services.yml:ro \
   -v $(pwd)/config/nginx-templates:/webcrate/nginx-templates:ro \
-  -v webcrate_nginx_configs_volume:/webcrate/nginx_configs \
-  -v webcrate_dnsmasq_hosts_volume:/webcrate/dnsmasq_hosts \
+  -v webcrate_nginx_configs:/webcrate/nginx_configs \
+  -v webcrate_dnsmasq_hosts:/webcrate/dnsmasq_hosts \
   ace5040/webcrate-utils:stable \
   /webcrate/parse-services.py
 

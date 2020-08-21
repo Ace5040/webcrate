@@ -43,10 +43,10 @@ services:
       - ./config/php/php73.ini:/etc/php73/conf.d/user.ini:ro
       - ./config/php/php5.ini:/etc/php56/conf.d/user.ini:ro
       - ./config/exim/exim.conf:/etc/mail/exim.conf
-      - php7_pools_volume:/etc/php/php-fpm.d
-      - php73_pools_volume:/etc/php73/php-fpm.d
-      - php5_pools_volume:/etc/php56/php-fpm.d
-      - dnsmasq_hosts_volume:/webcrate/dnsmasq_hosts
+      - php7_pools:/etc/php/php-fpm.d
+      - php73_pools:/etc/php73/php-fpm.d
+      - php5_pools:/etc/php56/php-fpm.d
+      - dnsmasq_hosts:/webcrate/dnsmasq_hosts
     networks:
       network:
         ipv4_address: 172.31.0.100
@@ -73,7 +73,7 @@ services:
       - ./var/backup:/webcrate/backup
       - ./var/secrets:/webcrate/secrets
       - ./var/duplicity:/webcrate/duplicity
-      - ssl_configs_volume:/webcrate/ssl_configs
+      - ssl_configs:/webcrate/ssl_configs
     depends_on:
       - "webcrate-core"
       - "webcrate-nginx"
@@ -90,18 +90,19 @@ services:
     hostname: webcrate-nginx
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
+      - "80:1080"
+      - "443:1443"
     environment:
       - WEBCRATE_MODE=${WEBCRATE_MODE}
+      - WEBCRATE_UID=${WEBCRATE_UID}
       - WEBCRATE_GID=${WEBCRATE_GID}
     volumes:
       - ${SITES_PATH}:/sites
       - /etc/localtime:/etc/localtime:ro
       - ./users.yml:/webcrate/users.yml:ro
       - ./var/letsencrypt:/webcrate/letsencrypt:ro
-      - ssl_configs_volume:/webcrate/ssl_configs:ro
-      - nginx_configs_volume:/etc/nginx/conf.d:ro
+      - ssl_configs:/webcrate/ssl_configs:ro
+      - nginx_configs:/etc/nginx/conf.d:ro
     depends_on:
       - "webcrate-core"
     networks:
@@ -149,6 +150,8 @@ services:
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
+    logging:
+      driver: none
     container_name: phpmyadmin
     environment:
       - PMA_HOSTS=mysql,mysql5
@@ -159,8 +162,8 @@ services:
       - ./config/phpmyadmin/php.ini:/usr/local/etc/php/php.ini
       - ./config/phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
       - phpmyadmin_sessions:/sessions
-      - phpmyadmin_volume:/var/www/html
-      - phpmyadmin_config_volume:/etc/phpmyadmin
+      - phpmyadmin:/var/www/html
+      - phpmyadmin_config:/etc/phpmyadmin
     networks:
       - network
 
@@ -185,8 +188,8 @@ services:
     environment:
       - PHP_PG_ADMIN_SERVER_HOST=postgres
     volumes:
-      - phppgadmin_volume:/data
-      - phppgadmin_logs_volume:/var/log
+      - phppgadmin:/data
+      - phppgadmin_logs:/var/log
     networks:
       - network
 
@@ -272,17 +275,17 @@ services:
       - network
 
 volumes:
-  dnsmasq_hosts_volume: {}
-  nginx_configs_volume: {}
-  ssl_configs_volume: {}
-  php7_pools_volume: {}
-  php73_pools_volume: {}
-  php5_pools_volume: {}
-  phpmyadmin_volume: {}
-  phpmyadmin_config_volume: {}
+  dnsmasq_hosts: {}
+  nginx_configs: {}
+  ssl_configs: {}
+  php7_pools: {}
+  php73_pools: {}
+  php5_pools: {}
+  phpmyadmin: {}
+  phpmyadmin_config: {}
   phpmyadmin_sessions: {}
-  phppgadmin_volume: {}
-  phppgadmin_logs_volume: {}
+  phppgadmin: {}
+  phppgadmin_logs: {}
 
 networks:
   network:

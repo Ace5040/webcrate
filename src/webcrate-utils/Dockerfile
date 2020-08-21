@@ -6,8 +6,10 @@ RUN pip install pyyml munch
 RUN mkdir -p /webcrate
 COPY ssl.conf /webcrate/ssl.conf
 COPY parse-users.py /webcrate/parse-users.py
-COPY pwgen.sh /webcrate/pwgen.sh
-RUN chmod u+x /webcrate/parse-users.py
-RUN chmod u+x /webcrate/pwgen.sh
 COPY parse-services.py /webcrate/parse-services.py
-RUN chmod u+x /webcrate/parse-services.py
+COPY create-user.py /webcrate/create-user.py
+COPY pwgen.sh /webcrate/pwgen.sh
+RUN chmod u+x /webcrate/parse-users.py; \
+    chmod u+x /webcrate/parse-services.py; \
+    chmod u+x /webcrate/create-user.py; \
+    chmod u+x /webcrate/pwgen.sh

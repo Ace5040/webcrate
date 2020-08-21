@@ -1,7 +1,7 @@
 FROM archlinux:latest
 RUN echo "Set disable_coredump false" >> /etc/sudo.conf
 RUN pacman --noconfirm -Syu; \
-    pacman --needed --noconfirm -S base-devel git unzip mariadb-clients postgresql-libs cronie python-pip certbot duplicity;
+    pacman --needed --noconfirm -S base-devel git unzip mariadb-clients postgresql-libs cronie python-pip certbot duplicity lftp;
 RUN useradd -m -s /bin/bash dev; \
     usermod -p "dev" dev; \
     echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo

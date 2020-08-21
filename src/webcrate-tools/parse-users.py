@@ -141,5 +141,6 @@ for username,user in users.items():
     print(f'ssl config for {user.name} - not present')
 
 if reload_needed:
+  os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/letsencrypt')
   print(f'changes detected - reloading nginx config')
   os.system(f'docker exec webcrate-nginx nginx -s reload')

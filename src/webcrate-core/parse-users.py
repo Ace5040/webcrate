@@ -52,5 +52,8 @@ if WEBCRATE_MODE == 'DEV':
       gunicorn_conf=''
       if os.path.isfile(f'/sites/{user.name}/{data_folder}/gunicorn.conf.py'):
         gunicorn_conf=f'-c /sites/{user.name}/{data_folder}/gunicorn.conf.py'
-      os.system(f'source /sites/{user.name}/{data_folder}/env/bin/activate; sudo -u dev gunicorn --daemon --bind :{port} --name {user.name} --user dev --group dev --pid ../tmp/gunicorn.pid --error-logfile ../log/gunicorn-error.log {gunicorn_conf} --chdir /sites/{user.name}/{data_folder} {user.gunicorn_app_module}; deactivate')
+      dev_user = 'dev'
+      if WEBCRATE_UID == 0 or WEBCRATE_GID == 0:
+        dev_user = 'root'
+      os.system(f'source /sites/{user.name}/{data_folder}/env/bin/activate; sudo -u {dev_user} gunicorn --daemon --bind :{port} --name {user.name} --user {dev_user} --group {dev_user} --pid ../tmp/gunicorn.pid --error-logfile ../log/gunicorn-error.log {gunicorn_conf} --chdir /sites/{user.name}/{data_folder} {user.gunicorn_app_module}; deactivate')
     print(f'{user.name} - parsed')

@@ -22,6 +22,10 @@ if WEBCRATE_MODE == 'PRODUCTION':
     print(f'group {user.name} - added')
 
 if WEBCRATE_MODE == 'DEV':
-  os.system(f'groupadd --gid {WEBCRATE_GID} dev')
-  os.system(f'gpasswd -a nginx dev')
-  print(f'group dev - added')
+  if WEBCRATE_GID != 0:
+    os.system(f'groupadd --gid {WEBCRATE_GID} dev')
+    os.system(f'gpasswd -a nginx dev')
+    print(f'group dev - added')
+  else:
+    os.system(f'gpasswd -a nginx root')
+    print(f'group root - added')

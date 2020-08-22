@@ -18,7 +18,7 @@ LETSENCRYPT_EMAIL = os.environ.get('LETSENCRYPT_EMAIL', '')
 reload_needed = False
 
 def is_mysql_up(host, password):
-  return int(os.popen(f'mysql -u root -h mysql -p"{password}" -e "show databases;" | grep "Database" | wc -l').read().strip())
+  return int(os.popen(f'mysql -u root -h {host} -p"{password}" -e "show databases;" | grep "Database" | wc -l').read().strip())
 
 def is_postgresql_up(host, password):
   return os.popen(f'psql -d "host={host} user=postgres password={password}" -tAc "SELECT 1 FROM pg_database LIMIT 1;"').read().strip()
@@ -26,7 +26,7 @@ def is_postgresql_up(host, password):
 for username,user in users.items():
   user.name = username
   if user.mysql_db:
-    mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password=').read().strip().split("=")[1][1:][:-1]
+    mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password="').read().strip().split("=")[1][1:][:-1]
     retries = 10
     while retries > 0 and is_mysql_up('mysql', mysql_root_password) == 0:
       retries -= 1
@@ -51,7 +51,7 @@ for username,user in users.items():
         print(f'mysql user {user.name} and db already exists')
 
   if user.mysql5_db:
-    mysql5_root_password = os.popen(f'cat /webcrate/secrets/mysql5.cnf | grep "password=').read().strip().split("=")[1][1:][:-1]
+    mysql5_root_password = os.popen(f'cat /webcrate/secrets/mysql5.cnf | grep "password="').read().strip().split("=")[1][1:][:-1]
     retries = 10
     while retries > 0 and is_mysql_up('mysql5', mysql5_root_password) == 0:
       retries -= 1
@@ -76,7 +76,7 @@ for username,user in users.items():
         print(f'mysql5 user {user.name} and db already exists')
 
   if user.postgresql_db:
-    postgres_root_password = os.popen(f'cat /webcrate/secrets/postgres.cnf | grep "password=').read().strip().split("=")[1][1:][:-1]
+    postgres_root_password = os.popen(f'cat /webcrate/secrets/postgres.cnf | grep "password="').read().strip().split("=")[1][1:][:-1]
     retries = 10
     while retries > 0 and is_postgresql_up('postgres', postgres_root_password) == 1:
       retries -= 1

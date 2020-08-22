@@ -109,7 +109,7 @@ docker run --rm --env-file=$(pwd)/.env \
   ace5040/webcrate-utils:stable \
   /webcrate/parse-services.py
 
-bash -c "${MYSQL_env}${MYSQL5_env}${POSTGRES_env}${WEBCRATE_UID_env}${WEBCRATE_GID_env}docker-compose --project-name webcrate up --remove-orphans -d"
+bash -c "${MYSQL_env}${MYSQL5_env}${POSTGRES_env}${WEBCRATE_UID_env}${WEBCRATE_GID_env}docker-compose --project-name webcrate up --remove-orphans --no-build -d"
 
 if [[ $grafana_password != '' ]] ; then
   docker exec --user $uid:$gid grafana grafana-cli admin reset-admin-password "$grafana_password"

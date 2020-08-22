@@ -206,7 +206,6 @@ services:
   htmltopdf:
     dns:
       - 172.31.0.100
-    build: ../projects/htmltopdf
     image: ace5040/htmltopdf:latest
     container_name: htmltopdf
     hostname: htmltopdf

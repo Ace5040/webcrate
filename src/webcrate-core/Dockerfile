@@ -35,6 +35,7 @@ RUN systemctl enable php-fpm; \
     systemctl enable cronie; \
     systemctl enable telegraf; \
     systemctl enable exim; \
+    systemctl enable dnsmasq; \
     systemctl enable proftpd
 RUN printf "\ninclude=/etc/php56/php-fpm.d/*.conf" >> /etc/php56/php-fpm.conf; \
     sed -i "s/.*open_basedir =.*/open_basedir =/g" /etc/php/php.ini; \

@@ -232,6 +232,7 @@ services:
     entrypoint:
       - docker-entrypoint.sh
       - solr
+      - -force
       - -f
     networks:
       - network

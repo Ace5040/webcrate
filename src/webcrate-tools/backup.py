@@ -36,7 +36,7 @@ for username,user in users.items():
     #backup mysql
     if user.mysql_db:
       print(f'backup mysql db for user {user.name}')
-      mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password="').read().strip().split("=")[1][1:][:-1]
+      mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
       os.system(f'mkdir -p /webcrate/backup/tmp')
       os.system(f'rm /webcrate/backup/tmp/*')
       os.system(f'mysqldump --single-transaction --max_allowed_packet=64M -h mysql -u root -p"{mysql_root_password}" --result-file "/webcrate/backup/tmp/{user.name}.sql" "{user.name}"')
@@ -55,7 +55,7 @@ for username,user in users.items():
     #backup mysql5
     if user.mysql5_db:
       print(f'backup mysql5 db for user {user.name}')
-      mysql5_root_password = os.popen(f'cat /webcrate/secrets/mysql5.cnf | grep "password="').read().strip().split("=")[1][1:][:-1]
+      mysql5_root_password = os.popen(f'cat /webcrate/secrets/mysql5.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
       os.system(f'mkdir -p /webcrate/backup/tmp')
       os.system(f'rm /webcrate/backup/tmp/*')
       os.system(f'mysqldump --single-transaction --max_allowed_packet=64M -h mysql5 -u root -p"{mysql5_root_password}" --result-file "/webcrate/backup/tmp/{user.name}.sql" "{user.name}"')
@@ -74,7 +74,7 @@ for username,user in users.items():
     #backup postgresql
     if user.postgresql_db:
       print(f'backup postgresql db for user {user.name}')
-      postgres_root_password = os.popen(f'cat /webcrate/secrets/postgres.cnf | grep "password="').read().strip().split("=")[1][1:][:-1]
+      postgres_root_password = os.popen(f'cat /webcrate/secrets/postgres.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
       os.system(f'mkdir -p /webcrate/backup/tmp')
       os.system(f'rm /webcrate/backup/tmp/*')
       os.system(f'PGPASSWORD={postgres_root_password} pg_dump -U postgres -h postgres {user.name} > /webcrate/backup/tmp/{user.name}.pgsql')

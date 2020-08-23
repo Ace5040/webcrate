@@ -33,8 +33,8 @@ RUN chmod a+x /webcrate/parse-users.py; \
     chmod a+x /webcrate/certbot-renew-deploy.py; \
     chmod a+x /webcrate/backup.py; \
     chmod u+x /entrypoint.sh
-RUN echo '*/10 * * * * root /webcrate/parse-users.py' > /etc/cron.d/parse-users
-RUN echo '0 6 * * * root /webcrate/certbot-renew.py' > /etc/cron.d/certbot-renew
-RUN echo '0 4 * * * root /webcrate/backup.py' > /etc/cron.d/certbot-renew
+RUN echo '*/10 * * * * root . /docker.env; /webcrate/parse-users.py' > /etc/cron.d/parse-users
+RUN echo '0 6 * * * root . /docker.env; /webcrate/certbot-renew.py' > /etc/cron.d/certbot-renew
+RUN echo '0 4 * * * root . /docker.env; /webcrate/backup.py' > /etc/cron.d/backup
 WORKDIR /webcrate
 CMD ["/entrypoint.sh"]

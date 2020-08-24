@@ -62,6 +62,9 @@ fi
 if [[ ! -d "./var/letsencrypt" ]] ; then
   mkdir -p "./var/letsencrypt"
 fi
+if [[ ! -d "./var/openssl" ]] ; then
+  mkdir -p "./var/openssl"
+fi
 if [[ ! -d "./var/crontabs" ]] ; then
   mkdir -p "./var/crontabs"
 fi
@@ -92,6 +95,7 @@ docker run --rm --env-file=$(pwd)/.env \
   -v $(pwd)/config/nginx-templates:/webcrate/nginx-templates:ro \
   -v $(pwd)/config/php-pool-templates:/webcrate/custom_templates:ro \
   -v $(pwd)/var/letsencrypt:/webcrate/letsencrypt:ro \
+  -v $(pwd)/var/openssl:/webcrate/openssl:ro \
   -v webcrate_nginx_configs:/webcrate/nginx_configs \
   -v webcrate_ssl_configs:/webcrate/ssl_configs \
   -v webcrate_php7_pools:/webcrate/php-fpm.d \

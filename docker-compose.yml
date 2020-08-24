@@ -63,13 +63,18 @@ services:
       - WEBCRATE_MODE=${WEBCRATE_MODE}
       - REMOTE_BACKUP_URI=${REMOTE_BACKUP_URI}
       - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+      - OPENSSL_EMAIL=${OPENSSL_EMAIL}
       - WEBCRATE_EXTERNAL_DNS_IP=${WEBCRATE_EXTERNAL_DNS_IP}
+      - WEBCRATE_countryName=${WEBCRATE_countryName}
+      - WEBCRATE_organizationName=${WEBCRATE_organizationName}
+
     volumes:
       - ${SITES_PATH}:/sites
       - ${DOCKER_SOCKET}:/var/run/docker.sock
       - /etc/localtime:/etc/localtime:ro
       - ./users.yml:/webcrate/users.yml:ro
       - ./var/letsencrypt:/webcrate/letsencrypt
+      - ./var/openssl:/webcrate/openssl
       - ./var/backup:/webcrate/backup
       - ./var/secrets:/webcrate/secrets
       - ./var/duplicity:/webcrate/duplicity
@@ -101,6 +106,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ./users.yml:/webcrate/users.yml:ro
       - ./var/letsencrypt:/webcrate/letsencrypt:ro
+      - ./var/openssl:/webcrate/openssl:ro
       - ssl_configs:/webcrate/ssl_configs:ro
       - nginx_configs:/etc/nginx/conf.d:ro
     depends_on:

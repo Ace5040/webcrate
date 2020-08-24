@@ -124,7 +124,19 @@ for username, user in users.items():
         with open(f'/webcrate/ssl.conf', 'r') as f:
           conf = f.read()
           f.close()
-        conf = conf.replace('%user%', user.name)
+        conf = conf.replace('%type%', 'letsencrypt')
+        conf = conf.replace('%path%', f'live/{user.name}')
+        with open(f'/webcrate/ssl_configs/{user.name}.conf', 'w') as f:
+          f.write(conf)
+          f.close()
+        print(f'ssl config for {user.name} - generated')
+    if user.https == 'openssl':
+      if os.path.isdir(f'/webcrate/openssl/{user.name}'):
+        with open(f'/webcrate/ssl.conf', 'r') as f:
+          conf = f.read()
+          f.close()
+        conf = conf.replace('%type%', 'openssl')
+        conf = conf.replace('%path%', f'{user.name}')
         with open(f'/webcrate/ssl_configs/{user.name}.conf', 'w') as f:
           f.write(conf)
           f.close()

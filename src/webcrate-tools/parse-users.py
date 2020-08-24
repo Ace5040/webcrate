@@ -14,7 +14,10 @@ SITES_PATH = '/sites'
 WEBCRATE_MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
 WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
+countryName = os.environ.get('WEBCRATE_countryName', '')
+organizationName = os.environ.get('WEBCRATE_organizationName', '')
 LETSENCRYPT_EMAIL = os.environ.get('LETSENCRYPT_EMAIL', '')
+OPENSSL_EMAIL = os.environ.get('OPENSSL_EMAIL', '')
 reload_needed = False
 
 def is_mysql_up(host, password):
@@ -126,7 +129,8 @@ for username,user in users.items():
       with open(f'/webcrate/ssl.conf', 'r') as f:
         conf = f.read()
         f.close()
-      conf = conf.replace('%user%', user.name)
+      conf = conf.replace('%type%', 'letsencrypt')
+      conf = conf.replace('%path%', f'live/{user.name}')
       with open(f'/webcrate/ssl_configs/{user.name}.conf', 'w') as f:
         f.write(conf)
         f.close()
@@ -134,13 +138,67 @@ for username,user in users.items():
     else:
       print(f'ssl config for {user.name} - already exists')
   else:
-    if os.path.exists(f'/webcrate/ssl_configs/{user.name}.conf'):
-      reload_needed = True
-      os.system(f'rm /webcrate/ssl_configs/{user.name}.conf')
-      print(f'ssl config for {user.name} - removed')
-    print(f'ssl config for {user.name} - not present')
+    if user.https == 'openssl':
+
+      if not os.path.exists(f'/webcrate/secrets/rootCA.key') or not os.path.exists(f'/webcrate/secrets/rootCA.crt'):
+        os.system(f'openssl genrsa -out /webcrate/secrets/rootCA.key 4096')
+        conf = (f'[req]\n'
+        f'prompt = no\n'
+        f'distinguished_name = dn\n'
+        f'[ dn ]\n'
+        f'C={countryName}\n'
+        f'O=Webcrate\n'
+        f'emailAddress={OPENSSL_EMAIL}\n'
+        f'CN = Webcrate\n')
+        with open(f'/tmp/openssl-root.cnf', 'w') as f:
+          f.write(conf)
+          f.close()
+        os.system(f'openssl req -x509 -new -nodes -key /webcrate/secrets/rootCA.key -sha256 -days 10000 -out /webcrate/secrets/rootCA.crt -config /tmp/openssl-root.cnf')
+        reload_needed = True
+      if not os.path.exists(f'/webcrate/openssl/{user.name}/privkey.pem') or not os.path.exists(f'/webcrate/openssl/{user.name}/fullchain.pem'):
+        os.system(f'mkdir -p /webcrate/openssl/{user.name}')
+        conf = (f'[req]\n'
+        f'distinguished_name = dn\n'
+        f'prompt = no\n'
+        f'req_extensions = SAN\n'
+        f'[dn]\n'
+        f'C={countryName}\n'
+        f'O={organizationName}\n'
+        f'emailAddress={OPENSSL_EMAIL}\n'
+        f'CN = {user.name}\n'
+        f'[SAN]\n'
+        f'subjectAltName = DNS:{",DNS:".join(user.domains)}\n')
+        with open(f'/tmp/openssl.cnf', 'w') as f:
+          f.write(conf)
+          f.close()
+        os.system(f'openssl genrsa -out /webcrate/openssl/{user.name}/privkey.pem 2048')
+        os.system(f'openssl req -new -sha256 -key /webcrate/openssl/{user.name}/privkey.pem -out /webcrate/openssl/{user.name}/fullchain.csr -config /tmp/openssl.cnf')
+        os.system(f'openssl x509 -req -extensions SAN -extfile /tmp/openssl.cnf -in /webcrate/openssl/{user.name}/fullchain.csr -CA /webcrate/secrets/rootCA.crt -CAkey /webcrate/secrets/rootCA.key -CAcreateserial -out /webcrate/openssl/{user.name}/fullchain.pem -days 5000 -sha256')
+        reload_needed = True
+
+      if not os.path.exists(f'/webcrate/ssl_configs/{user.name}.conf'):
+        with open(f'/webcrate/ssl.conf', 'r') as f:
+          conf = f.read()
+          f.close()
+        conf = conf.replace('%type%', 'openssl')
+        conf = conf.replace('%path%', f'{user.name}')
+        with open(f'/webcrate/ssl_configs/{user.name}.conf', 'w') as f:
+          f.write(conf)
+          f.close()
+        reload_needed = True
+        print(f'ssl config for {user.name} - generated')
+      else:
+        print(f'ssl config for {user.name} - already exists')
+    else:
+      if os.path.exists(f'/webcrate/ssl_configs/{user.name}.conf'):
+        reload_needed = True
+        os.system(f'rm /webcrate/ssl_configs/{user.name}.conf')
+        print(f'ssl config for {user.name} - removed')
+      print(f'ssl config for {user.name} - disabled')
 
 if reload_needed:
   os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/letsencrypt')
+  os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/openssl')
+  os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/secrets')
   print(f'changes detected - reloading nginx config')
   os.system(f'docker exec webcrate-nginx nginx -s reload')

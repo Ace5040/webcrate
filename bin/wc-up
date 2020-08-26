@@ -71,6 +71,9 @@ fi
 if [[ ! -d "./var/backup" ]] ; then
   mkdir -p "./var/backup"
 fi
+if [[ ! -d "./var/secrets" ]] ; then
+  mkdir -p "./var/secrets"
+fi
 if [[ ! -d "./var/solr" ]] ; then
   mkdir -p "./var/solr/logs"
   mkdir -p "./var/solr/cores"

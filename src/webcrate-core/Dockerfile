@@ -16,6 +16,10 @@ WORKDIR /home/dev
 RUN gpg --keyserver keys.gnupg.net --recv-key CBAF69F173A0FEA4B537F470D66C9593118BCCB6 F38252826ACD957EF380D39F2F7956BC5DA04B5D C2BF0BC433CFC8B3
 RUN yay --noeditmenu --nodiffmenu --noconfirm -S --mflags --nocheck php73 php73-fpm php73-intl php73-sqlite php73-gd php73-xsl php73-intl php73-tidy php73-imagick php73-memcached php73-xdebug
 RUN yay --noeditmenu --nodiffmenu --noconfirm -S --mflags --nocheck php56 php56-fpm php56-intl php56-sqlite php56-gd php56-xsl php56-intl php56-tidy php56-imagick php56-memcached
+RUN git clone https://aur.archlinux.org/php56-xdebug.git
+WORKDIR /home/dev/php56-xdebug
+RUN sed -i '31,38d;51d' PKGBUILD
+RUN makepkg -scir --noconfirm
 RUN gpg --keyserver keys.gnupg.net --recv-key 32E4B74757B1D65234FC389F293D771241515FE8
 RUN yay --noeditmenu --nodiffmenu --noconfirm -S docker-systemctl-replacement-git drush-launcher symfony-cli telegraf-bin tmux fish proftpd
 USER root
@@ -85,6 +89,7 @@ COPY fishrc.fish /etc/fish/conf.d/fishrc.fish
 COPY toprc /etc/telegraf/.config/procps/toprc
 COPY gunicorn_restart.sh /webcrate/bin/gunicorn_restart.sh
 COPY parse-users.py /webcrate/parse-users.py
+COPY versions.py /webcrate/versions.py
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod u+x /webcrate/sync_ssh_keys.sh; \
     chmod a+x /webcrate/stats_users.sh; \
@@ -93,6 +98,7 @@ RUN chmod u+x /webcrate/sync_ssh_keys.sh; \
     rm /etc/mail/exim.conf; \
     chmod a+x /webcrate/bin/gunicorn_restart.sh; \
     chmod a+x /webcrate/parse-users.py; \
+    chmod u+x /webcrate/versions.py; \
     chmod u+x /entrypoint.sh
 WORKDIR /webcrate
 CMD ["/entrypoint.sh"]

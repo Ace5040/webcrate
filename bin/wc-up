@@ -81,6 +81,9 @@ fi
 if [[ ! -d "./var/influxdb" ]] ; then
   mkdir -p "./var/influxdb"
 fi
+if [[ ! -d "./var/logs" ]] ; then
+  mkdir -p "./var/logs"
+fi
 grafana_password=''
 if [[ ! -d "./var/grafana/data" ]] ; then
   mkdir -p "./var/grafana/data"
@@ -88,6 +91,13 @@ if [[ ! -d "./var/grafana/data" ]] ; then
   grafana_password=`docker run --rm ace5040/webcrate-utils:stable /webcrate/pwgen.sh`
   echo "user=admin" > ./var/secrets/grafana.secret
   echo "password=\"$grafana_password\"" >> ./var/secrets/grafana.secret
+fi
+if [[ ! -f "./var/secrets/webcrate-admin.secret" ]] ; then
+  admin_password=`docker run --rm ace5040/webcrate-utils:stable /webcrate/pwgen.sh`
+  app_secret=`docker run --rm ace5040/webcrate-utils:stable pwgen -nAs1 32 1`
+  echo "user=admin" > ./var/secrets/webcrate-admin.secret
+  echo "password=$admin_password" >> ./var/secrets/webcrate-admin.secret
+  echo "secret=$app_secret" >> ./var/secrets/webcrate-admin.secret
 fi
 
 docker run --rm --env-file=$(pwd)/.env \

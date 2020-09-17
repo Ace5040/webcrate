@@ -24,16 +24,18 @@ WORKDIR /
 RUN mkdir -p /webcrate;
 COPY ssl.conf /webcrate/ssl.conf
 COPY parse-users.py /webcrate/parse-users.py
+COPY parse-services.py /webcrate/parse-services.py
 COPY certbot-renew.py /webcrate/certbot-renew.py
 COPY certbot-renew-deploy.py /webcrate/certbot-renew-deploy.py
 COPY backup.py /webcrate/backup.py
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod a+x /webcrate/parse-users.py; \
+    chmod a+x /webcrate/parse-services.py; \
     chmod a+x /webcrate/certbot-renew.py; \
     chmod a+x /webcrate/certbot-renew-deploy.py; \
     chmod a+x /webcrate/backup.py; \
     chmod u+x /entrypoint.sh
-RUN echo '*/10 * * * * root . /docker.env; /webcrate/parse-users.py' > /etc/cron.d/parse-users
+RUN echo '*/10 * * * * root . /docker.env; /webcrate/parse-users.py; /webcrate/parse-services.py' > /etc/cron.d/parse-users-and-services
 RUN echo '0 6 * * * root . /docker.env; /webcrate/certbot-renew.py' > /etc/cron.d/certbot-renew
 RUN echo '0 4 * * * root . /docker.env; /webcrate/backup.py' > /etc/cron.d/backup
 WORKDIR /webcrate

@@ -51,6 +51,41 @@ services:
       network:
         ipv4_address: 172.31.0.100
 
+  webcrate-admin:
+    build: src/webcrate-admin
+    image: ace5040/webcrate-admin:stable
+    container_name: webcrate-admin
+    hostname: webcrate-admin
+    restart: unless-stopped
+    dns:
+      - 172.31.0.100
+    environment:
+      - WEBCRATE_UID=${WEBCRATE_UID}
+      - WEBCRATE_ADMIN_EMAIL=${WEBCRATE_ADMIN_EMAIL}
+      - WEBCRATE_GID=${WEBCRATE_GID}
+      - WEBCRATE_MODE=${WEBCRATE_MODE}
+      - DEV_MODE_USER_PASS=${DEV_MODE_USER_PASS}
+      - UID_START_NUMBER=${UID_START_NUMBER}
+      - CGI_PORT_START_NUMBER=${CGI_PORT_START_NUMBER}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /home/ace/projects/webcrate-admin/webcrate-admin.test:/app
+      - ./var/logs:/app/logs
+      - ${DOCKER_SOCKET}:/var/run/docker.sock
+      - ${SITES_PATH}:/sites
+      - ./users.yml:/webcrate/users.yml
+      - ./services.yml:/webcrate/services.yml
+      - ./var/secrets:/webcrate/secrets
+      - ./config/exim/exim.conf:/etc/mail/exim.conf
+    depends_on:
+      - "webcrate-core"
+      - "webcrate-tools"
+      - "mysql"
+      - "mysql5"
+      - "postgres"
+    networks:
+      - network
+
   webcrate-tools:
     build: src/webcrate-tools
     image: ace5040/webcrate-tools:stable
@@ -67,12 +102,12 @@ services:
       - WEBCRATE_EXTERNAL_DNS_IP=${WEBCRATE_EXTERNAL_DNS_IP}
       - WEBCRATE_countryName=${WEBCRATE_countryName}
       - WEBCRATE_organizationName=${WEBCRATE_organizationName}
-
     volumes:
       - ${SITES_PATH}:/sites
       - ${DOCKER_SOCKET}:/var/run/docker.sock
       - /etc/localtime:/etc/localtime:ro
       - ./users.yml:/webcrate/users.yml:ro
+      - ./services.yml:/webcrate/services.yml:ro
       - ./var/letsencrypt:/webcrate/letsencrypt
       - ./var/openssl:/webcrate/openssl
       - ./var/backup:/webcrate/backup
@@ -81,7 +116,6 @@ services:
       - ssl_configs:/webcrate/ssl_configs
     depends_on:
       - "webcrate-core"
-      - "webcrate-nginx"
       - "mysql"
       - "mysql5"
       - "postgres"
@@ -107,10 +141,12 @@ services:
       - ./users.yml:/webcrate/users.yml:ro
       - ./var/letsencrypt:/webcrate/letsencrypt:ro
       - ./var/openssl:/webcrate/openssl:ro
+      - ./var/logs:/app/logs
       - ssl_configs:/webcrate/ssl_configs:ro
       - nginx_configs:/etc/nginx/conf.d:ro
     depends_on:
       - "webcrate-core"
+      - "webcrate-admin"
     networks:
       - network
 

@@ -112,19 +112,18 @@ for username,user in users.items():
       print(f'certificate for {user.name} - already exists')
       if not os.path.exists(f'/webcrate/ssl_configs/{user.name}.conf'):
         reload_needed = True
-    else:
-      path = f'{SITES_PATH}/{user.name}/{user.root_folder}'
-      domains = list(filter(lambda domain: domain.split('.')[-1] != 'test', user.domains))
-      if len(domains):
-        if not os.path.isdir(path):
-          os.system(f'mkdir -p {path}')
-          os.system(f'chown -R {user.uid if WEBCRATE_MODE == "PRODUCTION" else WEBCRATE_UID}:{user.uid if WEBCRATE_MODE == "PRODUCTION" else WEBCRATE_UID} {SITES_PATH}/{user.name}/{user.root_folder.split("/")[0]}')
-        print(path)
-        print(f'certbot certonly --config-dir /webcrate/letsencrypt --cert-path /webcrate/letsencrypt --cert-name {user.name} --expand --webroot --webroot-path {path} -d {",".join(domains)}')
-        output = os.popen(f'certbot certonly --config-dir /webcrate/letsencrypt --cert-name {user.name} --expand --webroot --webroot-path {path} -d {",".join(domains)}').read()
-        print(output)
-        print(f'certificate for {user.name} - generated')
-        reload_needed = True
+    path = f'{SITES_PATH}/{user.name}/{user.root_folder}'
+    domains = list(filter(lambda domain: domain.split('.')[-1] != 'test', user.domains))
+    if len(domains):
+      if not os.path.isdir(path):
+        os.system(f'mkdir -p {path}')
+        os.system(f'chown -R {user.uid if WEBCRATE_MODE == "PRODUCTION" else WEBCRATE_UID}:{user.uid if WEBCRATE_MODE == "PRODUCTION" else WEBCRATE_UID} {SITES_PATH}/{user.name}/{user.root_folder.split("/")[0]}')
+      print(path)
+      print(f'certbot certonly --keep-until-expiring --renew-with-new-domains --allow-subset-of-names --config-dir /webcrate/letsencrypt --cert-path /webcrate/letsencrypt --cert-name {user.name} --expand --webroot --webroot-path {path} -d {",".join(domains)}')
+      output = os.popen(f'certbot certonly --keep-until-expiring --renew-with-new-domains --allow-subset-of-names --config-dir /webcrate/letsencrypt --cert-name {user.name} --expand --webroot --webroot-path {path} -d {",".join(domains)}').read()
+      print(output)
+      print(f'certificate for {user.name} - generated')
+      reload_needed = True
     if not os.path.exists(f'/webcrate/ssl_configs/{user.name}.conf'):
       with open(f'/webcrate/ssl.conf', 'r') as f:
         conf = f.read()

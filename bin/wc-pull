@@ -5,4 +5,19 @@ SCRIPTPATH=`dirname $SCRIPT`
 
 cd $SCRIPTPATH/..
 
-docker-compose --project-name webcrate pull
+docker pull ace5040/webcrate-core:stable
+docker pull ace5040/webcrate-admin:stable
+docker pull ace5040/webcrate-tools:stable
+docker pull ace5040/webcrate-nginx:stable
+docker pull ace5040/webcrate-utils:stable
+docker pull ace5040/doctohtml:latest
+docker pull ace5040/htmltopdf:latest
+docker pull memcached:1
+docker pull mariadb:5
+docker pull mariadb:10
+docker pull phpmyadmin/phpmyadmin
+docker pull postgres:12
+docker pull dockage/phppgadmin
+docker pull solr:6
+docker pull grafana/grafana
+docker pull influxdb:latest

@@ -5,4 +5,4 @@ SCRIPTPATH=`dirname $SCRIPT`
 
 cd $SCRIPTPATH/..
 
-docker-compose --project-name webcrate logs
+docker ps -q | xargs -L 1 docker logs -t

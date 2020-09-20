@@ -29,8 +29,8 @@ def is_postgresql_up(host, password):
 for username,user in users.items():
   user.name = username
   if user.mysql_db:
-    mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
-    retries = 10
+    mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password="').read().strip().split("password=")[1][1:][:-1].replace("$", "\$")
+    retries = 20
     while retries > 0 and is_mysql_up('mysql', mysql_root_password) == 0:
       retries -= 1
       time.sleep(5)
@@ -54,8 +54,8 @@ for username,user in users.items():
         print(f'mysql user {user.name} and db already exists')
 
   if user.mysql5_db:
-    mysql5_root_password = os.popen(f'cat /webcrate/secrets/mysql5.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
-    retries = 10
+    mysql5_root_password = os.popen(f'cat /webcrate/secrets/mysql5.cnf | grep "password="').read().strip().split("password=")[1][1:][:-1].replace("$", "\$")
+    retries = 20
     while retries > 0 and is_mysql_up('mysql5', mysql5_root_password) == 0:
       retries -= 1
       time.sleep(5)
@@ -79,8 +79,8 @@ for username,user in users.items():
         print(f'mysql5 user {user.name} and db already exists')
 
   if user.postgresql_db:
-    postgres_root_password = os.popen(f'cat /webcrate/secrets/postgres.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
-    retries = 10
+    postgres_root_password = os.popen(f'cat /webcrate/secrets/postgres.cnf | grep "password="').read().strip().split("password=")[1][1:][:-1].replace("$", "\$")
+    retries = 20
     while retries > 0 and is_postgresql_up('postgres', postgres_root_password) != '1':
       retries -= 1
       time.sleep(5)

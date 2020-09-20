@@ -3,6 +3,7 @@ RUN echo "Set disable_coredump false" >> /etc/sudo.conf
 RUN pacman --noconfirm -Syu
 RUN pacman --needed --noconfirm -S git nano openssh base-devel unzip composer npm mariadb-clients iputils inetutils which python-pip
 RUN pacman --needed --noconfirm -S php php-fpm php-intl php-sqlite php-gd php-xsl php-intl php-tidy php-imagick php-memcached
+RUN pacman --needed --noconfirm -S nginx
 RUN useradd -m -s /bin/bash dev
 RUN useradd -m -s /bin/bash app
 RUN usermod -p "dev" dev
@@ -23,6 +24,7 @@ RUN chmod a+x /bin/systemctl.py
 RUN mv /bin/systemctl /bin/systemctl_original
 RUN cp /bin/systemctl.py /bin/systemctl
 RUN systemctl enable php-fpm;
+RUN systemctl enable nginx;
 RUN sed -i "s/.*open_basedir =.*/open_basedir =/g" /etc/php/php.ini; \
     sed -i "s/;extension=imagick/extension=imagick/g" /etc/php/conf.d/imagick.ini;
 RUN yes | sudo symfony self-update
@@ -44,8 +46,6 @@ USER root
 RUN echo 'app ALL=(ALL) NOPASSWD: /webcrate/versions.py' | EDITOR='tee -a' visudo
 COPY init-db.py /webcrate/init-db.py
 RUN chmod u+x /webcrate/init-db.py
-RUN pacman --needed --noconfirm -S nginx
-RUN systemctl enable nginx;
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY versions.py /webcrate/versions.py
 RUN chmod a+rxs /webcrate/versions.py

@@ -30,9 +30,9 @@ function initDbFolder () {
   echo ''
 }
 
-MYSQL_ROOT_PASSWORD=$(initDbFolder 'mysql')
-MYSQL5_ROOT_PASSWORD=$(initDbFolder 'mysql5')
-POSTGRES_PASSWORD=$(initDbFolder 'postgres')
+MYSQL_ROOT_PASS=$(initDbFolder 'mysql')
+MYSQL5_ROOT_PASS=$(initDbFolder 'mysql5')
+POSTGRES_PASS=$(initDbFolder 'postgres')
 
 if [[ ! -f "./users.yml" ]] ; then
   cp ./users.yml.example ./users.yml
@@ -83,13 +83,13 @@ fi
 if [[ ! -d "./var/logs" ]] ; then
   mkdir -p "./var/logs"
 fi
-grafana_password=''
+GRAFANA_PASS=''
 if [[ ! -d "./var/grafana/data" ]] ; then
   mkdir -p "./var/grafana/data"
   mkdir -p "./var/grafana/log"
-  grafana_password=`docker run --rm ace5040/webcrate-utils:stable /webcrate/pwgen.sh`
+  GRAFANA_PASS=`docker run --rm ace5040/webcrate-utils:stable /webcrate/pwgen.sh`
   echo "user=admin" > ./var/secrets/grafana.secret
-  echo "password=\"$grafana_password\"" >> ./var/secrets/grafana.secret
+  echo "password=\"$GRAFANA_PASS\"" >> ./var/secrets/grafana.secret
 fi
 
 if [[ ! -f "./var/secrets/webcrate-admin.secret" ]] ; then
@@ -221,41 +221,41 @@ docker run -d --env-file=$(pwd)/.env --name webcrate-nginx \
   -v webcrate_nginx_configs:/etc/nginx/conf.d:ro \
   ace5040/webcrate-nginx:stable > /dev/null
 
-docker run -d --env-file=$(pwd)/.env --name memcached \
+docker run -d --env-file=$(pwd)/.env --log-driver=none --name memcached \
   --network="webcrate_network" --dns=172.31.0.100 \
   --restart="unless-stopped" \
   memcached:1 > /dev/null
 
-if [ "$MYSQL5_ROOT_PASSWORD" != "" ]; then MYSQL_ROOT_PASSWORD=-e\ MYSQL_ROOT_PASSWORD=$MYSQL5_ROOT_PASSWORD; fi
+if [ "$MYSQL5_ROOT_PASS" != "" ]; then MYSQL5_ROOT_PASS=-e\ MYSQL_ROOT_PASSWORD="$MYSQL5_ROOT_PASS"; fi
 docker run -d --env-file=$(pwd)/.env --name mysql5 \
   --network="webcrate_network" --dns=172.31.0.100 \
   --restart="unless-stopped" \
   --user "$uid:$gid" \
-  $MYSQL5_ROOT_PASSWORD \
+  $MYSQL5_ROOT_PASS \
   -p "3305:3306" \
   -v /etc/localtime:/etc/localtime:ro \
   -v $(pwd)/var/mysql5:/var/lib/mysql \
   -v $(pwd)/config/mysql/mysql5.cnf:/etc/mysql/conf.d/user.cnf \
   mariadb:5 > /dev/null
 
-if [ "$MYSQL_ROOT_PASSWORD" != "" ]; then MYSQL_ROOT_PASSWORD=-e\ MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD; fi
+if [ "$MYSQL_ROOT_PASS" != "" ]; then MYSQL_ROOT_PASS=-e\ MYSQL_ROOT_PASSWORD="$MYSQL_ROOT_PASS"; fi
 docker run -d --env-file=$(pwd)/.env --name mysql \
   --network="webcrate_network" --dns=172.31.0.100 \
   --restart="unless-stopped" \
   --user "$uid:$gid" \
-  $MYSQL_ROOT_PASSWORD \
+  $MYSQL_ROOT_PASS \
   -p "3306:3306" \
   -v /etc/localtime:/etc/localtime:ro \
   -v $(pwd)/var/mysql:/var/lib/mysql \
   -v $(pwd)/config/mysql/mysql.cnf:/etc/mysql/conf.d/user.cnf \
   mariadb:10 > /dev/null
 
-if [ "$POSTGRES_PASSWORD" != "" ]; then POSTGRES_PASSWORD=-e\ POSTGRES_PASSWORD=$POSTGRES_PASSWORD; fi
+if [ "$POSTGRES_PASS" != "" ]; then POSTGRES_PASS=-e\ POSTGRES_PASSWORD="$POSTGRES_PASS"; fi
 docker run -d --env-file=$(pwd)/.env --name postgres \
   --network="webcrate_network" --dns=172.31.0.100 \
   --restart="unless-stopped" \
   --user "$uid:$gid" \
-  $POSTGRES_PASSWORD \
+  $POSTGRES_PASS \
   -p "5432:5432" \
   -v /etc/localtime:/etc/localtime:ro \
   -v $(pwd)/var/postgres:/var/lib/postgresql/data \
@@ -296,7 +296,7 @@ docker run -d --env-file=$(pwd)/.env --name htmltopdf \
   -p "3001:3000" \
   ace5040/htmltopdf:latest > /dev/null
 
-docker run -d --env-file=$(pwd)/.env --name solr \
+docker run -d --env-file=$(pwd)/.env --log-driver=none --name solr \
   --network="webcrate_network" --dns=172.31.0.100 \
   --restart="unless-stopped" \
   --user "$uid:$gid" \
@@ -307,7 +307,7 @@ docker run -d --env-file=$(pwd)/.env --name solr \
   --entrypoint docker-entrypoint.sh \
   solr:6 solr -force -f > /dev/null
 
-docker run -d --env-file=$(pwd)/.env --name grafana \
+docker run -d --env-file=$(pwd)/.env --log-driver=none --name grafana \
   --network="webcrate_network" --dns=172.31.0.100 \
   --restart="unless-stopped" \
   --user "$uid:$gid" \
@@ -323,7 +323,7 @@ docker run -d --env-file=$(pwd)/.env --name grafana \
   -v $(pwd)/config/grafana/datasource.yml:/etc/grafana/provisioning/datasources/default.yml \
   grafana/grafana > /dev/null
 
-docker run -d --env-file=$(pwd)/.env --name influxdb \
+docker run -d --env-file=$(pwd)/.env --log-driver=none --name influxdb \
   --network="webcrate_network" --dns=172.31.0.100 \
   --restart="unless-stopped" \
   --user "$uid:$gid" \
@@ -332,6 +332,6 @@ docker run -d --env-file=$(pwd)/.env --name influxdb \
   -v $(pwd)/var/influxdb:/var/lib/influxdb \
   influxdb:latest > /dev/null
 
-if [[ $grafana_password != '' ]] ; then
-  docker exec --user $uid:$gid grafana grafana-cli admin reset-admin-password "$grafana_password"
+if [ "$GRAFANA_PASS" != "" ]; then
+  sleep 5; docker exec --user $uid:$gid grafana grafana-cli admin reset-admin-password "$GRAFANA_PASS"
 fi

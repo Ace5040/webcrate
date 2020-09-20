@@ -35,7 +35,7 @@ if retries > 0:
     mysql_database_found = int(os.popen(f'mysql -u webcrate-admin -h mysql -p"{mysql_service_password}" -e "show databases like \'webcrate-admin\';" | grep "Database (webcrate-admin)" | wc -l').read().strip())
     if mysql_database_found != 0:
       os.system(f'cd /app; php bin/console doctrine:migrations:sync-metadata-storage')
-      os.system(f'cd /app; php bin/console doctrine:migrations:migrate')
+      os.system(f'cd /app; yes | php bin/console doctrine:migrations:migrate')
       admin_user_found = int(os.popen(f'mysql -u webcrate-admin -h mysql -p"{mysql_service_password}" webcrate-admin -e "select id from user where id=1" | wc -l').read().strip())
       if admin_user_found == 0:
         admin_password=os.popen("cat /webcrate/secrets/webcrate-admin.secret | grep password= | awk '{split($0,a,\"password=\"); print a[2]}' | tr -d \"\n\"").read().strip()

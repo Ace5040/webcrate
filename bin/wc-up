@@ -256,7 +256,6 @@ docker run -d --env-file=$(pwd)/.env --name postgres \
   --user "$uid:$gid" \
   $POSTGRES_PASS \
   -p "5432:5432" \
-  -v /etc/localtime:/etc/localtime:ro \
   -v $(pwd)/var/postgres:/var/lib/postgresql/data \
   postgres:12 > /dev/null
 

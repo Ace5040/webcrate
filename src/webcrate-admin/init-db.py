@@ -45,6 +45,7 @@ if retries > 0:
         print(f'webcrate admin user created')
       else:
         print(f'webcrate admin user exists')
+      os.system(f'cd /app; php bin/console cache:pool:clear cache.app')
     else:
       print(f'webcrate database not found')
     os.system(f'cd /app; composer run-script post-install-cmd')

@@ -142,7 +142,7 @@ docker network create --driver=bridge --subnet=172.31.0.0/16 webcrate_network > 
 
 if [ "$WEBCRATE_MODE" == "DEV" ]; then DNS_MASQ=-p\ "53:53/udp"; else DNS_MASQ=''; fi
 
-docker run -d --env-file=$(pwd)/.env --name webcrate-core \
+docker run -d --env-file=$(pwd)/.env --hostname webcrate-core --name webcrate-core \
   --network="webcrate_network" --dns=172.31.0.100 --ip=172.31.0.100 \
   --restart="unless-stopped" \
   -p "2222:22" \
@@ -169,12 +169,13 @@ docker run -d --env-file=$(pwd)/.env --name webcrate-core \
   -v webcrate_dnsmasq_hosts:/webcrate/dnsmasq_hosts \
   ace5040/webcrate-core:stable > /dev/null
 
-docker run -d --env-file=$(pwd)/.env --name webcrate-admin \
+docker run -d --env-file=$(pwd)/.env --hostname webcrate-admin --name webcrate-admin \
   --network="webcrate_network" --dns=172.31.0.100 \
   --restart="unless-stopped" \
   -e WEBCRATE_UID=$uid \
   -e WEBCRATE_GID=$gid \
   -v /etc/localtime:/etc/localtime:ro \
+  -v /home/ace/projects/webcrate-admin/webcrate-admin.test:/app \
   -v $(pwd)/var/logs:/app/logs \
   -v $DOCKER_SOCKET:/var/run/docker.sock \
   -v $SITES_FOLDER_ABSOLUTE_PATH:/sites \
@@ -184,7 +185,7 @@ docker run -d --env-file=$(pwd)/.env --name webcrate-admin \
   -v $(pwd)/config/exim/exim.conf:/etc/mail/exim.conf \
   ace5040/webcrate-admin:stable > /dev/null
 
-docker run -d --env-file=$(pwd)/.env --name webcrate-tools \
+docker run -d --env-file=$(pwd)/.env --hostname webcrate-tools --name webcrate-tools \
   --network="webcrate_network" --dns=172.31.0.100 \
   --restart="unless-stopped" \
   -e WEBCRATE_UID=$uid \
@@ -203,7 +204,7 @@ docker run -d --env-file=$(pwd)/.env --name webcrate-tools \
   ace5040/webcrate-tools:stable > /dev/null
 
 
-docker run -d --env-file=$(pwd)/.env --name webcrate-nginx \
+docker run -d --env-file=$(pwd)/.env --hostname webcrate-nginx --name webcrate-nginx \
   --network="webcrate_network" --dns=172.31.0.100 \
   --restart="unless-stopped" \
   -e WEBCRATE_UID=$uid \

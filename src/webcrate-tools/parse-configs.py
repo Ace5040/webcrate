@@ -94,8 +94,8 @@ def genereate_openssl_conf(name, domains, countryName, organizationName, OPENSSL
 
 def load_openssl_conf(name):
   conf_old = ''
-  if os.path.isfile(f'/webcrate/secrets/{name}/openssl.cnf'):
-    with open(f'/webcrate/secrets/{name}/openssl.cnf', 'r') as f:
+  if os.path.isfile(f'/webcrate/openssl/{name}/openssl.cnf'):
+    with open(f'/webcrate/openssl/{name}/openssl.cnf', 'r') as f:
       conf_old = f.read()
       f.close()
   return conf_old

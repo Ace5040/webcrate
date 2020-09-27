@@ -14,6 +14,14 @@ synapse:
   mysql_db: no
   mysql5_db: no
   postgresql_db: no
+turn:
+  domain: turn.test
+  nginx_config: default
+  port: 3478
+  https: openssl
+  mysql_db: no
+  mysql5_db: no
+  postgresql_db: no
 synapse-admin:
   domain: synapse-admin.test
   nginx_config: default

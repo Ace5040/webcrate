@@ -116,6 +116,7 @@ if [[ ! -f "./var/secrets/synapse.secret" ]] ; then
   echo $TURN_SHARED_SECRET >> ./var/secrets/turn.secret
 fi
 WEBCRATE_SYNAPSE_DOMAIN=`cat ./services.yml | awk "/synapse:/,/nginx_config:/" | grep -oP "(?<=domain: ).*" | head -c -1`
+WEBCRATE_TURN_DOMAIN=`cat ./services.yml | awk "/turn:/,/nginx_config:/" | grep -oP "(?<=domain: ).*" | head -c -1`
 
 docker volume create webcrate_dnsmasq_hosts
 docker volume create webcrate_nginx_configs
@@ -325,10 +326,10 @@ if [[ ! -f "./var/synapse/homeserver.yaml" ]] ; then
     matrixdotorg/synapse:latest generate
   echo "" >> ./var/synapse/homeserver.yaml
   echo "turn_uris:" >> ./var/synapse/homeserver.yaml
-  echo "  - \"turns:$WEBCRATE_SYNAPSE_DOMAIN:3478?transport=udp\"" >> ./var/synapse/homeserver.yaml
-  echo "  - \"turns:$WEBCRATE_SYNAPSE_DOMAIN:3478?transport=udp\"" >> ./var/synapse/homeserver.yaml
-  echo "  - \"turn:$WEBCRATE_SYNAPSE_DOMAIN:3478?transport=udp\"" >> ./var/synapse/homeserver.yaml
-  echo "  - \"turn:$WEBCRATE_SYNAPSE_DOMAIN:3478?transport=udp\"" >> ./var/synapse/homeserver.yaml
+  echo "  - \"turns:$WEBCRATE_TURN_DOMAIN?transport=udp\"" >> ./var/synapse/homeserver.yaml
+  echo "  - \"turns:$WEBCRATE_TURN_DOMAIN?transport=udp\"" >> ./var/synapse/homeserver.yaml
+  echo "  - \"turn:$WEBCRATE_TURN_DOMAIN?transport=udp\"" >> ./var/synapse/homeserver.yaml
+  echo "  - \"turn:$WEBCRATE_TURN_DOMAIN?transport=udp\"" >> ./var/synapse/homeserver.yaml
   echo "turn_user_lifetime: \"10h\"" >> ./var/synapse/homeserver.yaml
   echo "turn_shared_secret: \"$turn_secret\"" >> ./var/synapse/homeserver.yaml
   echo "suppress_key_server_warning: true" >> ./var/synapse/homeserver.yaml

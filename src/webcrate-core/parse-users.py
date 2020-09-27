@@ -13,9 +13,8 @@ SITES_PATH = '/sites'
 WEBCRATE_MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
 WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
-DEV_MODE_USER_PASS = os.environ.get('DEV_MODE_USER_PASS', 'DEV')
-UID_START_NUMBER = int(os.environ.get('UID_START_NUMBER', '100000'))
-CGI_PORT_START_NUMBER = int(os.environ.get('CGI_PORT_START_NUMBER', '9000'))
+UID_START_NUMBER = 100000
+CGI_PORT_START_NUMBER = 9000
 
 if WEBCRATE_MODE == 'PRODUCTION':
   os.system(f'userdel dev > /dev/null 2>&1')
@@ -37,9 +36,6 @@ if WEBCRATE_MODE == 'PRODUCTION':
     print(f'{user.name} - created')
 
 if WEBCRATE_MODE == 'DEV':
-  stream = os.popen('openssl passwd -6 {DEV_MODE_USER_PASS}')
-  dev_password = stream.read().strip()
-  os.system(f'usermod -p "{dev_password}" dev > /dev/null 2>&1')
   os.system(f'usermod -u {WEBCRATE_UID} dev > /dev/null 2>&1')
   os.system(f'groupmod -g {WEBCRATE_GID} dev > /dev/null 2>&1')
   os.system(f'usermod -s /bin/fish dev > /dev/null 2>&1')

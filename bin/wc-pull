@@ -21,3 +21,6 @@ docker pull dockage/phppgadmin
 docker pull solr:6
 docker pull grafana/grafana
 docker pull influxdb:latest
+docker pull matrixdotorg/synapse:latest
+docker pull awesometechnologies/synapse-admin:latest
+

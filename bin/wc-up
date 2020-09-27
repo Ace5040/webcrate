@@ -43,6 +43,9 @@ fi
 if [[ ! -d "./var/mysql" ]] ; then
   mkdir -p "./var/mysql"
 fi
+if [[ ! -d "./var/synapse" ]] ; then
+  mkdir -p "./var/synapse"
+fi
 if [[ ! -d "./var/ssh" ]] ; then
   mkdir -p "./var/ssh"
 fi
@@ -60,6 +63,9 @@ if [[ ! -d "./var/duplicity" ]] ; then
 fi
 if [[ ! -d "./var/letsencrypt" ]] ; then
   mkdir -p "./var/letsencrypt"
+fi
+if [[ ! -d "./var/letsencrypt-meta/well-known" ]] ; then
+  mkdir -p "./var/letsencrypt-meta/well-known"
 fi
 if [[ ! -d "./var/openssl" ]] ; then
   mkdir -p "./var/openssl"
@@ -80,9 +86,10 @@ fi
 if [[ ! -d "./var/influxdb" ]] ; then
   mkdir -p "./var/influxdb"
 fi
-if [[ ! -d "./var/logs" ]] ; then
-  mkdir -p "./var/logs"
+if [[ ! -d "./var/logs/nginx" ]] ; then
+  mkdir -p "./var/logs/nginx"
 fi
+
 GRAFANA_PASS=''
 if [[ ! -d "./var/grafana/data" ]] ; then
   mkdir -p "./var/grafana/data"
@@ -99,6 +106,30 @@ if [[ ! -f "./var/secrets/webcrate-admin.secret" ]] ; then
   echo "password=$admin_password" >> ./var/secrets/webcrate-admin.secret
   echo "secret=$app_secret" >> ./var/secrets/webcrate-admin.secret
 fi
+
+SYNAPSE_PASS=''
+if [[ ! -f "./var/secrets/synapse.secret" ]] ; then
+  SYNAPSE_PASS=`docker run --rm ace5040/webcrate-utils:stable /webcrate/pwgen.sh`
+  TURN_SHARED_SECRET=`docker run --rm ace5040/webcrate-utils:stable pwgen -nAs1 32 1`
+  echo "user=admin" > ./var/secrets/synapse.secret
+  echo "password=$SYNAPSE_PASS" >> ./var/secrets/synapse.secret
+  echo $TURN_SHARED_SECRET >> ./var/secrets/turn.secret
+fi
+WEBCRATE_SYNAPSE_DOMAIN=`cat ./services.yml | awk "/synapse:/,/nginx_config:/" | grep -oP "(?<=domain: ).*" | head -c -1`
+
+docker volume create webcrate_dnsmasq_hosts
+docker volume create webcrate_nginx_configs
+docker volume create webcrate_ssl_configs
+docker volume create webcrate_php7_pools
+docker volume create webcrate_php73_pools
+docker volume create webcrate_php5_pools
+docker volume create webcrate_phpmyadmin
+docker volume create webcrate_phpmyadmin_config
+docker volume create webcrate_phpmyadmin_sessions
+docker volume create webcrate_phppgadmin
+docker volume create webcrate_phppgadmin_logs
+
+docker network create --driver=bridge --subnet=172.31.0.0/16 webcrate_network > /dev/null
 
 docker run --rm --env-file=$(pwd)/.env \
   -e WEBCRATE_UID=$uid \
@@ -121,34 +152,21 @@ docker run --rm --env-file=$(pwd)/.env \
 docker run --rm --env-file=$(pwd)/.env \
   -v $(pwd)/services.yml:/webcrate/services.yml:ro \
   -v $(pwd)/config/nginx-templates:/webcrate/nginx-templates:ro \
+  -v $(pwd)/var/letsencrypt:/webcrate/letsencrypt:ro \
+  -v $(pwd)/var/openssl:/webcrate/openssl:ro \
   -v webcrate_nginx_configs:/webcrate/nginx_configs \
+  -v webcrate_ssl_configs:/webcrate/ssl_configs \
   -v webcrate_dnsmasq_hosts:/webcrate/dnsmasq_hosts \
   ace5040/webcrate-utils:stable \
   /webcrate/parse-services.py
 
-docker volume create webcrate_dnsmasq_hosts
-docker volume create webcrate_nginx_configs
-docker volume create webcrate_ssl_configs
-docker volume create webcrate_php7_pools
-docker volume create webcrate_php73_pools
-docker volume create webcrate_php5_pools
-docker volume create webcrate_phpmyadmin
-docker volume create webcrate_phpmyadmin_config
-docker volume create webcrate_phpmyadmin_sessions
-docker volume create webcrate_phppgadmin
-docker volume create webcrate_phppgadmin_logs
-
-docker network create --driver=bridge --subnet=172.31.0.0/16 webcrate_network > /dev/null
-
 if [ "$WEBCRATE_MODE" == "DEV" ]; then DNS_MASQ=-p\ "53:53/udp"; else DNS_MASQ=''; fi
+if [ "$WEBCRATE_MODE" == "PRODUCTION" ]; then SSH_AND_FTP=-p\ "2222:22"\ -p\ "21:21"\ -p\ "20:20"\ -p\ "50000-50100:50000-50100"; else SSH_AND_FTP=''; fi
 
 docker run -d --env-file=$(pwd)/.env --hostname webcrate-core --name webcrate-core \
   --network="webcrate_network" --dns=172.31.0.100 --ip=172.31.0.100 \
   --restart="unless-stopped" \
-  -p "2222:22" \
-  -p "21:21" \
-  -p "20:20" \
-  -p "50000-50100:50000-50100" \
+  $SSH_AND_FTP \
   $DNS_MASQ \
   -e WEBCRATE_UID=$uid \
   -e WEBCRATE_GID=$gid \
@@ -169,13 +187,12 @@ docker run -d --env-file=$(pwd)/.env --hostname webcrate-core --name webcrate-co
   -v webcrate_dnsmasq_hosts:/webcrate/dnsmasq_hosts \
   ace5040/webcrate-core:stable > /dev/null
 
-docker run -d --env-file=$(pwd)/.env --hostname webcrate-admin --name webcrate-admin \
+docker run -d --env-file=$(pwd)/.env --hostname webcrate --name webcrate \
   --network="webcrate_network" --dns=172.31.0.100 \
   --restart="unless-stopped" \
   -e WEBCRATE_UID=$uid \
   -e WEBCRATE_GID=$gid \
   -v /etc/localtime:/etc/localtime:ro \
-  -v $(pwd)/var/logs:/app/logs \
   -v $DOCKER_SOCKET:/var/run/docker.sock \
   -v $SITES_FOLDER_ABSOLUTE_PATH:/sites \
   -v $(pwd)/users.yml:/webcrate/users.yml \
@@ -183,42 +200,6 @@ docker run -d --env-file=$(pwd)/.env --hostname webcrate-admin --name webcrate-a
   -v $(pwd)/var/secrets:/webcrate/secrets \
   -v $(pwd)/config/exim/exim.conf:/etc/mail/exim.conf \
   ace5040/webcrate-admin:stable > /dev/null
-
-docker run -d --env-file=$(pwd)/.env --hostname webcrate-tools --name webcrate-tools \
-  --network="webcrate_network" --dns=172.31.0.100 \
-  --restart="unless-stopped" \
-  -e WEBCRATE_UID=$uid \
-  -e WEBCRATE_GID=$gid \
-  -v $SITES_FOLDER_ABSOLUTE_PATH:/sites \
-  -v $DOCKER_SOCKET:/var/run/docker.sock \
-  -v /etc/localtime:/etc/localtime:ro \
-  -v $(pwd)/users.yml:/webcrate/users.yml:ro \
-  -v $(pwd)/services.yml:/webcrate/services.yml:ro \
-  -v $(pwd)/var/letsencrypt:/webcrate/letsencrypt \
-  -v $(pwd)/var/openssl:/webcrate/openssl \
-  -v $(pwd)/var/backup:/webcrate/backup \
-  -v $(pwd)/var/secrets:/webcrate/secrets \
-  -v $(pwd)/var/duplicity:/webcrate/duplicity \
-  -v webcrate_ssl_configs:/webcrate/ssl_configs \
-  ace5040/webcrate-tools:stable > /dev/null
-
-
-docker run -d --env-file=$(pwd)/.env --hostname webcrate-nginx --name webcrate-nginx \
-  --network="webcrate_network" --dns=172.31.0.100 \
-  --restart="unless-stopped" \
-  -e WEBCRATE_UID=$uid \
-  -e WEBCRATE_GID=$gid \
-  -p "80:1080" \
-  -p "443:1443" \
-  -v $SITES_FOLDER_ABSOLUTE_PATH:/sites \
-  -v /etc/localtime:/etc/localtime:ro \
-  -v $(pwd)/users.yml:/webcrate/users.yml:ro \
-  -v $(pwd)/var/letsencrypt:/webcrate/letsencrypt:ro \
-  -v $(pwd)/var/openssl:/webcrate/openssl:ro \
-  -v $(pwd)/var/logs:/app/logs \
-  -v webcrate_ssl_configs:/webcrate/ssl_configs:ro \
-  -v webcrate_nginx_configs:/etc/nginx/conf.d:ro \
-  ace5040/webcrate-nginx:stable > /dev/null
 
 docker run -d --env-file=$(pwd)/.env --log-driver=none --name memcached \
   --network="webcrate_network" --dns=172.31.0.100 \
@@ -330,6 +311,97 @@ docker run -d --env-file=$(pwd)/.env --log-driver=none --name influxdb \
   -v $(pwd)/var/influxdb:/var/lib/influxdb \
   influxdb:latest > /dev/null
 
-if [ "$GRAFANA_PASS" != "" ]; then
-  sleep 5; docker exec --user $uid:$gid grafana grafana-cli admin reset-admin-password "$GRAFANA_PASS"
+turn_secret=`cat ./var/secrets/turn.secret`
+
+if [[ ! -f "./var/synapse/homeserver.yaml" ]] ; then
+  docker run -it --rm --hostname synapse --name synapse \
+    --user "$uid:$gid" \
+    --network="webcrate_network" --dns=172.31.0.100 \
+    -v $(pwd)/var/synapse:/data \
+    -e SYNAPSE_SERVER_NAME=$WEBCRATE_SYNAPSE_DOMAIN \
+    -e UID=$uid \
+    -e GID=$gid \
+    -e SYNAPSE_REPORT_STATS=yes \
+    matrixdotorg/synapse:latest generate
+  echo "" >> ./var/synapse/homeserver.yaml
+  echo "turn_uris:" >> ./var/synapse/homeserver.yaml
+  echo "  - \"turns:$WEBCRATE_SYNAPSE_DOMAIN:3478?transport=udp\"" >> ./var/synapse/homeserver.yaml
+  echo "  - \"turns:$WEBCRATE_SYNAPSE_DOMAIN:3478?transport=udp\"" >> ./var/synapse/homeserver.yaml
+  echo "  - \"turn:$WEBCRATE_SYNAPSE_DOMAIN:3478?transport=udp\"" >> ./var/synapse/homeserver.yaml
+  echo "  - \"turn:$WEBCRATE_SYNAPSE_DOMAIN:3478?transport=udp\"" >> ./var/synapse/homeserver.yaml
+  echo "turn_user_lifetime: \"10h\"" >> ./var/synapse/homeserver.yaml
+  echo "turn_shared_secret: \"$turn_secret\"" >> ./var/synapse/homeserver.yaml
+  echo "suppress_key_server_warning: true" >> ./var/synapse/homeserver.yaml
 fi
+
+docker run -d --hostname synapse --name synapse \
+  --network="webcrate_network" --dns=172.31.0.100 \
+  --restart="unless-stopped" \
+  --user "$uid:$gid" \
+  -e UID=$uid \
+  -e GID=$gid \
+  -v $(pwd)/var/synapse:/data \
+  -v $(pwd)/var/openssl:/webcrate/openssl \
+  matrixdotorg/synapse:latest
+
+docker run -d --hostname turn --name turn \
+  --network="webcrate_network" --dns=172.31.0.100 \
+  --restart="unless-stopped" \
+  -v $(pwd)/config/turn:/webcrate \
+  -p 3478:3478 \
+  -p 3479:3479 \
+  -p 5349:5349 \
+  -p 49160-49200:49160-49200/udp \
+  instrumentisto/coturn:4 -c /webcrate/turn.conf  \
+    --realm $WEBCRATE_SYNAPSE_DOMAIN \
+    --static-auth-secret="$turn_secret"
+
+docker run -d --env-file=$(pwd)/.env --hostname synapse-admin --name synapse-admin \
+  --network="webcrate_network" --dns=172.31.0.100 \
+  --restart="unless-stopped" \
+  awesometechnologies/synapse-admin:latest
+
+if [ "$GRAFANA_PASS" != "" ]; then
+  sleep 2; docker exec --user $uid:$gid grafana grafana-cli admin reset-admin-password "$GRAFANA_PASS"
+fi
+
+if [ "$SYNAPSE_PASS" != "" ]; then
+  sleep 2; docker exec synapse register_new_matrix_user -a --user admin --password "$SYNAPSE_PASS" -c /data/homeserver.yaml http://localhost:8008
+fi
+
+docker run -d --env-file=$(pwd)/.env --hostname webcrate-nginx --name webcrate-nginx \
+  --network="webcrate_network" --dns=172.31.0.100 \
+  --restart="unless-stopped" \
+  -e WEBCRATE_UID=$uid \
+  -e WEBCRATE_GID=$gid \
+  -p "80:1080" \
+  -p "443:1443" \
+  -v $SITES_FOLDER_ABSOLUTE_PATH:/sites \
+  -v /etc/localtime:/etc/localtime:ro \
+  -v $(pwd)/users.yml:/webcrate/users.yml:ro \
+  -v $(pwd)/var/letsencrypt:/webcrate/letsencrypt:ro \
+  -v $(pwd)/var/letsencrypt-meta:/webcrate/letsencrypt-meta:ro \
+  -v $(pwd)/var/openssl:/webcrate/openssl:ro \
+  -v $(pwd)/var/logs/nginx:/webcrate/logs \
+  -v webcrate_ssl_configs:/webcrate/ssl_configs:ro \
+  -v webcrate_nginx_configs:/etc/nginx/conf.d:ro \
+  ace5040/webcrate-nginx:stable > /dev/null
+
+docker run -d --env-file=$(pwd)/.env --hostname webcrate-tools --name webcrate-tools \
+  --network="webcrate_network" --dns=172.31.0.100 \
+  --restart="unless-stopped" \
+  -e WEBCRATE_UID=$uid \
+  -e WEBCRATE_GID=$gid \
+  -v $SITES_FOLDER_ABSOLUTE_PATH:/sites \
+  -v $DOCKER_SOCKET:/var/run/docker.sock \
+  -v /etc/localtime:/etc/localtime:ro \
+  -v $(pwd)/users.yml:/webcrate/users.yml:ro \
+  -v $(pwd)/services.yml:/webcrate/services.yml:ro \
+  -v $(pwd)/var/letsencrypt:/webcrate/letsencrypt \
+  -v $(pwd)/var/letsencrypt-meta:/webcrate/letsencrypt-meta \
+  -v $(pwd)/var/openssl:/webcrate/openssl \
+  -v $(pwd)/var/backup:/webcrate/backup \
+  -v $(pwd)/var/secrets:/webcrate/secrets \
+  -v $(pwd)/var/duplicity:/webcrate/duplicity \
+  -v webcrate_ssl_configs:/webcrate/ssl_configs \
+  ace5040/webcrate-tools:stable > /dev/null

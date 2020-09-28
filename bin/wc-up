@@ -326,10 +326,10 @@ if [[ ! -f "./var/synapse/homeserver.yaml" ]] ; then
     matrixdotorg/synapse:latest generate
   echo "" >> ./var/synapse/homeserver.yaml
   echo "turn_uris:" >> ./var/synapse/homeserver.yaml
-  echo "  - \"turns:$WEBCRATE_TURN_DOMAIN?transport=udp\"" >> ./var/synapse/homeserver.yaml
-  echo "  - \"turns:$WEBCRATE_TURN_DOMAIN?transport=udp\"" >> ./var/synapse/homeserver.yaml
-  echo "  - \"turn:$WEBCRATE_TURN_DOMAIN?transport=udp\"" >> ./var/synapse/homeserver.yaml
-  echo "  - \"turn:$WEBCRATE_TURN_DOMAIN?transport=udp\"" >> ./var/synapse/homeserver.yaml
+  echo "  - \"turns:$WEBCRATE_SYNAPSE_DOMAIN?transport=udp\"" >> ./var/synapse/homeserver.yaml
+  echo "  - \"turns:$WEBCRATE_SYNAPSE_DOMAIN?transport=udp\"" >> ./var/synapse/homeserver.yaml
+  echo "  - \"turn:$WEBCRATE_SYNAPSE_DOMAIN?transport=udp\"" >> ./var/synapse/homeserver.yaml
+  echo "  - \"turn:$WEBCRATE_SYNAPSE_DOMAIN?transport=udp\"" >> ./var/synapse/homeserver.yaml
   echo "turn_user_lifetime: \"10h\"" >> ./var/synapse/homeserver.yaml
   echo "turn_shared_secret: \"$turn_secret\"" >> ./var/synapse/homeserver.yaml
   echo "suppress_key_server_warning: true" >> ./var/synapse/homeserver.yaml
@@ -349,13 +349,15 @@ docker run -d --hostname turn --name turn \
   --network="webcrate_network" --dns=172.31.0.100 \
   --restart="unless-stopped" \
   -v $(pwd)/config/turn:/webcrate \
-  -p 3478:3478 \
-  -p 3479:3479 \
-  -p 5349:5349 \
-  -p 49160-49200:49160-49200/udp \
+  -p "3478:3478/udp" \
+  -p "3479:3479/udp" \
+  -p "5349:5349/udp" \
+  -p "49160-49200:49160-49200/udp" \
   instrumentisto/coturn:4 -c /webcrate/turn.conf  \
     --realm $WEBCRATE_SYNAPSE_DOMAIN \
-    --static-auth-secret="$turn_secret"
+    --static-auth-secret="$turn_secret" \
+    --external-ip='$(detect-external-ip)' \
+    --relay-ip='$(detect-external-ip)'
 
 docker run -d --env-file=$(pwd)/.env --hostname synapse-admin --name synapse-admin \
   --network="webcrate_network" --dns=172.31.0.100 \

@@ -116,7 +116,6 @@ if [[ ! -f "./var/secrets/synapse.secret" ]] ; then
   echo $TURN_SHARED_SECRET >> ./var/secrets/turn.secret
 fi
 WEBCRATE_SYNAPSE_DOMAIN=`cat ./services.yml | awk "/synapse:/,/nginx_config:/" | grep -oP "(?<=domain: ).*" | head -c -1`
-WEBCRATE_TURN_DOMAIN=`cat ./services.yml | awk "/turn:/,/nginx_config:/" | grep -oP "(?<=domain: ).*" | head -c -1`
 
 docker volume create webcrate_dnsmasq_hosts
 docker volume create webcrate_nginx_configs

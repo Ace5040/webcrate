@@ -26,7 +26,7 @@ if retries > 0:
     time.sleep(5)
   if retries2 > 0:
     mysql_service_password=os.popen("cat /webcrate/secrets/webcrate-service-mysql.txt | grep password= | awk '{split($0,a,\"password=\"); print a[2]}' | tr -d \"\n\"").read().strip()
-    webcrate_secret=os.popen("cat /webcrate/secrets/webcrate-admin.secret | grep secret= | awk '{split($0,a,\"secret=\"); print a[2]}' | tr -d \"\n\"").read().strip()
+    webcrate_secret=os.popen("cat /webcrate/secrets/webcrate.secret | grep secret= | awk '{split($0,a,\"secret=\"); print a[2]}' | tr -d \"\n\"").read().strip()
     with open(f'/app/.env.local', 'w') as f:
       f.write('APP_ENV=dev\n')
       f.write(f'APP_SECRET={webcrate_secret}\n')
@@ -38,7 +38,7 @@ if retries > 0:
       os.system(f'cd /app; yes | php bin/console doctrine:migrations:migrate')
       admin_user_found = int(os.popen(f'mysql -u webcrate -h mysql -p"{mysql_service_password}" webcrate -e "select id from user where id=1" | wc -l').read().strip())
       if admin_user_found == 0:
-        admin_password=os.popen("cat /webcrate/secrets/webcrate-admin.secret | grep password= | awk '{split($0,a,\"password=\"); print a[2]}' | tr -d \"\n\"").read().strip()
+        admin_password=os.popen("cat /webcrate/secrets/webcrate.secret | grep password= | awk '{split($0,a,\"password=\"); print a[2]}' | tr -d \"\n\"").read().strip()
         admin_password_encoded=os.popen(f'cd /app; php bin/console security:encode-password "{admin_password}" | grep "Encoded password" | awk \'{{split($0,a,"password"); print a[2]}}\' | tr -d " \n"').read().strip()
         admin_password_encoded = str(admin_password_encoded).replace("$", "\$").replace("&", "\&")
         os.system(f'mysql -u webcrate -h mysql -p"{mysql_service_password}" webcrate -e "INSERT INTO \\`user\\` (\\`id\\`, \\`email\\`, \\`roles\\`, \\`password\\`) VALUES (NULL, \'{WEBCRATE_ADMIN_EMAIL}\', \'[\\"ROLE_ADMIN\\"]\', \'{admin_password_encoded}\')"')

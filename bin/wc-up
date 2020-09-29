@@ -99,12 +99,12 @@ if [[ ! -d "./var/grafana/data" ]] ; then
   echo "password=\"$GRAFANA_PASS\"" >> ./var/secrets/grafana.secret
 fi
 
-if [[ ! -f "./var/secrets/webcrate-admin.secret" ]] ; then
+if [[ ! -f "./var/secrets/webcrate.secret" ]] ; then
   admin_password=`docker run --rm ace5040/webcrate-utils:stable /webcrate/pwgen.sh`
   app_secret=`docker run --rm ace5040/webcrate-utils:stable pwgen -nAs1 32 1`
-  echo "user=admin" > ./var/secrets/webcrate-admin.secret
-  echo "password=$admin_password" >> ./var/secrets/webcrate-admin.secret
-  echo "secret=$app_secret" >> ./var/secrets/webcrate-admin.secret
+  echo "user=admin" > ./var/secrets/webcrate.secret
+  echo "password=$admin_password" >> ./var/secrets/webcrate.secret
+  echo "secret=$app_secret" >> ./var/secrets/webcrate.secret
 fi
 
 SYNAPSE_PASS=''
@@ -128,6 +128,7 @@ docker volume create webcrate_phpmyadmin_config
 docker volume create webcrate_phpmyadmin_sessions
 docker volume create webcrate_phppgadmin
 docker volume create webcrate_phppgadmin_logs
+docker volume create webcrate_coturn
 
 docker network create --driver=bridge --subnet=172.31.0.0/16 webcrate_network > /dev/null
 
@@ -348,6 +349,7 @@ docker run -d --hostname turn --name turn \
   --network="webcrate_network" --dns=172.31.0.100 \
   --restart="unless-stopped" \
   -v $(pwd)/config/turn:/webcrate \
+  -v webcrate_coturn:/var/lib/coturn \
   -p "3478:3478/udp" \
   -p "3479:3479/udp" \
   -p "5349:5349/udp" \

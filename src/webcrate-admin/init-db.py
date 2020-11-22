@@ -10,6 +10,9 @@ WEBCRATE_MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
 WEBCRATE_ADMIN_EMAIL = os.environ.get('WEBCRATE_ADMIN_EMAIL', 'email@notset')
 WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
+os.system(f'usermod -u {WEBCRATE_UID} app > /dev/null 2>&1')
+os.system(f'groupmod -g {WEBCRATE_GID} app > /dev/null 2>&1')
+os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate > /dev/null 2>&1')
 
 def is_mysql_up(host, password):
   return int(os.popen(f'mysql -u root -h {host} -p"{password}" -e "show databases;" | grep "Database" | wc -l').read().strip())
@@ -30,6 +33,8 @@ if retries > 0:
     with open(f'/app/.env.local', 'w') as f:
       f.write('APP_ENV=dev\n')
       f.write(f'APP_SECRET={webcrate_secret}\n')
+      f.write(f'WEBCRATE_UID={WEBCRATE_UID}\n')
+      f.write(f'WEBCRATE_GID={WEBCRATE_GID}\n')
       f.write(f'DATABASE_URL=mysql://webcrate:{mysql_service_password}@mysql:3306/webcrate\n')
       f.close()
     mysql_database_found = int(os.popen(f'mysql -u webcrate -h mysql -p"{mysql_service_password}" -e "show databases like \'webcrate\';" | grep "Database (webcrate)" | wc -l').read().strip())

@@ -7,6 +7,8 @@ RUN pacman --needed --noconfirm -S nginx
 RUN useradd -m -s /bin/bash dev
 RUN useradd -m -s /bin/bash app
 RUN usermod -p "dev" dev
+RUN usermod -u 555 dev
+RUN groupmod -g 555 dev
 RUN echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo
 RUN sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j6\"/g" /etc/makepkg.conf
 USER dev
@@ -45,6 +47,8 @@ RUN npm install
 RUN npm run build
 USER root
 RUN echo 'app ALL=(ALL) NOPASSWD: /webcrate/versions.py' | EDITOR='tee -a' visudo
+RUN mkdir /webcrate; \
+    chown app:app /webcrate
 COPY init-db.py /webcrate/init-db.py
 RUN chmod u+x /webcrate/init-db.py
 COPY nginx.conf /etc/nginx/nginx.conf

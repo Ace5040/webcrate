@@ -174,7 +174,7 @@ for username,user in users.items():
       retries -= 1
       time.sleep(5)
     if retries > 0:
-      postgres_database_found = os.popen(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "SELECT 1 FROM pg_database WHERE datname=\'postgres\';"').read().strip()
+      postgres_database_found = os.popen(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "SELECT 1 FROM pg_database WHERE datname=\'{user.name}\';"').read().strip()
       if postgres_database_found != '1':
         postgres_user_password=os.popen(f"docker run --rm ace5040/webcrate-utils:stable /webcrate/pwgen.sh").read().strip()
         with open(f'/webcrate/secrets/{user.name}-postgres.txt', 'w') as f:
@@ -300,7 +300,7 @@ for servicename,service in services.items():
       retries -= 1
       time.sleep(5)
     if retries > 0:
-      postgres_database_found = os.popen(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "SELECT 1 FROM pg_database WHERE datname=\'postgres\';"').read().strip()
+      postgres_database_found = os.popen(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "SELECT 1 FROM pg_database WHERE datname=\'{service.name}\';"').read().strip()
       if postgres_database_found != '1':
         postgres_service_password=os.popen(f"docker run --rm ace5040/webcrate-utils:stable /webcrate/pwgen.sh").read().strip()
         with open(f'/webcrate/secrets/{service.name}-service-postgres.txt', 'w') as f:
@@ -310,7 +310,7 @@ for servicename,service in services.items():
           f.write(f'password={postgres_service_password}\n')
           f.close()
         os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/secrets/{service.name}-service-postgres.txt')
-        os.system(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "CREATE DATABASE {service.name};"')
+        os.system(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "CREATE DATABASE {service.name} ENCODING \'UTF8\' TEMPLATE template0 LC_COLLATE=\'C\' LC_CTYPE=\'C\';"')
         os.system(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "CREATE USER {service.name} WITH ENCRYPTED PASSWORD \'{postgres_service_password}\';"')
         os.system(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "GRANT ALL PRIVILEGES ON DATABASE {service.name} TO {service.name};"')
         print(f'postgresql user {service.name} and db created')

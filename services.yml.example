@@ -13,7 +13,7 @@ synapse:
   https: openssl
   mysql_db: no
   mysql5_db: no
-  postgresql_db: no
+  postgresql_db: yes
 synapse-admin:
   domain: synapse-admin.test
   nginx_config: default

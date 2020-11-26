@@ -25,7 +25,7 @@ synapse-admin:
 phpmyadmin:
   domain: phpmyadmin.test
   nginx_config: default
-  port: 80
+  port: 8080
   https: disabled
   mysql_db: no
   mysql5_db: no

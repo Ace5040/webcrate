@@ -17,7 +17,7 @@ docker pull mariadb:5
 docker pull mariadb:10
 docker pull phpmyadmin/phpmyadmin
 docker pull postgres:12
-docker pull dockage/phppgadmin
+docker pull bitnami/phppgadmin
 docker pull solr:6
 docker pull grafana/grafana
 docker pull influxdb:latest

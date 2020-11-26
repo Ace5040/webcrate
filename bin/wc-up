@@ -257,12 +257,10 @@ docker run -d --env-file=$(pwd)/.env --name phpmyadmin \
 docker run -d --env-file=$(pwd)/.env --name phppgadmin \
   --network="webcrate_network" --dns=172.31.0.100 \
   --restart="unless-stopped" \
-  -e PMA_HOSTS=mysql,mysql5 \
-  -e PHP_PG_ADMIN_SERVER_HOST=postgres \
+  -e DATABASE_HOST=postgres \
   -v /etc/localtime:/etc/localtime:ro \
-  -v webcrate_phppgadmin:/data \
-  -v webcrate_phppgadmin_logs:/var/log \
-  dockage/phppgadmin > /dev/null
+  -v webcrate_phppgadmin:/bitnami \
+  bitnami/phppgadmin > /dev/null
 
 docker run -d --env-file=$(pwd)/.env --name doctohtml \
   --network="webcrate_network" --dns=172.31.0.100 \
@@ -355,6 +353,10 @@ if [[ ! -f "./var/synapse/homeserver.yaml" ]] ; then
   echo "    host: postgres" >> ./var/synapse/homeserver.yaml
   echo "    cp_min: 5" >> ./var/synapse/homeserver.yaml
   echo "    cp_max: 10" >> ./var/synapse/homeserver.yaml
+
+  echo "" >> ./var/synapse/homeserver.yaml
+  echo "user_directory:" >> ./var/synapse/homeserver.yaml
+  echo "  search_all_users: true" >> ./var/synapse/homeserver.yaml
 
 fi
 

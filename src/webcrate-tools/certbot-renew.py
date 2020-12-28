@@ -13,10 +13,10 @@ with open('/webcrate/services.yml', 'r') as f:
   f.close()
 
 any_letsencrypt_https_configs_found = False
-for user in users.items():
+for username,user in users.items():
   if user.https == 'letsencrypt':
     any_letsencrypt_https_configs_found = True
-for service in services.items():
+for servicename,service in services.items():
   if service.https == 'letsencrypt':
     any_letsencrypt_https_configs_found = True
 

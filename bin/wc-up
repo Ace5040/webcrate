@@ -283,7 +283,7 @@ docker run -d --env-file=$(pwd)/.env --log-driver=none --name solr \
   -v $(pwd)/var/solr/logs:/opt/solr/server/logs \
   -v $(pwd)/var/solr/cores:/opt/solr/server/solr/mycores \
   --entrypoint docker-entrypoint.sh \
-  solr:6 solr -force -f > /dev/null
+  solr:6 solr -m 2048m -force -f > /dev/null
 
 docker run -d --env-file=$(pwd)/.env --log-driver=none --name grafana \
   --network="webcrate_network" --dns=172.31.0.100 \

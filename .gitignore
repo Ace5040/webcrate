@@ -8,6 +8,7 @@
 !/*.example
 !/config/exim/*.example
 !/config/nginx-templates/default-php-user.conf
+!/config/nginx-templates/default.conf
 !/config/nginx-templates/default-gunicorn-user.conf
 !/config/nginx-templates/default-service.conf
 !/config/nginx-templates/drupal8.conf

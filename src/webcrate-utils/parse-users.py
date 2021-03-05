@@ -68,6 +68,7 @@ for username, user in users.items():
       php_path_prefix = {
         '5': '56',
         '73': '73',
+        '7': '74'
       }.get(str(user.backend_version), '')
       php_conf_path = f'/webcrate/php{php_path_prefix}-fpm.d/{user.name}.conf';
       os.system(f'cp -rf /webcrate/custom_templates/php{user.backend_version}-default.conf {php_conf_path}')
@@ -152,7 +153,8 @@ if WEBCRATE_MODE == "DEV":
 
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/ssl_configs')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/nginx_configs')
-os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/php-fpm.d')
-os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/php73-fpm.d')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/php56-fpm.d')
+os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/php73-fpm.d')
+os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/php74-fpm.d')
+os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/php-fpm.d')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/dnsmasq_hosts')

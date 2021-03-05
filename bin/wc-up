@@ -120,9 +120,10 @@ WEBCRATE_SYNAPSE_DOMAIN=`cat ./services.yml | awk "/synapse:/,/nginx_config:/" |
 docker volume create webcrate_dnsmasq_hosts
 docker volume create webcrate_nginx_configs
 docker volume create webcrate_ssl_configs
-docker volume create webcrate_php7_pools
+docker volume create webcrate_php56_pools
 docker volume create webcrate_php73_pools
-docker volume create webcrate_php5_pools
+docker volume create webcrate_php74_pools
+docker volume create webcrate_php80_pools
 docker volume create webcrate_phpmyadmin
 docker volume create webcrate_phpmyadmin_config
 docker volume create webcrate_phpmyadmin_sessions
@@ -143,9 +144,10 @@ docker run --rm --env-file=$(pwd)/.env \
   -v $(pwd)/var/openssl:/webcrate/openssl:ro \
   -v webcrate_nginx_configs:/webcrate/nginx_configs \
   -v webcrate_ssl_configs:/webcrate/ssl_configs \
-  -v webcrate_php7_pools:/webcrate/php-fpm.d \
+  -v webcrate_php56_pools:/webcrate/php56-fpm.d \
   -v webcrate_php73_pools:/webcrate/php73-fpm.d \
-  -v webcrate_php5_pools:/webcrate/php56-fpm.d \
+  -v webcrate_php74_pools:/webcrate/php74-fpm.d \
+  -v webcrate_php80_pools:/webcrate/php-fpm.d \
   -v webcrate_dnsmasq_hosts:/webcrate/dnsmasq_hosts \
   ace5040/webcrate-utils:stable \
   /webcrate/parse-users.py
@@ -161,12 +163,14 @@ docker run --rm --env-file=$(pwd)/.env \
   ace5040/webcrate-utils:stable \
   /webcrate/parse-services.py
 
+if [ "$WEBCRATE_MODE" == "DEV" ]; then WDS=-p\ "8080:8080/tcp"; else WDS=''; fi
 if [ "$WEBCRATE_MODE" == "DEV" ]; then DNS_MASQ=-p\ "53:53/udp"; else DNS_MASQ=''; fi
 if [ "$WEBCRATE_MODE" == "PRODUCTION" ]; then SSH_AND_FTP=-p\ "2222:22"\ -p\ "21:21"\ -p\ "20:20"\ -p\ "50000-50100:50000-50100"; else SSH_AND_FTP=''; fi
 
 docker run -d --env-file=$(pwd)/.env --hostname webcrate-core --name webcrate-core \
   --network="webcrate_network" --dns=172.31.0.100 --ip=172.31.0.100 \
   --restart="unless-stopped" \
+  $WDS \
   $SSH_AND_FTP \
   $DNS_MASQ \
   -e WEBCRATE_UID=$uid \
@@ -178,13 +182,15 @@ docker run -d --env-file=$(pwd)/.env --hostname webcrate-core --name webcrate-co
   -v $(pwd)/users.yml:/webcrate/users.yml:ro \
   -v $(pwd)/var/ssh:/webcrate/ssh_keys \
   -v $(pwd)/config/php-pool-templates:/webcrate/custom_templates:ro \
-  -v $(pwd)/config/php/php7.ini:/etc/php/conf.d/user.ini:ro \
+  -v $(pwd)/config/php/php56.ini:/etc/php56/conf.d/user.ini:ro \
   -v $(pwd)/config/php/php73.ini:/etc/php73/conf.d/user.ini:ro \
-  -v $(pwd)/config/php/php5.ini:/etc/php56/conf.d/user.ini:ro \
+  -v $(pwd)/config/php/php74.ini:/etc/php7/conf.d/user.ini:ro \
+  -v $(pwd)/config/php/php80.ini:/etc/php/conf.d/user.ini:ro \
   -v $(pwd)/config/exim/exim.conf:/etc/mail/exim.conf \
-  -v webcrate_php7_pools:/etc/php/php-fpm.d \
-  -v webcrate_php73_pools:/etc/php73/php-fpm.d \
   -v webcrate_php5_pools:/etc/php56/php-fpm.d \
+  -v webcrate_php73_pools:/etc/php73/php-fpm.d \
+  -v webcrate_php74_pools:/etc/php74/php-fpm.d \
+  -v webcrate_php80_pools:/etc/php/php-fpm.d \
   -v webcrate_dnsmasq_hosts:/webcrate/dnsmasq_hosts \
   ace5040/webcrate-core:stable > /dev/null
 

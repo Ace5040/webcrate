@@ -21,4 +21,8 @@ for servicename,service in services.items():
     any_letsencrypt_https_configs_found = True
 
 if any_letsencrypt_https_configs_found:
+  WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
+  WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
+  os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/letsencrypt')
+  print(f'reload nginx config after certificates renewal')
   os.system(f'certbot renew --config-dir /webcrate/letsencrypt --deploy-hook /webcrate/certbot-renew-deploy.py');

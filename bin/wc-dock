@@ -15,11 +15,11 @@ else
 
     if [[ $WEBCRATE_MODE == "PRODUCTION" ]]; then
 
-        docker exec -it webcrate-core sudo --user ${1} bash -c "export HOME=/sites/${1}; cd ~; fish"
+        docker exec -it webcrate-core sudo --user ${1} bash -c "[ -d \"/sites/${1}\" ] && export HOME=/sites/${1}; cd ~; fish"
 
     else
 
-        docker exec -it webcrate-core sudo --user dev bash -c "export HOME=/sites/${1}; cd ~; fish"
+        docker exec -it webcrate-core sudo --user dev bash -c "[ -d \"/sites/${1}\" ] && export HOME=/sites/${1}; cd ~; fish"
 
     fi
 

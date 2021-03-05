@@ -20,7 +20,7 @@ docker pull postgres:12
 docker pull bitnami/phppgadmin
 docker pull solr:6
 docker pull grafana/grafana
-docker pull influxdb:latest
+docker pull influxdb:1.8-alpine
 docker pull matrixdotorg/synapse:latest
 docker pull awesometechnologies/synapse-admin:latest
 

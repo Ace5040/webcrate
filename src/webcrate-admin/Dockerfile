@@ -39,10 +39,11 @@ RUN mkdir /app; \
     chown app:app /app
 USER app
 WORKDIR /app
-ARG V=0
+ARG V=1
 RUN git clone https://github.com/Ace5040/webcrate-admin.git .
 RUN sed -i "s/.*\"@auto-scripts\".*/ /g" composer.json;
 RUN composer install --no-scripts
+WORKDIR /app/assets/admin
 RUN npm install
 RUN npm run build
 USER root

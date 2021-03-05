@@ -52,7 +52,6 @@ if retries > 0:
         print(f'webcrate admin user exists')
       os.system(f'cd /app; php bin/console doctrine:fixtures:load --group=Backends --group=HttpsTypes --append')
       os.system(f'cd /app; php bin/console cache:pool:clear cache.app')
-      os.system(f'cd /app/assest/admin; npm run build')
     else:
       print(f'webcrate database not found')
     os.system(f'cd /app; composer run-script post-install-cmd')

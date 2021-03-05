@@ -111,5 +111,8 @@ RUN chmod u+x /webcrate/sync_ssh_keys.sh; \
     chmod a+x /webcrate/parse-users.py; \
     chmod u+x /webcrate/versions.py; \
     chmod u+x /entrypoint.sh
+USER dev
+RUN yay --noeditmenu --nodiffmenu --noconfirm -S python38
+USER root
 WORKDIR /webcrate
 CMD ["/entrypoint.sh"]

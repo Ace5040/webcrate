@@ -5,6 +5,7 @@
 /config/nginx-templates/*
 /config/exim
 /config/php-pool-templates/*
+/config/duplicity/globbing-filelist
 !/*.example
 !/config/exim/*.example
 !/config/nginx-templates/default-php-user.conf

@@ -314,7 +314,7 @@ docker run -d --env-file=$(pwd)/.env --log-driver=none --name influxdb \
   -e INFLUXDB_DB=telegraf \
   -v /etc/localtime:/etc/localtime:ro \
   -v $(pwd)/var/influxdb:/var/lib/influxdb \
-  influxdb:latest > /dev/null
+  influxdb:1.8-alpine > /dev/null
 
 turn_secret=`cat ./var/secrets/turn.secret`
 
@@ -442,6 +442,6 @@ docker run -d --env-file=$(pwd)/.env --hostname webcrate-tools --name webcrate-t
   -v $(pwd)/var/backup:/webcrate/backup \
   -v $(pwd)/var/secrets:/webcrate/secrets \
   -v $(pwd)/var/duplicity:/webcrate/duplicity \
-  -v $GFL \
+  $GFL \
   -v webcrate_ssl_configs:/webcrate/ssl_configs \
   ace5040/webcrate-tools:stable > /dev/null

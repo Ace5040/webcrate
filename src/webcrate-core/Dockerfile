@@ -63,7 +63,7 @@ RUN printf "\ninclude=/etc/php56/php-fpm.d/*.conf" >> /etc/php56/php-fpm.conf; \
 #    sed -i 's/  interval = "10s"/  interval = "1s"/g' /etc/telegraf/telegraf.conf
 WORKDIR /
 COPY proftpd.conf /etc/proftpd.conf
-RUN printf "no-resolv\nno-poll\nno-hosts\naddn-hosts=/webcrate/dnsmasq_hosts/hosts_nginx\n" > /etc/dnsmasq.conf
+RUN printf "no-resolv\nno-poll\nno-hosts\naddn-hosts=/webcrate-dnsmasq/config/hosts_nginx\n" > /etc/dnsmasq.conf
 RUN echo ". /etc/profile.d/bashrc.sh" >> /etc/bash.bashrc
 RUN mkdir -p /webcrate; \
     mkdir -p /webcrate-bin; \
@@ -75,16 +75,16 @@ RUN mkdir -p /webcrate; \
     ln -s /bin/php73 /webcrate-bin/php73/php; \
     ln -s /bin/php7 /webcrate-bin/php74/php; \
     ln -s /bin/php /webcrate-bin/php/php; \
-    mkdir -p /webcrate/fish \
-    chmod o-rwx /webcrate;
-WORKDIR /webcrate/fish
+    mkdir -p /webcrate-fish; \
+    chmod o-rwx /webcrate
+WORKDIR /webcrate-fish
 RUN git clone https://github.com/oh-my-fish/oh-my-fish
-WORKDIR /webcrate/fish/oh-my-fish
-RUN bin/install --offline --path=/webcrate/fish/omf --config=/webcrate/fish/omfconf; \
+WORKDIR /webcrate-fish/oh-my-fish
+RUN bin/install --offline --path=/webcrate-fish/omf --config=/webcrate-fish/omfconf; \
     cp /root/.config/fish/conf.d/omf.fish /etc/fish/conf.d/omf.fish; \
     fish -C "omf install cbjohnson"; \
-    cp /webcrate/fish/omf/themes/default/fish_right_prompt.fish /webcrate/fish/omf/themes/cbjohnson/fish_right_prompt.fish
-COPY fish_prompt.fish /webcrate/fish/omf/themes/cbjohnson/fish_prompt.fish
+    cp /webcrate-fish/omf/themes/default/fish_right_prompt.fish /webcrate-fish/omf/themes/cbjohnson/fish_right_prompt.fish
+COPY fish_prompt.fish /webcrate-fish/omf/themes/cbjohnson/fish_prompt.fish
 WORKDIR /root
 RUN wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz; \
     tar xzvf ioncube_loaders_lin_x86-64.tar.gz; \
@@ -94,9 +94,15 @@ RUN wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-
     rm /etc/php73/conf.d/xdebug.ini; \
     yes | sudo symfony self-update
 WORKDIR /
+RUN mkdir -p /webcrate-telegraf; \
+    chown telegraf:telegraf /webcrate-telegraf; \
+    chmod o-rwx /webcrate-telegraf; \
+    mkdir -p /webcrate-dnsmasq; \
+    chown dnsmasq:dnsmasq /webcrate-dnsmasq; \
+    chmod o-rwx /webcrate-dnsmasq
 COPY sync_ssh_keys.sh /webcrate/sync_ssh_keys.sh
-COPY stats_users.sh /webcrate/stats_users.sh
-COPY stats_pools.sh /webcrate/stats_pools.sh
+COPY stats_users.sh /webcrate-telegraf/stats_users.sh
+COPY stats_pools.sh /webcrate-telegraf/stats_pools.sh
 COPY bashrc.sh /etc/profile.d/bashrc.sh
 COPY fishrc.fish /etc/fish/conf.d/fishrc.fish
 COPY toprc /etc/telegraf/.config/procps/toprc
@@ -105,8 +111,8 @@ COPY parse-users.py /webcrate/parse-users.py
 COPY versions.py /webcrate/versions.py
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod u+x /webcrate/sync_ssh_keys.sh; \
-    chmod a+x /webcrate/stats_users.sh; \
-    chmod a+x /webcrate/stats_pools.sh; \
+    chmod a+x /webcrate-telegraf/stats_users.sh; \
+    chmod a+x /webcrate-telegraf/stats_pools.sh; \
     mkdir -p /etc/telegraf/.config/procps; \
     rm /etc/mail/exim.conf; \
     chmod a+x /webcrate-bin/gunicorn_restart.sh; \

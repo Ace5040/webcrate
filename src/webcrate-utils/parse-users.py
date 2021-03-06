@@ -22,12 +22,13 @@ os.system(f'rm /webcrate/nginx_configs/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/php-fpm.d/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/php73-fpm.d/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/php56-fpm.d/* > /dev/null 2>&1')
-os.system(f'rm /webcrate/dnsmasq_hosts/* > /dev/null 2>&1')
+os.system(f'rm /webcrate-dnsmasq/config/* > /dev/null 2>&1')
 
 print(f'WEBCRATE_MODE = {WEBCRATE_MODE}')
 
 for username, user in users.items():
   user.name = username
+  data_folder=user.root_folder.split("/")[0]
   port = CGI_PORT_START_NUMBER + user.uid - UID_START_NUMBER
 
   if not os.path.isdir(f'/sites/{user.name}'):
@@ -43,7 +44,6 @@ for username, user in users.items():
         f.write(f'print "Welcome to webcrate. Happy coding!";\n')
         f.close()
     if user.backend == 'gunicorn':
-      data_folder=user.root_folder.split("/")[0]
       with open(f'/sites/{user.name}/{data_folder}/app.py', 'w') as f:
         f.write(f'def app(environ, start_response):\n'
         f'  data = b"Welcome to webcrate. Happy coding!"\n'
@@ -54,7 +54,7 @@ for username, user in users.items():
         f'  return iter([data])\n')
         f.close()
       os.system(f'cd /sites/{user.name}/{data_folder}; python -m venv env; source ./env/bin/activate; pip install gunicorn; pip freeze > requirements.txt; deactivate')
-    os.system(f'chown -R {WEBCRATE_UID if WEBCRATE_MODE == "DEV" else user.uid }:{WEBCRATE_GID if WEBCRATE_MODE == "DEV" else user.uid } /sites/{user.name}/{user.root_folder.split("/")[0]}')
+    os.system(f'chown -R {WEBCRATE_UID if WEBCRATE_MODE == "DEV" else user.uid }:{WEBCRATE_GID if WEBCRATE_MODE == "DEV" else user.uid } /sites/{user.name}/{data_folder}')
 
   if not os.path.isdir(f'/sites/{user.name}/log'):
     os.system(f'mkdir -p /sites/{user.name}/log')
@@ -88,18 +88,22 @@ for username, user in users.items():
         f.write(conf)
         f.close()
 
-      with open(f'/sites/{user.name}/phpversion.sh', 'w') as f:
-        f.write(f'PATH=/webcrate-bin/php{php_path_prefix}:$PATH')
-        f.close()
-
-      with open(f'/sites/{user.name}/phpversion.fish', 'w') as f:
-        f.write(f'set PATH /webcrate-bin/php{php_path_prefix} $PATH')
-        f.close()
-
-      os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /sites/{user.name}/phpversion.sh')
-      os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /sites/{user.name}/phpversion.fish')
-
       print(f'php pool for {user.name} - generated')
+
+    with open(f'/sites/{user.name}/config.sh', 'w') as f:
+      if user.backend == 'php':
+        f.write(f'PATH=/webcrate-bin/php{php_path_prefix}:$PATH\n')
+      f.write(f'export DATA_FOLDER={data_folder}\n')
+      f.close()
+
+    with open(f'/sites/{user.name}/config.fish', 'w') as f:
+      if user.backend == 'php':
+        f.write(f'set PATH /webcrate-bin/php{php_path_prefix} $PATH\n')
+      f.write(f'set -x DATA_FOLDER {data_folder}\n')
+      f.close()
+
+    os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /sites/{user.name}/config.sh')
+    os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /sites/{user.name}/config.fish')
 
     if os.path.isfile(f'/webcrate/nginx-templates/{user.name}.conf'):
       with open(f'/webcrate/nginx-templates/{user.name}.conf', 'r') as f:
@@ -146,7 +150,7 @@ for username, user in users.items():
 
 
 if WEBCRATE_MODE == "DEV":
-  with open(f'/webcrate/dnsmasq_hosts/hosts_nginx', 'w') as f:
+  with open(f'/webcrate-dnsmasq/config/hosts_nginx', 'w') as f:
     for username, user in users.items():
       user.name = username
       f.write(f'{DOCKER_HOST_IP} {" ".join(user.domains)}\n')
@@ -158,4 +162,4 @@ os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/php56-fpm.d')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/php73-fpm.d')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/php74-fpm.d')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/php-fpm.d')
-os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/dnsmasq_hosts')
+os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate-dnsmasq/config')

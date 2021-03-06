@@ -14,6 +14,7 @@
 !/config/nginx-templates/default-gunicorn-user.conf
 !/config/nginx-templates/default-service.conf
 !/config/nginx-templates/drupal8.conf
-!/config/php-pool-templates/php7-default.conf
+!/config/php-pool-templates/php56-default.conf
 !/config/php-pool-templates/php73-default.conf
-!/config/php-pool-templates/php5-default.conf
+!/config/php-pool-templates/php74-default.conf
+!/config/php-pool-templates/php80-default.conf

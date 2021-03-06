@@ -148,7 +148,7 @@ docker run --rm --env-file=$(pwd)/.env \
   -v webcrate_php73_pools:/webcrate/php73-fpm.d \
   -v webcrate_php74_pools:/webcrate/php74-fpm.d \
   -v webcrate_php80_pools:/webcrate/php-fpm.d \
-  -v webcrate_dnsmasq_hosts:/webcrate/dnsmasq_hosts \
+  -v webcrate_dnsmasq_hosts:/webcrate-dnsmasq/config \
   ace5040/webcrate-utils:stable \
   /webcrate/parse-users.py
 
@@ -159,7 +159,7 @@ docker run --rm --env-file=$(pwd)/.env \
   -v $(pwd)/var/openssl:/webcrate/openssl:ro \
   -v webcrate_nginx_configs:/webcrate/nginx_configs \
   -v webcrate_ssl_configs:/webcrate/ssl_configs \
-  -v webcrate_dnsmasq_hosts:/webcrate/dnsmasq_hosts \
+  -v webcrate_dnsmasq_hosts:/webcrate-dnsmasq/config \
   ace5040/webcrate-utils:stable \
   /webcrate/parse-services.py
 
@@ -191,7 +191,7 @@ docker run -d --env-file=$(pwd)/.env --hostname webcrate-core --name webcrate-co
   -v webcrate_php73_pools:/etc/php73/php-fpm.d \
   -v webcrate_php74_pools:/etc/php74/php-fpm.d \
   -v webcrate_php80_pools:/etc/php/php-fpm.d \
-  -v webcrate_dnsmasq_hosts:/webcrate/dnsmasq_hosts \
+  -v webcrate_dnsmasq_hosts:/webcrate-dnsmasq/config \
   ace5040/webcrate-core:stable > /dev/null
 
 docker run -d --env-file=$(pwd)/.env --hostname webcrate --name webcrate \
@@ -199,6 +199,7 @@ docker run -d --env-file=$(pwd)/.env --hostname webcrate --name webcrate \
   --restart="unless-stopped" \
   -e WEBCRATE_UID=$uid \
   -e WEBCRATE_GID=$gid \
+  -v /home/ace/projects/webcrate-admin/webcrate-admin.test:/app \
   -v /etc/localtime:/etc/localtime:ro \
   -v $DOCKER_SOCKET:/var/run/docker.sock \
   -v $SITES_FOLDER_ABSOLUTE_PATH:/sites \

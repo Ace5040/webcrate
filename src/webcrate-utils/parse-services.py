@@ -59,11 +59,11 @@ for servicename, service in services.items():
       print(f'ssl config for {service.name} - generated')
 
 if WEBCRATE_MODE == "DEV":
-  with open(f'/webcrate/dnsmasq_hosts/hosts_nginx', 'a') as f:
+  with open(f'/webcrate-dnsmasq/config/hosts_nginx', 'a') as f:
     for servicename, service in services.items():
       service.name = servicename
       f.write(f'{DOCKER_HOST_IP} {service.domain}\n')
     f.close()
 
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/nginx_configs')
-os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/dnsmasq_hosts')
+os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate-dnsmasq/config')

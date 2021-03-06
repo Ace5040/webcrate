@@ -414,6 +414,7 @@ docker run -d --env-file=$(pwd)/.env --hostname webcrate-nginx --name webcrate-n
   -v $SITES_FOLDER_ABSOLUTE_PATH:/sites \
   -v /etc/localtime:/etc/localtime:ro \
   -v $(pwd)/users.yml:/webcrate/users.yml:ro \
+  -v $(pwd)/config/hrligapasswd:/webcrate/hrligapasswd:ro \
   -v $(pwd)/var/letsencrypt:/webcrate/letsencrypt:ro \
   -v $(pwd)/var/letsencrypt-meta:/webcrate/letsencrypt-meta:ro \
   -v $(pwd)/var/openssl:/webcrate/openssl:ro \

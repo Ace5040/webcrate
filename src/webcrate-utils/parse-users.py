@@ -32,7 +32,8 @@ for username, user in users.items():
 
   if not os.path.isdir(f'/sites/{user.name}'):
     os.system(f'mkdir -p /sites/{user.name}')
-    os.system(f'chown {WEBCRATE_UID if WEBCRATE_MODE == "DEV" else user.uid }:{WEBCRATE_GID if WEBCRATE_MODE == "DEV" else user.uid } /sites/{user.name}')
+  os.system(f'chown {WEBCRATE_UID if WEBCRATE_MODE == "DEV" else user.uid }:{WEBCRATE_GID if WEBCRATE_MODE == "DEV" else user.uid } /sites/{user.name}')
+  os.system(f'chmod 0770 /sites/{user.name}')
 
   if not os.path.isdir(f'/sites/{user.name}/{user.root_folder}'):
     os.system(f'mkdir -p /sites/{user.name}/{user.root_folder}')
@@ -88,11 +89,11 @@ for username, user in users.items():
         f.close()
 
       with open(f'/sites/{user.name}/phpversion.sh', 'w') as f:
-        f.write(f'PATH=/webcrate/bin/php{php_path_prefix}:$PATH')
+        f.write(f'PATH=/webcrate-bin/php{php_path_prefix}:$PATH')
         f.close()
 
       with open(f'/sites/{user.name}/phpversion.fish', 'w') as f:
-        f.write(f'set PATH /webcrate/bin/php{php_path_prefix} $PATH')
+        f.write(f'set PATH /webcrate-bin/php{php_path_prefix} $PATH')
         f.close()
 
       os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /sites/{user.name}/phpversion.sh')

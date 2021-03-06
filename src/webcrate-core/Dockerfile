@@ -65,16 +65,17 @@ COPY proftpd.conf /etc/proftpd.conf
 RUN printf "no-resolv\nno-poll\nno-hosts\naddn-hosts=/webcrate/dnsmasq_hosts/hosts_nginx\n" > /etc/dnsmasq.conf
 RUN echo ". /etc/profile.d/bashrc.sh" >> /etc/bash.bashrc
 RUN mkdir -p /webcrate; \
-    mkdir -p /webcrate/bin; \
-    mkdir -p /webcrate/bin/php; \
-    mkdir -p /webcrate/bin/php74; \
-    mkdir -p /webcrate/bin/php73; \
-    mkdir -p /webcrate/bin/php56; \
-    ln -s /bin/php56 /webcrate/bin/php56/php; \
-    ln -s /bin/php73 /webcrate/bin/php73/php; \
-    ln -s /bin/php7 /webcrate/bin/php74/php; \
-    ln -s /bin/php /webcrate/bin/php/php; \
-    mkdir -p /webcrate/fish
+    mkdir -p /webcrate-bin; \
+    mkdir -p /webcrate-bin/php; \
+    mkdir -p /webcrate-bin/php74; \
+    mkdir -p /webcrate-bin/php73; \
+    mkdir -p /webcrate-bin/php56; \
+    ln -s /bin/php56 /webcrate-bin/php56/php; \
+    ln -s /bin/php73 /webcrate-bin/php73/php; \
+    ln -s /bin/php7 /webcrate-bin/php74/php; \
+    ln -s /bin/php /webcrate-bin/php/php; \
+    mkdir -p /webcrate/fish \
+    chmod o-rwx /webcrate;
 WORKDIR /webcrate/fish
 RUN git clone https://github.com/oh-my-fish/oh-my-fish
 WORKDIR /webcrate/fish/oh-my-fish
@@ -98,7 +99,7 @@ COPY stats_pools.sh /webcrate/stats_pools.sh
 COPY bashrc.sh /etc/profile.d/bashrc.sh
 COPY fishrc.fish /etc/fish/conf.d/fishrc.fish
 COPY toprc /etc/telegraf/.config/procps/toprc
-COPY gunicorn_restart.sh /webcrate/bin/gunicorn_restart.sh
+COPY gunicorn_restart.sh /webcrate-bin/gunicorn_restart.sh
 COPY parse-users.py /webcrate/parse-users.py
 COPY versions.py /webcrate/versions.py
 COPY entrypoint.sh /entrypoint.sh
@@ -107,7 +108,7 @@ RUN chmod u+x /webcrate/sync_ssh_keys.sh; \
     chmod a+x /webcrate/stats_pools.sh; \
     mkdir -p /etc/telegraf/.config/procps; \
     rm /etc/mail/exim.conf; \
-    chmod a+x /webcrate/bin/gunicorn_restart.sh; \
+    chmod a+x /webcrate-bin/gunicorn_restart.sh; \
     chmod a+x /webcrate/parse-users.py; \
     chmod u+x /webcrate/versions.py; \
     chmod u+x /entrypoint.sh

@@ -39,7 +39,7 @@ RUN mkdir /app; \
     chown app:app /app
 USER app
 WORKDIR /app
-ARG V=1
+ARG V=2
 RUN git clone https://github.com/Ace5040/webcrate-admin.git .
 RUN sed -i "s/.*\"@auto-scripts\".*/ /g" composer.json;
 RUN composer install --no-scripts
@@ -55,3 +55,5 @@ RUN chmod u+x /webcrate/init-db.py
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY versions.py /webcrate/versions.py
 RUN chmod a+rxs /webcrate/versions.py
+COPY updateusers.py /webcrate/updateusers.py
+RUN chmod a+rxs /webcrate/updateusers.py

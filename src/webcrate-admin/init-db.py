@@ -10,9 +10,12 @@ WEBCRATE_MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
 WEBCRATE_ADMIN_EMAIL = os.environ.get('WEBCRATE_ADMIN_EMAIL', 'email@notset')
 WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
-os.system(f'usermod -u {WEBCRATE_UID} app > /dev/null 2>&1')
-os.system(f'groupmod -g {WEBCRATE_GID} app > /dev/null 2>&1')
-os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate > /dev/null 2>&1')
+if WEBCRATE_UID != '0':
+  os.system(f'usermod -u {WEBCRATE_UID} app > /dev/null 2>&1')
+  os.system(f'chown {WEBCRATE_UID} /webcrate > /dev/null 2>&1')
+if WEBCRATE_GID != '0':
+  os.system(f'groupmod -g {WEBCRATE_GID} app > /dev/null 2>&1')
+  os.system(f'chgrp {WEBCRATE_GID} /webcrate > /dev/null 2>&1')
 
 def is_mysql_up(host, password):
   return int(os.popen(f'mysql -u root -h {host} -p"{password}" -e "show databases;" | grep "Database" | wc -l').read().strip())

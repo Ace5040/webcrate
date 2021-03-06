@@ -199,7 +199,6 @@ docker run -d --env-file=$(pwd)/.env --hostname webcrate --name webcrate \
   --restart="unless-stopped" \
   -e WEBCRATE_UID=$uid \
   -e WEBCRATE_GID=$gid \
-  -v /home/ace/projects/webcrate-admin/webcrate-admin.test:/app \
   -v /etc/localtime:/etc/localtime:ro \
   -v $DOCKER_SOCKET:/var/run/docker.sock \
   -v $SITES_FOLDER_ABSOLUTE_PATH:/sites \

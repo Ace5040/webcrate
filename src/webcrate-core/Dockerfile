@@ -25,6 +25,7 @@ RUN gpg --keyserver keys.gnupg.net --recv-key 32E4B74757B1D65234FC389F293D771241
 RUN yay --noeditmenu --nodiffmenu --noconfirm -S docker-systemctl-replacement-git symfony-cli telegraf-bin tmux fish proftpd
 #RUN yay --noeditmenu --nodiffmenu --noconfirm -S drush-launcher
 RUN yay --noeditmenu --nodiffmenu --noconfirm -S vue-cli
+RUN yay --noeditmenu --nodiffmenu --noconfirm -S python38
 USER root
 RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/latest/download/drush.phar
 RUN chmod +x drush.phar
@@ -112,8 +113,4 @@ RUN chmod u+x /webcrate/sync_ssh_keys.sh; \
     chmod a+x /webcrate/parse-users.py; \
     chmod u+x /webcrate/versions.py; \
     chmod u+x /entrypoint.sh
-USER dev
-RUN yay --noeditmenu --nodiffmenu --noconfirm -S python38
-USER root
-WORKDIR /webcrate
 CMD ["/entrypoint.sh"]

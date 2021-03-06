@@ -39,7 +39,7 @@ RUN mkdir /app; \
     chown app:app /app
 USER app
 WORKDIR /app
-ARG V=2
+ARG V=3
 RUN git clone https://github.com/Ace5040/webcrate-admin.git .
 RUN sed -i "s/.*\"@auto-scripts\".*/ /g" composer.json;
 RUN composer install --no-scripts
@@ -48,6 +48,7 @@ RUN npm install
 RUN npm run build
 USER root
 RUN echo 'app ALL=(ALL) NOPASSWD: /webcrate/versions.py' | EDITOR='tee -a' visudo
+RUN echo 'app ALL=(ALL) NOPASSWD: /webcrate/updateusers.py' | EDITOR='tee -a' visudo
 RUN mkdir /webcrate; \
     chown app:app /webcrate
 COPY init-db.py /webcrate/init-db.py

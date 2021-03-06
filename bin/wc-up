@@ -422,7 +422,7 @@ docker run -d --env-file=$(pwd)/.env --hostname webcrate-nginx --name webcrate-n
   -v webcrate_nginx_configs:/etc/nginx/conf.d:ro \
   ace5040/webcrate-nginx:stable > /dev/null
 
-if [[ ! -f "./config/duplicity/globbing-filelist" ]] ; then
+if [[ -f "./config/duplicity/globbing-filelist" ]] ; then
   GFL=-v\ $(pwd)/config/duplicity/globbing-filelist:/webcrate/duplicity/globbing-filelist; else GFL='';
 fi
 

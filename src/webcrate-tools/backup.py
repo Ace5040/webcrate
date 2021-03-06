@@ -16,12 +16,12 @@ WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
 WEBCRATE_FULL_BACKUP_DAYS = os.environ.get('WEBCRATE_FULL_BACKUP_DAYS', '7')
 WEBCRATE_MAX_FULL_BACKUPS = os.environ.get('WEBCRATE_MAX_FULL_BACKUPS', '10')
 REMOTE_BACKUP_URI = os.environ.get('REMOTE_BACKUP_URI', 'file:///webcrate/backup')
-EXCLUDE_FILELIST = ''
 INCLUDE_FILELIST = ''
-if os.path.isfile('/webcrate/duplicity/exclude-filelist'):
-  EXCLUDE_FILELIST = '--exclude-filelist /webcrate/duplicity/exclude-filelist'
 if os.path.isfile('/webcrate/duplicity/include-filelist'):
   INCLUDE_FILELIST = '--include-filelist /webcrate/duplicity/include-filelist'
+EXCLUDE_FILELIST = ''
+if os.path.isfile('/webcrate/duplicity/exclude-filelist'):
+  EXCLUDE_FILELIST = '--exclude-filelist /webcrate/duplicity/exclude-filelist'
 for username,user in users.items():
   user.name = username
   if user.backup:
@@ -37,8 +37,8 @@ for username,user in users.items():
         f'--volsize 100 '
         f'--archive-dir /webcrate/duplicity/.duplicity '
         f'--log-file /webcrate/duplicity/duplicity.log '
-        f'{EXCLUDE_FILELIST} '
         f'{INCLUDE_FILELIST} '
+        f'{EXCLUDE_FILELIST} '
         f'"{data_folder}" '
         f'"{REMOTE_BACKUP_URI}/users/{user.name}/files"'
       )

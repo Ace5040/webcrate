@@ -422,10 +422,12 @@ docker run -d --env-file=$(pwd)/.env --hostname webcrate-nginx --name webcrate-n
   -v webcrate_nginx_configs:/etc/nginx/conf.d:ro \
   ace5040/webcrate-nginx:stable > /dev/null
 
-if [[ -f "./config/duplicity/globbing-filelist" ]] ; then
-  GFL=-v\ $(pwd)/config/duplicity/globbing-filelist:/webcrate/duplicity/globbing-filelist; else GFL='';
+if [[ -f "./config/duplicity/include-filelist" ]] ; then
+  IFL=-v\ $(pwd)/config/duplicity/include-filelist:/webcrate/duplicity/include-filelist; else IFL='';
 fi
-
+if [[ -f "./config/duplicity/exclude-filelist" ]] ; then
+  EFL=-v\ $(pwd)/config/duplicity/exclude-filelist:/webcrate/duplicity/exclude-filelist; else EFL='';
+fi
 docker run -d --env-file=$(pwd)/.env --hostname webcrate-tools --name webcrate-tools \
   --network="webcrate_network" --dns=172.31.0.100 \
   --restart="unless-stopped" \
@@ -442,6 +444,7 @@ docker run -d --env-file=$(pwd)/.env --hostname webcrate-tools --name webcrate-t
   -v $(pwd)/var/backup:/webcrate/backup \
   -v $(pwd)/var/secrets:/webcrate/secrets \
   -v $(pwd)/var/duplicity:/webcrate/duplicity \
-  $GFL \
+  $IFL \
+  $EFL \
   -v webcrate_ssl_configs:/webcrate/ssl_configs \
   ace5040/webcrate-tools:stable > /dev/null

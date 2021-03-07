@@ -165,14 +165,15 @@ docker run --rm --env-file=$(pwd)/.env \
 
 if [ "$WEBCRATE_MODE" == "DEV" ]; then WDS=-p\ "8080:8080/tcp"; else WDS=''; fi
 if [ "$WEBCRATE_MODE" == "DEV" ]; then DNS_MASQ=-p\ "53:53/udp"; else DNS_MASQ=''; fi
-if [ "$WEBCRATE_MODE" == "PRODUCTION" ]; then SSH_AND_FTP=-p\ "2222:22"\ -p\ "21:21"\ -p\ "20:20"\ -p\ "50000-50100:50000-50100"; else SSH_AND_FTP=''; fi
+if [ "$WEBCRATE_MODE" == "PRODUCTION" ]; then FTP=-p\ "21:21"\ -p\ "20:20"\ -p\ "50000-50100:50000-50100"; else FTP=''; fi
 
 docker run -d --env-file=$(pwd)/.env --hostname webcrate-core --name webcrate-core \
   --network="webcrate_network" --dns=172.31.0.100 --ip=172.31.0.100 \
   --restart="unless-stopped" \
   $WDS \
-  $SSH_AND_FTP \
+  $FTP \
   $DNS_MASQ \
+  -p "2222:22" \
   -e WEBCRATE_UID=$uid \
   -e WEBCRATE_GID=$gid \
   -v /etc/localtime:/etc/localtime:ro \

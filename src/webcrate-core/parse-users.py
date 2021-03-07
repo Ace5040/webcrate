@@ -26,6 +26,8 @@ if WEBCRATE_MODE == 'DEV':
 
 for username,user in users.items():
   user.name = username
+  UID = user.uid
+  GID = user.uid
 
   if WEBCRATE_MODE == 'DEV':
     UID = WEBCRATE_UID

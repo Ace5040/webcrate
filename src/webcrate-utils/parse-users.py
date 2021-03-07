@@ -71,8 +71,12 @@ for username, user in users.items():
         '73': '73',
         '7': '74'
       }.get(str(user.backend_version), '')
-      php_conf_path = f'/webcrate/php{php_path_prefix}-fpm.d/{user.name}.conf';
-      os.system(f'cp -rf /webcrate/custom_templates/php{user.backend_version}-default.conf {php_conf_path}')
+      php_conf_path = f'/webcrate/php{user.backend_version}-fpm.d/{user.name}.conf';
+
+      if os.path.isfile(f'/webcrate/custom_templates/{user.name}.conf'):
+        os.system(f'cp -rf /webcrate/custom_templates/{user.name}.conf {php_conf_path}')
+      else:
+        os.system(f'cp -rf /webcrate/custom_templates/php{user.backend_version}-default.conf {php_conf_path}')
 
       with open(php_conf_path, 'r') as f:
         conf = f.read()

@@ -3,7 +3,7 @@ export EDITOR=mcedit
 export VISUAL=mcedit
 export DRUSH_LAUNCHER_FALLBACK=~/.composer/vendor/bin/drush
 PATH=/webcrate-bin:$PATH
-if test -f ~/config.sh; then
+if test -e ~/config.sh; then
     source ~/config.sh
 fi
 [ -d "$HOME/$DATA_FOLDER" ] && cd ~/$DATA_FOLDER;

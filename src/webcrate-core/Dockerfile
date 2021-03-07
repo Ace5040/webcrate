@@ -65,6 +65,8 @@ WORKDIR /
 COPY proftpd.conf /etc/proftpd.conf
 RUN printf "no-resolv\nno-poll\nno-hosts\naddn-hosts=/webcrate-dnsmasq/config/hosts_nginx\n" > /etc/dnsmasq.conf
 RUN echo ". /etc/profile.d/bashrc.sh" >> /etc/bash.bashrc
+RUN echo 'dev ALL=(ALL) NOPASSWD: /bin/crontab' | EDITOR='tee -a' visudo
+RUN sed -i 's/test -r /test -e /g' /etc/profile
 RUN mkdir -p /webcrate; \
     mkdir -p /webcrate-bin; \
     mkdir -p /webcrate-bin/php; \
@@ -119,5 +121,4 @@ RUN chmod u+x /webcrate/sync_ssh_keys.sh; \
     chmod a+x /webcrate/parse-users.py; \
     chmod u+x /webcrate/versions.py; \
     chmod u+x /entrypoint.sh
-RUN echo 'dev ALL=(ALL) NOPASSWD: /bin/crontab' | EDITOR='tee -a' visudo
 CMD ["/entrypoint.sh"]

@@ -2,7 +2,7 @@ source /env.fish
 set fish_greeting ""
 set -x VISUAL mcedit
 set -x EDITOR mcedit
-set -x DRUSH_LAUNCHER_FALLBACK ~/.composer/vendor/bin/drush
+set -x DRUSH_LAUNCHER_FALLBACK ~/config/.composer/vendor/bin/drush
 set PATH /webcrate-bin $PATH
 set -x u $USER
 if test -e ~/config.fish

@@ -98,12 +98,20 @@ for username, user in users.items():
     with open(f'/sites/{user.name}/config.sh', 'w') as f:
       if user.backend == 'php':
         f.write(f'PATH=/webcrate-bin/php{php_path_prefix}:$PATH\n')
+        f.write(f'PATH=/sites/{user.name}/.config/composer/vendor/bin:$PATH\n')
+        f.write(f'PATH=/sites/{user.name}/{data_folder}/vendor/bin:$PATH\n')
+        f.write(f'export COMPOSER_HOME=/sites/{user.name}/.config/composer\n')
+        f.write(f'export DRUSH_PHP=/webcrate-bin/php{php_path_prefix}/php\n')
       f.write(f'export DATA_FOLDER={data_folder}\n')
       f.close()
 
     with open(f'/sites/{user.name}/config.fish', 'w') as f:
       if user.backend == 'php':
         f.write(f'set PATH /webcrate-bin/php{php_path_prefix} $PATH\n')
+        f.write(f'set PATH /sites/{user.name}/.config/composer/vendor/bin $PATH\n')
+        f.write(f'set PATH /sites/{user.name}/{data_folder}/vendor/bin $PATH\n')
+        f.write(f'set -x COMPOSER_HOME /sites/{user.name}/.config/composer\n')
+        f.write(f'set -x DRUSH_PHP /webcrate-bin/php{php_path_prefix}/php\n')
       f.write(f'set -x DATA_FOLDER {data_folder}\n')
       f.close()
 

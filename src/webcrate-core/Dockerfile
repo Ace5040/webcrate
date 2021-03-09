@@ -27,9 +27,12 @@ RUN yay --noeditmenu --nodiffmenu --noconfirm -S docker-systemctl-replacement-gi
 RUN yay --noeditmenu --nodiffmenu --noconfirm -S vue-cli
 RUN yay --noeditmenu --nodiffmenu --noconfirm -S python38
 USER root
-RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/latest/download/drush.phar
-RUN chmod +x drush.phar
-RUN mv drush.phar /usr/bin/drush
+RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/latest/download/drush.phar; \
+    chmod +x drush.phar; \
+    mv drush.phar /usr/bin/drush
+RUN wget -O drush.0.8.0.phar https://github.com/drush-ops/drush-launcher/releases/download/0.8.0/drush.phar; \
+    chmod +x drush.0.8.0.phar; \
+    mv drush.0.8.0.phar /usr/bin/drush.0.8.0
 RUN gem install compass --norc
 RUN pip install pyyml munch
 RUN pacman --noconfirm -R postfix
@@ -74,6 +77,7 @@ RUN mkdir -p /webcrate; \
     mkdir -p /webcrate-bin/php73; \
     mkdir -p /webcrate-bin/php56; \
     ln -s /bin/php56 /webcrate-bin/php56/php; \
+    ln -s /bin/drush.0.8.0 /webcrate-bin/php56/drush; \
     ln -s /bin/php73 /webcrate-bin/php73/php; \
     ln -s /bin/php7 /webcrate-bin/php74/php; \
     ln -s /bin/php /webcrate-bin/php/php; \

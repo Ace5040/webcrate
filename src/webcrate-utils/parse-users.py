@@ -68,9 +68,9 @@ for username, user in users.items():
   if os.path.isdir(f'/sites/{user.name}'):
     if user.backend == 'php':
       php_path_prefix = {
-        '5': '56',
+        '56': '56',
         '73': '73',
-        '7': '74'
+        '74': '74'
       }.get(str(user.backend_version), '')
       php_conf_path = f'/webcrate/php{user.backend_version}-fpm.d/{user.name}.conf';
 

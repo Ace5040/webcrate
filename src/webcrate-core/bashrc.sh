@@ -1,7 +1,7 @@
 source /env.bash
 export EDITOR=mcedit
 export VISUAL=mcedit
-export DRUSH_LAUNCHER_FALLBACK=~/config/.composer/vendor/bin/drush
+export DRUSH_LAUNCHER_FALLBACK=~/.config/composer/vendor/bin/drush
 PATH=/webcrate-bin:$PATH
 if test -e ~/config.sh; then
     source ~/config.sh

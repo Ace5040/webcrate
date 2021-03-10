@@ -18,6 +18,8 @@ CGI_PORT_START_NUMBER = 9000
 
 #clean up configs
 os.system(f'rm /webcrate/ssl_configs/* > /dev/null 2>&1')
+os.system(f'rm /webcrate/redirect_configs/* > /dev/null 2>&1')
+os.system(f'rm /webcrate/gzip_configs/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/nginx_configs/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/php56-fpm.d/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/php73-fpm.d/* > /dev/null 2>&1')
@@ -138,6 +140,25 @@ for username, user in users.items():
 
     print(f'nginx config for {user.name} - generated')
 
+    if user.redirect:
+      with open(f'/webcrate/redirect.conf', 'r') as f:
+        conf = f.read()
+        f.close()
+      conf = conf.replace('%main-domain%', user.domains[0])
+      with open(f'/webcrate/redirect_configs/{user.name}.conf', 'w') as f:
+        f.write(conf)
+        f.close()
+      print(f'redirect config for {user.name} - generated')
+
+    if user.gzip:
+      with open(f'/webcrate/gzip.conf', 'r') as f:
+        conf = f.read()
+        f.close()
+      with open(f'/webcrate/gzip_configs/{user.name}.conf', 'w') as f:
+        f.write(conf)
+        f.close()
+      print(f'gzip config for {user.name} - generated')
+
     if user.https == 'letsencrypt':
       if os.path.isdir(f'/webcrate/letsencrypt/live/{user.name}'):
         with open(f'/webcrate/ssl.conf', 'r') as f:
@@ -149,6 +170,7 @@ for username, user in users.items():
           f.write(conf)
           f.close()
         print(f'ssl config for {user.name} - generated')
+
     if user.https == 'openssl':
       if os.path.isdir(f'/webcrate/openssl/{user.name}'):
         with open(f'/webcrate/ssl.conf', 'r') as f:

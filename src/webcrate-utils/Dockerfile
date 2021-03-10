@@ -5,6 +5,8 @@ RUN pacman --needed --noconfirm -S mc certbot pwgen python python-pip
 RUN pip install pyyml munch
 RUN mkdir -p /webcrate
 COPY ssl.conf /webcrate/ssl.conf
+COPY redirect.conf /webcrate/redirect.conf
+COPY gzip.conf /webcrate/gzip.conf
 COPY parse-users.py /webcrate/parse-users.py
 COPY parse-services.py /webcrate/parse-services.py
 COPY create-user.py /webcrate/create-user.py

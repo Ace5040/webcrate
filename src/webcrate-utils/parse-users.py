@@ -22,6 +22,7 @@ CGI_PORT_START_NUMBER = 9000
 os.system(f'rm /webcrate/ssl_configs/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/redirect_configs/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/options_configs/* > /dev/null 2>&1')
+os.system(f'rm /webcrate/auth_locations_configs/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/gzip_configs/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/nginx_configs/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/php56-fpm.d/* > /dev/null 2>&1')
@@ -152,10 +153,28 @@ for username, user in users.items():
         f.write(conf)
         f.close()
       print(f'redirect config for {user.name} - generated')
+
     if user.nginx_options:
       with open(f'/webcrate/options_configs/{user.name}.conf', 'w') as f:
         for name, value in user.nginx_options.items():
           f.write(f'{name} {value};\n')
+        f.close()
+      print(f'nginx options config for {user.name} - generated')
+
+    if user.auth_locations:
+      with open(f'/webcrate/auth_locations_configs/{user.name}.conf', 'w') as f:
+        index = 0
+        for auth_location in user.auth_locations:
+          index = index + 1
+          f.write(
+            f'location {auth_location.path} {{\n'
+            f'  auth_basic "{auth_location.title}";\n'
+            f'  auth_basic_user_file /webcrate/auth_locations_configs/{user.name}-{index}.password;\n'
+            f'}}\n\n'
+          )
+          with open(f'/webcrate/auth_locations_configs/{user.name}-{index}.password', 'w') as pf:
+            pf.write(f'{auth_location.user}:{auth_location.password}\n')
+            pf.close()
         f.close()
       print(f'nginx options config for {user.name} - generated')
 
@@ -202,6 +221,7 @@ if WEBCRATE_MODE == "DEV":
 
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/ssl_configs')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/options_configs')
+os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/auth_locations_configs')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/redirect_configs')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/gzip_configs')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/nginx_configs')

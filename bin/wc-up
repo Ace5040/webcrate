@@ -120,6 +120,9 @@ WEBCRATE_SYNAPSE_DOMAIN=`cat ./services.yml | awk "/synapse:/,/nginx_config:/" |
 docker volume create webcrate_dnsmasq_hosts
 docker volume create webcrate_nginx_configs
 docker volume create webcrate_ssl_configs
+docker volume create webcrate_redirect_configs
+docker volume create webcrate_options_configs
+docker volume create webcrate_gzip_configs
 docker volume create webcrate_php56_pools
 docker volume create webcrate_php73_pools
 docker volume create webcrate_php74_pools
@@ -144,6 +147,9 @@ docker run --rm --env-file=$(pwd)/.env \
   -v $(pwd)/var/openssl:/webcrate/openssl:ro \
   -v webcrate_nginx_configs:/webcrate/nginx_configs \
   -v webcrate_ssl_configs:/webcrate/ssl_configs \
+  -v webcrate_gzip_configs:/webcrate/gzip_configs \
+  -v webcrate_redirect_configs:/webcrate/redirect_configs \
+  -v webcrate_options_configs:/webcrate/options_configs \
   -v webcrate_php56_pools:/webcrate/php56-fpm.d \
   -v webcrate_php73_pools:/webcrate/php73-fpm.d \
   -v webcrate_php74_pools:/webcrate/php74-fpm.d \
@@ -421,6 +427,9 @@ docker run -d --env-file=$(pwd)/.env --hostname webcrate-nginx --name webcrate-n
   -v $(pwd)/var/openssl:/webcrate/openssl:ro \
   -v $(pwd)/var/logs/nginx:/webcrate/logs \
   -v webcrate_ssl_configs:/webcrate/ssl_configs:ro \
+  -v webcrate_gzip_configs:/webcrate/gzip_configs:ro \
+  -v webcrate_redirect_configs:/webcrate/redirect_configs:ro \
+  -v webcrate_options_configs:/webcrate/options_configs:ro \
   -v webcrate_nginx_configs:/etc/nginx/conf.d:ro \
   ace5040/webcrate-nginx:stable > /dev/null
 

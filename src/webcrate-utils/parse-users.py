@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 import yaml
 from munch import munchify
 from pprint import pprint
+import json
 
 with open('/webcrate/users.yml', 'r') as f:
   users = munchify(yaml.safe_load(f))
@@ -19,6 +21,7 @@ CGI_PORT_START_NUMBER = 9000
 #clean up configs
 os.system(f'rm /webcrate/ssl_configs/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/redirect_configs/* > /dev/null 2>&1')
+os.system(f'rm /webcrate/options_configs/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/gzip_configs/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/nginx_configs/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/php56-fpm.d/* > /dev/null 2>&1')
@@ -149,6 +152,12 @@ for username, user in users.items():
         f.write(conf)
         f.close()
       print(f'redirect config for {user.name} - generated')
+    if user.nginx_options:
+      with open(f'/webcrate/options_configs/{user.name}.conf', 'w') as f:
+        for name, value in user.nginx_options.items():
+          f.write(f'{name} {value};\n')
+        f.close()
+      print(f'nginx options config for {user.name} - generated')
 
     if user.gzip:
       with open(f'/webcrate/gzip.conf', 'r') as f:
@@ -192,9 +201,13 @@ if WEBCRATE_MODE == "DEV":
     f.close()
 
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/ssl_configs')
+os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/options_configs')
+os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/redirect_configs')
+os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/gzip_configs')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/nginx_configs')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/php56-fpm.d')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/php73-fpm.d')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/php74-fpm.d')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/php80-fpm.d')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate-dnsmasq/config')
+sys.stdout.flush()

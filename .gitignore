@@ -3,13 +3,16 @@
 /users.yml
 /services.yml
 /config/nginx-templates/*
+/config/nginx/*
 /config/exim
 /config/php-pool-templates/*
 /config/duplicity/include-filelist
 /config/duplicity/exclude-filelist
 !/*.example
 !/config/exim/*.example
+!/config/nginx/nginx.conf
 !/config/nginx-templates/default-*.conf
+!/config/nginx-templates/default.conf
 !/config/php-pool-templates/php56-default.conf
 !/config/php-pool-templates/php73-default.conf
 !/config/php-pool-templates/php74-default.conf

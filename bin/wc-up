@@ -429,6 +429,7 @@ docker run -d --env-file=$(pwd)/.env --hostname webcrate-nginx --name webcrate-n
   -v $(pwd)/var/letsencrypt-meta:/webcrate/letsencrypt-meta:ro \
   -v $(pwd)/var/openssl:/webcrate/openssl:ro \
   -v $(pwd)/var/logs/nginx:/webcrate/logs \
+  -v $(pwd)/config/nginx:/webcrate/nginx-config:ro \
   -v webcrate_ssl_configs:/webcrate/ssl_configs:ro \
   -v webcrate_gzip_configs:/webcrate/gzip_configs:ro \
   -v webcrate_redirect_configs:/webcrate/redirect_configs:ro \

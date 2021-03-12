@@ -3,7 +3,7 @@ test: #project name = linux user name = ftp login = ssh login = home folder name
   password: $6$He6eNb6R$mEwUlFRu82L1IugfMyRB7ik0Z63PnzrrAVoNw5x54wORqiTze3gOgk03pT3AmCe3GW4easb85Dm4SgOE2r84P. #linux passwd hash
   domains: #domains list, first is main for optional redirect
     - test.test
-  nginx_config: custom #custom,default
+  nginx_template: default # for php: default/drupal8/drupal7/drupal6/html; for gunicorn: default
   root_folder: data/web #{project_data_filder}[/web_root_folder]
   https: openssl #disabled,openssl,letsencrypt
   backend: php #php,gunicorn
@@ -11,6 +11,10 @@ test: #project name = linux user name = ftp login = ssh login = home folder name
   gunicorn_app_module: '' #gunicorn app e.g.: app:app
   redirect: false #nginx redirect to main domain
   gzip: true #nginx gzip
+  nginx_options: #server context nginx options array
+    nginx_option_name: 'option value'
+  auth_locations: # locations protected by basic http auth
+    - { path: /admin, title: 'Protected admin interface', user: admin, password: hash } #hash is output of
   mysql_db: true #create mysql db
   mysql5_db: false #create mysql5 db
   postgresql_db: false #create postresql db

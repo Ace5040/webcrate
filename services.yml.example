@@ -1,6 +1,5 @@
 webcrate:
   domain: webcrate.test
-  nginx_config: default
   port: 80
   https: disabled
   mysql_db: yes
@@ -8,7 +7,6 @@ webcrate:
   postgresql_db: no
 synapse:
   domain: synapse.test
-  nginx_config: default
   port: 8008
   https: openssl
   mysql_db: no
@@ -16,7 +14,6 @@ synapse:
   postgresql_db: yes
 synapse-admin:
   domain: synapse-admin.test
-  nginx_config: default
   port: 80
   https: disabled
   mysql_db: no
@@ -24,7 +21,6 @@ synapse-admin:
   postgresql_db: no
 phpmyadmin:
   domain: phpmyadmin.test
-  nginx_config: default
   port: 8080
   https: disabled
   mysql_db: no
@@ -32,7 +28,6 @@ phpmyadmin:
   postgresql_db: no
 phppgadmin:
   domain: phppgadmin.test
-  nginx_config: default
   port: 80
   https: disabled
   mysql_db: no
@@ -40,7 +35,6 @@ phppgadmin:
   postgresql_db: no
 doctohtml:
   domain: doctohtml.test
-  nginx_config: default
   port: 3000
   https: disabled
   mysql_db: no
@@ -48,7 +42,6 @@ doctohtml:
   postgresql_db: no
 htmltopdf:
   domain: htmltopdf.test
-  nginx_config: default
   port: 3000
   https: disabled
   mysql_db: no
@@ -56,7 +49,6 @@ htmltopdf:
   postgresql_db: no
 grafana:
   domain: grafana.test
-  nginx_config: default
   port: 3000
   https: disabled
   mysql_db: no
@@ -64,7 +56,6 @@ grafana:
   postgresql_db: no
 solr:
   domain: solr.test
-  nginx_config: default
   port: 8983
   https: disabled
   mysql_db: no

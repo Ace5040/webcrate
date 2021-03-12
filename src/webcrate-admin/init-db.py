@@ -53,7 +53,7 @@ if retries > 0:
         print(f'webcrate admin user created')
       else:
         print(f'webcrate admin user exists')
-      os.system(f'cd /app; php bin/console doctrine:fixtures:load --group=Backends --group=HttpsTypes --append')
+      os.system(f'cd /app; php bin/console doctrine:fixtures:load --group=Backends --group=HttpsTypes --group=NginxTemplates --append')
       os.system(f'cd /app; php bin/console cache:pool:clear cache.app')
     else:
       print(f'webcrate database not found')

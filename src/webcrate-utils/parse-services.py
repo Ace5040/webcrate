@@ -17,8 +17,10 @@ print(f'WEBCRATE_MODE = {WEBCRATE_MODE}')
 
 for servicename, service in services.items():
   service.name = servicename
-
-  os.system(f'cp -rf /webcrate/nginx-templates/{service.name if service.nginx_config == "custom" else "default"}-service.conf /webcrate/nginx_configs/{service.name}-service.conf')
+  template = 'default';
+  if os.path.isfile(f'/webcrate/nginx-templates/{service.name}-service.conf'):
+    template = service.name
+  os.system(f'cp -rf /webcrate/nginx-templates/{template}-service.conf /webcrate/nginx_configs/{service.name}-service.conf')
 
   with open(f'/webcrate/nginx_configs/{service.name}-service.conf', 'r') as f:
     conf = f.read()

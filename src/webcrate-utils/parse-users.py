@@ -124,12 +124,12 @@ for username, user in users.items():
     os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /sites/{user.name}/config.sh')
     os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /sites/{user.name}/config.fish')
 
+    conf = ''
+    template = f'default-{user.backend}' if user.nginx_template == 'default' else f'default-{user.nginx_template}'
     if os.path.isfile(f'/webcrate/nginx-templates/{user.name}.conf'):
-      with open(f'/webcrate/nginx-templates/{user.name}.conf', 'r') as f:
-        conf = f.read()
-        f.close()
-    else:
-      with open(f'/webcrate/nginx-templates/default-{user.backend}-user.conf', 'r') as f:
+      template = user.name
+    if os.path.isfile(f'/webcrate/nginx-templates/{template}.conf'):
+      with open(f'/webcrate/nginx-templates/{template}.conf', 'r') as f:
         conf = f.read()
         f.close()
 

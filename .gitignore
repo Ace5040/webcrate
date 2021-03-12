@@ -9,11 +9,7 @@
 /config/duplicity/exclude-filelist
 !/*.example
 !/config/exim/*.example
-!/config/nginx-templates/default-php-user.conf
-!/config/nginx-templates/default.conf
-!/config/nginx-templates/default-gunicorn-user.conf
-!/config/nginx-templates/default-service.conf
-!/config/nginx-templates/drupal8.conf
+!/config/nginx-templates/default-*.conf
 !/config/php-pool-templates/php56-default.conf
 !/config/php-pool-templates/php73-default.conf
 !/config/php-pool-templates/php74-default.conf

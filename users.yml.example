@@ -15,6 +15,8 @@ test: #project name = linux user name = ftp login = ssh login = home folder name
     nginx_option_name: 'option value'
   auth_locations: # locations protected by basic http auth
     - { path: /admin, title: 'Protected admin interface', user: admin, password: hash } #hash is output of
+  #text to be appended at the end of nginx server context
+  nginx_block: "location ~* \"\\.(woff|woff2|ttf|svg|eot)$\" {\r\n    add_header 'Access-Control-Allow-Origin' '*';\r\n}"
   mysql_db: true #create mysql db
   mysql5_db: false #create mysql5 db
   postgresql_db: false #create postresql db

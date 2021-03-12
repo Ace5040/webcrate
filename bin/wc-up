@@ -122,6 +122,7 @@ docker volume create webcrate_nginx_configs
 docker volume create webcrate_ssl_configs
 docker volume create webcrate_redirect_configs
 docker volume create webcrate_options_configs
+docker volume create webcrate_block_configs
 docker volume create webcrate_auth_locations_configs
 docker volume create webcrate_gzip_configs
 docker volume create webcrate_php56_pools
@@ -151,6 +152,7 @@ docker run --rm --env-file=$(pwd)/.env \
   -v webcrate_gzip_configs:/webcrate/gzip_configs \
   -v webcrate_redirect_configs:/webcrate/redirect_configs \
   -v webcrate_options_configs:/webcrate/options_configs \
+  -v webcrate_block_configs:/webcrate/block_configs \
   -v webcrate_auth_locations_configs:/webcrate/auth_locations_configs \
   -v webcrate_php56_pools:/webcrate/php56-fpm.d \
   -v webcrate_php73_pools:/webcrate/php73-fpm.d \
@@ -431,6 +433,7 @@ docker run -d --env-file=$(pwd)/.env --hostname webcrate-nginx --name webcrate-n
   -v webcrate_gzip_configs:/webcrate/gzip_configs:ro \
   -v webcrate_redirect_configs:/webcrate/redirect_configs:ro \
   -v webcrate_options_configs:/webcrate/options_configs:ro \
+  -v webcrate_block_configs:/webcrate/block_configs:ro \
   -v webcrate_auth_locations_configs:/webcrate/auth_locations_configs:ro \
   -v webcrate_nginx_configs:/etc/nginx/conf.d:ro \
   ace5040/webcrate-nginx:stable > /dev/null

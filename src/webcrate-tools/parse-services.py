@@ -13,15 +13,11 @@ DOCKER_HOST_IP = os.environ.get('DOCKER_HOST_IP', '')
 WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
 
-
 WEBCRATE_SERVICE_HTMLTOPDF = os.environ.get('WEBCRATE_SERVICE_HTMLTOPDF', 'false') == 'true'
 WEBCRATE_SERVICE_DOCTOHTML = os.environ.get('WEBCRATE_SERVICE_DOCTOHTML', 'false') == 'true'
 WEBCRATE_SERVICE_SOLR = os.environ.get('WEBCRATE_SERVICE_SOLR', 'false') == 'true'
 WEBCRATE_SERVICE_SYNAPSE = os.environ.get('WEBCRATE_SERVICE_SYNAPSE', 'false') == 'true'
 WEBCRATE_SERVICE_STATS = os.environ.get('WEBCRATE_SERVICE_STATS', 'false') == 'true'
-
-print(WEBCRATE_SERVICE_HTMLTOPDF)
-print(WEBCRATE_SERVICE_STATS)
 
 for servicename, service in services.items():
   if  ( servicename != 'synapse' or WEBCRATE_SERVICE_SYNAPSE  ) and \

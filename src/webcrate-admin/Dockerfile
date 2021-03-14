@@ -39,7 +39,7 @@ RUN mkdir /app; \
     chown app:app /app
 USER app
 WORKDIR /app
-ARG V=11
+ARG V=13
 RUN git clone https://github.com/Ace5040/webcrate-admin.git .
 RUN sed -i "s/.*\"@auto-scripts\".*/ /g" composer.json;
 RUN composer install --no-scripts
@@ -49,12 +49,15 @@ RUN npm run build
 USER root
 RUN echo 'app ALL=(ALL) NOPASSWD: /webcrate/versions.py' | EDITOR='tee -a' visudo
 RUN echo 'app ALL=(ALL) NOPASSWD: /webcrate/updateusers.py' | EDITOR='tee -a' visudo
+RUN echo 'app ALL=(ALL) NOPASSWD: /webcrate/reload.py' | EDITOR='tee -a' visudo
 RUN mkdir /webcrate; \
     chown app:app /webcrate
 COPY init-db.py /webcrate/init-db.py
-RUN chmod u+x /webcrate/init-db.py
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY versions.py /webcrate/versions.py
-RUN chmod a+rxs /webcrate/versions.py
 COPY updateusers.py /webcrate/updateusers.py
-RUN chmod a+rxs /webcrate/updateusers.py
+COPY reload.py /webcrate/reload.py
+RUN chmod u+x /webcrate/init-db.py; \
+    chmod a+rxs /webcrate/versions.py; \
+    chmod a+rxs /webcrate/updateusers.py; \
+    chmod a+rxs /webcrate/reload.py

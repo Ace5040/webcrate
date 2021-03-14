@@ -1,7 +1,7 @@
 FROM archlinux:latest
 RUN echo "Set disable_coredump false" >> /etc/sudo.conf
 RUN pacman --noconfirm -Syu; \
-    pacman --needed --noconfirm -S base-devel git unzip mariadb-clients postgresql-libs cronie python-pip certbot duplicity lftp;
+    pacman --needed --noconfirm -S base-devel git unzip mariadb-clients postgresql-libs cronie python python-pip certbot duplicity lftp pwgen;
 RUN useradd -m -s /bin/bash dev; \
     usermod -p "dev" dev; \
     echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo
@@ -23,15 +23,23 @@ RUN systemctl enable cronie;
 WORKDIR /
 RUN mkdir -p /webcrate;
 COPY ssl.conf /webcrate/ssl.conf
+COPY gzip.conf /webcrate/gzip.conf
+COPY redirect.conf /webcrate/redirect.conf
 COPY parse-configs.py /webcrate/parse-configs.py
+COPY parse-users.py /webcrate/parse-users.py
+COPY parse-services.py /webcrate/parse-services.py
 COPY certbot-renew.py /webcrate/certbot-renew.py
 COPY certbot-renew-deploy.py /webcrate/certbot-renew-deploy.py
 COPY backup.py /webcrate/backup.py
 COPY entrypoint.sh /entrypoint.sh
+COPY pwgen.sh /webcrate/pwgen.sh
 RUN chmod a+x /webcrate/parse-configs.py; \
+    chmod a+x /webcrate/parse-users.py; \
+    chmod a+x /webcrate/parse-services.py; \
     chmod a+x /webcrate/certbot-renew.py; \
     chmod a+x /webcrate/certbot-renew-deploy.py; \
     chmod a+x /webcrate/backup.py; \
+    chmod u+x /webcrate/pwgen.sh; \
     chmod u+x /entrypoint.sh
 RUN echo '*/10 * * * * root . /docker.env; /webcrate/parse-configs.py;' > /etc/cron.d/parse-configs
 RUN echo '0 6 * * * root . /docker.env; /webcrate/certbot-renew.py' > /etc/cron.d/certbot-renew

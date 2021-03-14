@@ -4,7 +4,9 @@ RUN apt-get --assume-yes install python3 python3-pip sudo
 RUN pip3 install pyyaml munch
 RUN mkdir -p /webcrate
 COPY parse-users.py /webcrate/parse-users.py
-RUN chmod u+x /webcrate/parse-users.py
+COPY reload.py /webcrate/reload.py
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod u+x /entrypoint.sh
+RUN chmod u+x /webcrate/parse-users.py; \
+    chmod u+x /webcrate/reload.py; \
+    chmod u+x /entrypoint.sh
 CMD ["/entrypoint.sh"]

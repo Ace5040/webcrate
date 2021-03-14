@@ -116,13 +116,15 @@ COPY gunicorn_restart.sh /webcrate-bin/gunicorn_restart.sh
 COPY parse-users.py /webcrate/parse-users.py
 COPY versions.py /webcrate/versions.py
 COPY entrypoint.sh /entrypoint.sh
+COPY reload.py /webcrate/reload.py
 RUN chmod u+x /webcrate/sync_ssh_keys.sh; \
     chmod a+x /webcrate-telegraf/stats_users.sh; \
     chmod a+x /webcrate-telegraf/stats_pools.sh; \
     mkdir -p /etc/telegraf/.config/procps; \
     rm /etc/mail/exim.conf; \
     chmod a+x /webcrate-bin/gunicorn_restart.sh; \
-    chmod a+x /webcrate/parse-users.py; \
+    chmod u+x /webcrate/parse-users.py; \
+    chmod u+x /webcrate/reload.py; \
     chmod u+x /webcrate/versions.py; \
     chmod u+x /entrypoint.sh
 CMD ["/entrypoint.sh"]

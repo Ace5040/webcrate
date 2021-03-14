@@ -1,0 +1,46 @@
+#!/bin/bash
+
+SCRIPT=`realpath $0`
+SCRIPTPATH=`dirname $SCRIPT`
+cd $SCRIPTPATH/..
+source .env
+source ./bin/wc-init.inc
+uid=$(id -u);
+gid=$(id -u);
+
+if [[ $SITES_PATH == /* ]]; then SITES_FOLDER_ABSOLUTE_PATH=$SITES_PATH; else SITES_FOLDER_ABSOLUTE_PATH=$(pwd)/$SITES_PATH; fi
+
+docker run --rm --env-file=$(pwd)/.env --entrypoint /webcrate/parse-users.py \
+  -e WEBCRATE_UID=$uid \
+  -e WEBCRATE_GID=$gid \
+  -v $SITES_FOLDER_ABSOLUTE_PATH:/sites \
+  -v $(pwd)/users.yml:/webcrate/users.yml:ro \
+  -v $(pwd)/var/meta:/webcrate/meta \
+  -v $(pwd)/config/nginx-templates:/webcrate/nginx-templates:ro \
+  -v $(pwd)/config/php-pool-templates:/webcrate/custom_templates:ro \
+  -v $(pwd)/var/letsencrypt:/webcrate/letsencrypt:ro \
+  -v $(pwd)/var/openssl:/webcrate/openssl:ro \
+  -v webcrate_nginx_configs:/webcrate/nginx_configs \
+  -v webcrate_ssl_configs:/webcrate/ssl_configs \
+  -v webcrate_gzip_configs:/webcrate/gzip_configs \
+  -v webcrate_redirect_configs:/webcrate/redirect_configs \
+  -v webcrate_options_configs:/webcrate/options_configs \
+  -v webcrate_block_configs:/webcrate/block_configs \
+  -v webcrate_auth_locations_configs:/webcrate/auth_locations_configs \
+  -v webcrate_php56_pools:/webcrate/php56-fpm.d \
+  -v webcrate_php73_pools:/webcrate/php73-fpm.d \
+  -v webcrate_php74_pools:/webcrate/php74-fpm.d \
+  -v webcrate_php80_pools:/webcrate/php80-fpm.d \
+  -v webcrate_dnsmasq_hosts:/webcrate-dnsmasq/config \
+  ace5040/webcrate-tools:stable
+
+docker run --rm --env-file=$(pwd)/.env --entrypoint /webcrate/parse-services.py \
+  -v $(pwd)/services.yml:/webcrate/services.yml:ro \
+  -v $(pwd)/config/nginx-templates:/webcrate/nginx-templates:ro \
+  -v $(pwd)/var/letsencrypt:/webcrate/letsencrypt:ro \
+  -v $(pwd)/var/openssl:/webcrate/openssl:ro \
+  -v webcrate_nginx_configs:/webcrate/nginx_configs \
+  -v webcrate_ssl_configs:/webcrate/ssl_configs \
+  -v webcrate_dnsmasq_hosts:/webcrate-dnsmasq/config \
+  ace5040/webcrate-tools:stable
+

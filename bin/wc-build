@@ -9,4 +9,3 @@ docker build -t ace5040/webcrate-core:stable ./src/webcrate-core --cache-from ac
 docker build -t ace5040/webcrate-admin:stable ./src/webcrate-admin --cache-from ace5040/webcrate-admin:stable
 docker build -t ace5040/webcrate-tools:stable ./src/webcrate-tools --cache-from ace5040/webcrate-tools:stable
 docker build -t ace5040/webcrate-nginx:stable ./src/webcrate-nginx --cache-from ace5040/webcrate-nginx:stable
-docker build -t ace5040/webcrate-utils:stable ./src/webcrate-utils --cache-from ace5040/webcrate-utils:stable

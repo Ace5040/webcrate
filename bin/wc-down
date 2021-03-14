@@ -5,7 +5,6 @@ SCRIPTPATH=`dirname $SCRIPT`
 
 cd $SCRIPTPATH/..
 
-#docker-compose --project-name webcrate down
 docker stop webcrate-core webcrate webcrate-nginx webcrate-tools influxdb grafana solr htmltopdf doctohtml phppgadmin phpmyadmin mysql mysql5 postgres memcached synapse-admin synapse turn
 docker container rm webcrate-core webcrate webcrate-nginx webcrate-tools influxdb grafana solr htmltopdf doctohtml phppgadmin phpmyadmin mysql mysql5 postgres memcached synapse-admin synapse turn
 docker network rm webcrate_network

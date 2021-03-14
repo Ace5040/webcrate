@@ -18,7 +18,7 @@ WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
 UID_START_NUMBER = 100000
 CGI_PORT_START_NUMBER = 9000
 
-#clean up configs
+#cleanup configs
 os.system(f'rm /webcrate/ssl_configs/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/redirect_configs/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/options_configs/* > /dev/null 2>&1')
@@ -31,8 +31,6 @@ os.system(f'rm /webcrate/php73-fpm.d/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/php74-fpm.d/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/php80-fpm.d/* > /dev/null 2>&1')
 os.system(f'rm /webcrate-dnsmasq/config/* > /dev/null 2>&1')
-
-print(f'WEBCRATE_MODE = {WEBCRATE_MODE}')
 
 for username, user in users.items():
   user.name = username
@@ -75,16 +73,18 @@ for username, user in users.items():
   if os.path.isdir(f'/sites/{user.name}'):
     if user.backend == 'php':
       php_path_prefix = {
+        'latest': '80',
+        '80': '80',
         '56': '56',
         '73': '73',
         '74': '74'
       }.get(str(user.backend_version), '')
-      php_conf_path = f'/webcrate/php{user.backend_version}-fpm.d/{user.name}.conf';
+      php_conf_path = f'/webcrate/php{php_path_prefix}-fpm.d/{user.name}.conf';
 
       if os.path.isfile(f'/webcrate/custom_templates/{user.name}.conf'):
         os.system(f'cp -rf /webcrate/custom_templates/{user.name}.conf {php_conf_path}')
       else:
-        os.system(f'cp -rf /webcrate/custom_templates/php{user.backend_version}-default.conf {php_conf_path}')
+        os.system(f'cp -rf /webcrate/custom_templates/php{php_path_prefix}-default.conf {php_conf_path}')
 
       with open(php_conf_path, 'r') as f:
         conf = f.read()
@@ -226,6 +226,10 @@ if WEBCRATE_MODE == "DEV":
       f.write(f'{DOCKER_HOST_IP} {" ".join(user.domains)}\n')
     f.close()
 
+
+os.system('sha256sum /webcrate/users.yml | awk \'{print $1}\' | tr -d \'\n\' > /webcrate/meta/projects.checksum')
+
+os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/meta')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/ssl_configs')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/options_configs')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/auth_locations_configs')

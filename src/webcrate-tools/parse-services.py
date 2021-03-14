@@ -13,8 +13,6 @@ DOCKER_HOST_IP = os.environ.get('DOCKER_HOST_IP', '')
 WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
 
-print(f'WEBCRATE_MODE = {WEBCRATE_MODE}')
-
 for servicename, service in services.items():
   service.name = servicename
   template = 'default';

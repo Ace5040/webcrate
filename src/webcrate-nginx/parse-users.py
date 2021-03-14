@@ -3,7 +3,6 @@
 import os
 import yaml
 from munch import munchify
-from pprint import pprint
 
 with open('/webcrate/users.yml', 'r') as f:
   users = munchify(yaml.safe_load(f))
@@ -12,7 +11,7 @@ with open('/webcrate/users.yml', 'r') as f:
 SITES_PATH = '/sites'
 WEBCRATE_MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
-print(f'WEBCRATE_MODE = {WEBCRATE_MODE}')
+
 if WEBCRATE_MODE == 'PRODUCTION':
   for username,user in users.items():
     user.name = username

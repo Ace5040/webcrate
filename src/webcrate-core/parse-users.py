@@ -3,7 +3,6 @@
 import os
 import yaml
 from munch import munchify
-from pprint import pprint
 
 with open('/webcrate/users.yml', 'r') as f:
   users = munchify(yaml.safe_load(f))
@@ -33,7 +32,7 @@ for username,user in users.items():
     UID = WEBCRATE_UID
     GID = WEBCRATE_GID
 
-  os.system(f'groupadd --gid {GID} {user.name}')
+  os.system(f'groupadd --non-unique --gid {GID} {user.name}')
   os.system(f'useradd --non-unique --no-create-home --uid {UID} --gid {GID} --home-dir {SITES_PATH}/{user.name} {user.name}')
   os.system(f'usermod -s /bin/fish {user.name} > /dev/null 2>&1')
   os.system(f'chown {user.name}:{user.name} {SITES_PATH}/{user.name}')

@@ -59,13 +59,15 @@ else
     ace5040/webcrate-admin:stable > /dev/null
 fi
 
-if docker container inspect memcached >/dev/null 2> /dev/null; then
-  echo service memcached exists
-else
-  docker run -d --env-file=$(pwd)/.env --log-driver=none --name memcached \
-    --network="webcrate_network" --dns=172.31.0.100 \
-    --restart="unless-stopped" \
-    memcached:1 > /dev/null
+if [ "$WEBCRATE_SERVICE_MEMCACHED" = true ]; then
+  if docker container inspect memcached >/dev/null 2> /dev/null; then
+    echo service memcached exists
+  else
+    docker run -d --env-file=$(pwd)/.env --log-driver=none --name memcached \
+      --network="webcrate_network" --dns=172.31.0.100 \
+      --restart="unless-stopped" \
+      memcached:1 > /dev/null
+  fi
 fi
 
 if docker container inspect mysql5 >/dev/null 2> /dev/null; then
@@ -143,173 +145,183 @@ else
     bitnami/phppgadmin:7 > /dev/null
 fi
 
-if docker container inspect doctohtml >/dev/null 2> /dev/null; then
-  echo service doctohtml exists
-else
-  docker run -d --env-file=$(pwd)/.env --name doctohtml \
-    --network="webcrate_network" --dns=172.31.0.100 \
-    --restart="unless-stopped" \
-    -p "3000:3000" \
-    ace5040/doctohtml:latest > /dev/null
+if [ "$WEBCRATE_SERVICE_DOCTOHTML" = true ]; then
+  if docker container inspect doctohtml >/dev/null 2> /dev/null; then
+    echo service doctohtml exists
+  else
+    docker run -d --env-file=$(pwd)/.env --name doctohtml \
+      --network="webcrate_network" --dns=172.31.0.100 \
+      --restart="unless-stopped" \
+      -p "3000:3000" \
+      ace5040/doctohtml:latest > /dev/null
+  fi
 fi
 
-if docker container inspect htmltopdf >/dev/null 2> /dev/null; then
-  echo service htmltopdf exists
-else
-  docker run -d --env-file=$(pwd)/.env --name htmltopdf \
-    --network="webcrate_network" --dns=172.31.0.100 \
-    --restart="unless-stopped" \
-    -p "3001:3000" \
-    ace5040/htmltopdf:latest > /dev/null
+if [ "$WEBCRATE_SERVICE_HTMLTOPDF" = true ]; then
+  if docker container inspect htmltopdf >/dev/null 2> /dev/null; then
+    echo service htmltopdf exists
+  else
+    docker run -d --env-file=$(pwd)/.env --name htmltopdf \
+      --network="webcrate_network" --dns=172.31.0.100 \
+      --restart="unless-stopped" \
+      -p "3001:3000" \
+      ace5040/htmltopdf:latest > /dev/null
+  fi
 fi
 
-if docker container inspect solr >/dev/null 2> /dev/null; then
-  echo service solr exists
-else
-  docker run -d --env-file=$(pwd)/.env --log-driver=none --name solr \
-    --network="webcrate_network" --dns=172.31.0.100 \
-    --restart="unless-stopped" \
-    --user "$uid:$gid" \
-    -p "8983:8983" \
-    -v /etc/localtime:/etc/localtime:ro \
-    -v $(pwd)/var/solr/logs:/opt/solr/server/logs \
-    -v $(pwd)/var/solr/cores:/opt/solr/server/solr/mycores \
-    --entrypoint docker-entrypoint.sh \
-    solr:6 solr -m 4096m -force -f > /dev/null
+if [ "$WEBCRATE_SERVICE_SOLR" = true ]; then
+  if docker container inspect solr >/dev/null 2> /dev/null; then
+    echo service solr exists
+  else
+    docker run -d --env-file=$(pwd)/.env --log-driver=none --name solr \
+      --network="webcrate_network" --dns=172.31.0.100 \
+      --restart="unless-stopped" \
+      --user "$uid:$gid" \
+      -p "8983:8983" \
+      -v /etc/localtime:/etc/localtime:ro \
+      -v $(pwd)/var/solr/logs:/opt/solr/server/logs \
+      -v $(pwd)/var/solr/cores:/opt/solr/server/solr/mycores \
+      --entrypoint docker-entrypoint.sh \
+      solr:6 solr -m 4096m -force -f > /dev/null
+  fi
 fi
 
-if docker container inspect grafana >/dev/null 2> /dev/null; then
-  echo service grafana exists
-else
-  docker run -d --env-file=$(pwd)/.env --log-driver=none --name grafana \
-    --network="webcrate_network" --dns=172.31.0.100 \
-    --restart="unless-stopped" \
-    --user "$uid:$gid" \
-    -e GF_PATHS_DATA=/data \
-    -e GF_PATHS_LOGS=/log \
-    -e GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/home.json \
-    -p "8181:3000" \
-    -v /etc/localtime:/etc/localtime:ro \
-    -v $(pwd)/var/grafana/data:/data \
-    -v $(pwd)/var/grafana/log:/log \
-    -v $(pwd)/config/grafana/home.json:/home.json \
-    -v $(pwd)/config/grafana/dashboard.yml:/etc/grafana/provisioning/dashboards/default.yml \
-    -v $(pwd)/config/grafana/datasource.yml:/etc/grafana/provisioning/datasources/default.yml \
-    grafana/grafana:7.4.3 > /dev/null
+if [ "$WEBCRATE_SERVICE_STATS" = true ]; then
+  if docker container inspect grafana >/dev/null 2> /dev/null; then
+    echo service grafana exists
+  else
+    docker run -d --env-file=$(pwd)/.env --log-driver=none --name grafana \
+      --network="webcrate_network" --dns=172.31.0.100 \
+      --restart="unless-stopped" \
+      --user "$uid:$gid" \
+      -e GF_PATHS_DATA=/data \
+      -e GF_PATHS_LOGS=/log \
+      -e GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/home.json \
+      -p "8181:3000" \
+      -v /etc/localtime:/etc/localtime:ro \
+      -v $(pwd)/var/grafana/data:/data \
+      -v $(pwd)/var/grafana/log:/log \
+      -v $(pwd)/config/grafana/home.json:/home.json \
+      -v $(pwd)/config/grafana/dashboard.yml:/etc/grafana/provisioning/dashboards/default.yml \
+      -v $(pwd)/config/grafana/datasource.yml:/etc/grafana/provisioning/datasources/default.yml \
+      grafana/grafana:7.4.3 > /dev/null
+  fi
+
+  if docker container inspect influxdb >/dev/null 2> /dev/null; then
+    echo service influxdb exists
+  else
+    docker run -d --env-file=$(pwd)/.env --log-driver=none --name influxdb \
+      --network="webcrate_network" --dns=172.31.0.100 \
+      --restart="unless-stopped" \
+      --user "$uid:$gid" \
+      -e INFLUXDB_DB=telegraf \
+      -v /etc/localtime:/etc/localtime:ro \
+      -v $(pwd)/var/influxdb:/var/lib/influxdb \
+      influxdb:1.8-alpine > /dev/null
+  fi
 fi
 
-if docker container inspect influxdb >/dev/null 2> /dev/null; then
-  echo service influxdb exists
-else
-  docker run -d --env-file=$(pwd)/.env --log-driver=none --name influxdb \
-    --network="webcrate_network" --dns=172.31.0.100 \
-    --restart="unless-stopped" \
-    --user "$uid:$gid" \
-    -e INFLUXDB_DB=telegraf \
-    -v /etc/localtime:/etc/localtime:ro \
-    -v $(pwd)/var/influxdb:/var/lib/influxdb \
-    influxdb:1.8-alpine > /dev/null
+if [ "$WEBCRATE_SERVICE_SYNAPSE" = true ]; then
+  if docker container inspect synapse >/dev/null 2> /dev/null; then
+    echo service synapse exists
+  else
+    turn_secret=`cat ./var/secrets/turn.secret`
+
+    if [[ ! -f "./var/synapse/homeserver.yaml" ]] ; then
+      docker run -it --rm --hostname synapse --name synapse \
+        --user "$uid:$gid" \
+        --network="webcrate_network" --dns=172.31.0.100 \
+        -v $(pwd)/var/synapse:/data \
+        -e SYNAPSE_SERVER_NAME=$WEBCRATE_SYNAPSE_DOMAIN \
+        -e UID=$uid \
+        -e GID=$gid \
+        -e SYNAPSE_REPORT_STATS=yes \
+        matrixdotorg/synapse:latest generate
+      echo "" >> ./var/synapse/homeserver.yaml
+      echo "turn_uris:" >> ./var/synapse/homeserver.yaml
+      echo "  - \"turns:$WEBCRATE_SYNAPSE_DOMAIN?transport=udp\"" >> ./var/synapse/homeserver.yaml
+      echo "  - \"turns:$WEBCRATE_SYNAPSE_DOMAIN?transport=udp\"" >> ./var/synapse/homeserver.yaml
+      echo "  - \"turn:$WEBCRATE_SYNAPSE_DOMAIN?transport=udp\"" >> ./var/synapse/homeserver.yaml
+      echo "  - \"turn:$WEBCRATE_SYNAPSE_DOMAIN?transport=udp\"" >> ./var/synapse/homeserver.yaml
+      echo "turn_user_lifetime: \"10h\"" >> ./var/synapse/homeserver.yaml
+      echo "turn_shared_secret: \"$turn_secret\"" >> ./var/synapse/homeserver.yaml
+      echo "suppress_key_server_warning: true" >> ./var/synapse/homeserver.yaml
+
+      sed -i "s/^#max_upload_size: 10M$/max_upload_size: 10M/g" ./var/synapse/homeserver.yaml;
+      sed -i "s/^database:$/#database:/g" ./var/synapse/homeserver.yaml;
+      sed -i "s/^  name: sqlite3$/#  name: sqlite3/g" ./var/synapse/homeserver.yaml;
+      sed -i "s/^  args:$/#  args:/g" ./var/synapse/homeserver.yaml;
+      sed -i "s/^    database: \/data\/homeserver.db$/#    database: \/data\/homeserver.db/g" ./var/synapse/homeserver.yaml;
+
+      SYNAPSE_POSTGRES_PASS='';
+      if [[ -f "./var/secrets/synapse-service-postgres.txt" ]] ; then
+        SYNAPSE_POSTGRES_PASS=`cat ./var/secrets/synapse-service-postgres.txt|grep 'password='|grep -oP "(?<=password=).*" | head -c -1`
+      fi
+
+      echo "" >> ./var/synapse/homeserver.yaml
+      echo "database:" >> ./var/synapse/homeserver.yaml
+      echo "  name: psycopg2" >> ./var/synapse/homeserver.yaml
+      echo "  args:" >> ./var/synapse/homeserver.yaml
+      echo "    user: synapse" >> ./var/synapse/homeserver.yaml
+      echo "    password: \"$SYNAPSE_POSTGRES_PASS\"" >> ./var/synapse/homeserver.yaml
+      echo "    database: synapse" >> ./var/synapse/homeserver.yaml
+      echo "    host: postgres" >> ./var/synapse/homeserver.yaml
+      echo "    cp_min: 5" >> ./var/synapse/homeserver.yaml
+      echo "    cp_max: 10" >> ./var/synapse/homeserver.yaml
+
+      echo "" >> ./var/synapse/homeserver.yaml
+      echo "user_directory:" >> ./var/synapse/homeserver.yaml
+      echo "  search_all_users: true" >> ./var/synapse/homeserver.yaml
+
+    fi
+
+    docker run -d --hostname synapse --name synapse \
+      --network="webcrate_network" --dns=172.31.0.100 \
+      --restart="unless-stopped" \
+      --user "$uid:$gid" \
+      -e UID=$uid \
+      -e GID=$gid \
+      -v $(pwd)/var/synapse:/data \
+      -v $(pwd)/var/openssl:/webcrate/openssl \
+      matrixdotorg/synapse:latest
+  fi
+
+  if docker container inspect turn >/dev/null 2> /dev/null; then
+    echo service turn exists
+  else
+    docker run -d --hostname turn --name turn \
+      --network="webcrate_network" --dns=172.31.0.100 \
+      --restart="unless-stopped" \
+      -v $(pwd)/config/turn:/webcrate \
+      -v webcrate_coturn:/var/lib/coturn \
+      -p "3478:3478/udp" \
+      -p "3479:3479/udp" \
+      -p "5349:5349/udp" \
+      -p "49160-49200:49160-49200/udp" \
+      instrumentisto/coturn:4 -c /webcrate/turn.conf  \
+        --realm $WEBCRATE_SYNAPSE_DOMAIN \
+        --static-auth-secret="$turn_secret" \
+        --external-ip='$(detect-external-ip)' \
+        --relay-ip='$(detect-external-ip)'
+  fi
+
+  if docker container inspect synapse-admin >/dev/null 2> /dev/null; then
+    echo service synapse-admin exists
+  else
+    docker run -d --env-file=$(pwd)/.env --hostname synapse-admin --name synapse-admin \
+      --network="webcrate_network" --dns=172.31.0.100 \
+      --restart="unless-stopped" \
+      awesometechnologies/synapse-admin:latest
+
+    if [ "$GRAFANA_PASS" != "" ]; then
+      sleep 10; docker exec --user $uid:$gid grafana grafana-cli admin reset-admin-password "$GRAFANA_PASS"
+    fi
+
+    if [ "$SYNAPSE_PASS" != "" ]; then
+      sleep 10; docker exec synapse register_new_matrix_user -a --user admin --password "$SYNAPSE_PASS" -c /data/homeserver.yaml http://localhost:8008
+    fi
+  fi
 fi
-
-# if docker container inspect synapse >/dev/null 2> /dev/null; then
-#   echo service synapse exists
-# else
-#   turn_secret=`cat ./var/secrets/turn.secret`
-
-#   if [[ ! -f "./var/synapse/homeserver.yaml" ]] ; then
-#     docker run -it --rm --hostname synapse --name synapse \
-#       --user "$uid:$gid" \
-#       --network="webcrate_network" --dns=172.31.0.100 \
-#       -v $(pwd)/var/synapse:/data \
-#       -e SYNAPSE_SERVER_NAME=$WEBCRATE_SYNAPSE_DOMAIN \
-#       -e UID=$uid \
-#       -e GID=$gid \
-#       -e SYNAPSE_REPORT_STATS=yes \
-#       matrixdotorg/synapse:latest generate
-#     echo "" >> ./var/synapse/homeserver.yaml
-#     echo "turn_uris:" >> ./var/synapse/homeserver.yaml
-#     echo "  - \"turns:$WEBCRATE_SYNAPSE_DOMAIN?transport=udp\"" >> ./var/synapse/homeserver.yaml
-#     echo "  - \"turns:$WEBCRATE_SYNAPSE_DOMAIN?transport=udp\"" >> ./var/synapse/homeserver.yaml
-#     echo "  - \"turn:$WEBCRATE_SYNAPSE_DOMAIN?transport=udp\"" >> ./var/synapse/homeserver.yaml
-#     echo "  - \"turn:$WEBCRATE_SYNAPSE_DOMAIN?transport=udp\"" >> ./var/synapse/homeserver.yaml
-#     echo "turn_user_lifetime: \"10h\"" >> ./var/synapse/homeserver.yaml
-#     echo "turn_shared_secret: \"$turn_secret\"" >> ./var/synapse/homeserver.yaml
-#     echo "suppress_key_server_warning: true" >> ./var/synapse/homeserver.yaml
-
-#     sed -i "s/^#max_upload_size: 10M$/max_upload_size: 10M/g" ./var/synapse/homeserver.yaml;
-#     sed -i "s/^database:$/#database:/g" ./var/synapse/homeserver.yaml;
-#     sed -i "s/^  name: sqlite3$/#  name: sqlite3/g" ./var/synapse/homeserver.yaml;
-#     sed -i "s/^  args:$/#  args:/g" ./var/synapse/homeserver.yaml;
-#     sed -i "s/^    database: \/data\/homeserver.db$/#    database: \/data\/homeserver.db/g" ./var/synapse/homeserver.yaml;
-
-#     SYNAPSE_POSTGRES_PASS='';
-#     if [[ -f "./var/secrets/synapse-service-postgres.txt" ]] ; then
-#       SYNAPSE_POSTGRES_PASS=`cat ./var/secrets/synapse-service-postgres.txt|grep 'password='|grep -oP "(?<=password=).*" | head -c -1`
-#     fi
-
-#     echo "" >> ./var/synapse/homeserver.yaml
-#     echo "database:" >> ./var/synapse/homeserver.yaml
-#     echo "  name: psycopg2" >> ./var/synapse/homeserver.yaml
-#     echo "  args:" >> ./var/synapse/homeserver.yaml
-#     echo "    user: synapse" >> ./var/synapse/homeserver.yaml
-#     echo "    password: \"$SYNAPSE_POSTGRES_PASS\"" >> ./var/synapse/homeserver.yaml
-#     echo "    database: synapse" >> ./var/synapse/homeserver.yaml
-#     echo "    host: postgres" >> ./var/synapse/homeserver.yaml
-#     echo "    cp_min: 5" >> ./var/synapse/homeserver.yaml
-#     echo "    cp_max: 10" >> ./var/synapse/homeserver.yaml
-
-#     echo "" >> ./var/synapse/homeserver.yaml
-#     echo "user_directory:" >> ./var/synapse/homeserver.yaml
-#     echo "  search_all_users: true" >> ./var/synapse/homeserver.yaml
-
-#   fi
-
-#   docker run -d --hostname synapse --name synapse \
-#     --network="webcrate_network" --dns=172.31.0.100 \
-#     --restart="unless-stopped" \
-#     --user "$uid:$gid" \
-#     -e UID=$uid \
-#     -e GID=$gid \
-#     -v $(pwd)/var/synapse:/data \
-#     -v $(pwd)/var/openssl:/webcrate/openssl \
-#     matrixdotorg/synapse:latest
-# fi
-
-# if docker container inspect turn >/dev/null 2> /dev/null; then
-#   echo service turn exists
-# else
-#   docker run -d --hostname turn --name turn \
-#     --network="webcrate_network" --dns=172.31.0.100 \
-#     --restart="unless-stopped" \
-#     -v $(pwd)/config/turn:/webcrate \
-#     -v webcrate_coturn:/var/lib/coturn \
-#     -p "3478:3478/udp" \
-#     -p "3479:3479/udp" \
-#     -p "5349:5349/udp" \
-#     -p "49160-49200:49160-49200/udp" \
-#     instrumentisto/coturn:4 -c /webcrate/turn.conf  \
-#       --realm $WEBCRATE_SYNAPSE_DOMAIN \
-#       --static-auth-secret="$turn_secret" \
-#       --external-ip='$(detect-external-ip)' \
-#       --relay-ip='$(detect-external-ip)'
-# fi
-
-# if docker container inspect synapse-admin >/dev/null 2> /dev/null; then
-#   echo service synapse-admin exists
-# else
-#   docker run -d --env-file=$(pwd)/.env --hostname synapse-admin --name synapse-admin \
-#     --network="webcrate_network" --dns=172.31.0.100 \
-#     --restart="unless-stopped" \
-#     awesometechnologies/synapse-admin:latest
-
-#   if [ "$GRAFANA_PASS" != "" ]; then
-#     sleep 10; docker exec --user $uid:$gid grafana grafana-cli admin reset-admin-password "$GRAFANA_PASS"
-#   fi
-
-#   if [ "$SYNAPSE_PASS" != "" ]; then
-#     sleep 10; docker exec synapse register_new_matrix_user -a --user admin --password "$SYNAPSE_PASS" -c /data/homeserver.yaml http://localhost:8008
-#   fi
-# fi
 
 if docker container inspect webcrate-nginx >/dev/null 2> /dev/null; then
   echo service webcrate-nginx exists

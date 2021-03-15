@@ -21,14 +21,14 @@ GRAFANA_PASS=''
 if [[ ! -d "./var/grafana/data" ]] ; then
   mkdir -p "./var/grafana/data"
   mkdir -p "./var/grafana/log"
-  GRAFANA_PASS=`docker run --rm ace5040/webcrate-utils:stable /webcrate/pwgen.sh`
+  GRAFANA_PASS=`docker run --rm ace5040/webcrate-tools:stable /webcrate/pwgen.sh`
   echo "user=admin" > ./var/secrets/grafana.secret
   echo "password=\"$GRAFANA_PASS\"" >> ./var/secrets/grafana.secret
 fi
 
 if [[ ! -f "./var/secrets/webcrate.secret" ]] ; then
-  admin_password=`docker run --rm ace5040/webcrate-utils:stable /webcrate/pwgen.sh`
-  app_secret=`docker run --rm ace5040/webcrate-utils:stable pwgen -nAs1 32 1`
+  admin_password=`docker run --rm ace5040/webcrate-tools:stable /webcrate/pwgen.sh`
+  app_secret=`docker run --rm ace5040/webcrate-tools:stable pwgen -nAs1 32 1`
   echo "user=admin" > ./var/secrets/webcrate.secret
   echo "password=$admin_password" >> ./var/secrets/webcrate.secret
   echo "secret=$app_secret" >> ./var/secrets/webcrate.secret
@@ -36,8 +36,8 @@ fi
 
 SYNAPSE_PASS=''
 if [[ ! -f "./var/secrets/synapse.secret" ]] ; then
-  SYNAPSE_PASS=`docker run --rm ace5040/webcrate-utils:stable /webcrate/pwgen.sh`
-  TURN_SHARED_SECRET=`docker run --rm ace5040/webcrate-utils:stable pwgen -nAs1 32 1`
+  SYNAPSE_PASS=`docker run --rm ace5040/webcrate-tools:stable /webcrate/pwgen.sh`
+  TURN_SHARED_SECRET=`docker run --rm ace5040/webcrate-tools:stable pwgen -nAs1 32 1`
   echo "user=admin" > ./var/secrets/synapse.secret
   echo "password=$SYNAPSE_PASS" >> ./var/secrets/synapse.secret
   echo $TURN_SHARED_SECRET >> ./var/secrets/turn.secret

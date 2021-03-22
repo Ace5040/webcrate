@@ -126,7 +126,7 @@ for username,user in users.items():
     if retries > 0:
       mysql_database_found = int(os.popen(f'mysql -u root -h mysql -p"{mysql_root_password}" -e "show databases like \'{user.name}\';" | grep "Database ({user.name})" | wc -l').read().strip())
       if mysql_database_found == 0:
-        mysql_user_password=os.popen(f"docker run --rm ace5040/webcrate-utils:stable /webcrate/pwgen.sh").read().strip()
+        mysql_user_password=os.popen(f"/webcrate/pwgen.sh").read().strip()
         with open(f'/webcrate/secrets/{user.name}-mysql.txt', 'w') as f:
           f.write(f'host=mysql\n')
           f.write(f'name={user.name}\n')
@@ -151,7 +151,7 @@ for username,user in users.items():
     if retries > 0:
       mysql5_database_found = int(os.popen(f'mysql -u root -h mysql5 -p"{mysql5_root_password}" -e "show databases like \'{user.name}\';" | grep "Database ({user.name})" | wc -l').read().strip())
       if mysql5_database_found == 0:
-        mysql5_user_password=os.popen(f"docker run --rm ace5040/webcrate-utils:stable /webcrate/pwgen.sh").read().strip()
+        mysql5_user_password=os.popen(f"/webcrate/pwgen.sh").read().strip()
         with open(f'/webcrate/secrets/{user.name}-mysql5.txt', 'w') as f:
           f.write(f'host=mysql\n')
           f.write(f'db={user.name}\n')
@@ -176,7 +176,7 @@ for username,user in users.items():
     if retries > 0:
       postgres_database_found = os.popen(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "SELECT 1 FROM pg_database WHERE datname=\'{user.name}\';"').read().strip()
       if postgres_database_found != '1':
-        postgres_user_password=os.popen(f"docker run --rm ace5040/webcrate-utils:stable /webcrate/pwgen.sh").read().strip()
+        postgres_user_password=os.popen(f"/webcrate/pwgen.sh").read().strip()
         with open(f'/webcrate/secrets/{user.name}-postgres.txt', 'w') as f:
           f.write(f'host=postgres\n')
           f.write(f'db={user.name}\n')
@@ -252,7 +252,7 @@ for servicename,service in services.items():
     if retries > 0:
       mysql_database_found = int(os.popen(f'mysql -u root -h mysql -p"{mysql_root_password}" -e "show databases like \'{service.name}\';" | grep "Database ({service.name})" | wc -l').read().strip())
       if mysql_database_found == 0:
-        mysql_service_password=os.popen(f"docker run --rm ace5040/webcrate-utils:stable /webcrate/pwgen.sh").read().strip()
+        mysql_service_password=os.popen(f"/webcrate/pwgen.sh").read().strip()
         with open(f'/webcrate/secrets/{service.name}-service-mysql.txt', 'w') as f:
           f.write(f'host=mysql\n')
           f.write(f'name={service.name}\n')
@@ -277,7 +277,7 @@ for servicename,service in services.items():
     if retries > 0:
       mysql5_database_found = int(os.popen(f'mysql -u root -h mysql5 -p"{mysql5_root_password}" -e "show databases like \'{service.name}\';" | grep "Database ({service.name})" | wc -l').read().strip())
       if mysql5_database_found == 0:
-        mysql5_service_password=os.popen(f"docker run --rm ace5040/webcrate-utils:stable /webcrate/pwgen.sh").read().strip()
+        mysql5_service_password=os.popen(f"/webcrate/pwgen.sh").read().strip()
         with open(f'/webcrate/secrets/{service.name}-service-mysql5.txt', 'w') as f:
           f.write(f'host=mysql\n')
           f.write(f'db={service.name}\n')
@@ -302,7 +302,7 @@ for servicename,service in services.items():
     if retries > 0:
       postgres_database_found = os.popen(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "SELECT 1 FROM pg_database WHERE datname=\'{service.name}\';"').read().strip()
       if postgres_database_found != '1':
-        postgres_service_password=os.popen(f"docker run --rm ace5040/webcrate-utils:stable /webcrate/pwgen.sh").read().strip()
+        postgres_service_password=os.popen(f"/webcrate/pwgen.sh").read().strip()
         with open(f'/webcrate/secrets/{service.name}-service-postgres.txt', 'w') as f:
           f.write(f'host=postgres\n')
           f.write(f'db={service.name}\n')

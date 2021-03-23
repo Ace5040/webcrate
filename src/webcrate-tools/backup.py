@@ -9,7 +9,6 @@ with open('/webcrate/users.yml', 'r') as f:
   users = munchify(yaml.safe_load(f))
   f.close()
 
-SITES_PATH = '/sites'
 WEBCRATE_MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
 WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
@@ -26,7 +25,7 @@ for username,user in users.items():
   user.name = username
   if user.backup:
     #backup files
-    data_folder = f'{SITES_PATH}/{user.name}/{user.root_folder.split("/")[0]}'
+    data_folder = f'/projects{(user.volume + 1) if user.volume else ""}/{user.name}/{user.root_folder.split("/")[0]}'
     if os.path.isdir(f'{data_folder}'):
       print(f'backup files for user {user.name}')
       os.system(f'duplicity --verbosity notice '

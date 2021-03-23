@@ -21,7 +21,7 @@ else
     -e WEBCRATE_UID=$uid \
     -e WEBCRATE_GID=$gid \
     -v /etc/localtime:/etc/localtime:ro \
-    -v $SITES_FOLDER_ABSOLUTE_PATH:/sites \
+    $PROJECTS_VOLUMES \
     -v $(pwd)/var/crontabs:/var/spool/cron \
     -v $(pwd)/config/telegraf:/etc/telegraf/telegraf.d:ro \
     -v $(pwd)/users.yml:/webcrate/users.yml:ro \
@@ -48,14 +48,12 @@ else
     --restart="unless-stopped" \
     -e WEBCRATE_UID=$uid \
     -e WEBCRATE_GID=$gid \
+    -e WEBCRATE_PROJECTS_FOLDERS=$( IFS=:; printf '%s' "${WEBCRATE_PROJECTS_FOLDERS[*]}" ) \
     -v /etc/localtime:/etc/localtime:ro \
     -v $DOCKER_SOCKET:/var/run/docker.sock \
-    -v $SITES_FOLDER_ABSOLUTE_PATH:/sites \
     -v $(pwd)/var/meta:/webcrate/meta \
     -v $(pwd)/users.yml:/webcrate/users.yml \
     -v $(pwd)/services.yml:/webcrate/services.yml \
-    -v $(pwd)/var/secrets:/webcrate/secrets \
-    -v $(pwd)/config/exim/exim.conf:/etc/mail/exim.conf \
     ace5040/webcrate-admin:stable > /dev/null
 fi
 
@@ -333,7 +331,7 @@ else
     -e WEBCRATE_GID=$gid \
     -p "80:1080" \
     -p "443:1443" \
-    -v $SITES_FOLDER_ABSOLUTE_PATH:/sites \
+    $PROJECTS_VOLUMES \
     -v /etc/localtime:/etc/localtime:ro \
     -v $(pwd)/users.yml:/webcrate/users.yml:ro \
     -v $(pwd)/var/letsencrypt:/webcrate/letsencrypt:ro \
@@ -365,7 +363,7 @@ else
     --restart="unless-stopped" \
     -e WEBCRATE_UID=$uid \
     -e WEBCRATE_GID=$gid \
-    -v $SITES_FOLDER_ABSOLUTE_PATH:/sites \
+    $PROJECTS_VOLUMES \
     -v $DOCKER_SOCKET:/var/run/docker.sock \
     -v /etc/localtime:/etc/localtime:ro \
     -v $(pwd)/var/meta:/webcrate/meta \

@@ -5,7 +5,6 @@ import sys
 import yaml
 from munch import munchify
 
-SITES_PATH = '/sites'
 WEBCRATE_MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
 

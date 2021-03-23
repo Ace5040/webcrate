@@ -11,7 +11,22 @@ if [[ ! -f "./services.yml" ]] ; then
   cp ./services.yml.example ./services.yml
 fi
 
-var_folders=( "meta" "mysql" "synapse" "ssh" "mysql5" "postgres" "sites" "duplicity" "letsencrypt" "letsencrypt-meta/well-known" "openssl" "crontabs" "backup" "secrets" "solr/cores" "solr/logs" "influxdb" "logs/nginx" )
+PROJECTS_VOLUMES=""
+VOLUMES_COUNTER=0
+for SITES_PATH in ${WEBCRATE_PROJECTS_FOLDERS[@]}
+do
+    if [[ $SITES_PATH == /* ]]; then
+      SITES_ABSOLUTE_PATH=$SITES_PATH;
+    else
+      SITES_ABSOLUTE_PATH=$(pwd)/$SITES_PATH;
+    fi
+    if [[ $VOLUMES_COUNTER != 0 ]]; then let VOLUME_INDEX=$VOLUMES_COUNTER+1; else VOLUME_INDEX=""; fi
+    if [[ ! -d "$SITES_ABSOLUTE_PATH" ]] ; then mkdir -p "$SITES_ABSOLUTE_PATH"; fi
+    PROJECTS_VOLUMES="$PROJECTS_VOLUMES-v $SITES_ABSOLUTE_PATH:/projects${VOLUME_INDEX} "
+    let VOLUMES_COUNTER+=1
+done
+
+var_folders=( "meta" "mysql" "synapse" "ssh" "mysql5" "postgres" "duplicity" "letsencrypt" "letsencrypt-meta/well-known" "openssl" "crontabs" "backup" "secrets" "solr/cores" "solr/logs" "influxdb" "logs/nginx" )
 for i in "${var_folders[@]}"
 do
   if [[ ! -d "./var/$i" ]] ; then mkdir -p "./var/$i"; fi

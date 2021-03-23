@@ -8,12 +8,10 @@ source ./bin/wc-init.inc
 uid=$(id -u);
 gid=$(id -u);
 
-if [[ $SITES_PATH == /* ]]; then SITES_FOLDER_ABSOLUTE_PATH=$SITES_PATH; else SITES_FOLDER_ABSOLUTE_PATH=$(pwd)/$SITES_PATH; fi
-
 docker run --rm --env-file=$(pwd)/.env --entrypoint /webcrate/parse-users.py \
   -e WEBCRATE_UID=$uid \
   -e WEBCRATE_GID=$gid \
-  -v $SITES_FOLDER_ABSOLUTE_PATH:/sites \
+  $PROJECTS_VOLUMES \
   -v $(pwd)/users.yml:/webcrate/users.yml:ro \
   -v $(pwd)/var/meta:/webcrate/meta \
   -v $(pwd)/config/nginx-templates:/webcrate/nginx-templates:ro \

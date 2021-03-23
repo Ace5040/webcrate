@@ -7,6 +7,7 @@ from munch import munchify
 from pprint import pprint
 
 WEBCRATE_MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
+WEBCRATE_PROJECTS_FOLDERS = os.environ.get('WEBCRATE_PROJECTS_FOLDERS', 'var/projects')
 WEBCRATE_ADMIN_EMAIL = os.environ.get('WEBCRATE_ADMIN_EMAIL', 'email@notset')
 WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
@@ -38,6 +39,7 @@ if retries > 0:
       f.write(f'APP_SECRET={webcrate_secret}\n')
       f.write(f'WEBCRATE_UID={WEBCRATE_UID}\n')
       f.write(f'WEBCRATE_GID={WEBCRATE_GID}\n')
+      f.write(f'WEBCRATE_PROJECTS_FOLDERS={WEBCRATE_PROJECTS_FOLDERS}\n')
       f.write(f'DATABASE_URL=mysql://webcrate:{mysql_service_password}@mysql:3306/webcrate\n')
       f.close()
     mysql_database_found = int(os.popen(f'mysql -u webcrate -h mysql -p"{mysql_service_password}" -e "show databases like \'webcrate\';" | grep "Database (webcrate)" | wc -l').read().strip())

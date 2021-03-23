@@ -7,7 +7,6 @@ import json
 from munch import munchify
 from pprint import pprint
 
-SITES_PATH = '/sites'
 WEBCRATE_MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
 
 def execCommand(cmd):

@@ -7,9 +7,9 @@ gunicorn_pids_count=`printf "$gunicorn_pids" | wc -l`;
 
 if [[ $gunicorn_pids_count > 1 ]]; then
 
-    if [[ -f /sites/$user/tmp/gunicorn.pid ]]; then
+    if [[ -f ~/tmp/gunicorn.pid ]]; then
 
-      printf "$gunicorn_pids" | grep -f /sites/$user/tmp/gunicorn.pid | xargs kill -HUP
+      printf "$gunicorn_pids" | grep -f ~/tmp/gunicorn.pid | xargs kill -HUP
       echo HUP signal sent for main gunicorn process
 
     else

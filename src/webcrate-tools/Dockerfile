@@ -41,8 +41,8 @@ RUN chmod a+x /webcrate/parse-configs.py; \
     chmod a+x /webcrate/backup.py; \
     chmod u+x /webcrate/pwgen.sh; \
     chmod u+x /entrypoint.sh
-RUN echo '*/10 * * * * root . /docker.env; /webcrate/parse-configs.py;' > /etc/cron.d/parse-configs
-RUN echo '0 6 * * * root . /docker.env; /webcrate/certbot-renew.py' > /etc/cron.d/certbot-renew
-RUN echo '0 4 * * * root . /docker.env; /webcrate/backup.py' > /etc/cron.d/backup
+#RUN echo '*/10 * * * * root . /docker.env; /webcrate/parse-configs.py;' > /etc/cron.d/parse-configs
+RUN echo '0 6 * * 1 root . /docker.env; /webcrate/certbot-renew.py' > /etc/cron.d/certbot-renew
+RUN echo '0 3 * * * root . /docker.env; /webcrate/backup.py' > /etc/cron.d/backup
 WORKDIR /webcrate
 CMD ["/entrypoint.sh"]

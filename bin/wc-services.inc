@@ -52,6 +52,7 @@ else
     -v /etc/localtime:/etc/localtime:ro \
     -v $DOCKER_SOCKET:/var/run/docker.sock \
     -v $(pwd)/var/meta:/webcrate/meta \
+    -v $(pwd)/var/secrets:/webcrate/secrets \
     -v $(pwd)/users.yml:/webcrate/users.yml \
     -v $(pwd)/services.yml:/webcrate/services.yml \
     ace5040/webcrate-admin:stable > /dev/null

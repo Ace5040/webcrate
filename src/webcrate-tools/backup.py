@@ -33,6 +33,7 @@ for username,user in users.items():
         f'--full-if-older-than {WEBCRATE_FULL_BACKUP_DAYS}D '
         f'--num-retries 3 '
         f'--asynchronous-upload '
+        f'--allow-source-mismatch '
         f'--volsize 500 '
         f'--archive-dir /webcrate/duplicity/.duplicity '
         f'--log-file /webcrate/duplicity/duplicity.log '

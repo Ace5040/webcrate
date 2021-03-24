@@ -39,6 +39,7 @@ for username,user in users.items():
   password = str(user.password).replace("$", "\$")
   os.system(f'usermod -p {password} {user.name} > /dev/null 2>&1')
 
+  os.system(f'touch /etc/ftp.passwd')
   if hasattr(user, 'ftps') and user.ftps:
     with open(f'/etc/ftp.passwd', 'a') as f:
       for ftp in user.ftps:
@@ -47,8 +48,9 @@ for username,user in users.items():
         os.system(f'mkdir -p {ftp_folder}')
         os.system(f'chown -R {user.name}:{user.name} {ftp_folder}')
       f.close()
-    os.system(f'chmod a-rwx,u+rw /etc/ftp.passwd')
+
     print(f'additional ftp accounts for {user.name} - generated')
+  os.system(f'chmod a-rwx,u+rw /etc/ftp.passwd')
 
   if user.backend == 'gunicorn':
     data_folder=user.root_folder.split("/")[0]

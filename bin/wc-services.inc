@@ -31,7 +31,7 @@ else
     -v $(pwd)/config/php/php73.ini:/etc/php73/conf.d/user.ini:ro \
     -v $(pwd)/config/php/php74.ini:/etc/php7/conf.d/user.ini:ro \
     -v $(pwd)/config/php/php80.ini:/etc/php/conf.d/user.ini:ro \
-    -v $(pwd)/config/exim/exim.conf:/etc/mail/exim.conf \
+    -v $(pwd)/config/exim/exim.conf:/etc/mail/exim.original.conf \
     -v webcrate_php56_pools:/etc/php56/php-fpm.d \
     -v webcrate_php73_pools:/etc/php73/php-fpm.d \
     -v webcrate_php74_pools:/etc/php74/php-fpm.d \

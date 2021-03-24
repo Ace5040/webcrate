@@ -36,7 +36,12 @@ for username, user in users.items():
   user.name = username
   data_folder=user.root_folder.split("/")[0]
   port = CGI_PORT_START_NUMBER + user.uid - UID_START_NUMBER
-  user.folder = f'/projects{(user.volume + 1) if user.volume else ""}/{user.name}'
+
+  if hasattr(user, 'volume'):
+    user.folder = f'/projects{(user.volume + 1) if user.volume else ""}/{user.name}'
+  else:
+    user.folder = f'/projects/{user.name}'
+
   if not os.path.isdir(f'{user.folder}'):
     os.system(f'mkdir -p {user.folder}')
   os.system(f'chown {WEBCRATE_UID if WEBCRATE_MODE == "DEV" else user.uid }:{WEBCRATE_GID if WEBCRATE_MODE == "DEV" else user.uid } {user.folder}')

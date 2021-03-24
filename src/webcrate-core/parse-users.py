@@ -24,7 +24,12 @@ if WEBCRATE_MODE == 'DEV':
 
 for username,user in users.items():
   user.name = username
-  user.folder = f'/projects{(user.volume + 1) if user.volume else ""}/{user.name}'
+
+  if hasattr(user, 'volume'):
+    user.folder = f'/projects{(user.volume + 1) if user.volume else ""}/{user.name}'
+  else:
+    user.folder = f'/projects/{user.name}'
+
   UID = user.uid
   GID = user.uid
 

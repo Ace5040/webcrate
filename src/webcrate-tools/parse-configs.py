@@ -117,6 +117,18 @@ def is_postgresql_up(host, password):
 #parse users
 for username,user in users.items():
   user.name = username
+  UID = user.uid
+  GID = user.uid
+
+  if WEBCRATE_MODE == 'DEV':
+    UID = WEBCRATE_UID
+    GID = WEBCRATE_GID
+
+  if hasattr(user, 'volume'):
+    user.folder = f'/projects{(user.volume + 1) if user.volume else ""}/{user.name}'
+  else:
+    user.folder = f'/projects/{user.name}'
+
   if user.mysql_db:
     mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password="').read().strip().split("password=")[1][1:][:-1].replace("$", "\$")
     retries = 20
@@ -134,6 +146,9 @@ for username,user in users.items():
           f.write(f'password={mysql_user_password}\n')
           f.close()
         os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/secrets/{user.name}-mysql.txt')
+        os.system(f'cp /webcrate/secrets/{user.name}-mysql.txt {user.folder}/mysql.txt')
+        os.system(f'chown {UID}:{GID} {user.folder}/mysql.txt')
+        os.system(f'chmod a-rwx,u+rw {user.folder}/mysql.txt')
         os.system(f'mysql -u root -h mysql -p"{mysql_root_password}" -e "CREATE DATABASE \`{user.name}\`;"')
         os.system(f"mysql -u root -h mysql -p\"{mysql_root_password}\" -e \"CREATE USER \`{user.name}\`@'%' IDENTIFIED BY \\\"{mysql_user_password}\\\";\"")
         os.system(f"mysql -u root -h mysql -p\"{mysql_root_password}\" -e \"GRANT ALL PRIVILEGES ON \`{user.name}\` . * TO \`{user.name}\`@'%';\"")
@@ -159,6 +174,9 @@ for username,user in users.items():
           f.write(f'password={mysql5_user_password}\n')
           f.close()
         os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/secrets/{user.name}-mysql5.txt')
+        os.system(f'cp /webcrate/secrets/{user.name}-mysql5.txt {user.folder}/mysql5.txt')
+        os.system(f'chown {UID}:{GID} {user.folder}/mysql5.txt')
+        os.system(f'chmod a-rwx,u+rw {user.folder}/mysql5.txt')
         os.system(f'mysql -u root -h mysql5 -p"{mysql5_root_password}" -e "CREATE DATABASE \`{user.name}\`;"')
         os.system(f"mysql -u root -h mysql5 -p\"{mysql5_root_password}\" -e \"CREATE USER \`{user.name}\`@'%' IDENTIFIED BY \\\"{mysql5_user_password}\\\";\"")
         os.system(f"mysql -u root -h mysql5 -p\"{mysql5_root_password}\" -e \"GRANT ALL PRIVILEGES ON \`{user.name}\` . * TO \`{user.name}\`@'%';\"")
@@ -184,6 +202,9 @@ for username,user in users.items():
           f.write(f'password={postgres_user_password}\n')
           f.close()
         os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/secrets/{user.name}-postgres.txt')
+        os.system(f'cp /webcrate/secrets/{user.name}-postgres.txt {user.folder}/postgres.txt')
+        os.system(f'chown {UID}:{GID} {user.folder}/postgres.txt')
+        os.system(f'chmod a-rwx,u+rw {user.folder}/postgres.txt')
         os.system(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "CREATE DATABASE {user.name};"')
         os.system(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "CREATE USER {user.name} WITH ENCRYPTED PASSWORD \'{postgres_user_password}\';"')
         os.system(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "GRANT ALL PRIVILEGES ON DATABASE {user.name} TO {user.name};"')

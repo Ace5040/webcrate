@@ -1518,7 +1518,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "alias": "$tag_user",
+          "alias": "$tag_project",
           "groupBy": [
             {
               "params": [
@@ -1528,7 +1528,7 @@
             },
             {
               "params": [
-                "user"
+                "project"
               ],
               "type": "tag"
             },

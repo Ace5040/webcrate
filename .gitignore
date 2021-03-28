@@ -6,8 +6,6 @@
 /config/nginx/*
 /config/exim
 /config/php-pool-templates/*
-/config/duplicity/include-filelist
-/config/duplicity/exclude-filelist
 !/*.example
 !/config/exim/*.example
 !/config/nginx/nginx.conf

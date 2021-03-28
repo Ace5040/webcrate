@@ -353,12 +353,6 @@ fi
 if docker container inspect webcrate-tools >/dev/null 2> /dev/null; then
   echo service webcrate-tools exists
 else
-  if [[ -f "./config/duplicity/include-filelist" ]] ; then
-    IFL=-v\ $(pwd)/config/duplicity/include-filelist:/webcrate/duplicity/include-filelist; else IFL='';
-  fi
-  if [[ -f "./config/duplicity/exclude-filelist" ]] ; then
-    EFL=-v\ $(pwd)/config/duplicity/exclude-filelist:/webcrate/duplicity/exclude-filelist; else EFL='';
-  fi
   docker run -d --env-file=$(pwd)/.env --hostname webcrate-tools --name webcrate-tools \
     --network="webcrate_network" --dns=172.31.0.100 \
     --restart="unless-stopped" \
@@ -376,8 +370,6 @@ else
     -v $(pwd)/var/backup:/webcrate/backup \
     -v $(pwd)/var/secrets:/webcrate/secrets \
     -v $(pwd)/var/duplicity:/webcrate/duplicity \
-    $IFL \
-    $EFL \
     -v webcrate_ssl_configs:/webcrate/ssl_configs \
     -v $(pwd)/config/nginx-templates:/webcrate/nginx-templates:ro \
     -v $(pwd)/config/php-pool-templates:/webcrate/custom_templates:ro \

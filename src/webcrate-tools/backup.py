@@ -15,12 +15,6 @@ WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
 WEBCRATE_FULL_BACKUP_DAYS = os.environ.get('WEBCRATE_FULL_BACKUP_DAYS', '7')
 WEBCRATE_MAX_FULL_BACKUPS = os.environ.get('WEBCRATE_MAX_FULL_BACKUPS', '10')
 REMOTE_BACKUP_URI = os.environ.get('REMOTE_BACKUP_URI', 'file:///webcrate/backup')
-INCLUDE_FILELIST = ''
-if os.path.isfile('/webcrate/duplicity/include-filelist'):
-  INCLUDE_FILELIST = '--include-filelist /webcrate/duplicity/include-filelist'
-EXCLUDE_FILELIST = ''
-if os.path.isfile('/webcrate/duplicity/exclude-filelist'):
-  EXCLUDE_FILELIST = '--exclude-filelist /webcrate/duplicity/exclude-filelist'
 for username,user in users.items():
   user.name = username
   if user.backup:
@@ -29,7 +23,10 @@ for username,user in users.items():
       data_folder = f'/projects{(user.volume + 1) if user.volume else ""}/{user.name}/{user.root_folder.split("/")[0]}'
     else:
       data_folder = f'/projects/{user.name}/{user.root_folder.split("/")[0]}'
-
+    FILTERS = ''
+    if hasattr(user, 'duplicity_filters'):
+      for duplicity_filter in user.duplicity_filters:
+        FILTERS = f'{FILTERS}--{duplicity_filter.mode} "{data_folder}/{duplicity_filter.path}" '
     if os.path.isdir(f'{data_folder}'):
       print(f'backup files for user {user.name}')
       os.system(f'duplicity --verbosity notice '
@@ -41,17 +38,16 @@ for username,user in users.items():
         f'--volsize 500 '
         f'--archive-dir /webcrate/duplicity/.duplicity '
         f'--log-file /webcrate/duplicity/duplicity.log '
-        f'{INCLUDE_FILELIST} '
-        f'{EXCLUDE_FILELIST} '
+        f'{FILTERS}'
         f'"{data_folder}" '
-        f'"{REMOTE_BACKUP_URI}/users/{user.name}/files"'
+        f'"{REMOTE_BACKUP_URI}/projects/{user.name}/files"'
       )
       os.system(f'duplicity --verbosity notice '
         f'--archive-dir /webcrate/duplicity/.duplicity '
         f'--log-file /webcrate/duplicity/duplicity.log '
         f'--force '
         f'remove-all-but-n-full {WEBCRATE_MAX_FULL_BACKUPS} '
-        f'"{REMOTE_BACKUP_URI}/users/{user.name}/files"'
+        f'"{REMOTE_BACKUP_URI}/projects/{user.name}/files"'
       )
     #backup mysql
     if user.mysql_db:
@@ -69,7 +65,7 @@ for username,user in users.items():
         f'--archive-dir /webcrate/duplicity/.duplicity '
         f'--log-file /webcrate/duplicity/duplicity.log '
         f'"/webcrate/backup/tmp" '
-        f'"{REMOTE_BACKUP_URI}/users/{user.name}/mysql"'
+        f'"{REMOTE_BACKUP_URI}/projects/{user.name}/mysql"'
       )
       os.system(f'rm /webcrate/backup/tmp/*')
       os.system(f'duplicity --verbosity notice '
@@ -77,7 +73,7 @@ for username,user in users.items():
         f'--log-file /webcrate/duplicity/duplicity.log '
         f'--force '
         f'remove-all-but-n-full {WEBCRATE_MAX_FULL_BACKUPS} '
-        f'"{REMOTE_BACKUP_URI}/users/{user.name}/mysql"'
+        f'"{REMOTE_BACKUP_URI}/projects/{user.name}/mysql"'
       )
     #backup mysql5
     if user.mysql5_db:
@@ -95,7 +91,7 @@ for username,user in users.items():
         f'--archive-dir /webcrate/duplicity/.duplicity '
         f'--log-file /webcrate/duplicity/duplicity.log '
         f'"/webcrate/backup/tmp" '
-        f'"{REMOTE_BACKUP_URI}/users/{user.name}/mysql5"'
+        f'"{REMOTE_BACKUP_URI}/projects/{user.name}/mysql5"'
       )
       os.system(f'rm /webcrate/backup/tmp/*')
       os.system(f'duplicity --verbosity notice '
@@ -103,7 +99,7 @@ for username,user in users.items():
         f'--log-file /webcrate/duplicity/duplicity.log '
         f'--force '
         f'remove-all-but-n-full {WEBCRATE_MAX_FULL_BACKUPS} '
-        f'"{REMOTE_BACKUP_URI}/users/{user.name}/mysql5"'
+        f'"{REMOTE_BACKUP_URI}/projects/{user.name}/mysql5"'
       )
     #backup postgresql
     if user.postgresql_db:
@@ -121,7 +117,7 @@ for username,user in users.items():
         f'--archive-dir /webcrate/duplicity/.duplicity '
         f'--log-file /webcrate/duplicity/duplicity.log '
         f'"/webcrate/backup/tmp" '
-        f'"{REMOTE_BACKUP_URI}/users/{user.name}/postgresql"'
+        f'"{REMOTE_BACKUP_URI}/projects/{user.name}/postgresql"'
       )
       os.system(f'rm /webcrate/backup/tmp/*')
       os.system(f'duplicity --verbosity notice '
@@ -129,7 +125,7 @@ for username,user in users.items():
         f'--log-file /webcrate/duplicity/duplicity.log '
         f'--force '
         f'remove-all-but-n-full {WEBCRATE_MAX_FULL_BACKUPS} '
-        f'"{REMOTE_BACKUP_URI}/users/{user.name}/postgresql"'
+        f'"{REMOTE_BACKUP_URI}/projects/{user.name}/postgresql"'
       )
 
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/backup')

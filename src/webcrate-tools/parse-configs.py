@@ -59,8 +59,8 @@ nginx_reload_needed = False
 openssl_root_conf_changed = False
 
 any_letsencrypt_https_configs_found = False
-for username,user in projects.items():
-  if user.https == 'letsencrypt':
+for projectname,project in projects.items():
+  if project.https == 'letsencrypt':
     any_letsencrypt_https_configs_found = True
 for servicename,service in services.items():
   if service.https == 'letsencrypt':
@@ -123,150 +123,150 @@ if any_letsencrypt_https_configs_found:
     os.system(f'certbot register --config-dir /webcrate/letsencrypt --agree-tos --eff-email --email {LETSENCRYPT_EMAIL}')
 
 #parse projects
-for username,user in projects.items():
-  user.name = username
-  UID = user.uid
-  GID = user.uid
+for projectname,project in projects.items():
+  project.name = projectname
+  UID = project.uid
+  GID = project.uid
 
   if WEBCRATE_MODE == 'DEV':
     UID = WEBCRATE_UID
     GID = WEBCRATE_GID
 
-  if hasattr(user, 'volume'):
-    user.folder = f'/projects{(user.volume + 1) if user.volume else ""}/{user.name}'
+  if hasattr(project, 'volume'):
+    project.folder = f'/projects{(project.volume + 1) if project.volume else ""}/{project.name}'
   else:
-    user.folder = f'/projects/{user.name}'
+    project.folder = f'/projects/{project.name}'
 
-  if user.mysql_db:
+  if project.mysql_db:
     mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password="').read().strip().split("password=")[1][1:][:-1].replace("$", "\$")
     retries = 20
     while retries > 0 and is_mysql_up('mysql', mysql_root_password) == 0:
       retries -= 1
       time.sleep(5)
     if retries > 0:
-      mysql_database_found = int(os.popen(f'mysql -u root -h mysql -p"{mysql_root_password}" -e "show databases like \'{user.name}\';" | grep "Database ({user.name})" | wc -l').read().strip())
+      mysql_database_found = int(os.popen(f'mysql -u root -h mysql -p"{mysql_root_password}" -e "show databases like \'{project.name}\';" | grep "Database ({project.name})" | wc -l').read().strip())
       if mysql_database_found == 0:
         mysql_user_password=os.popen(f"/webcrate/pwgen.sh").read().strip()
-        with open(f'/webcrate/secrets/{user.name}-mysql.txt', 'w') as f:
+        with open(f'/webcrate/secrets/{project.name}-mysql.txt', 'w') as f:
           f.write(f'host=mysql\n')
-          f.write(f'name={user.name}\n')
-          f.write(f'user={user.name}\n')
+          f.write(f'name={project.name}\n')
+          f.write(f'user={project.name}\n')
           f.write(f'password={mysql_user_password}\n')
           f.close()
-        os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/secrets/{user.name}-mysql.txt')
-        os.system(f'cp /webcrate/secrets/{user.name}-mysql.txt {user.folder}/mysql.txt')
-        os.system(f'chown {UID}:{GID} {user.folder}/mysql.txt')
-        os.system(f'chmod a-rwx,u+rw {user.folder}/mysql.txt')
-        os.system(f'mysql -u root -h mysql -p"{mysql_root_password}" -e "CREATE DATABASE \`{user.name}\`;"')
-        os.system(f"mysql -u root -h mysql -p\"{mysql_root_password}\" -e \"CREATE USER \`{user.name}\`@'%' IDENTIFIED BY \\\"{mysql_user_password}\\\";\"")
-        os.system(f"mysql -u root -h mysql -p\"{mysql_root_password}\" -e \"GRANT ALL PRIVILEGES ON \`{user.name}\` . * TO \`{user.name}\`@'%';\"")
+        os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/secrets/{project.name}-mysql.txt')
+        os.system(f'cp /webcrate/secrets/{project.name}-mysql.txt {project.folder}/mysql.txt')
+        os.system(f'chown {UID}:{GID} {project.folder}/mysql.txt')
+        os.system(f'chmod a-rwx,u+rw {project.folder}/mysql.txt')
+        os.system(f'mysql -u root -h mysql -p"{mysql_root_password}" -e "CREATE DATABASE \`{project.name}\`;"')
+        os.system(f"mysql -u root -h mysql -p\"{mysql_root_password}\" -e \"CREATE USER \`{project.name}\`@'%' IDENTIFIED BY \\\"{mysql_user_password}\\\";\"")
+        os.system(f"mysql -u root -h mysql -p\"{mysql_root_password}\" -e \"GRANT ALL PRIVILEGES ON \`{project.name}\` . * TO \`{project.name}\`@'%';\"")
         os.system(f"mysql -u root -h mysql -p\"{mysql_root_password}\" -e \"FLUSH PRIVILEGES;\"")
-        print(f'mysql user {user.name} and db created')
+        print(f'mysql user {project.name} and db created')
       else:
-        print(f'mysql user {user.name} and db already exists')
+        print(f'mysql user {project.name} and db already exists')
 
-  if user.mysql5_db:
+  if project.mysql5_db:
     mysql5_root_password = os.popen(f'cat /webcrate/secrets/mysql5.cnf | grep "password="').read().strip().split("password=")[1][1:][:-1].replace("$", "\$")
     retries = 20
     while retries > 0 and is_mysql_up('mysql5', mysql5_root_password) == 0:
       retries -= 1
       time.sleep(5)
     if retries > 0:
-      mysql5_database_found = int(os.popen(f'mysql -u root -h mysql5 -p"{mysql5_root_password}" -e "show databases like \'{user.name}\';" | grep "Database ({user.name})" | wc -l').read().strip())
+      mysql5_database_found = int(os.popen(f'mysql -u root -h mysql5 -p"{mysql5_root_password}" -e "show databases like \'{project.name}\';" | grep "Database ({project.name})" | wc -l').read().strip())
       if mysql5_database_found == 0:
         mysql5_user_password=os.popen(f"/webcrate/pwgen.sh").read().strip()
-        with open(f'/webcrate/secrets/{user.name}-mysql5.txt', 'w') as f:
+        with open(f'/webcrate/secrets/{project.name}-mysql5.txt', 'w') as f:
           f.write(f'host=mysql\n')
-          f.write(f'db={user.name}\n')
-          f.write(f'user={user.name}\n')
+          f.write(f'db={project.name}\n')
+          f.write(f'user={project.name}\n')
           f.write(f'password={mysql5_user_password}\n')
           f.close()
-        os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/secrets/{user.name}-mysql5.txt')
-        os.system(f'cp /webcrate/secrets/{user.name}-mysql5.txt {user.folder}/mysql5.txt')
-        os.system(f'chown {UID}:{GID} {user.folder}/mysql5.txt')
-        os.system(f'chmod a-rwx,u+rw {user.folder}/mysql5.txt')
-        os.system(f'mysql -u root -h mysql5 -p"{mysql5_root_password}" -e "CREATE DATABASE \`{user.name}\`;"')
-        os.system(f"mysql -u root -h mysql5 -p\"{mysql5_root_password}\" -e \"CREATE USER \`{user.name}\`@'%' IDENTIFIED BY \\\"{mysql5_user_password}\\\";\"")
-        os.system(f"mysql -u root -h mysql5 -p\"{mysql5_root_password}\" -e \"GRANT ALL PRIVILEGES ON \`{user.name}\` . * TO \`{user.name}\`@'%';\"")
+        os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/secrets/{project.name}-mysql5.txt')
+        os.system(f'cp /webcrate/secrets/{project.name}-mysql5.txt {project.folder}/mysql5.txt')
+        os.system(f'chown {UID}:{GID} {project.folder}/mysql5.txt')
+        os.system(f'chmod a-rwx,u+rw {project.folder}/mysql5.txt')
+        os.system(f'mysql -u root -h mysql5 -p"{mysql5_root_password}" -e "CREATE DATABASE \`{project.name}\`;"')
+        os.system(f"mysql -u root -h mysql5 -p\"{mysql5_root_password}\" -e \"CREATE USER \`{project.name}\`@'%' IDENTIFIED BY \\\"{mysql5_user_password}\\\";\"")
+        os.system(f"mysql -u root -h mysql5 -p\"{mysql5_root_password}\" -e \"GRANT ALL PRIVILEGES ON \`{project.name}\` . * TO \`{project.name}\`@'%';\"")
         os.system(f"mysql -u root -h mysql5 -p\"{mysql5_root_password}\" -e \"FLUSH PRIVILEGES;\"")
-        print(f'mysql5 user {user.name} and db created')
+        print(f'mysql5 user {project.name} and db created')
       else:
-        print(f'mysql5 user {user.name} and db already exists')
+        print(f'mysql5 user {project.name} and db already exists')
 
-  if user.postgresql_db:
+  if project.postgresql_db:
     postgres_root_password = os.popen(f'cat /webcrate/secrets/postgres.cnf | grep "password="').read().strip().split("password=")[1][1:][:-1].replace("$", "\$")
     retries = 20
     while retries > 0 and is_postgresql_up('postgres', postgres_root_password) != '1':
       retries -= 1
       time.sleep(5)
     if retries > 0:
-      postgres_database_found = os.popen(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "SELECT 1 FROM pg_database WHERE datname=\'{user.name}\';"').read().strip()
+      postgres_database_found = os.popen(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "SELECT 1 FROM pg_database WHERE datname=\'{project.name}\';"').read().strip()
       if postgres_database_found != '1':
         postgres_user_password=os.popen(f"/webcrate/pwgen.sh").read().strip()
-        with open(f'/webcrate/secrets/{user.name}-postgres.txt', 'w') as f:
+        with open(f'/webcrate/secrets/{project.name}-postgres.txt', 'w') as f:
           f.write(f'host=postgres\n')
-          f.write(f'db={user.name}\n')
-          f.write(f'user={user.name}\n')
+          f.write(f'db={project.name}\n')
+          f.write(f'user={project.name}\n')
           f.write(f'password={postgres_user_password}\n')
           f.close()
-        os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/secrets/{user.name}-postgres.txt')
-        os.system(f'cp /webcrate/secrets/{user.name}-postgres.txt {user.folder}/postgres.txt')
-        os.system(f'chown {UID}:{GID} {user.folder}/postgres.txt')
-        os.system(f'chmod a-rwx,u+rw {user.folder}/postgres.txt')
-        os.system(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "CREATE DATABASE {user.name};"')
-        os.system(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "CREATE USER {user.name} WITH ENCRYPTED PASSWORD \'{postgres_user_password}\';"')
-        os.system(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "GRANT ALL PRIVILEGES ON DATABASE {user.name} TO {user.name};"')
-        print(f'postgresql user {user.name} and db created')
+        os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/secrets/{project.name}-postgres.txt')
+        os.system(f'cp /webcrate/secrets/{project.name}-postgres.txt {project.folder}/postgres.txt')
+        os.system(f'chown {UID}:{GID} {project.folder}/postgres.txt')
+        os.system(f'chmod a-rwx,u+rw {project.folder}/postgres.txt')
+        os.system(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "CREATE DATABASE {project.name};"')
+        os.system(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "CREATE USER {project.name} WITH ENCRYPTED PASSWORD \'{postgres_user_password}\';"')
+        os.system(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "GRANT ALL PRIVILEGES ON DATABASE {project.name} TO {project.name};"')
+        print(f'postgresql user {project.name} and db created')
       else:
-        print(f'postgresql user {user.name} and db already exists')
+        print(f'postgresql user {project.name} and db already exists')
 
-  if user.https == 'letsencrypt':
-    domains = ",".join(list(filter(lambda domain: domain.split('.')[-1] != 'test', user.domains)))
-    domains_prev = load_domains(user.name)
-    if ( domains != domains_prev or not os.path.isdir(f'/webcrate/letsencrypt/live/{user.name}') or not os.listdir(f'/webcrate/letsencrypt/live/{user.name}')) and len(domains):
-      with open(f'/webcrate/letsencrypt-meta/domains-{user.name}.txt', 'w') as f:
+  if project.https == 'letsencrypt':
+    domains = ",".join(list(filter(lambda domain: domain.split('.')[-1] != 'test', project.domains)))
+    domains_prev = load_domains(project.name)
+    if ( domains != domains_prev or not os.path.isdir(f'/webcrate/letsencrypt/live/{project.name}') or not os.listdir(f'/webcrate/letsencrypt/live/{project.name}')) and len(domains):
+      with open(f'/webcrate/letsencrypt-meta/domains-{project.name}.txt', 'w') as f:
         f.write(domains)
         f.close()
-      path = f'/webcrate/letsencrypt-meta/well-known/{user.name}'
+      path = f'/webcrate/letsencrypt-meta/well-known/{project.name}'
       if not os.path.isdir(path):
         os.system(f'mkdir -p {path}')
-      os.system(f'certbot certonly --keep-until-expiring --renew-with-new-domains --allow-subset-of-names --config-dir /webcrate/letsencrypt --cert-name {user.name} --expand --webroot --webroot-path {path} -d {domains}')
-      print(f'certificate for {user.name} - generated')
+      os.system(f'certbot certonly --keep-until-expiring --renew-with-new-domains --allow-subset-of-names --config-dir /webcrate/letsencrypt --cert-name {project.name} --expand --webroot --webroot-path {path} -d {domains}')
+      print(f'certificate for {project.name} - generated')
       nginx_reload_needed = True
 
-  if user.https == 'openssl':
+  if project.https == 'openssl':
     if openssl_root_conf_changed:
-      os.system(f'rm -r /webcrate/openssl/{user.name}')
-    conf = genereate_openssl_conf(user.name, user.domains, countryName, organizationName, OPENSSL_EMAIL)
-    conf_old = load_openssl_conf(user.name)
-    if conf_old != conf or not os.path.exists(f'/webcrate/openssl/{user.name}/privkey.pem') or not os.path.exists(f'/webcrate/openssl/{user.name}/fullchain.pem'):
-      os.system(f'mkdir -p /webcrate/openssl/{user.name}; rm /webcrate/openssl/{user.name}/*')
-      with open(f'/webcrate/openssl/{user.name}/openssl.cnf', 'w') as f:
+      os.system(f'rm -r /webcrate/openssl/{project.name}')
+    conf = genereate_openssl_conf(project.name, project.domains, countryName, organizationName, OPENSSL_EMAIL)
+    conf_old = load_openssl_conf(project.name)
+    if conf_old != conf or not os.path.exists(f'/webcrate/openssl/{project.name}/privkey.pem') or not os.path.exists(f'/webcrate/openssl/{project.name}/fullchain.pem'):
+      os.system(f'mkdir -p /webcrate/openssl/{project.name}; rm /webcrate/openssl/{project.name}/*')
+      with open(f'/webcrate/openssl/{project.name}/openssl.cnf', 'w') as f:
         f.write(conf)
         f.close()
-      os.system(f'openssl genrsa -out /webcrate/openssl/{user.name}/privkey.pem 2048')
-      os.system(f'openssl req -new -sha256 -key /webcrate/openssl/{user.name}/privkey.pem -out /webcrate/openssl/{user.name}/fullchain.csr -config /webcrate/openssl/{user.name}/openssl.cnf')
-      os.system(f'openssl x509 -req -extensions SAN -extfile /webcrate/openssl/{user.name}/openssl.cnf -in /webcrate/openssl/{user.name}/fullchain.csr -CA /webcrate/secrets/rootCA.crt -CAkey /webcrate/secrets/rootCA.key -CAcreateserial -out /webcrate/openssl/{user.name}/fullchain.pem -days 5000 -sha256')
+      os.system(f'openssl genrsa -out /webcrate/openssl/{project.name}/privkey.pem 2048')
+      os.system(f'openssl req -new -sha256 -key /webcrate/openssl/{project.name}/privkey.pem -out /webcrate/openssl/{project.name}/fullchain.csr -config /webcrate/openssl/{project.name}/openssl.cnf')
+      os.system(f'openssl x509 -req -extensions SAN -extfile /webcrate/openssl/{project.name}/openssl.cnf -in /webcrate/openssl/{project.name}/fullchain.csr -CA /webcrate/secrets/rootCA.crt -CAkey /webcrate/secrets/rootCA.key -CAcreateserial -out /webcrate/openssl/{project.name}/fullchain.pem -days 5000 -sha256')
       nginx_reload_needed = True
 
-  if user.https == 'openssl' or user.https == 'letsencrypt':
-    if not os.path.exists(f'/webcrate/ssl_configs/{user.name}.conf'):
-      if (os.path.exists(f'/webcrate/openssl/{user.name}/privkey.pem') and os.path.exists(f'/webcrate/openssl/{user.name}/fullchain.pem')) or (os.path.isdir(f'/webcrate/letsencrypt/live/{user.name}') and os.listdir(f'/webcrate/letsencrypt/live/{user.name}')):
+  if project.https == 'openssl' or project.https == 'letsencrypt':
+    if not os.path.exists(f'/webcrate/ssl_configs/{project.name}.conf'):
+      if (os.path.exists(f'/webcrate/openssl/{project.name}/privkey.pem') and os.path.exists(f'/webcrate/openssl/{project.name}/fullchain.pem')) or (os.path.isdir(f'/webcrate/letsencrypt/live/{project.name}') and os.listdir(f'/webcrate/letsencrypt/live/{project.name}')):
         nginx_reload_needed = True
         with open(f'/webcrate/ssl.conf', 'r') as f:
           conf = f.read()
           f.close()
-        conf = conf.replace('%type%', user.https)
-        conf = conf.replace('%path%', f'{"live/" if user.https == "letsencrypt" else ""}{user.name}')
-        with open(f'/webcrate/ssl_configs/{user.name}.conf', 'w') as f:
+        conf = conf.replace('%type%', project.https)
+        conf = conf.replace('%path%', f'{"live/" if project.https == "letsencrypt" else ""}{project.name}')
+        with open(f'/webcrate/ssl_configs/{project.name}.conf', 'w') as f:
           f.write(conf)
           f.close()
-        print(f'ssl config for {user.name} - generated')
+        print(f'ssl config for {project.name} - generated')
 
-  if user.https == 'disabled' and os.path.exists(f'/webcrate/ssl_configs/{user.name}.conf'):
+  if project.https == 'disabled' and os.path.exists(f'/webcrate/ssl_configs/{project.name}.conf'):
     nginx_reload_needed = True
-    os.system(f'rm /webcrate/ssl_configs/{user.name}.conf')
-    print(f'ssl config for {user.name} - removed')
+    os.system(f'rm /webcrate/ssl_configs/{project.name}.conf')
+    print(f'ssl config for {project.name} - removed')
 
 #parse services
 for servicename,service in services.items():

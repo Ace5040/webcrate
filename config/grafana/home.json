@@ -1539,7 +1539,7 @@
               "type": "fill"
             }
           ],
-          "measurement": "stats_projects",
+          "measurement": "stats_users",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "A",
@@ -1571,7 +1571,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "CPU - projects",
+      "title": "CPU - users",
       "tooltip": {
         "shared": true,
         "sort": 2,

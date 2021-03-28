@@ -33,5 +33,5 @@ for my $row (@data) {
 }
 
 while ( my ($u, $d) = each %projects) {
-  printf "stats_projects,user=%s pcpu=%.1f,mem=%di\n", @{$d};
+  printf "stats_projects,project=%s pcpu=%.1f,mem=%di\n", @{$d};
 }

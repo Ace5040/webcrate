@@ -12,11 +12,11 @@ WEBCRATE_MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
 
 if WEBCRATE_MODE == 'PRODUCTION':
-  for username,user in projects.items():
-    user.name = username
-    os.system(f'groupadd --gid {user.uid} {user.name}')
-    os.system(f'gpasswd -a nginx {user.name}')
-    print(f'group {user.name} - added')
+  for projectname,project in projects.items():
+    project.name = projectname
+    os.system(f'groupadd --gid {project.uid} {project.name}')
+    os.system(f'gpasswd -a nginx {project.name}')
+    print(f'group {project.name} - added')
 
 if WEBCRATE_MODE == 'DEV':
   if WEBCRATE_GID != 0:

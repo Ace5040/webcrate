@@ -15,20 +15,20 @@ WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
 WEBCRATE_FULL_BACKUP_DAYS = os.environ.get('WEBCRATE_FULL_BACKUP_DAYS', '7')
 WEBCRATE_MAX_FULL_BACKUPS = os.environ.get('WEBCRATE_MAX_FULL_BACKUPS', '10')
 REMOTE_BACKUP_URI = os.environ.get('REMOTE_BACKUP_URI', 'file:///webcrate/backup')
-for username,user in projects.items():
-  user.name = username
-  if user.backup:
+for projectname,project in projects.items():
+  project.name = projectname
+  if project.backup:
     #backup files
-    if hasattr(user, 'volume'):
-      data_folder = f'/projects{(user.volume + 1) if user.volume else ""}/{user.name}/{user.root_folder.split("/")[0]}'
+    if hasattr(project, 'volume'):
+      data_folder = f'/projects{(project.volume + 1) if project.volume else ""}/{project.name}/{project.root_folder.split("/")[0]}'
     else:
-      data_folder = f'/projects/{user.name}/{user.root_folder.split("/")[0]}'
+      data_folder = f'/projects/{project.name}/{project.root_folder.split("/")[0]}'
     FILTERS = ''
-    if hasattr(user, 'duplicity_filters'):
-      for duplicity_filter in user.duplicity_filters:
+    if hasattr(project, 'duplicity_filters'):
+      for duplicity_filter in project.duplicity_filters:
         FILTERS = f'{FILTERS}--{duplicity_filter.mode} "{data_folder}/{duplicity_filter.path}" '
     if os.path.isdir(f'{data_folder}'):
-      print(f'backup files for user {user.name}')
+      print(f'backup files for project {project.name}')
       os.system(f'duplicity --verbosity notice '
         f'--no-encryption '
         f'--full-if-older-than {WEBCRATE_FULL_BACKUP_DAYS}D '
@@ -40,22 +40,22 @@ for username,user in projects.items():
         f'--log-file /webcrate/duplicity/duplicity.log '
         f'{FILTERS}'
         f'"{data_folder}" '
-        f'"{REMOTE_BACKUP_URI}/projects/{user.name}/files"'
+        f'"{REMOTE_BACKUP_URI}/projects/{project.name}/files"'
       )
       os.system(f'duplicity --verbosity notice '
         f'--archive-dir /webcrate/duplicity/.duplicity '
         f'--log-file /webcrate/duplicity/duplicity.log '
         f'--force '
         f'remove-all-but-n-full {WEBCRATE_MAX_FULL_BACKUPS} '
-        f'"{REMOTE_BACKUP_URI}/projects/{user.name}/files"'
+        f'"{REMOTE_BACKUP_URI}/projects/{project.name}/files"'
       )
     #backup mysql
-    if user.mysql_db:
-      print(f'backup mysql db for user {user.name}')
+    if project.mysql_db:
+      print(f'backup mysql db for project {project.name}')
       mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
       os.system(f'mkdir -p /webcrate/backup/tmp')
       os.system(f'rm /webcrate/backup/tmp/*')
-      os.system(f'mysqldump --single-transaction --max_allowed_packet=64M -h mysql -u root -p"{mysql_root_password}" --result-file "/webcrate/backup/tmp/{user.name}.sql" "{user.name}"')
+      os.system(f'mysqldump --single-transaction --max_allowed_packet=64M -h mysql -u root -p"{mysql_root_password}" --result-file "/webcrate/backup/tmp/{project.name}.sql" "{project.name}"')
       os.system(f'duplicity --verbosity notice '
         f'--no-encryption '
         f'--full-if-older-than {WEBCRATE_FULL_BACKUP_DAYS}D '
@@ -65,7 +65,7 @@ for username,user in projects.items():
         f'--archive-dir /webcrate/duplicity/.duplicity '
         f'--log-file /webcrate/duplicity/duplicity.log '
         f'"/webcrate/backup/tmp" '
-        f'"{REMOTE_BACKUP_URI}/projects/{user.name}/mysql"'
+        f'"{REMOTE_BACKUP_URI}/projects/{project.name}/mysql"'
       )
       os.system(f'rm /webcrate/backup/tmp/*')
       os.system(f'duplicity --verbosity notice '
@@ -73,15 +73,15 @@ for username,user in projects.items():
         f'--log-file /webcrate/duplicity/duplicity.log '
         f'--force '
         f'remove-all-but-n-full {WEBCRATE_MAX_FULL_BACKUPS} '
-        f'"{REMOTE_BACKUP_URI}/projects/{user.name}/mysql"'
+        f'"{REMOTE_BACKUP_URI}/projects/{project.name}/mysql"'
       )
     #backup mysql5
-    if user.mysql5_db:
-      print(f'backup mysql5 db for user {user.name}')
+    if project.mysql5_db:
+      print(f'backup mysql5 db for project {project.name}')
       mysql5_root_password = os.popen(f'cat /webcrate/secrets/mysql5.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
       os.system(f'mkdir -p /webcrate/backup/tmp')
       os.system(f'rm /webcrate/backup/tmp/*')
-      os.system(f'mysqldump --single-transaction --max_allowed_packet=64M -h mysql5 -u root -p"{mysql5_root_password}" --result-file "/webcrate/backup/tmp/{user.name}.sql" "{user.name}"')
+      os.system(f'mysqldump --single-transaction --max_allowed_packet=64M -h mysql5 -u root -p"{mysql5_root_password}" --result-file "/webcrate/backup/tmp/{project.name}.sql" "{project.name}"')
       os.system(f'duplicity --verbosity notice '
         f'--no-encryption '
         f'--full-if-older-than {WEBCRATE_FULL_BACKUP_DAYS}D '
@@ -91,7 +91,7 @@ for username,user in projects.items():
         f'--archive-dir /webcrate/duplicity/.duplicity '
         f'--log-file /webcrate/duplicity/duplicity.log '
         f'"/webcrate/backup/tmp" '
-        f'"{REMOTE_BACKUP_URI}/projects/{user.name}/mysql5"'
+        f'"{REMOTE_BACKUP_URI}/projects/{project.name}/mysql5"'
       )
       os.system(f'rm /webcrate/backup/tmp/*')
       os.system(f'duplicity --verbosity notice '
@@ -99,15 +99,15 @@ for username,user in projects.items():
         f'--log-file /webcrate/duplicity/duplicity.log '
         f'--force '
         f'remove-all-but-n-full {WEBCRATE_MAX_FULL_BACKUPS} '
-        f'"{REMOTE_BACKUP_URI}/projects/{user.name}/mysql5"'
+        f'"{REMOTE_BACKUP_URI}/projects/{project.name}/mysql5"'
       )
     #backup postgresql
-    if user.postgresql_db:
-      print(f'backup postgresql db for user {user.name}')
+    if project.postgresql_db:
+      print(f'backup postgresql db for project {project.name}')
       postgres_root_password = os.popen(f'cat /webcrate/secrets/postgres.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
       os.system(f'mkdir -p /webcrate/backup/tmp')
       os.system(f'rm /webcrate/backup/tmp/*')
-      os.system(f'PGPASSWORD={postgres_root_password} pg_dump -U postgres -h postgres {user.name} > /webcrate/backup/tmp/{user.name}.pgsql')
+      os.system(f'PGPASSWORD={postgres_root_password} pg_dump -U postgres -h postgres {project.name} > /webcrate/backup/tmp/{project.name}.pgsql')
       os.system(f'duplicity --verbosity notice '
         f'--no-encryption '
         f'--full-if-older-than {WEBCRATE_FULL_BACKUP_DAYS}D '
@@ -117,7 +117,7 @@ for username,user in projects.items():
         f'--archive-dir /webcrate/duplicity/.duplicity '
         f'--log-file /webcrate/duplicity/duplicity.log '
         f'"/webcrate/backup/tmp" '
-        f'"{REMOTE_BACKUP_URI}/projects/{user.name}/postgresql"'
+        f'"{REMOTE_BACKUP_URI}/projects/{project.name}/postgresql"'
       )
       os.system(f'rm /webcrate/backup/tmp/*')
       os.system(f'duplicity --verbosity notice '
@@ -125,7 +125,7 @@ for username,user in projects.items():
         f'--log-file /webcrate/duplicity/duplicity.log '
         f'--force '
         f'remove-all-but-n-full {WEBCRATE_MAX_FULL_BACKUPS} '
-        f'"{REMOTE_BACKUP_URI}/projects/{user.name}/postgresql"'
+        f'"{REMOTE_BACKUP_URI}/projects/{project.name}/postgresql"'
       )
 
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/backup')

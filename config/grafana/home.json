@@ -1539,7 +1539,7 @@
               "type": "fill"
             }
           ],
-          "measurement": "stats_users",
+          "measurement": "stats_projects",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "A",
@@ -1571,7 +1571,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "CPU - users",
+      "title": "CPU - projects",
       "tooltip": {
         "shared": true,
         "sort": 2,
@@ -21096,8 +21096,8 @@
       "scopedVars": {
         "mountpoint": {
           "selected": false,
-          "text": "/webcrate/users.yml",
-          "value": "/webcrate/users.yml"
+          "text": "/webcrate/projects.yml",
+          "value": "/webcrate/projects.yml"
         }
       },
       "title": "Disk space usage for $mountpoint",
@@ -21158,8 +21158,8 @@
       "scopedVars": {
         "mountpoint": {
           "selected": false,
-          "text": "/webcrate/users.yml",
-          "value": "/webcrate/users.yml"
+          "text": "/webcrate/projects.yml",
+          "value": "/webcrate/projects.yml"
         }
       },
       "seriesOverrides": [
@@ -21320,8 +21320,8 @@
       "scopedVars": {
         "mountpoint": {
           "selected": false,
-          "text": "/webcrate/users.yml",
-          "value": "/webcrate/users.yml"
+          "text": "/webcrate/projects.yml",
+          "value": "/webcrate/projects.yml"
         }
       },
       "seriesOverrides": [

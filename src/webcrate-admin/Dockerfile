@@ -43,20 +43,20 @@ RUN npm install
 RUN npm run build
 USER root
 RUN echo 'app ALL=(ALL) NOPASSWD: /webcrate/versions.py' | EDITOR='tee -a' visudo
-RUN echo 'app ALL=(ALL) NOPASSWD: /webcrate/updateusers.py' | EDITOR='tee -a' visudo
+RUN echo 'app ALL=(ALL) NOPASSWD: /webcrate/updateprojects.py' | EDITOR='tee -a' visudo
 RUN echo 'app ALL=(ALL) NOPASSWD: /webcrate/reload.py' | EDITOR='tee -a' visudo
 RUN mkdir /webcrate; \
     chown app:app /webcrate
 COPY init-db.py /webcrate/init-db.py
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY versions.py /webcrate/versions.py
-COPY updateusers.py /webcrate/updateusers.py
+COPY updateprojects.py /webcrate/updateprojects.py
 COPY reload.py /webcrate/reload.py
 COPY entrypoint.sh /entrypoint.sh
 CMD ["/entrypoint.sh"]
 RUN chmod u+x /webcrate/init-db.py; \
     chmod a+rxs /webcrate/versions.py; \
-    chmod a+rxs /webcrate/updateusers.py; \
+    chmod a+rxs /webcrate/updateprojects.py; \
     chmod a+rxs /webcrate/reload.py; \
     chmod u+x /entrypoint.sh
 

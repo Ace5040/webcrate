@@ -16,7 +16,7 @@ for (@ps) {
     push @data, \@row;
 }
 
-my %users;
+my %projects;
 
 for my $row (@data) {
 
@@ -26,18 +26,18 @@ for my $row (@data) {
     if ( $pool =~ m/pool_/ ) {
       $pool =~ s/.*pool_//;
       $pool =~ s/[\r\n]+$//;
-      if ( !exists $users{$pool} ) {
-        $users{$pool}=$row;
-        $users{$pool}[0]=$pool;
+      if ( !exists $projects{$pool} ) {
+        $projects{$pool}=$row;
+        $projects{$pool}[0]=$pool;
       } else {
-        $users{$pool}[1]+=$ud[1];
-        $users{$pool}[2]+=$ud[2];
+        $projects{$pool}[1]+=$ud[1];
+        $projects{$pool}[2]+=$ud[2];
       }
     }
 
 }
 
 
-while ( my ($u, $d) = each %users) {
+while ( my ($u, $d) = each %projects) {
   printf "stats_pools,pool=%s pcpu=%.1f,mem=%di\n", @{$d};
 }

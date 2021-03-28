@@ -4,8 +4,8 @@ import os
 import yaml
 from munch import munchify
 
-with open('/webcrate/users.yml', 'r') as f:
-  users = munchify(yaml.safe_load(f))
+with open('/webcrate/projects.yml', 'r') as f:
+  projects = munchify(yaml.safe_load(f))
   f.close()
 
 with open('/webcrate/services.yml', 'r') as f:
@@ -13,7 +13,7 @@ with open('/webcrate/services.yml', 'r') as f:
   f.close()
 
 any_letsencrypt_https_configs_found = False
-for username,user in users.items():
+for username,user in projects.items():
   if user.https == 'letsencrypt':
     any_letsencrypt_https_configs_found = True
 for servicename,service in services.items():

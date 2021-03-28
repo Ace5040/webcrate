@@ -1,6 +1,6 @@
 /.env
 /var/*
-/users.yml
+/projects.yml
 /services.yml
 /config/nginx-templates/*
 /config/nginx/*

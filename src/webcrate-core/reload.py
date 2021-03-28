@@ -5,8 +5,8 @@ import sys
 import yaml
 from munch import munchify
 
-with open('/webcrate/users.yml', 'r') as f:
-  users = munchify(yaml.safe_load(f))
+with open('/webcrate/projects.yml', 'r') as f:
+  projects = munchify(yaml.safe_load(f))
   f.close()
 
 WEBCRATE_MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
@@ -31,7 +31,7 @@ os.system(f'kill -15 $(pgrep --inverse --euid 0 '')')
 print(f'services stopped')
 sys.stdout.flush()
 
-#delete users
+#delete projects
 with open("/etc/passwd") as file:
   for line in file:
     arr=line.split(":")
@@ -40,12 +40,12 @@ with open("/etc/passwd") as file:
     if ( ( WEBCRATE_MODE == 'DEV' and user_id == int(WEBCRATE_UID) ) or ( WEBCRATE_MODE == 'PRODUCTION' and user_id >= 100000 ) ) and user_id != 0 and user_name != 'dev':
       os.system(f'userdel -f {user_name} >/dev/null 2>/dev/null')
       os.system(f'groupdel -f {user_name} >/dev/null 2>/dev/null')
-print(f'users deleted')
+print(f'projects deleted')
 sys.stdout.flush()
 
-#parse users
-os.system(f'/webcrate/parse-users.py')
-print(f'users parsed')
+#parse projects
+os.system(f'/webcrate/parse-projects.py')
+print(f'projects parsed')
 sys.stdout.flush()
 
 #start services

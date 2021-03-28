@@ -3,7 +3,7 @@
 sed -i "s/\/var\/log\/nginx\/error.log/\/dev\/null/g" /etc/nginx/nginx.conf
 sed -i "s/\/var\/log\/nginx\/access.log/\/dev\/null/g" /etc/nginx/nginx.conf
 sed -i "s/#gzip  on/include \/webcrate\/nginx-config\/\*\.conf/g" /etc/nginx/nginx.conf
-/webcrate/parse-users.py
+/webcrate/parse-projects.py
 
 if [[ $WEBCRATE_UID == 0 ]] ; then
     exec nginx -g 'daemon off;'

@@ -19,9 +19,9 @@ with open("/etc/group") as file:
 print(f'groups deleted')
 sys.stdout.flush()
 
-#parse users
-os.system(f'/webcrate/parse-users.py')
-print(f'users parsed')
+#parse projects
+os.system(f'/webcrate/parse-projects.py')
+print(f'projects parsed')
 sys.stdout.flush()
 
 #reload nginx service

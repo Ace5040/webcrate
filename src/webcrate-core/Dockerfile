@@ -107,23 +107,23 @@ RUN mkdir -p /webcrate-telegraf; \
     chown dnsmasq:dnsmasq /webcrate-dnsmasq; \
     chmod o-rwx /webcrate-dnsmasq
 COPY sync_ssh_keys.sh /webcrate/sync_ssh_keys.sh
-COPY stats_users.sh /webcrate-telegraf/stats_users.sh
+COPY stats_projects.sh /webcrate-telegraf/stats_projects.sh
 COPY stats_pools.sh /webcrate-telegraf/stats_pools.sh
 COPY bashrc.sh /etc/profile.d/bashrc.sh
 COPY fishrc.fish /etc/fish/conf.d/fishrc.fish
 COPY toprc /etc/telegraf/.config/procps/toprc
 COPY gunicorn_restart.sh /webcrate-bin/gunicorn_restart.sh
-COPY parse-users.py /webcrate/parse-users.py
+COPY parse-projects.py /webcrate/parse-projects.py
 COPY versions.py /webcrate/versions.py
 COPY entrypoint.sh /entrypoint.sh
 COPY reload.py /webcrate/reload.py
 RUN chmod u+x /webcrate/sync_ssh_keys.sh; \
-    chmod a+x /webcrate-telegraf/stats_users.sh; \
+    chmod a+x /webcrate-telegraf/stats_projects.sh; \
     chmod a+x /webcrate-telegraf/stats_pools.sh; \
     mkdir -p /etc/telegraf/.config/procps; \
     rm /etc/mail/exim.conf; \
     chmod a+x /webcrate-bin/gunicorn_restart.sh; \
-    chmod u+x /webcrate/parse-users.py; \
+    chmod u+x /webcrate/parse-projects.py; \
     chmod u+x /webcrate/reload.py; \
     chmod u+x /webcrate/versions.py; \
     chmod u+x /entrypoint.sh

@@ -24,7 +24,7 @@ else
     $PROJECTS_VOLUMES \
     -v $(pwd)/var/crontabs:/var/spool/cron \
     -v $(pwd)/config/telegraf:/etc/telegraf/telegraf.d:ro \
-    -v $(pwd)/users.yml:/webcrate/users.yml:ro \
+    -v $(pwd)/projects.yml:/webcrate/projects.yml:ro \
     -v $(pwd)/var/ssh:/webcrate/ssh_keys \
     -v $(pwd)/config/php-pool-templates:/webcrate/custom_templates:ro \
     -v $(pwd)/config/php/php56.ini:/etc/php56/conf.d/user.ini:ro \
@@ -55,7 +55,7 @@ else
     $WEBCRATE_APP_SRC \
     -v $(pwd)/var/meta:/webcrate/meta \
     -v $(pwd)/var/secrets:/webcrate/secrets \
-    -v $(pwd)/users.yml:/webcrate/users.yml \
+    -v $(pwd)/projects.yml:/webcrate/projects.yml \
     -v $(pwd)/services.yml:/webcrate/services.yml \
     ace5040/webcrate-admin:stable > /dev/null
 fi
@@ -272,7 +272,7 @@ if [ "$WEBCRATE_SERVICE_SYNAPSE" = true ]; then
 
       echo "" >> ./var/synapse/homeserver.yaml
       echo "user_directory:" >> ./var/synapse/homeserver.yaml
-      echo "  search_all_users: true" >> ./var/synapse/homeserver.yaml
+      echo "  search_all_projects: true" >> ./var/synapse/homeserver.yaml
 
     fi
 
@@ -336,7 +336,7 @@ else
     -p "443:1443" \
     $PROJECTS_VOLUMES \
     -v /etc/localtime:/etc/localtime:ro \
-    -v $(pwd)/users.yml:/webcrate/users.yml:ro \
+    -v $(pwd)/projects.yml:/webcrate/projects.yml:ro \
     -v $(pwd)/var/letsencrypt:/webcrate/letsencrypt:ro \
     -v $(pwd)/var/letsencrypt-meta:/webcrate/letsencrypt-meta:ro \
     -v $(pwd)/var/openssl:/webcrate/openssl:ro \
@@ -364,7 +364,7 @@ else
     -v $DOCKER_SOCKET:/var/run/docker.sock \
     -v /etc/localtime:/etc/localtime:ro \
     -v $(pwd)/var/meta:/webcrate/meta \
-    -v $(pwd)/users.yml:/webcrate/users.yml:ro \
+    -v $(pwd)/projects.yml:/webcrate/projects.yml:ro \
     -v $(pwd)/services.yml:/webcrate/services.yml:ro \
     -v $(pwd)/var/letsencrypt:/webcrate/letsencrypt \
     -v $(pwd)/var/letsencrypt-meta:/webcrate/letsencrypt-meta \

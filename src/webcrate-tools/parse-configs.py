@@ -5,8 +5,8 @@ import yaml
 import time
 from munch import munchify
 
-with open('/webcrate/users.yml', 'r') as f:
-  users = munchify(yaml.safe_load(f))
+with open('/webcrate/projects.yml', 'r') as f:
+  projects = munchify(yaml.safe_load(f))
   f.close()
 with open('/webcrate/services.yml', 'r') as f:
   services = munchify(yaml.safe_load(f))
@@ -59,7 +59,7 @@ nginx_reload_needed = False
 openssl_root_conf_changed = False
 
 any_letsencrypt_https_configs_found = False
-for username,user in users.items():
+for username,user in projects.items():
   if user.https == 'letsencrypt':
     any_letsencrypt_https_configs_found = True
 for servicename,service in services.items():
@@ -122,8 +122,8 @@ if any_letsencrypt_https_configs_found:
   if not os.path.isdir('/webcrate/letsencrypt/accounts/acme-v02.api.letsencrypt.org/directory') or not os.listdir('/webcrate/letsencrypt/accounts/acme-v02.api.letsencrypt.org/directory'):
     os.system(f'certbot register --config-dir /webcrate/letsencrypt --agree-tos --eff-email --email {LETSENCRYPT_EMAIL}')
 
-#parse users
-for username,user in users.items():
+#parse projects
+for username,user in projects.items():
   user.name = username
   UID = user.uid
   GID = user.uid

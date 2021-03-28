@@ -4,8 +4,8 @@ import os
 import yaml
 from munch import munchify
 
-with open('/webcrate/users.yml', 'r') as f:
-  users = munchify(yaml.safe_load(f))
+with open('/webcrate/projects.yml', 'r') as f:
+  projects = munchify(yaml.safe_load(f))
   f.close()
 
 WEBCRATE_MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
@@ -22,7 +22,7 @@ if WEBCRATE_MODE == 'DEV':
   os.system(f'groupmod -g {WEBCRATE_GID} dev > /dev/null 2>&1')
   os.system(f'usermod -s /bin/fish dev > /dev/null 2>&1')
 
-for username,user in users.items():
+for username,user in projects.items():
   user.name = username
 
   if hasattr(user, 'volume'):

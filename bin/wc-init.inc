@@ -4,8 +4,8 @@ MYSQL_ROOT_PASS=$(initDbFolder 'mysql')
 MYSQL5_ROOT_PASS=$(initDbFolder 'mysql5')
 POSTGRES_PASS=$(initDbFolder 'postgres')
 
-if [[ ! -f "./users.yml" ]] ; then
-  cp ./users.yml.example ./users.yml
+if [[ ! -f "./projects.yml" ]] ; then
+  cp ./projects.yml.example ./projects.yml
 fi
 if [[ ! -f "./services.yml" ]] ; then
   cp ./services.yml.example ./services.yml

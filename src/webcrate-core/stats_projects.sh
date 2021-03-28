@@ -16,22 +16,22 @@ for (@ps) {
     push @data, \@row;
 }
 
-my %users;
+my %projects;
 
 for my $row (@data) {
 
     my @ud = @{$row};
     my $name = $ud[0];
 
-    if ( !exists $users{$name} ) {
-	     $users{$name}=$row;
+    if ( !exists $projects{$name} ) {
+	     $projects{$name}=$row;
     } else {
-	    $users{$name}[1]+=$ud[1];
-	    $users{$name}[2]+=$ud[2];
+	    $projects{$name}[1]+=$ud[1];
+	    $projects{$name}[2]+=$ud[2];
     }
 
 }
 
-while ( my ($u, $d) = each %users) {
-  printf "stats_users,user=%s pcpu=%.1f,mem=%di\n", @{$d};
+while ( my ($u, $d) = each %projects) {
+  printf "stats_projects,user=%s pcpu=%.1f,mem=%di\n", @{$d};
 }

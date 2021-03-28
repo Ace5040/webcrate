@@ -7,8 +7,8 @@ from munch import munchify
 from pprint import pprint
 import json
 
-with open('/webcrate/users.yml', 'r') as f:
-  users = munchify(yaml.safe_load(f))
+with open('/webcrate/projects.yml', 'r') as f:
+  projects = munchify(yaml.safe_load(f))
   f.close()
 
 WEBCRATE_MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
@@ -32,7 +32,7 @@ os.system(f'rm /webcrate/php74-fpm.d/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/php80-fpm.d/* > /dev/null 2>&1')
 os.system(f'rm /webcrate-dnsmasq/config/* > /dev/null 2>&1')
 
-for username, user in users.items():
+for username, user in projects.items():
   user.name = username
   data_folder=user.root_folder.split("/")[0]
   port = CGI_PORT_START_NUMBER + user.uid - UID_START_NUMBER
@@ -227,13 +227,13 @@ for username, user in users.items():
 
 if WEBCRATE_MODE == "DEV":
   with open(f'/webcrate-dnsmasq/config/hosts_nginx', 'w') as f:
-    for username, user in users.items():
+    for username, user in projects.items():
       user.name = username
       f.write(f'{DOCKER_HOST_IP} {" ".join(user.domains)}\n')
     f.close()
 
 
-os.system('sha256sum /webcrate/users.yml | awk \'{print $1}\' | tr -d \'\n\' > /webcrate/meta/projects.checksum')
+os.system('sha256sum /webcrate/projects.yml | awk \'{print $1}\' | tr -d \'\n\' > /webcrate/meta/projects.checksum')
 
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/meta')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/ssl_configs')

@@ -5,8 +5,8 @@ import yaml
 from munch import munchify
 from pprint import pprint
 
-with open('/webcrate/users.yml', 'r') as f:
-  users = munchify(yaml.safe_load(f))
+with open('/webcrate/projects.yml', 'r') as f:
+  projects = munchify(yaml.safe_load(f))
   f.close()
 
 WEBCRATE_MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
@@ -15,7 +15,7 @@ WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
 WEBCRATE_FULL_BACKUP_DAYS = os.environ.get('WEBCRATE_FULL_BACKUP_DAYS', '7')
 WEBCRATE_MAX_FULL_BACKUPS = os.environ.get('WEBCRATE_MAX_FULL_BACKUPS', '10')
 REMOTE_BACKUP_URI = os.environ.get('REMOTE_BACKUP_URI', 'file:///webcrate/backup')
-for username,user in users.items():
+for username,user in projects.items():
   user.name = username
   if user.backup:
     #backup files

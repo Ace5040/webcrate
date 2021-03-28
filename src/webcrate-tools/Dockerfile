@@ -26,7 +26,7 @@ COPY ssl.conf /webcrate/ssl.conf
 COPY gzip.conf /webcrate/gzip.conf
 COPY redirect.conf /webcrate/redirect.conf
 COPY parse-configs.py /webcrate/parse-configs.py
-COPY parse-users.py /webcrate/parse-users.py
+COPY parse-projects.py /webcrate/parse-projects.py
 COPY parse-services.py /webcrate/parse-services.py
 COPY certbot-renew.py /webcrate/certbot-renew.py
 COPY certbot-renew-deploy.py /webcrate/certbot-renew-deploy.py
@@ -34,7 +34,7 @@ COPY backup.py /webcrate/backup.py
 COPY entrypoint.sh /entrypoint.sh
 COPY pwgen.sh /webcrate/pwgen.sh
 RUN chmod a+x /webcrate/parse-configs.py; \
-    chmod a+x /webcrate/parse-users.py; \
+    chmod a+x /webcrate/parse-projects.py; \
     chmod a+x /webcrate/parse-services.py; \
     chmod a+x /webcrate/certbot-renew.py; \
     chmod a+x /webcrate/certbot-renew-deploy.py; \

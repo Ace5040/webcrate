@@ -8,11 +8,11 @@ source ./bin/wc-init.inc
 uid=$(id -u);
 gid=$(id -u);
 
-docker run --rm --env-file=$(pwd)/.env --entrypoint /webcrate/parse-users.py \
+docker run --rm --env-file=$(pwd)/.env --entrypoint /webcrate/parse-projects.py \
   -e WEBCRATE_UID=$uid \
   -e WEBCRATE_GID=$gid \
   $PROJECTS_VOLUMES \
-  -v $(pwd)/users.yml:/webcrate/users.yml:ro \
+  -v $(pwd)/projects.yml:/webcrate/projects.yml:ro \
   -v $(pwd)/var/meta:/webcrate/meta \
   -v $(pwd)/config/nginx-templates:/webcrate/nginx-templates:ro \
   -v $(pwd)/config/php-pool-templates:/webcrate/custom_templates:ro \

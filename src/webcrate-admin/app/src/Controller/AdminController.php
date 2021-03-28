@@ -126,7 +126,7 @@ class AdminController extends AbstractController
                 }
                 $this->manager->persist($project);
                 $this->manager->flush();
-                $this->updateUsersYaml();
+                $this->updateProjectsYaml();
                 return $this->redirectToRoute('admin-projects');
             }
         }
@@ -160,7 +160,7 @@ class AdminController extends AbstractController
                 }
                 $this->manager->persist($project);
                 $this->manager->flush();
-                $this->updateUsersYaml();
+                $this->updateProjectsYaml();
                 return $this->redirectToRoute('admin-projects');
             }
         }
@@ -184,7 +184,7 @@ class AdminController extends AbstractController
         $this->manager->remove($project);
         $this->manager->flush();
         $list = $this->repository->getListForTable();
-        $sha256sum = $this->updateUsersYaml();
+        $sha256sum = $this->updateProjectsYaml();
         $actual_sha256sum = $this->getActualSha256Sum();
         $response = new JsonResponse();
         $response->setData([
@@ -204,7 +204,7 @@ class AdminController extends AbstractController
         $project->setActive(true);
         $this->manager->flush();
         $list = $this->repository->getListForTable();
-        $sha256sum = $this->updateUsersYaml();
+        $sha256sum = $this->updateProjectsYaml();
         $actual_sha256sum = $this->getActualSha256Sum();
         $response = new JsonResponse();
         $response->setData([
@@ -252,7 +252,7 @@ class AdminController extends AbstractController
         $project->setActive(false);
         $this->manager->flush();
         $list = $this->repository->getListForTable();
-        $sha256sum = $this->updateUsersYaml();
+        $sha256sum = $this->updateProjectsYaml();
         $actual_sha256sum = $this->getActualSha256Sum();
         $response = new JsonResponse();
         $response->setData([
@@ -355,7 +355,7 @@ class AdminController extends AbstractController
             }
         }
         $this->manager->flush();
-        $sha256sum = $this->updateUsersYaml();
+        $sha256sum = $this->updateProjectsYaml();
         $actual_sha256sum = $this->getActualSha256Sum();
         $list = $this->repository->getListForTable();
         $response = new JsonResponse();
@@ -368,14 +368,14 @@ class AdminController extends AbstractController
         return $response;
     }
 
-    public function updateUsersYaml()
+    public function updateProjectsYaml()
     {
         $ymlData = $this->getYmlData();
         $sha256sum = hash('sha256', $ymlData);
         try {
-            $new_file_path = "/webcrate/updated-users.yml";
+            $new_file_path = "/webcrate/updated-projects.yml";
             file_put_contents($new_file_path, $ymlData);
-            $process = Process::fromShellCommandline('sudo /webcrate/updateusers.py');
+            $process = Process::fromShellCommandline('sudo /webcrate/updateprojects.py');
             $process->run();
             if (!$process->isSuccessful()) {
                 throw new \Symfony\Component\Process\Exception\ProcessFailedException($process);

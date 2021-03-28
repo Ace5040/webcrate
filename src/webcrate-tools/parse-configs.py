@@ -20,65 +20,6 @@ organizationName = os.environ.get('WEBCRATE_organizationName', '')
 LETSENCRYPT_EMAIL = os.environ.get('WEBCRATE_ADMIN_EMAIL', '')
 OPENSSL_EMAIL = os.environ.get('WEBCRATE_ADMIN_EMAIL', '')
 
-nginx_reload_needed = False
-openssl_root_conf_changed = False
-
-any_letsencrypt_https_configs_found = False
-any_openssl_https_configs_found = False
-for username,user in users.items():
-  if user.https == 'letsencrypt':
-    any_letsencrypt_https_configs_found = True
-  if user.https == 'openssl':
-    any_openssl_https_configs_found = True
-for servicename,service in services.items():
-  if service.https == 'letsencrypt':
-    any_letsencrypt_https_configs_found = True
-  if service.https == 'openssl':
-    any_openssl_https_configs_found = True
-
-if any_openssl_https_configs_found:
-  #load pervious openssl root config
-  openssl_root_conf_prev = ''
-  if os.path.isfile(f'/webcrate/secrets/openssl-root.cnf'):
-    with open(f'/webcrate/secrets/openssl-root.cnf', 'r') as f:
-      openssl_root_conf_prev = f.read()
-      f.close()
-  #generate openssl root config
-  openssl_root_conf = (f'[req]\n'
-  f'prompt = no\n'
-  f'distinguished_name = dn\n'
-  f'[ dn ]\n'
-  f'C={countryName}\n'
-  f'O=Webcrate\n'
-  f'emailAddress={OPENSSL_EMAIL}\n'
-  f'CN = Webcrate\n')
-  if openssl_root_conf_prev != openssl_root_conf:
-    openssl_root_conf_changed = True
-    print(f'openssl root config changed')
-    os.system(f'rm -f /webcrate/secrets/rootCA.key; rm -f /webcrate/secrets/rootCA.crt; rm -f /webcrate/secrets/rootCA.srl; rm -f /webcrate/secrets/openssl-root.cnf')
-    os.system(f'openssl genrsa -out /webcrate/secrets/rootCA.key 4096')
-    with open(f'/webcrate/secrets/openssl-root.cnf', 'w') as f:
-      f.write(openssl_root_conf)
-      f.close()
-    os.system(f'openssl req -x509 -new -nodes -key /webcrate/secrets/rootCA.key -sha256 -days 10000 -out /webcrate/secrets/rootCA.crt -config /webcrate/secrets/openssl-root.cnf')
-
-if any_letsencrypt_https_configs_found:
-
-  LETSENCRYPT_EMAIL_prev = ''
-  if os.path.isfile('/webcrate/letsencrypt-meta/letsencrypt-email.txt'):
-    with open('/webcrate/letsencrypt-meta/letsencrypt-email.txt', 'r') as f:
-      LETSENCRYPT_EMAIL_prev = f.read()
-      f.close()
-  if LETSENCRYPT_EMAIL_prev != LETSENCRYPT_EMAIL:
-    os.system('rm -r /webcrate/letsencrypt/*')
-    os.system('rm -r /webcrate/letsencrypt-meta/*')
-    with open('/webcrate/letsencrypt-meta/letsencrypt-email.txt', 'w') as f:
-      f.write(LETSENCRYPT_EMAIL)
-      f.close()
-  if not os.path.isdir('/webcrate/letsencrypt/accounts/acme-v02.api.letsencrypt.org/directory') or not os.listdir('/webcrate/letsencrypt/accounts/acme-v02.api.letsencrypt.org/directory'):
-    os.system(f'certbot register --config-dir /webcrate/letsencrypt --agree-tos --eff-email --email {LETSENCRYPT_EMAIL}')
-
-
 def genereate_openssl_conf(name, domains, countryName, organizationName, OPENSSL_EMAIL):
   return (f'[req]\n'
   f'distinguished_name = dn\n'
@@ -113,6 +54,73 @@ def is_mysql_up(host, password):
 
 def is_postgresql_up(host, password):
   return os.popen(f'psql -d "host={host} user=postgres password={password}" -tAc "SELECT 1 FROM pg_database LIMIT 1;"').read().strip()
+
+nginx_reload_needed = False
+openssl_root_conf_changed = False
+
+any_letsencrypt_https_configs_found = False
+for username,user in users.items():
+  if user.https == 'letsencrypt':
+    any_letsencrypt_https_configs_found = True
+for servicename,service in services.items():
+  if service.https == 'letsencrypt':
+    any_letsencrypt_https_configs_found = True
+
+#load pervious openssl root config
+openssl_root_conf_prev = ''
+if os.path.isfile(f'/webcrate/secrets/openssl-root.cnf'):
+  with open(f'/webcrate/secrets/openssl-root.cnf', 'r') as f:
+    openssl_root_conf_prev = f.read()
+    f.close()
+#generate openssl root config
+openssl_root_conf = (f'[req]\n'
+f'prompt = no\n'
+f'distinguished_name = dn\n'
+f'[ dn ]\n'
+f'C={countryName}\n'
+f'O=Webcrate\n'
+f'emailAddress={OPENSSL_EMAIL}\n'
+f'CN = Webcrate\n')
+
+if openssl_root_conf_prev != openssl_root_conf:
+  openssl_root_conf_changed = True
+  print(f'openssl root config changed')
+  os.system(f'rm -f /webcrate/secrets/rootCA.key; rm -f /webcrate/secrets/rootCA.crt; rm -f /webcrate/secrets/rootCA.srl; rm -f /webcrate/secrets/openssl-root.cnf')
+  os.system(f'openssl genrsa -out /webcrate/secrets/rootCA.key 4096')
+  with open(f'/webcrate/secrets/openssl-root.cnf', 'w') as f:
+    f.write(openssl_root_conf)
+    f.close()
+  os.system(f'openssl req -x509 -new -nodes -key /webcrate/secrets/rootCA.key -sha256 -days 10000 -out /webcrate/secrets/rootCA.crt -config /webcrate/secrets/openssl-root.cnf')
+
+if openssl_root_conf_changed:
+  os.system(f'rm -r /webcrate/openssl/default')
+conf = genereate_openssl_conf('default', ['default'], countryName, organizationName, OPENSSL_EMAIL)
+conf_old = load_openssl_conf('default')
+if conf_old != conf or not os.path.exists(f'/webcrate/openssl/default/privkey.pem') or not os.path.exists(f'/webcrate/openssl/default/fullchain.pem'):
+  os.system(f'mkdir -p /webcrate/openssl/default; rm /webcrate/openssl/default/*')
+  with open(f'/webcrate/openssl/default/openssl.cnf', 'w') as f:
+    f.write(conf)
+    f.close()
+  os.system(f'openssl genrsa -out /webcrate/openssl/default/privkey.pem 2048')
+  os.system(f'openssl req -new -sha256 -key /webcrate/openssl/default/privkey.pem -out /webcrate/openssl/default/fullchain.csr -config /webcrate/openssl/default/openssl.cnf')
+  os.system(f'openssl x509 -req -extensions SAN -extfile /webcrate/openssl/default/openssl.cnf -in /webcrate/openssl/default/fullchain.csr -CA /webcrate/secrets/rootCA.crt -CAkey /webcrate/secrets/rootCA.key -CAcreateserial -out /webcrate/openssl/default/fullchain.pem -days 5000 -sha256')
+  nginx_reload_needed = True
+
+if any_letsencrypt_https_configs_found:
+
+  LETSENCRYPT_EMAIL_prev = ''
+  if os.path.isfile('/webcrate/letsencrypt-meta/letsencrypt-email.txt'):
+    with open('/webcrate/letsencrypt-meta/letsencrypt-email.txt', 'r') as f:
+      LETSENCRYPT_EMAIL_prev = f.read()
+      f.close()
+  if LETSENCRYPT_EMAIL_prev != LETSENCRYPT_EMAIL:
+    os.system('rm -r /webcrate/letsencrypt/*')
+    os.system('rm -r /webcrate/letsencrypt-meta/*')
+    with open('/webcrate/letsencrypt-meta/letsencrypt-email.txt', 'w') as f:
+      f.write(LETSENCRYPT_EMAIL)
+      f.close()
+  if not os.path.isdir('/webcrate/letsencrypt/accounts/acme-v02.api.letsencrypt.org/directory') or not os.listdir('/webcrate/letsencrypt/accounts/acme-v02.api.letsencrypt.org/directory'):
+    os.system(f'certbot register --config-dir /webcrate/letsencrypt --agree-tos --eff-email --email {LETSENCRYPT_EMAIL}')
 
 #parse users
 for username,user in users.items():

@@ -1,13 +1,16 @@
 #!/bin/bash
 
-#if [ $WEBCRATE_UID != '0' ]; then
+if [ $WEBCRATE_UID != '0' ]; then
   usermod -u $WEBCRATE_UID app > /dev/null 2>&1
   chown $WEBCRATE_UID /webcrate > /dev/null 2>&1
   chown -R $WEBCRATE_UID /app > /dev/null 2>&1
-#if [ $WEBCRATE_GID != '0' ]; then
+fi
+
+if [ $WEBCRATE_GID != '0' ]; then
   groupmod -g $WEBCRATE_GID app > /dev/null 2>&1
   chgrp $WEBCRATE_GID /webcrate > /dev/null 2>&1
   chgrp -R $WEBCRATE_GID /app > /dev/null 2>&1
+fi
 
 if [ "$WEBCRATE_APP_MODE" == "DEV" ]; then
   cd /app

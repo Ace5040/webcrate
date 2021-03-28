@@ -32,8 +32,13 @@ RUN sed -i "s/.*open_basedir =.*/open_basedir =/g" /etc/php/php.ini; \
 RUN yes | sudo symfony self-update
 COPY pool.conf /etc/php/php-fpm.d/pool.conf
 COPY php.ini /etc/php/conf.d/user.ini
-ADD app /app
-RUN chown -R app:app /app
+RUN echo 'app ALL=(ALL) NOPASSWD: /webcrate/versions.py' | EDITOR='tee -a' visudo
+RUN echo 'app ALL=(ALL) NOPASSWD: /webcrate/updateprojects.py' | EDITOR='tee -a' visudo
+RUN echo 'app ALL=(ALL) NOPASSWD: /webcrate/reload.py' | EDITOR='tee -a' visudo
+COPY app /app
+RUN mkdir /webcrate; \
+    chown app:app /webcrate; \
+    chown -R app:app /app
 WORKDIR /app
 USER app
 RUN sed -i "s/.*\"@auto-scripts\".*/ /g" composer.json;
@@ -42,11 +47,6 @@ WORKDIR /app/assets/admin
 RUN npm install
 RUN npm run build
 USER root
-RUN echo 'app ALL=(ALL) NOPASSWD: /webcrate/versions.py' | EDITOR='tee -a' visudo
-RUN echo 'app ALL=(ALL) NOPASSWD: /webcrate/updateprojects.py' | EDITOR='tee -a' visudo
-RUN echo 'app ALL=(ALL) NOPASSWD: /webcrate/reload.py' | EDITOR='tee -a' visudo
-RUN mkdir /webcrate; \
-    chown app:app /webcrate
 COPY init-db.py /webcrate/init-db.py
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY versions.py /webcrate/versions.py
@@ -59,4 +59,3 @@ RUN chmod u+x /webcrate/init-db.py; \
     chmod a+rxs /webcrate/updateprojects.py; \
     chmod a+rxs /webcrate/reload.py; \
     chmod u+x /entrypoint.sh
-

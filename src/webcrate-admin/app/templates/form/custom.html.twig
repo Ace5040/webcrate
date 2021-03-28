@@ -1,0 +1,213 @@
+{# domains #}
+{% block domains_row -%}
+    {%- if compound is defined and compound -%}
+        {%- set element = 'fieldset' -%}
+    {%- endif -%}
+    {%- set widget_attr = {} -%}
+    {%- if help is not empty -%}
+        {%- set widget_attr = {attr: {'aria-describedby': id ~"_help"}} -%}
+    {%- endif -%}
+    <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group')|trim})} %}{{ block('attributes') }}{% endwith %}>
+        {{- form_label(form) -}}
+        {{- form_widget(form, []) -}}
+        <div class="add-domain-button btn btn-primary btn-sm"><i class="icon icon-plus"></i> Add Domain</div>
+        {{- form_help(form) -}}
+    </{{ element|default('div') }}>
+{%- endblock domains_row %}
+
+{% block domain_row -%}
+    {%- set widget_attr = {} -%}
+    <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group')|trim})} %}{{ block('attributes') }}{% endwith %}>
+        <span class="handle"><i class="icon icon-move"></i></span>
+        {{- form_widget(form, widget_attr) -}}
+        <span class="remove"><i class="icon icon-cancel"></i></span>
+    </{{ element|default('div') }}>
+{%- endblock domain_row %}
+
+{# nginx options #}
+{% block nginx_options_row -%}
+    {%- if compound is defined and compound -%}
+        {%- set element = 'fieldset' -%}
+    {%- endif -%}
+    {%- set widget_attr = {} -%}
+    {%- if help is not empty -%}
+        {%- set widget_attr = {attr: {'aria-describedby': id ~"_help"}} -%}
+    {%- endif -%}
+    <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group')|trim})} %}{{ block('attributes') }}{% endwith %}>
+        {{- form_label(form) -}}
+        {{- form_widget(form, widget_attr) -}}
+        <div class="add-nginx-option-button btn btn-primary btn-sm"><i class="icon icon-plus"></i> Add Nginx Option</div>
+        {{- form_help(form) -}}
+    </{{ element|default('div') }}>
+{%- endblock nginx_options_row %}
+
+{% block nginx_option_row -%}
+    {%- set widget_attr = {} -%}
+    <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group')|trim})} %}{{ block('attributes') }}{% endwith %}>
+        <span class="handle"><i class="icon icon-move"></i></span>
+        {{- form_widget(form, widget_attr) -}}
+        <span class="remove"><i class="icon icon-cancel"></i></span>
+    </{{ element|default('div') }}>
+{%- endblock nginx_option_row %}
+
+{% block nginx_option_name_row -%}
+    {%- set widget_attr = {} -%}
+    <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group nginx-option-name')|trim})} %}{{ block('attributes') }}{% endwith %}>
+        {{- form_widget(form, widget_attr) -}}
+    </{{ element|default('div') }}>
+{%- endblock nginx_option_name_row %}
+
+{% block nginx_option_value_row -%}
+    {%- set widget_attr = {} -%}
+    <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group nginx-option-value')|trim})} %}{{ block('attributes') }}{% endwith %}>
+        {{- form_widget(form, widget_attr) -}}
+    </{{ element|default('div') }}>
+{%- endblock nginx_option_value_row %}
+
+{# auth locations #}
+{% block auth_locations_row -%}
+    {%- if compound is defined and compound -%}
+        {%- set element = 'fieldset' -%}
+    {%- endif -%}
+    {%- set widget_attr = {} -%}
+    {%- if help is not empty -%}
+        {%- set widget_attr = {attr: {'aria-describedby': id ~"_help"}} -%}
+    {%- endif -%}
+    <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group')|trim})} %}{{ block('attributes') }}{% endwith %}>
+        {{- form_label(form) -}}
+        {{- form_widget(form, widget_attr) -}}
+        <div class="add-auth-location-button btn btn-primary btn-sm"><i class="icon icon-plus"></i> Add Auth Location</div>
+        {{- form_help(form) -}}
+    </{{ element|default('div') }}>
+{%- endblock auth_locations_row %}
+
+{% block auth_location_row -%}
+    {%- set widget_attr = {} -%}
+    <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group')|trim})} %}{{ block('attributes') }}{% endwith %}>
+        <div class="handle"><i class="icon icon-move"></i></div>
+        <div class="fields_block">{{- form_widget(form, widget_attr) -}}</div>
+        <div class="remove"><i class="icon icon-cancel"></i></div>
+    </{{ element|default('div') }}>
+{%- endblock auth_location_row %}
+
+{% block auth_location_path_row -%}
+    {%- set widget_attr = {} -%}
+    <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group auth-location-path')|trim})} %}{{ block('attributes') }}{% endwith %}>
+        {{- form_label(form) -}}
+        {{- form_widget(form, widget_attr) -}}
+    </{{ element|default('div') }}>
+{%- endblock auth_location_path_row %}
+
+{% block auth_location_title_row -%}
+    {%- set widget_attr = {} -%}
+    <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group auth-location-title')|trim})} %}{{ block('attributes') }}{% endwith %}>
+        {{- form_label(form) -}}
+        {{- form_widget(form, widget_attr) -}}
+    </{{ element|default('div') }}>
+{%- endblock auth_location_title_row %}
+
+{% block auth_location_user_row -%}
+    {%- set widget_attr = {} -%}
+    <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group auth-location-user')|trim})} %}{{ block('attributes') }}{% endwith %}>
+        {{- form_label(form) -}}
+        {{- form_widget(form, widget_attr) -}}
+    </{{ element|default('div') }}>
+{%- endblock auth_location_user_row %}
+
+{% block auth_location_password_row -%}
+    {%- set widget_attr = {} -%}
+    <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group auth-location-password')|trim})} %}{{ block('attributes') }}{% endwith %}>
+        {{- form_label(form) -}}
+        {{- form_widget(form, widget_attr) -}}
+    </{{ element|default('div') }}>
+{%- endblock auth_location_password_row %}
+
+{# ftp accounts #}
+{% block ftps_row -%}
+    {%- if compound is defined and compound -%}
+        {%- set element = 'fieldset' -%}
+    {%- endif -%}
+    {%- set widget_attr = {} -%}
+    {%- if help is not empty -%}
+        {%- set widget_attr = {attr: {'aria-describedby': id ~"_help"}} -%}
+    {%- endif -%}
+    <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group')|trim})} %}{{ block('attributes') }}{% endwith %}>
+        {{- form_label(form) -}}
+        {{- form_widget(form, widget_attr) -}}
+        <div class="add-ftp-button btn btn-primary btn-sm"><i class="icon icon-plus"></i> Add Ftp Account</div>
+        {{- form_help(form) -}}
+    </{{ element|default('div') }}>
+{%- endblock ftps_row %}
+
+{% block ftp_row -%}
+    {%- set widget_attr = {} -%}
+    <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group')|trim})} %}{{ block('attributes') }}{% endwith %}>
+        <div class="handle"><i class="icon icon-move"></i></div>
+        <div class="fields_block">{{- form_widget(form, widget_attr) -}}</div>
+        <div class="remove"><i class="icon icon-cancel"></i></div>
+    </{{ element|default('div') }}>
+{%- endblock ftp_row %}
+
+{% block ftp_name_row -%}
+    {%- set widget_attr = {} -%}
+    <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group ftp-name')|trim})} %}{{ block('attributes') }}{% endwith %}>
+        {{- form_label(form) -}}
+        {{- form_widget(form, widget_attr) -}}
+    </{{ element|default('div') }}>
+{%- endblock ftp_name_row %}
+
+{% block ftp_home_row -%}
+    {%- set widget_attr = {} -%}
+    <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group ftp-home')|trim})} %}{{ block('attributes') }}{% endwith %}>
+        {{- form_label(form) -}}
+        {{- form_widget(form, widget_attr) -}}
+    </{{ element|default('div') }}>
+{%- endblock ftp_home_row %}
+
+{% block ftp_password_row -%}
+    {%- set widget_attr = {} -%}
+    <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group ftp-password')|trim})} %}{{ block('attributes') }}{% endwith %}>
+        {{- form_label(form) -}}
+        {{- form_widget(form, widget_attr) -}}
+    </{{ element|default('div') }}>
+{%- endblock ftp_password_row %}
+
+{# duplicity filters #}
+{% block duplicity_filters_row -%}
+    {%- if compound is defined and compound -%}
+        {%- set element = 'fieldset' -%}
+    {%- endif -%}
+    {%- set widget_attr = {} -%}
+    {%- if help is not empty -%}
+        {%- set widget_attr = {attr: {'aria-describedby': id ~"_help"}} -%}
+    {%- endif -%}
+    <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group')|trim})} %}{{ block('attributes') }}{% endwith %}>
+        {{- form_label(form) -}}
+        {{- form_widget(form, widget_attr) -}}
+        <div class="add-duplicity-filter-button btn btn-primary btn-sm"><i class="icon icon-plus"></i> Add Exclude/Include</div>
+        {{- form_help(form) -}}
+    </{{ element|default('div') }}>
+{%- endblock duplicity_filters_row %}
+
+{% block duplicity_filter_row -%}
+    {%- set widget_attr = {} -%}
+    <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group')|trim})} %}{{ block('attributes') }}{% endwith %}>
+        <div class="handle"><i class="icon icon-move"></i></div>
+        <div class="fields_block">{{- form_widget(form, widget_attr) -}}</div>
+        <div class="remove"><i class="icon icon-cancel"></i></div>
+    </{{ element|default('div') }}>
+{%- endblock duplicity_filter_row %}
+
+{% block duplicity_filter_mode_row -%}
+    {%- set widget_attr = {} -%}
+    <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group duplicity-filter-mode')|trim})} %}{{ block('attributes') }}{% endwith %}>
+        {{- form_widget(form, widget_attr) -}}
+    </{{ element|default('div') }}>
+{%- endblock duplicity_filter_mode_row %}
+
+{% block duplicity_filter_path_row -%}
+    {%- set widget_attr = {} -%}
+    <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group duplicity-filter-path')|trim})} %}{{ block('attributes') }}{% endwith %}>
+        {{- form_widget(form, widget_attr) -}}
+    </{{ element|default('div') }}>
+{%- endblock duplicity_filter_path_row %}

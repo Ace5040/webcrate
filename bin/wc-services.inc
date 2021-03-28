@@ -43,6 +43,7 @@ fi
 if docker container inspect webcrate >/dev/null 2> /dev/null; then
   echo service webcrate exists
 else
+  if [ "$WEBCRATE_APP_MODE" == "DEV" ]; then WEBCRATE_APP_SRC=-v\ $(pwd)/src/webcrate-admin/app:/app; else WEBCRATE_APP_SRC=""; fi
   docker run -d --env-file=$(pwd)/.env --hostname webcrate --name webcrate \
     --network="webcrate_network" --dns=172.31.0.100 \
     --restart="unless-stopped" \
@@ -51,6 +52,7 @@ else
     -e WEBCRATE_PROJECTS_FOLDERS=$( IFS=:; printf '%s' "${WEBCRATE_PROJECTS_FOLDERS[*]}" ) \
     -v /etc/localtime:/etc/localtime:ro \
     -v $DOCKER_SOCKET:/var/run/docker.sock \
+    $WEBCRATE_APP_SRC \
     -v $(pwd)/var/meta:/webcrate/meta \
     -v $(pwd)/var/secrets:/webcrate/secrets \
     -v $(pwd)/users.yml:/webcrate/users.yml \

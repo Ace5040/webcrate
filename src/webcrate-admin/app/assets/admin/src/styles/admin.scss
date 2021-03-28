@@ -1,0 +1,327 @@
+.action-menu {
+    padding: 20px;
+
+    .custom-file {
+        max-width: 400px;
+        width: auto;
+        float: left;
+        display: block;
+
+        button {
+            vertical-align: middle;
+            margin-left: 20px;
+            float: right;
+        }
+
+    }
+
+    button {
+        vertical-align: middle;
+        margin-left: 20px;
+    }
+
+    .form-group {
+        border-bottom: none;
+        padding-bottom: 0;
+        margin-bottom: 0;
+    }
+
+    .spinner-border {
+        vertical-align: middle;
+        margin-left: 10px;
+    }
+
+}
+
+.admin-page {
+
+
+    .table tr td {
+
+        .btn {
+            margin-left: 15px;
+
+            &:first-child {
+                margin-left: 0;
+            }
+
+        }
+
+    }
+
+}
+
+.project-edit-page {
+    width: 100%;
+    min-width: 320px;
+    max-width: 622px;
+    margin: 50px auto;
+}
+
+.form-group {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 15px;
+
+    input[type=text] {
+        width: auto;
+    }
+
+}
+
+fieldset .form-group {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.handle {
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 24px;
+    padding: 0 10px;
+    line-height: 1;
+    cursor: move;
+    color: blue;
+    opacity: 0.5;
+    cursor: pointer;
+    transition: opacity 0.1s ease-out;
+
+    &:hover {
+        opacity: 1;
+        transition: opacity 0.1s ease-in;
+    }
+}
+
+.remove {
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 24px;
+    padding: 0 10px;
+    line-height: 1;
+    color: red;
+    opacity: 0.5;
+    cursor: pointer;
+    transition: opacity 0.1s ease-out;
+
+    &:hover {
+        opacity: 1;
+        transition: opacity 0.1s ease-in;
+    }
+
+}
+
+#project_domains {
+
+    .form-group {
+        display: inline-block;
+
+        .form-control {
+            width: auto;
+        }
+
+        input {
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        &:first-child {
+            margin-left: 0;
+        }
+
+    }
+}
+
+.btn .icon {
+    display: inline-block;
+}
+
+#project_nginx_options {
+
+    div.form-group {
+        display: inline-block;
+
+        .form-control {
+            width: auto;
+        }
+
+        .nginx-option-name {
+            input {
+                margin-right: 15px;
+            }
+        }
+
+        input {
+            display: inline-block;
+            vertical-align: middle;
+            box-sizing: border-box;
+        }
+
+        &:first-child {
+            margin-left: 0;
+        }
+
+        > div {
+            display: inline-block;
+            .form-group {
+                margin-bottom: 0;
+            }
+        }
+
+    }
+
+}
+
+#project_auth_locations {
+
+    .fields_block {
+        display: inline-block;
+        vertical-align: middle;
+        width: 54%;
+        > div {
+            display: inline-block;
+        }
+        label {
+            min-width: 85px;
+            margin-left: 10px;
+        }
+    }
+
+    div.form-group {
+        display: inline-block;
+
+        .form-control {
+            width: auto;
+        }
+
+        .nginx-option-name {
+            input {
+                margin-right: 15px;
+            }
+        }
+
+        input {
+            display: inline-block;
+            vertical-align: middle;
+            box-sizing: border-box;
+        }
+
+        &:first-child {
+            margin-left: 0;
+        }
+
+        > div {
+            display: inline-block;
+            .form-group {
+                margin-bottom: 8px;
+            }
+        }
+
+    }
+
+}
+
+#project_ftps {
+
+    .fields_block {
+        display: inline-block;
+        vertical-align: middle;
+        width: 54%;
+        > div {
+            display: inline-block;
+        }
+        label {
+            min-width: 85px;
+            margin-left: 10px;
+        }
+    }
+
+    div.form-group {
+        display: inline-block;
+
+        .form-control {
+            width: auto;
+        }
+
+        .nginx-option-name {
+            input {
+                margin-right: 15px;
+            }
+        }
+
+        input {
+            display: inline-block;
+            vertical-align: middle;
+            box-sizing: border-box;
+        }
+
+        &:first-child {
+            margin-left: 0;
+        }
+
+        > div {
+            display: inline-block;
+            .form-group {
+                margin-bottom: 8px;
+            }
+        }
+
+    }
+
+}
+
+#project_nginx_block {
+    height: 150px;
+}
+
+#project_DuplicityFilters {
+
+    .fields_block {
+        display: inline-block;
+        vertical-align: middle;
+        width: 80%;
+
+        .form-group {
+            display: inline-block;
+            vertical-align: middle;
+            margin-bottom: 0;
+
+            &.duplicity-filter-mode {
+                width: 100px;
+            }
+            &.duplicity-filter-path {
+                width: 390px;
+            }
+        }
+
+        > div {
+            display: inline-block;
+        }
+    }
+
+    div.form-group {
+        display: block;
+        margin-bottom: 8px;
+
+        .nginx-option-name {
+            input {
+                margin-right: 15px;
+            }
+        }
+
+        input {
+            display: inline-block;
+            vertical-align: middle;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        &:first-child {
+            margin-left: 0;
+        }
+
+        > div {
+            display: inline-block;
+        }
+
+    }
+
+}

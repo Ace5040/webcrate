@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Log in to Webcrate admin panel{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('chunk-vendors.css') }}">
+    <link rel="stylesheet" href="{{ asset('login.css') }}">
+{% endblock %}
+{% block javascripts %}
+    <script src="{{ asset('chunk-vendors.js') }}"></script>
+    <script src="{{ asset('login.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+    <script>
+        var error = {{ error ? 'true' : 'false' }};
+        var error_message = "{{ error ? error.messageKey|trans(error.messageData, 'security') : '' }}";
+        var csrf_token = "{{ csrf_token('authenticate') }}";
+        var last_username = "{{ last_username }}";
+    </script>
+    <div id="app"></div>
+{% endblock %}

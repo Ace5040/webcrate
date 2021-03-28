@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Webcrate - project edit{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('chunk-vendors.css') }}">
+    <link rel="stylesheet" href="{{ asset('admin.css') }}">
+{% endblock %}
+{% block javascripts %}
+    <script src="{{ asset('chunk-vendors.js') }}"></script>
+    <script src="{{ asset('admin-project.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+    <script>
+        var user = '{{ app.user ? app.user.email : '' }}';
+        var actual = {{ actual|json_encode(constant('JSON_UNESCAPED_UNICODE'))|raw }};
+    </script>
+    <div id="header"></div>
+    <div id="app"></div>
+    <div class="project-edit-page">
+        {{ form_start(form) }}
+            {{ form_widget(form) }}
+            <input class="btn btn-primary" type="submit" value="Save"/>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

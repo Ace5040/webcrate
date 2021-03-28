@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Webcrate - software versions{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('chunk-vendors.css') }}">
+    <link rel="stylesheet" href="{{ asset('admin.css') }}">
+{% endblock %}
+{% block javascripts %}
+    <script src="{{ asset('chunk-vendors.js') }}"></script>
+    <script src="{{ asset('admin.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+    <script>
+        var user = '{{ app.user ? app.user.email : '' }}';
+        var soft = {{ soft|json_encode(constant('JSON_UNESCAPED_UNICODE'))|raw }};
+        var actual = {{ actual|json_encode(constant('JSON_UNESCAPED_UNICODE'))|raw }};
+        var currentsha256 = {{ currentsha256|json_encode(constant('JSON_UNESCAPED_UNICODE'))|raw }};
+        var actualsha256 = {{ actualsha256|json_encode(constant('JSON_UNESCAPED_UNICODE'))|raw }};
+    </script>
+    <div id="header"></div>
+    <div id="app"></div>
+{% endblock %}

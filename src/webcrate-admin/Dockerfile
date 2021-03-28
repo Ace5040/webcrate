@@ -35,12 +35,10 @@ COPY php.ini /etc/php/conf.d/user.ini
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod u+x /entrypoint.sh
 CMD ["/entrypoint.sh"]
-RUN mkdir /app; \
-    chown app:app /app
-USER app
+ADD app /app
+RUN chown -R app:app /app
 WORKDIR /app
-ARG V=18
-RUN git clone https://github.com/Ace5040/webcrate-admin.git .
+USER app
 RUN sed -i "s/.*\"@auto-scripts\".*/ /g" composer.json;
 RUN composer install --no-scripts
 WORKDIR /app/assets/admin

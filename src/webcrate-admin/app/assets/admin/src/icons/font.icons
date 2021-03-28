@@ -1,0 +1,17 @@
+module.exports = {
+  'files': [
+    '../icons/svg/*.svg'
+  ],
+  'fontName': 'icons',
+  'classPrefix': 'icon-',
+  'baseSelector': 'icon',
+  'types': ['eot', 'woff', 'woff2', 'ttf', 'svg'],
+  'fileName': 'icons/[fontname].[ext]?[hash]',
+  'cssTemplate': 'css.hbs',
+  'formatOptions': {
+    ttf: {
+      ts: 1529668409//2018.01.01
+    }
+  },
+  'embed': false
+};

@@ -32,9 +32,6 @@ RUN sed -i "s/.*open_basedir =.*/open_basedir =/g" /etc/php/php.ini; \
 RUN yes | sudo symfony self-update
 COPY pool.conf /etc/php/php-fpm.d/pool.conf
 COPY php.ini /etc/php/conf.d/user.ini
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod u+x /entrypoint.sh
-CMD ["/entrypoint.sh"]
 ADD app /app
 RUN chown -R app:app /app
 WORKDIR /app
@@ -55,7 +52,11 @@ COPY nginx.conf /etc/nginx/nginx.conf
 COPY versions.py /webcrate/versions.py
 COPY updateusers.py /webcrate/updateusers.py
 COPY reload.py /webcrate/reload.py
+COPY entrypoint.sh /entrypoint.sh
+CMD ["/entrypoint.sh"]
 RUN chmod u+x /webcrate/init-db.py; \
     chmod a+rxs /webcrate/versions.py; \
     chmod a+rxs /webcrate/updateusers.py; \
-    chmod a+rxs /webcrate/reload.py
+    chmod a+rxs /webcrate/reload.py; \
+    chmod u+x /entrypoint.sh
+

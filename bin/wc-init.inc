@@ -32,6 +32,7 @@ do
   if [[ ! -d "./var/$i" ]] ; then mkdir -p "./var/$i"; fi
   chmod -R a-rw,u+rw ./var/$i
 done
+chmod -R a+r ./var/meta
 
 GRAFANA_PASS=''
 if [[ ! -d "./var/grafana/data" ]] ; then

@@ -363,6 +363,7 @@ else
     $PROJECTS_VOLUMES \
     -v $DOCKER_SOCKET:/var/run/docker.sock \
     -v /etc/localtime:/etc/localtime:ro \
+    -v $(pwd):/webcrate-readonly:ro \
     -v $(pwd)/var/meta:/webcrate/meta \
     -v $(pwd)/projects.yml:/webcrate/projects.yml:ro \
     -v $(pwd)/services.yml:/webcrate/services.yml:ro \

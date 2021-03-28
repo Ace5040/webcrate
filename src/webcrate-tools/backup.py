@@ -15,6 +15,69 @@ WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
 WEBCRATE_FULL_BACKUP_DAYS = os.environ.get('WEBCRATE_FULL_BACKUP_DAYS', '7')
 WEBCRATE_MAX_FULL_BACKUPS = os.environ.get('WEBCRATE_MAX_FULL_BACKUPS', '10')
 REMOTE_BACKUP_URI = os.environ.get('REMOTE_BACKUP_URI', 'file:///webcrate/backup')
+
+#backup webcrate
+data_folder = f'/webcrate-readonly'
+print(f'backup files webcrate-admin')
+os.system(f'duplicity --verbosity notice '
+  f'--no-encryption '
+  f'--full-if-older-than {WEBCRATE_FULL_BACKUP_DAYS}D '
+  f'--num-retries 3 '
+  f'--asynchronous-upload '
+  f'--allow-source-mismatch '
+  f'--volsize 500 '
+  f'--archive-dir /webcrate/duplicity/.duplicity '
+  f'--log-file /webcrate/duplicity/duplicity.log '
+  f'--include {data_folder}/config '
+  f'--include {data_folder}/var/crontabs '
+  f'--include {data_folder}/var/letsencrypt '
+  f'--include {data_folder}/var/openssl '
+  f'--include {data_folder}/var/secrets '
+  f'--include {data_folder}/var/ssh '
+  f'--exclude "{data_folder}/var/solr/cores/**/data" '
+  f'--include {data_folder}/var/solr/cores '
+  f'--include {data_folder}/var/synapse '
+  f'--include {data_folder}/.env '
+  f'--include {data_folder}/projects.yml '
+  f'--include {data_folder}/services.yml '
+  f'--exclude "**" '
+  f'"{data_folder}" '
+  f'"{REMOTE_BACKUP_URI}/webcrate/files"'
+)
+os.system(f'duplicity --verbosity notice '
+  f'--archive-dir /webcrate/duplicity/.duplicity '
+  f'--log-file /webcrate/duplicity/duplicity.log '
+  f'--force '
+  f'remove-all-but-n-full {WEBCRATE_MAX_FULL_BACKUPS} '
+  f'"{REMOTE_BACKUP_URI}/webcrate/files"'
+)
+
+#backup webcrate mysql
+print(f'backup mysql db for webcrate-admin')
+mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
+os.system(f'mkdir -p /webcrate/backup/tmp')
+os.system(f'rm /webcrate/backup/tmp/*')
+os.system(f'mysqldump --single-transaction --max_allowed_packet=64M -h mysql -u root -p"{mysql_root_password}" --result-file "/webcrate/backup/tmp/webcrate.sql" "webcrate"')
+os.system(f'duplicity --verbosity notice '
+  f'--no-encryption '
+  f'--full-if-older-than {WEBCRATE_FULL_BACKUP_DAYS}D '
+  f'--num-retries 3 '
+  f'--asynchronous-upload '
+  f'--volsize 500 '
+  f'--archive-dir /webcrate/duplicity/.duplicity '
+  f'--log-file /webcrate/duplicity/duplicity.log '
+  f'"/webcrate/backup/tmp" '
+  f'"{REMOTE_BACKUP_URI}/webcrate/mysql"'
+)
+os.system(f'rm /webcrate/backup/tmp/*')
+os.system(f'duplicity --verbosity notice '
+  f'--archive-dir /webcrate/duplicity/.duplicity '
+  f'--log-file /webcrate/duplicity/duplicity.log '
+  f'--force '
+  f'remove-all-but-n-full {WEBCRATE_MAX_FULL_BACKUPS} '
+  f'"{REMOTE_BACKUP_URI}/webcrate/mysql"'
+)
+
 for projectname,project in projects.items():
   project.name = projectname
   if project.backup:
@@ -129,4 +192,5 @@ for projectname,project in projects.items():
       )
 
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/backup')
+os.system(f'chomod -R a-rw,u+rw /webcrate/backup')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/duplicity')

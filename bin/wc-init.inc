@@ -30,6 +30,7 @@ var_folders=( "meta" "mysql" "synapse" "ssh" "mysql5" "postgres" "duplicity" "le
 for i in "${var_folders[@]}"
 do
   if [[ ! -d "./var/$i" ]] ; then mkdir -p "./var/$i"; fi
+  chmod -R a-rw,u+rw ./var/$i
 done
 
 GRAFANA_PASS=''

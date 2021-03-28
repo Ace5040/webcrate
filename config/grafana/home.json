@@ -1539,7 +1539,7 @@
               "type": "fill"
             }
           ],
-          "measurement": "stats_users",
+          "measurement": "stats_projects",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "A",

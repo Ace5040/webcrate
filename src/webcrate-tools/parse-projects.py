@@ -180,9 +180,17 @@ for projectname,project in projects.items():
         for auth_location in project.auth_locations:
           index = index + 1
           f.write(
-            f'location {auth_location.path} {{\n'
+            f'location ~ {auth_location.path}/.* {{\n'
             f'  auth_basic "{auth_location.title}";\n'
             f'  auth_basic_user_file /webcrate/auth_locations_configs/{project.name}-{index}.password;\n'
+            f'  location ~ \.php$ {{\n'
+            f'    fastcgi_split_path_info ^(.+?\.php)(|/.*)$;\n'
+            f'    fastcgi_pass webcrate-core:{ str(port) };\n'
+            f'    try_files $fastcgi_script_name =404;\n'
+            f'    include fastcgi_params;\n'
+            f'    fastcgi_read_timeout 60;\n'
+            f'    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;\n'
+            f'  }}\n'
             f'}}\n\n'
           )
           with open(f'/webcrate/auth_locations_configs/{project.name}-{index}.password', 'w') as pf:

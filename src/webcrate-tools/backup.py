@@ -192,5 +192,5 @@ for projectname,project in projects.items():
       )
 
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/backup')
-os.system(f'chomod -R a-rw,u+rw /webcrate/backup')
+os.system(f'chmod -R a-rw,u+rw /webcrate/backup')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/duplicity')

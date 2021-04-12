@@ -76,13 +76,21 @@ if os.path.isfile(f'/webcrate/secrets/openssl-root.cnf'):
 openssl_root_conf = (f'[req]\n'
 f'prompt = no\n'
 f'distinguished_name = dn\n'
+f'x509_extensions = x509_ext\n'
 f'[ dn ]\n'
 f'C={countryName}\n'
 f'O=Webcrate\n'
 f'emailAddress={OPENSSL_EMAIL}\n'
-f'CN = Webcrate\n')
+f'CN = Webcrate\n'
+f'[ x509_ext ]\n'
+f'subjectKeyIdentifier = hash\n'
+f'authorityKeyIdentifier = keyid:always,issuer\n'
+f'basicConstraints = critical, CA:TRUE\n'
+f'keyUsage = critical, digitalSignature, keyEncipherment, cRLSign, keyCertSign\n'
+#f'subjectAltName = DNS:test.com\n'
+f'extendedKeyUsage = serverAuth\n')
 
-if openssl_root_conf_prev != openssl_root_conf:
+if openssl_root_conf_prev != openssl_root_conf or not os.path.isfile(f'/webcrate/secrets/rootCA.crt'):
   openssl_root_conf_changed = True
   print(f'openssl root config changed')
   os.system(f'rm -f /webcrate/secrets/rootCA.key; rm -f /webcrate/secrets/rootCA.crt; rm -f /webcrate/secrets/rootCA.srl; rm -f /webcrate/secrets/openssl-root.cnf')
@@ -90,8 +98,7 @@ if openssl_root_conf_prev != openssl_root_conf:
   with open(f'/webcrate/secrets/openssl-root.cnf', 'w') as f:
     f.write(openssl_root_conf)
     f.close()
-  os.system(f'openssl req -x509 -new -nodes -key /webcrate/secrets/rootCA.key -sha256 -days 10000 -out /webcrate/secrets/rootCA.crt -config /webcrate/secrets/openssl-root.cnf')
-
+  os.system(f'openssl req -x509 -new -nodes -key /webcrate/secrets/rootCA.key -sha256 -days 825 -out /webcrate/secrets/rootCA.crt -config /webcrate/secrets/openssl-root.cnf')
 if openssl_root_conf_changed:
   os.system(f'rm -r /webcrate/openssl/default')
 conf = genereate_openssl_conf('default', ['default'], countryName, organizationName, OPENSSL_EMAIL)
@@ -281,13 +288,21 @@ for servicename,service in services.items():
     if retries > 0:
       mysql_database_found = int(os.popen(f'mysql -u root -h mysql -p"{mysql_root_password}" -e "show databases like \'{service.name}\';" | grep "Database ({service.name})" | wc -l').read().strip())
       if mysql_database_found == 0:
-        mysql_service_password=os.popen(f"/webcrate/pwgen.sh").read().strip()
-        with open(f'/webcrate/secrets/{service.name}-service-mysql.txt', 'w') as f:
-          f.write(f'host=mysql\n')
-          f.write(f'name={service.name}\n')
-          f.write(f'user={service.name}\n')
-          f.write(f'password={mysql_service_password}\n')
-          f.close()
+        if os.path.isfile(f'/webcrate/secrets/{service.name}-service-mysql.txt'):
+          with open(f'/webcrate/secrets/{service.name}-service-mysql.txt', 'r') as f:
+            for line in f:
+              pair = line.strip().split('=', 1)
+              if pair[0] == 'password':
+                mysql_service_password = pair[1]
+            f.close()
+        else:
+          mysql_service_password=os.popen(f"/webcrate/pwgen.sh").read().strip()
+          with open(f'/webcrate/secrets/{service.name}-service-mysql.txt', 'w') as f:
+            f.write(f'host=mysql\n')
+            f.write(f'name={service.name}\n')
+            f.write(f'user={service.name}\n')
+            f.write(f'password={mysql_service_password}\n')
+            f.close()
         os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/secrets/{service.name}-service-mysql.txt')
         os.system(f'mysql -u root -h mysql -p"{mysql_root_password}" -e "CREATE DATABASE \`{service.name}\`;"')
         os.system(f"mysql -u root -h mysql -p\"{mysql_root_password}\" -e \"CREATE USER \`{service.name}\`@'%' IDENTIFIED BY \\\"{mysql_service_password}\\\";\"")
@@ -306,9 +321,23 @@ for servicename,service in services.items():
     if retries > 0:
       mysql5_database_found = int(os.popen(f'mysql -u root -h mysql5 -p"{mysql5_root_password}" -e "show databases like \'{service.name}\';" | grep "Database ({service.name})" | wc -l').read().strip())
       if mysql5_database_found == 0:
-        mysql5_service_password=os.popen(f"/webcrate/pwgen.sh").read().strip()
+        if os.path.isfile(f'/webcrate/secrets/{service.name}-service-mysql5.txt'):
+          with open(f'/webcrate/secrets/{service.name}-service-mysql5.txt', 'r') as f:
+            for line in f:
+              pair = line.strip().split('=', 1)
+              if pair[0] == 'password':
+                mysql5_service_password = pair[1]
+            f.close()
+        else:
+          mysql5_service_password=os.popen(f"/webcrate/pwgen.sh").read().strip()
+          with open(f'/webcrate/secrets/{service.name}-service-mysql5.txt', 'w') as f:
+            f.write(f'host=mysql5\n')
+            f.write(f'name={service.name}\n')
+            f.write(f'user={service.name}\n')
+            f.write(f'password={mysql_service_password}\n')
+            f.close()
         with open(f'/webcrate/secrets/{service.name}-service-mysql5.txt', 'w') as f:
-          f.write(f'host=mysql\n')
+          f.write(f'host=mysql5\n')
           f.write(f'db={service.name}\n')
           f.write(f'user={service.name}\n')
           f.write(f'password={mysql5_service_password}\n')
@@ -331,7 +360,21 @@ for servicename,service in services.items():
     if retries > 0:
       postgres_database_found = os.popen(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "SELECT 1 FROM pg_database WHERE datname=\'{service.name}\';"').read().strip()
       if postgres_database_found != '1':
-        postgres_service_password=os.popen(f"/webcrate/pwgen.sh").read().strip()
+        if os.path.isfile(f'/webcrate/secrets/{service.name}-service-postgres.txt'):
+          with open(f'/webcrate/secrets/{service.name}-service-postgres.txt', 'r') as f:
+            for line in f:
+              pair = line.split('=', 1)
+              if pair[0] == 'password':
+                postgres_service_password = pair[1]
+            f.close()
+        else:
+          postgres_service_password=os.popen(f"/webcrate/pwgen.sh").read().strip()
+          with open(f'/webcrate/secrets/{service.name}-service-postgres.txt', 'w') as f:
+            f.write(f'host=postgres\n')
+            f.write(f'name={service.name}\n')
+            f.write(f'user={service.name}\n')
+            f.write(f'password={postgres_service_password}\n')
+            f.close()
         with open(f'/webcrate/secrets/{service.name}-service-postgres.txt', 'w') as f:
           f.write(f'host=postgres\n')
           f.write(f'db={service.name}\n')

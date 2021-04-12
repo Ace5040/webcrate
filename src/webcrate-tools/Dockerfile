@@ -22,15 +22,7 @@ RUN chown root:root /bin/systemctl.py; \
 RUN systemctl enable cronie;
 WORKDIR /
 RUN mkdir -p /webcrate;
-COPY ssl.conf /webcrate/ssl.conf
-COPY gzip.conf /webcrate/gzip.conf
-COPY redirect.conf /webcrate/redirect.conf
-COPY parse-configs.py /webcrate/parse-configs.py
-COPY parse-projects.py /webcrate/parse-projects.py
-COPY parse-services.py /webcrate/parse-services.py
-COPY certbot-renew.py /webcrate/certbot-renew.py
-COPY certbot-renew-deploy.py /webcrate/certbot-renew-deploy.py
-COPY backup.py /webcrate/backup.py
+COPY ["ssl.conf", "gzip.conf", "gzip.conf", "redirect.conf", "parse-configs.py", "parse-projects.py", "parse-services.py", "certbot-renew.py", "certbot-renew-deploy.py", "backup.py", "/webcrate/"]
 COPY entrypoint.sh /entrypoint.sh
 COPY pwgen.sh /webcrate/pwgen.sh
 RUN chmod a+x /webcrate/parse-configs.py; \

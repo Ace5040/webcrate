@@ -16,12 +16,11 @@ WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
 WEBCRATE_SERVICE_HTMLTOPDF = os.environ.get('WEBCRATE_SERVICE_HTMLTOPDF', 'false') == 'true'
 WEBCRATE_SERVICE_DOCTOHTML = os.environ.get('WEBCRATE_SERVICE_DOCTOHTML', 'false') == 'true'
 WEBCRATE_SERVICE_SOLR = os.environ.get('WEBCRATE_SERVICE_SOLR', 'false') == 'true'
-WEBCRATE_SERVICE_SYNAPSE = os.environ.get('WEBCRATE_SERVICE_SYNAPSE', 'false') == 'true'
+WEBCRATE_SERVICE_MATTERMOST = os.environ.get('WEBCRATE_SERVICE_MATTERMOST', 'false') == 'true'
 WEBCRATE_SERVICE_STATS = os.environ.get('WEBCRATE_SERVICE_STATS', 'false') == 'true'
 
 for servicename, service in services.items():
-  if  ( servicename != 'synapse' or WEBCRATE_SERVICE_SYNAPSE  ) and \
-      ( servicename != 'synapse-admin' or WEBCRATE_SERVICE_SYNAPSE ) and \
+  if  ( servicename != 'mattermost' or WEBCRATE_SERVICE_MATTERMOST ) and \
       ( servicename != 'doctohtml' or WEBCRATE_SERVICE_DOCTOHTML ) and \
       ( servicename != 'htmltopdf' or WEBCRATE_SERVICE_HTMLTOPDF ) and \
       ( servicename != 'grafana' or WEBCRATE_SERVICE_STATS ) and \
@@ -75,8 +74,7 @@ for servicename, service in services.items():
 if WEBCRATE_MODE == "DEV":
   with open(f'/webcrate-dnsmasq/config/hosts_nginx', 'a') as f:
     for servicename, service in services.items():
-      if  ( servicename != 'synapse' or WEBCRATE_SERVICE_SYNAPSE ) and \
-          ( servicename != 'synapse-admin' or WEBCRATE_SERVICE_SYNAPSE ) and \
+      if  ( servicename != 'mattermost' or WEBCRATE_SERVICE_MATTERMOST ) and \
           ( servicename != 'doctohtml' or WEBCRATE_SERVICE_DOCTOHTML ) and \
           ( servicename != 'htmltopdf' or WEBCRATE_SERVICE_HTMLTOPDF ) and \
           ( servicename != 'grafana' or WEBCRATE_SERVICE_STATS ) and \

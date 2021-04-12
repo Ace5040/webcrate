@@ -26,7 +26,7 @@ do
     let VOLUMES_COUNTER+=1
 done
 
-var_folders=( "meta" "mysql" "synapse" "ssh" "mysql5" "postgres" "duplicity" "letsencrypt" "letsencrypt-meta/well-known" "openssl" "crontabs" "backup" "secrets" "solr/cores" "solr/logs" "influxdb" "logs/nginx" )
+var_folders=( "meta" "mysql" "mattermost" "mattermost/config" "mattermost/data" "mattermost/logs" "mattermost/plugins" "mattermost/client-plugins" "ssh" "mysql5" "postgres" "duplicity" "letsencrypt" "letsencrypt-meta/well-known" "openssl" "crontabs" "backup" "secrets" "solr/cores" "solr/logs" "influxdb" "logs/nginx" )
 for i in "${var_folders[@]}"
 do
   if [[ ! -d "./var/$i" ]] ; then mkdir -p "./var/$i"; fi
@@ -51,15 +51,22 @@ if [[ ! -f "./var/secrets/webcrate.secret" ]] ; then
   echo "secret=$app_secret" >> ./var/secrets/webcrate.secret
 fi
 
-SYNAPSE_PASS=''
-if [[ ! -f "./var/secrets/synapse.secret" ]] ; then
-  SYNAPSE_PASS=`docker run --rm ace5040/webcrate-tools:stable /webcrate/pwgen.sh`
-  TURN_SHARED_SECRET=`docker run --rm ace5040/webcrate-tools:stable pwgen -nAs1 32 1`
-  echo "user=admin" > ./var/secrets/synapse.secret
-  echo "password=$SYNAPSE_PASS" >> ./var/secrets/synapse.secret
-  echo $TURN_SHARED_SECRET >> ./var/secrets/turn.secret
+if [ "$WEBCRATE_SERVICE_MATTERMOST" = true ]; then
+  MATTERMOST_ADMIN_PASS=''
+  if [[ ! -f "./var/secrets/mattermost.secret" ]] ; then
+    MATTERMOST_ADMIN_PASS=`docker run --rm ace5040/webcrate-tools:stable /webcrate/pwgen.sh`
+    echo "user=admin" > ./var/secrets/mattermost.secret
+    echo "password=$MATTERMOST_ADMIN_PASS" >> ./var/secrets/mattermost.secret
+  fi
+  MATTERMOST_MYSQL_PASS=''
+  if [[ ! -f "./var/secrets/mattermost-service-mysql.txt" ]] ; then
+    MATTERMOST_MYSQL_PASS=`docker run --rm ace5040/webcrate-tools:stable /webcrate/pwgen.sh`
+    echo "host=mysql" > ./var/secrets/mattermost-service-mysql.txt
+    echo "name=mattermost" >> ./var/secrets/mattermost-service-mysql.txt
+    echo "user=mattermost" >> ./var/secrets/mattermost-service-mysql.txt
+    echo "password=$MATTERMOST_MYSQL_PASS" >> ./var/secrets/mattermost-service-mysql.txt
+  fi
 fi
-WEBCRATE_SYNAPSE_DOMAIN=`cat ./services.yml | awk "/synapse:/,/port:/" | grep -oP "(?<=domain: ).*" | head -c -1`
 
 volumes=( webcrate_dnsmasq_hosts webcrate_nginx_configs webcrate_ssl_configs webcrate_redirect_configs webcrate_options_configs webcrate_block_configs webcrate_auth_locations_configs webcrate_gzip_configs webcrate_php56_pools webcrate_php73_pools webcrate_php74_pools webcrate_php80_pools webcrate_phpmyadmin webcrate_phpmyadmin_config webcrate_phpmyadmin_sessions webcrate_phppgadmin webcrate_phppgadmin_logs webcrate_coturn )
 for i in "${volumes[@]}"

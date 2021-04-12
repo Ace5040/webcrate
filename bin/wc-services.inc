@@ -222,106 +222,43 @@ if [ "$WEBCRATE_SERVICE_STATS" = true ]; then
   fi
 fi
 
-if [ "$WEBCRATE_SERVICE_SYNAPSE" = true ]; then
-  if docker container inspect synapse >/dev/null 2> /dev/null; then
-    echo service synapse exists
+if [ "$WEBCRATE_SERVICE_MATTERMOST" = true ]; then
+  if docker container inspect mattermost >/dev/null 2> /dev/null; then
+    echo service mattermost exists
   else
-    turn_secret=`cat ./var/secrets/turn.secret`
-
-    if [[ ! -f "./var/synapse/homeserver.yaml" ]] ; then
-      docker run -it --rm --hostname synapse --name synapse \
-        --user "$uid:$gid" \
-        --network="webcrate_network" --dns=172.31.0.100 \
-        -v $(pwd)/var/synapse:/data \
-        -e SYNAPSE_SERVER_NAME=$WEBCRATE_SYNAPSE_DOMAIN \
-        -e UID=$uid \
-        -e GID=$gid \
-        -e SYNAPSE_REPORT_STATS=yes \
-        matrixdotorg/synapse:latest generate
-      echo "" >> ./var/synapse/homeserver.yaml
-      echo "turn_uris:" >> ./var/synapse/homeserver.yaml
-      echo "  - \"turns:$WEBCRATE_SYNAPSE_DOMAIN?transport=udp\"" >> ./var/synapse/homeserver.yaml
-      echo "  - \"turns:$WEBCRATE_SYNAPSE_DOMAIN?transport=udp\"" >> ./var/synapse/homeserver.yaml
-      echo "  - \"turn:$WEBCRATE_SYNAPSE_DOMAIN?transport=udp\"" >> ./var/synapse/homeserver.yaml
-      echo "  - \"turn:$WEBCRATE_SYNAPSE_DOMAIN?transport=udp\"" >> ./var/synapse/homeserver.yaml
-      echo "turn_user_lifetime: \"10h\"" >> ./var/synapse/homeserver.yaml
-      echo "turn_shared_secret: \"$turn_secret\"" >> ./var/synapse/homeserver.yaml
-      echo "suppress_key_server_warning: true" >> ./var/synapse/homeserver.yaml
-
-      sed -i "s/^#max_upload_size: 10M$/max_upload_size: 10M/g" ./var/synapse/homeserver.yaml;
-      sed -i "s/^database:$/#database:/g" ./var/synapse/homeserver.yaml;
-      sed -i "s/^  name: sqlite3$/#  name: sqlite3/g" ./var/synapse/homeserver.yaml;
-      sed -i "s/^  args:$/#  args:/g" ./var/synapse/homeserver.yaml;
-      sed -i "s/^    database: \/data\/homeserver.db$/#    database: \/data\/homeserver.db/g" ./var/synapse/homeserver.yaml;
-
-      SYNAPSE_POSTGRES_PASS='';
-      if [[ -f "./var/secrets/synapse-service-postgres.txt" ]] ; then
-        SYNAPSE_POSTGRES_PASS=`cat ./var/secrets/synapse-service-postgres.txt|grep 'password='|grep -oP "(?<=password=).*" | head -c -1`
-      fi
-
-      echo "" >> ./var/synapse/homeserver.yaml
-      echo "database:" >> ./var/synapse/homeserver.yaml
-      echo "  name: psycopg2" >> ./var/synapse/homeserver.yaml
-      echo "  args:" >> ./var/synapse/homeserver.yaml
-      echo "    user: synapse" >> ./var/synapse/homeserver.yaml
-      echo "    password: \"$SYNAPSE_POSTGRES_PASS\"" >> ./var/synapse/homeserver.yaml
-      echo "    database: synapse" >> ./var/synapse/homeserver.yaml
-      echo "    host: postgres" >> ./var/synapse/homeserver.yaml
-      echo "    cp_min: 5" >> ./var/synapse/homeserver.yaml
-      echo "    cp_max: 10" >> ./var/synapse/homeserver.yaml
-
-      echo "" >> ./var/synapse/homeserver.yaml
-      echo "user_directory:" >> ./var/synapse/homeserver.yaml
-      echo "  search_all_projects: true" >> ./var/synapse/homeserver.yaml
-
-    fi
-
-    docker run -d --hostname synapse --name synapse \
+    #if [ "$NEXTCLOUD_ADMIN_PASS" != "" ]; then NEXTCLOUD_ADMIN_PASS=-e\ NEXTCLOUD_ADMIN_USER=admin\ -e\ NEXTCLOUD_ADMIN_PASSWORD="$NEXTCLOUD_ADMIN_PASS"; fi
+    #if [ "$MATTERMOST_MYSQL_PASS" != "" ]; then MATTERMOST_MYSQL_PASS=\ -e\ MYSQL_HOST=mysql\ -e\ MYSQL_DATABASE=nextcloud\ -e\ MYSQL_USER=nextcloud\ -e\ MYSQL_PASSWORD="$NEXTCLOUD_MYSQL_PASS"; fi
+    docker run -d --hostname mattermost --name mattermost \
       --network="webcrate_network" --dns=172.31.0.100 \
       --restart="unless-stopped" \
       --user "$uid:$gid" \
-      -e UID=$uid \
-      -e GID=$gid \
-      -v $(pwd)/var/synapse:/data \
-      -v $(pwd)/var/openssl:/webcrate/openssl \
-      matrixdotorg/synapse:latest
+      -e DB_PORT_NUMBER=3306 \
+      -e MM_SQLSETTINGS_DRIVERNAME=mysql \
+      -e MM_SQLSETTINGS_DATASOURCE="mattermost:uY(E&s&_Rq3KL;Pe@tcp(mysql:3306)/mattermost?charset=utf8mb4,utf8&readTimeout=30s&writeTimeout=30s" \
+      -e MM_SERVICESETTINGS_SITEURL=https://mattermost.test \
+      -e MM_EMAILSETTINGS_SENDEMAILNOTIFICATIONS=false \
+      -e MM_EMAILSETTINGS_ENABLESIGNUPWITHEMAIL=true \
+      -e MM_EMAILSETTINGS_ENABLESIGNINWITHEMAIL=true \
+      -e MM_EMAILSETTINGS_ENABLESIGNINWITHUSERNAME=true \
+      -e MM_EMAILSETTINGS_SENDPUSHNOTIFICATIONS=false \
+      -e MM_PLUGINSETTINGS_ENABLEUPLOADS=true \
+      -v $(pwd)/var/mattermost/config:/mattermost/config:rw \
+      -v $(pwd)/var/mattermost/data:/mattermost/data:rw \
+      -v $(pwd)/var/mattermost/logs:/mattermost/logs:rw \
+      -v $(pwd)/var/mattermost/plugins:/mattermost/plugins:rw \
+      -v $(pwd)/var/mattermost/client-plugins:/mattermost/client/plugins:rw \
+      ace5040/webcrate-mattermost:stable
+      #- /etc/localtime:/etc/localtime:ro
+      #$MATTERMOST_MYSQL_PASS \
+      #-e NEXTCLOUD_DATA_DIR=/var/www/html/data
+      #-e UID=$uid \
+      #-e GID=$gid \
+      #-v $(pwd)/var/nextcloud/apps:/var/www/html/custom_apps \
+      #-v $(pwd)/var/nextcloud/config:/var/www/html/config \
+      #-v $(pwd)/var/nextcloud/data:/var/www/html/data \
+      #-v $(pwd)/var/nextcloud/theme:/var/www/html/themes/<YOUR_CUSTOM_THEME> \
   fi
 
-  if docker container inspect turn >/dev/null 2> /dev/null; then
-    echo service turn exists
-  else
-    docker run -d --hostname turn --name turn \
-      --network="webcrate_network" --dns=172.31.0.100 \
-      --restart="unless-stopped" \
-      -v $(pwd)/config/turn:/webcrate \
-      -v webcrate_coturn:/var/lib/coturn \
-      -p "3478:3478/udp" \
-      -p "3479:3479/udp" \
-      -p "5349:5349/udp" \
-      -p "49160-49200:49160-49200/udp" \
-      instrumentisto/coturn:4 -c /webcrate/turn.conf  \
-        --realm $WEBCRATE_SYNAPSE_DOMAIN \
-        --static-auth-secret="$turn_secret" \
-        --external-ip='$(detect-external-ip)' \
-        --relay-ip='$(detect-external-ip)'
-  fi
-
-  if docker container inspect synapse-admin >/dev/null 2> /dev/null; then
-    echo service synapse-admin exists
-  else
-    docker run -d --env-file=$(pwd)/.env --hostname synapse-admin --name synapse-admin \
-      --network="webcrate_network" --dns=172.31.0.100 \
-      --restart="unless-stopped" \
-      awesometechnologies/synapse-admin:latest
-
-    if [ "$GRAFANA_PASS" != "" ]; then
-      sleep 10; docker exec --user $uid:$gid grafana grafana-cli admin reset-admin-password "$GRAFANA_PASS"
-    fi
-
-    if [ "$SYNAPSE_PASS" != "" ]; then
-      sleep 10; docker exec synapse register_new_matrix_user -a --user admin --password "$SYNAPSE_PASS" -c /data/homeserver.yaml http://localhost:8008
-    fi
-  fi
 fi
 
 if docker container inspect webcrate-nginx >/dev/null 2> /dev/null; then

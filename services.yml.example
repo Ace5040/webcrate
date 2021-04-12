@@ -5,18 +5,11 @@ webcrate:
   mysql_db: yes
   mysql5_db: no
   postgresql_db: no
-synapse:
-  domain: synapse.test
-  port: 8008
-  https: openssl
-  mysql_db: no
-  mysql5_db: no
-  postgresql_db: yes
-synapse-admin:
-  domain: synapse-admin.test
+mattermost:
+  domain: mattermost.test
   port: 80
   https: disabled
-  mysql_db: no
+  mysql_db: yes
   mysql5_db: no
   postgresql_db: no
 phpmyadmin:

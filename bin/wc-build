@@ -5,7 +5,13 @@ SCRIPTPATH=`dirname $SCRIPT`
 
 cd $SCRIPTPATH/..
 
-docker build -t ace5040/webcrate-core:stable ./src/webcrate-core --cache-from ace5040/webcrate-core:stable
-docker build -t ace5040/webcrate-admin:stable ./src/webcrate-admin --cache-from ace5040/webcrate-admin:stable
-docker build -t ace5040/webcrate-tools:stable ./src/webcrate-tools --cache-from ace5040/webcrate-tools:stable
-docker build -t ace5040/webcrate-nginx:stable ./src/webcrate-nginx --cache-from ace5040/webcrate-nginx:stable
+docker build -t ace5040/webcrate-core:stable --cache-from ace5040/webcrate-core:stable ./src/webcrate-core
+docker build -t ace5040/webcrate-admin:stable --cache-from ace5040/webcrate-admin:stable ./src/webcrate-admin
+docker build -t ace5040/webcrate-tools:stable --cache-from ace5040/webcrate-tools:stable ./src/webcrate-tools
+docker build -t ace5040/webcrate-nginx:stable --cache-from ace5040/webcrate-nginx:stable ./src/webcrate-nginx
+docker build -t ace5040/webcrate-mattermost:stable \
+  --build-arg edition=team \
+  --build-arg PUID=1000 \
+  --build-arg PGID=1000 \
+  --cache-from ace5040/webcrate-mattermost:stable \
+  ./src/mattermost-docker/app

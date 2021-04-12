@@ -1,0 +1,3 @@
+[submodule "src/mattermost-docker"]
+	path = src/mattermost-docker
+	url = ../../mattermost/mattermost-docker.git

@@ -1,18 +1,19 @@
 Dockerfile
 ###> symfony/framework-bundle ###
-/.env.local
-/.env.local.php
-/.env.*.local
-/config/secrets/prod/prod.decrypt.private.php
-/public/build/
-/public/bundles/
-/var/
-/vendor/
-/logs/
+/app/.env.local
+/app/.env.local.php
+/app/.env.*.local
+/app/config/secrets/prod/prod.decrypt.private.php
+/app/public/build/
+/app/public/bundles/
+/app/var/
+/app/vendor/
+/app/logs/
+node_modules/
 ###< symfony/framework-bundle ###
 
 ###> symfony/phpunit-bridge ###
 .phpunit
 .phpunit.result.cache
-/phpunit.xml
+/app/phpunit.xml
 ###< symfony/phpunit-bridge ###

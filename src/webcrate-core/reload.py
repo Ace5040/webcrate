@@ -51,7 +51,7 @@ sys.stdout.flush()
 #start services
 os.system(f'systemctl start php56-fpm')
 os.system(f'systemctl start php73-fpm')
-os.system(f'systemctl start php-fpm7')
+os.system(f'systemctl start php74-fpm')
 os.system(f'systemctl start php-fpm')
 
 os.system(f'systemctl start dnsmasq')

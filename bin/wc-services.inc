@@ -29,7 +29,7 @@ else
     -v $(pwd)/config/php-pool-templates:/webcrate/custom_templates:ro \
     -v $(pwd)/config/php/php56.ini:/etc/php56/conf.d/user.ini:ro \
     -v $(pwd)/config/php/php73.ini:/etc/php73/conf.d/user.ini:ro \
-    -v $(pwd)/config/php/php74.ini:/etc/php7/conf.d/user.ini:ro \
+    -v $(pwd)/config/php/php74.ini:/etc/php74/conf.d/user.ini:ro \
     -v $(pwd)/config/php/php80.ini:/etc/php/conf.d/user.ini:ro \
     -v $(pwd)/config/exim/exim.conf:/etc/mail/exim.original.conf \
     -v webcrate_php56_pools:/etc/php56/php-fpm.d \

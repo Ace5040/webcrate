@@ -1,19 +1,37 @@
 FROM archlinux:latest
-RUN echo "Set disable_coredump false" >> /etc/sudo.conf
-RUN pacman --noconfirm -Syu; \
-    pacman --needed --noconfirm -S base-devel git unzip mariadb-clients postgresql-libs cronie python python-pip certbot duplicity lftp pwgen;
-RUN useradd -m -s /bin/bash dev; \
-    usermod -p "dev" dev; \
-    echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo
+
+#update pacman db
+RUN pacman --needed --noconfirm -Syu
+
+#install system utils and services
+RUN pacman --needed --noconfirm -S base-devel git unzip mariadb-clients postgresql-libs cronie python python-pip certbot duplicity lftp pwgen docker;
+
+#add dev user
+RUN useradd -m -s /bin/bash dev
+RUN usermod -p "dev" dev
+
+#grant dev user sudo priviledges
+RUN echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo
+
+#enable 6 cores support for make
 RUN sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j6\"/g" /etc/makepkg.conf
 USER dev
 WORKDIR /home/dev
+
+#install yay
 RUN git clone https://aur.archlinux.org/yay.git
 WORKDIR /home/dev/yay
 RUN makepkg -scir --noconfirm
 WORKDIR /home/dev
-RUN yay --noeditmenu --nodiffmenu --noconfirm -S docker-systemctl-replacement-git docker
+
+#remove yay src
+RUN rm -rf /home/dev/yay
+
+#install soft from aur
+RUN yay --gpgflags "--keyserver hkp://keyserver.ubuntu.com" --noeditmenu --nodiffmenu --noconfirm --mflags --nocheck -S docker-systemctl-replacement-git
+
 USER root
+
 RUN pip install pyyml munch
 RUN chown root:root /bin/systemctl.py; \
     chmod a+x /bin/systemctl.py; \

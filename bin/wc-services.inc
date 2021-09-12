@@ -1,3 +1,5 @@
+writeLog "Starting webcrate-core container"
+
 if docker container inspect webcrate-core >/dev/null 2> /dev/null; then
   echo service webcrate-core exists
 else
@@ -40,6 +42,8 @@ else
     ace5040/webcrate-core:stable > /dev/null
 fi
 
+writeLog "Starting webcrate-admin container"
+
 if docker container inspect webcrate >/dev/null 2> /dev/null; then
   echo service webcrate exists
 else
@@ -60,6 +64,8 @@ else
     ace5040/webcrate-admin:stable > /dev/null
 fi
 
+writeLog "Starting memcached container"
+
 if [ "$WEBCRATE_SERVICE_MEMCACHED" = true ]; then
   if docker container inspect memcached >/dev/null 2> /dev/null; then
     echo service memcached exists
@@ -70,6 +76,8 @@ if [ "$WEBCRATE_SERVICE_MEMCACHED" = true ]; then
       memcached:1 > /dev/null
   fi
 fi
+
+writeLog "Starting mysql5 container"
 
 if docker container inspect mysql5 >/dev/null 2> /dev/null; then
   echo service mysql5 exists
@@ -87,6 +95,8 @@ else
     mariadb:5 > /dev/null
 fi
 
+writeLog "Starting mysql container"
+
 if docker container inspect mysql >/dev/null 2> /dev/null; then
   echo service mysql exists
 else
@@ -103,6 +113,8 @@ else
     mariadb:10 > /dev/null
 fi
 
+writeLog "Starting postgres container"
+
 if docker container inspect postgres >/dev/null 2> /dev/null; then
   echo service postgres exists
 else
@@ -116,6 +128,8 @@ else
     -v $(pwd)/var/postgres:/var/lib/postgresql/data \
     postgres:12 > /dev/null
 fi
+
+writeLog "Starting phpmyadmin container"
 
 if docker container inspect phpmyadmin >/dev/null 2> /dev/null; then
   echo service phpmyadmin exists
@@ -134,6 +148,8 @@ else
     phpmyadmin/phpmyadmin:5 > /dev/null
 fi
 
+writeLog "Starting phppgadmin container"
+
 if docker container inspect phppgadmin >/dev/null 2> /dev/null; then
   echo service phppgadmin exists
 else
@@ -147,6 +163,7 @@ else
 fi
 
 if [ "$WEBCRATE_SERVICE_DOCTOHTML" = true ]; then
+  writeLog "Starting doctohtml container"
   if docker container inspect doctohtml >/dev/null 2> /dev/null; then
     echo service doctohtml exists
   else
@@ -159,6 +176,7 @@ if [ "$WEBCRATE_SERVICE_DOCTOHTML" = true ]; then
 fi
 
 if [ "$WEBCRATE_SERVICE_HTMLTOPDF" = true ]; then
+  writeLog "Starting htmltopdf container"
   if docker container inspect htmltopdf >/dev/null 2> /dev/null; then
     echo service htmltopdf exists
   else
@@ -171,6 +189,7 @@ if [ "$WEBCRATE_SERVICE_HTMLTOPDF" = true ]; then
 fi
 
 if [ "$WEBCRATE_SERVICE_SOLR" = true ]; then
+  writeLog "Starting solr container"
   if docker container inspect solr >/dev/null 2> /dev/null; then
     echo service solr exists
   else
@@ -188,6 +207,7 @@ if [ "$WEBCRATE_SERVICE_SOLR" = true ]; then
 fi
 
 if [ "$WEBCRATE_SERVICE_STATS" = true ]; then
+  writeLog "Starting graphana and influxdb containers"
   if docker container inspect grafana >/dev/null 2> /dev/null; then
     echo service grafana exists
   else
@@ -207,7 +227,6 @@ if [ "$WEBCRATE_SERVICE_STATS" = true ]; then
       -v $(pwd)/config/grafana/datasource.yml:/etc/grafana/provisioning/datasources/default.yml \
       grafana/grafana:7.4.3 > /dev/null
   fi
-
   if docker container inspect influxdb >/dev/null 2> /dev/null; then
     echo service influxdb exists
   else
@@ -220,9 +239,13 @@ if [ "$WEBCRATE_SERVICE_STATS" = true ]; then
       -v $(pwd)/var/influxdb:/var/lib/influxdb \
       influxdb:1.8-alpine > /dev/null
   fi
+  if [ "$GRAFANA_PASS" != "" ]; then
+    sleep 10; docker exec --user $uid:$gid grafana grafana-cli admin reset-admin-password "$GRAFANA_PASS"
+  fi
 fi
 
 if [ "$WEBCRATE_SERVICE_SYNAPSE" = true ]; then
+  writeLog "Starting synapse, synapse-admin and turn containers"
   if docker container inspect synapse >/dev/null 2> /dev/null; then
     echo service synapse exists
   else
@@ -313,16 +336,15 @@ if [ "$WEBCRATE_SERVICE_SYNAPSE" = true ]; then
       --network="webcrate_network" --dns=172.31.0.100 \
       --restart="unless-stopped" \
       awesometechnologies/synapse-admin:latest
-
-    if [ "$GRAFANA_PASS" != "" ]; then
-      sleep 10; docker exec --user $uid:$gid grafana grafana-cli admin reset-admin-password "$GRAFANA_PASS"
-    fi
-
-    if [ "$SYNAPSE_PASS" != "" ]; then
-      sleep 10; docker exec synapse register_new_matrix_user -a --user admin --password "$SYNAPSE_PASS" -c /data/homeserver.yaml http://localhost:8008
-    fi
   fi
+
+  if [ "$SYNAPSE_PASS" != "" ]; then
+    sleep 10; docker exec synapse register_new_matrix_user -a --user admin --password "$SYNAPSE_PASS" -c /data/homeserver.yaml http://localhost:8008
+  fi
+
 fi
+
+writeLog "Starting nginx container"
 
 if docker container inspect webcrate-nginx >/dev/null 2> /dev/null; then
   echo service webcrate-nginx exists
@@ -351,6 +373,8 @@ else
     -v webcrate_nginx_configs:/etc/nginx/conf.d:ro \
     ace5040/webcrate-nginx:stable > /dev/null
 fi
+
+writeLog "Starting webcrate-tools container"
 
 if docker container inspect webcrate-tools >/dev/null 2> /dev/null; then
   echo service webcrate-tools exists

@@ -1,13 +1,24 @@
-source ./bin/wc-functions.inc
+writeLog "Initialization started"
+
+writeLog "Generate folders"
+var_folders=( "meta" "mysql" "synapse" "ssh" "mysql5" "postgres" "duplicity" "letsencrypt" "letsencrypt-meta/well-known" "openssl" "crontabs" "backup" "secrets" "solr/cores" "solr/logs" "influxdb" "logs/nginx" )
+for i in "${var_folders[@]}"
+do
+  if [[ ! -d "./var/$i" ]] ; then mkdir -p "./var/$i"; fi
+  chmod -R a-rw,u+rw ./var/$i
+done
+chmod -R a+r ./var/meta
 
 MYSQL_ROOT_PASS=$(initDbFolder 'mysql')
 MYSQL5_ROOT_PASS=$(initDbFolder 'mysql5')
 POSTGRES_PASS=$(initDbFolder 'postgres')
 
 if [[ ! -f "./projects.yml" ]] ; then
+  writeLog "Create default projects.yml"
   cp ./projects.yml.example ./projects.yml
 fi
 if [[ ! -f "./services.yml" ]] ; then
+  writeLog "Create default services.yml"
   cp ./services.yml.example ./services.yml
 fi
 
@@ -26,16 +37,9 @@ do
     let VOLUMES_COUNTER+=1
 done
 
-var_folders=( "meta" "mysql" "synapse" "ssh" "mysql5" "postgres" "duplicity" "letsencrypt" "letsencrypt-meta/well-known" "openssl" "crontabs" "backup" "secrets" "solr/cores" "solr/logs" "influxdb" "logs/nginx" )
-for i in "${var_folders[@]}"
-do
-  if [[ ! -d "./var/$i" ]] ; then mkdir -p "./var/$i"; fi
-  chmod -R a-rw,u+rw ./var/$i
-done
-chmod -R a+r ./var/meta
-
 GRAFANA_PASS=''
 if [[ ! -d "./var/grafana/data" ]] ; then
+  writeLog "Init grafana folders and generate password"
   mkdir -p "./var/grafana/data"
   mkdir -p "./var/grafana/log"
   GRAFANA_PASS=`docker run --rm ace5040/webcrate-tools:stable /webcrate/pwgen.sh`
@@ -44,6 +48,7 @@ if [[ ! -d "./var/grafana/data" ]] ; then
 fi
 
 if [[ ! -f "./var/secrets/webcrate.secret" ]] ; then
+  writeLog "Generate webcrate secret and admin password"
   admin_password=`docker run --rm ace5040/webcrate-tools:stable /webcrate/pwgen.sh`
   app_secret=`docker run --rm ace5040/webcrate-tools:stable pwgen -nAs1 32 1`
   echo "user=admin" > ./var/secrets/webcrate.secret
@@ -53,6 +58,7 @@ fi
 
 SYNAPSE_PASS=''
 if [[ ! -f "./var/secrets/synapse.secret" ]] ; then
+  writeLog "Generate synapse admin pass and turn secret"
   SYNAPSE_PASS=`docker run --rm ace5040/webcrate-tools:stable /webcrate/pwgen.sh`
   TURN_SHARED_SECRET=`docker run --rm ace5040/webcrate-tools:stable pwgen -nAs1 32 1`
   echo "user=admin" > ./var/secrets/synapse.secret
@@ -61,6 +67,7 @@ if [[ ! -f "./var/secrets/synapse.secret" ]] ; then
 fi
 WEBCRATE_SYNAPSE_DOMAIN=`cat ./services.yml | awk "/synapse:/,/port:/" | grep -oP "(?<=domain: ).*" | head -c -1`
 
+writeLog "Create docker volumes if they not exists"
 volumes=( webcrate_dnsmasq_hosts webcrate_nginx_configs webcrate_ssl_configs webcrate_redirect_configs webcrate_options_configs webcrate_block_configs webcrate_auth_locations_configs webcrate_gzip_configs webcrate_php56_pools webcrate_php73_pools webcrate_php74_pools webcrate_php80_pools webcrate_phpmyadmin webcrate_phpmyadmin_config webcrate_phpmyadmin_sessions webcrate_phppgadmin webcrate_phppgadmin_logs webcrate_coturn )
 for i in "${volumes[@]}"
 do
@@ -70,6 +77,8 @@ do
     docker volume create $i >/dev/null
   fi
 done
+
+writeLog "Create docker network if it not exists"
 if docker network inspect webcrate_network >/dev/null 2> /dev/null; then
   echo network webcrate_network exists
 else

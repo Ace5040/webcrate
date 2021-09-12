@@ -7,7 +7,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
-use Symfony\Component\HttpClient\CurlHttpClient;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,19 +18,8 @@ use App\Repository\HttpsTypeRepository;
 use App\Repository\BackendRepository;
 use App\Repository\NginxTemplateRepository;
 use App\Entity\Project;
-use App\Entity\HttpsType;
-use App\Entity\Backend;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
-use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Type;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use App\Form\Type\DomainsType;
-use App\Form\Type\DomainType;
 use App\Form\Type\ProjectType;
 use App\Entity\Ftp;
 
@@ -42,7 +30,7 @@ class AdminController extends AbstractController
     private $repository;
     private $https_repository;
     private $backend_repository;
-    private $nginx_tempalte_repository;
+    private $nginx_template_repository;
 
     public function __construct(CacheInterface $cache, ProjectRepository $repository, HttpsTypeRepository $https_repository, BackendRepository $backend_repository, NginxTemplateRepository $nginx_template_repository, EntityManagerInterface $manager)
     {
@@ -79,7 +67,7 @@ class AdminController extends AbstractController
         $process = Process::fromShellCommandline('sudo /webcrate/versions.py');
         $process->run();
         if (!$process->isSuccessful()) {
-            throw new \Symfony\Component\Process\Exception\ProcessFailedException($process);
+            throw new ProcessFailedException($process);
         }
         $soft_json = $process->getOutput();
         $encoder = new JsonEncoder();
@@ -227,7 +215,7 @@ class AdminController extends AbstractController
                 $process = Process::fromShellCommandline('sudo /webcrate/reload.py');
                 $process->run();
                 if (!$process->isSuccessful()) {
-                    throw new \Symfony\Component\Process\Exception\ProcessFailedException($process);
+                    throw new ProcessFailedException($process);
                 }
             } catch (IOExceptionInterface $exception) {
                 $debug['error'] = $exception->getMessage();
@@ -378,7 +366,7 @@ class AdminController extends AbstractController
             $process = Process::fromShellCommandline('sudo /webcrate/updateprojects.py');
             $process->run();
             if (!$process->isSuccessful()) {
-                throw new \Symfony\Component\Process\Exception\ProcessFailedException($process);
+                throw new ProcessFailedException($process);
             }
         } catch (IOExceptionInterface $exception) {
             $debug['error'] = $exception->getMessage();

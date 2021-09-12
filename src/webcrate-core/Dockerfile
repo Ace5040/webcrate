@@ -88,6 +88,10 @@ RUN systemctl enable php-fpm; \
     systemctl enable dnsmasq; \
     systemctl enable proftpd
 RUN printf "\ninclude=/etc/php56/php-fpm.d/*.conf" >> /etc/php56/php-fpm.conf; \
+    sed -i "s/;process_control_timeout = 0/process_control_timeout = 10s/g"  /etc/php/php-fpm.conf; \
+    sed -i "s/;process_control_timeout = 0/process_control_timeout = 10s/g"  /etc/php74/php-fpm.conf; \
+    sed -i "s/;process_control_timeout = 0/process_control_timeout = 10s/g"  /etc/php73/php-fpm.conf; \
+    sed -i "s/;process_control_timeout = 0/process_control_timeout = 10s/g"  /etc/php56/php-fpm.conf; \
     sed -i "s/.*open_basedir =.*/open_basedir =/g" /etc/php/php.ini; \
     sed -i "s/.*open_basedir =.*/open_basedir =/g" /etc/php74/php.ini; \
     sed -i "s/.*open_basedir =.*/open_basedir =/g" /etc/php73/php.ini; \
@@ -140,7 +144,7 @@ RUN wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-
 
 #remove ioncube files
 RUN rm -rf /root/ioncube
-RUN rm -f /root/ioncube/ioncube_loaders_lin_x86-64.tar.gz
+RUN rm -f /root/ioncube_loaders_lin_x86-64.tar.gz
 
 WORKDIR /
 RUN mkdir -p /webcrate-telegraf; \

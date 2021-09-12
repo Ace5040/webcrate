@@ -17,3 +17,8 @@ function initDbFolder () {
   fi
   echo ''
 }
+
+function writeLog () {
+  if [[ ! -d "./var/meta" ]] ; then mkdir -p "./var/meta"; fi
+  echo "$(date -Is):: $1" >> ./var/meta/webcrate.log
+}

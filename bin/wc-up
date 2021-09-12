@@ -4,6 +4,9 @@ SCRIPT=`realpath $0`
 SCRIPTPATH=`dirname $SCRIPT`
 cd $SCRIPTPATH/..
 source .env
+source ./bin/wc-functions.inc
+writeLog "wc-up"
 source ./bin/wc-generate-config
 source ./bin/wc-services.inc
+writeLog "Up and running"
 exit 0;

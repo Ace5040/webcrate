@@ -4,7 +4,11 @@ SCRIPT=`realpath $0`
 SCRIPTPATH=`dirname $SCRIPT`
 
 cd $SCRIPTPATH/..
-
+source ./bin/wc-functions.inc
+writeLog "wc-down"
 docker stop webcrate-core webcrate webcrate-nginx webcrate-tools influxdb grafana solr htmltopdf doctohtml phppgadmin phpmyadmin mysql mysql5 postgres memcached synapse-admin synapse turn
+writeLog "All containers stopped"
 docker container rm webcrate-core webcrate webcrate-nginx webcrate-tools influxdb grafana solr htmltopdf doctohtml phppgadmin phpmyadmin mysql mysql5 postgres memcached synapse-admin synapse turn
+writeLog "All containers removed"
 docker network rm webcrate_network
+writeLog "All networks removed"

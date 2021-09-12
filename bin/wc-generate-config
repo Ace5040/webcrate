@@ -8,6 +8,8 @@ source ./bin/wc-init.inc
 uid=$(id -u);
 gid=$(id -u);
 
+writeLog "Parse projects started"
+
 docker run --rm --env-file=$(pwd)/.env --entrypoint /webcrate/parse-projects.py \
   -e WEBCRATE_UID=$uid \
   -e WEBCRATE_GID=$gid \
@@ -32,6 +34,9 @@ docker run --rm --env-file=$(pwd)/.env --entrypoint /webcrate/parse-projects.py 
   -v webcrate_dnsmasq_hosts:/webcrate-dnsmasq/config \
   ace5040/webcrate-tools:stable
 
+writeLog "Parse projects ended"
+writeLog "Parse services started"
+
 docker run --rm --env-file=$(pwd)/.env --entrypoint /webcrate/parse-services.py \
   -v $(pwd)/services.yml:/webcrate/services.yml:ro \
   -v $(pwd)/config/nginx-templates:/webcrate/nginx-templates:ro \
@@ -42,3 +47,4 @@ docker run --rm --env-file=$(pwd)/.env --entrypoint /webcrate/parse-services.py 
   -v webcrate_dnsmasq_hosts:/webcrate-dnsmasq/config \
   ace5040/webcrate-tools:stable
 
+writeLog "Parse services ended"

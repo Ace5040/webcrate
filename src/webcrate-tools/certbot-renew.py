@@ -3,6 +3,9 @@
 import os
 import yaml
 from munch import munchify
+from log import log
+
+log = log('/webcrate/meta/webcrate.log')
 
 with open('/webcrate/projects.yml', 'r') as f:
   projects = munchify(yaml.safe_load(f))
@@ -25,4 +28,7 @@ if any_letsencrypt_https_configs_found:
   WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
   os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/letsencrypt')
   print(f'reload nginx config after certificates renewal')
+  log.write(f'Run certbot renew script')
   os.system(f'certbot renew --config-dir /webcrate/letsencrypt --deploy-hook /webcrate/certbot-renew-deploy.py');
+else:
+  log.write(f'No letsencrypt configs found')

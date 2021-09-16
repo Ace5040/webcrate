@@ -153,17 +153,16 @@ RUN mkdir -p /webcrate-telegraf; \
     mkdir -p /webcrate-dnsmasq; \
     chown dnsmasq:dnsmasq /webcrate-dnsmasq; \
     chmod o-rwx /webcrate-dnsmasq
-COPY sync_ssh_keys.sh /webcrate/sync_ssh_keys.sh
-COPY stats_projects.sh /webcrate-telegraf/stats_projects.sh
-COPY stats_pools.sh /webcrate-telegraf/stats_pools.sh
-COPY bashrc.sh /etc/profile.d/bashrc.sh
-COPY fishrc.fish /etc/fish/conf.d/fishrc.fish
-COPY toprc /etc/telegraf/.config/procps/toprc
-COPY gunicorn_restart.sh /webcrate-bin/gunicorn_restart.sh
-COPY parse-projects.py /webcrate/parse-projects.py
-COPY versions.py /webcrate/versions.py
-COPY entrypoint.sh /entrypoint.sh
-COPY reload.py /webcrate/reload.py
+
+COPY ["toprc", "/etc/telegraf/.config/procps/"]
+COPY ["fishrc.fish", "/etc/fish/conf.d/"]
+COPY ["fishrc.fish", "/etc/fish/conf.d/"]
+COPY ["bashrc.sh", "/etc/profile.d/"]
+COPY ["stats_projects.sh", "stats_pools.sh", "/webcrate-telegraf/"]
+COPY ["gunicorn_restart.sh", "/webcrate-bin/"]
+COPY ["reload.py", "versions.py", "parse-projects.py", "sync_ssh_keys.sh", "log.py", "/webcrate/"]
+COPY ["entrypoint.sh", "/"]
+
 RUN chmod u+x /webcrate/sync_ssh_keys.sh; \
     chmod a+x /webcrate-telegraf/stats_projects.sh; \
     chmod a+x /webcrate-telegraf/stats_pools.sh; \

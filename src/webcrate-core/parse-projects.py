@@ -3,6 +3,9 @@
 import os
 import yaml
 from munch import munchify
+from log import log
+
+log = log('/webcrate/meta/webcrate.log')
 
 with open('/webcrate/projects.yml', 'r') as f:
   projects = munchify(yaml.safe_load(f))
@@ -36,7 +39,7 @@ for projectname,project in projects.items():
   if WEBCRATE_MODE == 'DEV':
     UID = WEBCRATE_UID
     GID = WEBCRATE_GID
-
+  log.write(f'Create user and group for {project.name}')
   os.system(f'groupadd --non-unique --gid {GID} {project.name}')
   os.system(f'useradd --non-unique --no-create-home --uid {UID} --gid {GID} --home-dir {project.folder} {project.name}')
   os.system(f'usermod -s /bin/fish {project.name} > /dev/null 2>&1')
@@ -46,6 +49,7 @@ for projectname,project in projects.items():
 
   os.system(f'touch /etc/ftp.passwd')
   if hasattr(project, 'ftps') and project.ftps:
+    log.write(f'Create ftp accounts for {project.name}')
     with open(f'/etc/ftp.passwd', 'a') as f:
       for ftp in project.ftps:
         ftp_folder = f'{project.folder}{("/" + ftp.home) if ftp.home else ""}'
@@ -56,8 +60,8 @@ for projectname,project in projects.items():
 
     print(f'additional ftp accounts for {project.name} - generated')
   os.system(f'chmod a-rwx,u+rw /etc/ftp.passwd')
-
   if project.backend == 'gunicorn':
+    log.write(f'Start gunicorn for {project.name}')
     data_folder=project.root_folder.split("/")[0]
     port = CGI_PORT_START_NUMBER + project.uid - UID_START_NUMBER
     gunicorn_conf=''

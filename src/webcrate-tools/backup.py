@@ -4,6 +4,10 @@ import os
 import yaml
 from munch import munchify
 from pprint import pprint
+from log import log
+
+log = log('/webcrate/meta/webcrate.log')
+log.write(f'Starting backup process')
 
 with open('/webcrate/projects.yml', 'r') as f:
   projects = munchify(yaml.safe_load(f))
@@ -17,6 +21,7 @@ WEBCRATE_MAX_FULL_BACKUPS = os.environ.get('WEBCRATE_MAX_FULL_BACKUPS', '10')
 REMOTE_BACKUP_URI = os.environ.get('REMOTE_BACKUP_URI', 'file:///webcrate/backup')
 
 #backup webcrate
+log.write(f'Backup webcrate files')
 data_folder = f'/webcrate-readonly'
 print(f'backup files webcrate-admin')
 os.system(f'duplicity --verbosity notice '
@@ -53,6 +58,7 @@ os.system(f'duplicity --verbosity notice '
 )
 
 #backup webcrate mysql
+log.write(f'Backup webcrate-admin mysql database')
 print(f'backup mysql db for webcrate-admin')
 mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
 os.system(f'mkdir -p /webcrate/backup/tmp')
@@ -82,6 +88,7 @@ for projectname,project in projects.items():
   project.name = projectname
   if project.backup:
     #backup files
+    log.write(f'Backup files for project {project.name}')
     if hasattr(project, 'volume'):
       data_folder = f'/projects{(project.volume + 1) if project.volume else ""}/{project.name}/{project.root_folder.split("/")[0]}'
     else:
@@ -114,6 +121,7 @@ for projectname,project in projects.items():
       )
     #backup mysql
     if project.mysql_db:
+      log.write(f'Backup mysql db for project {project.name}')
       print(f'backup mysql db for project {project.name}')
       mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
       os.system(f'mkdir -p /webcrate/backup/tmp')
@@ -141,6 +149,7 @@ for projectname,project in projects.items():
     #backup mysql5
     if project.mysql5_db:
       print(f'backup mysql5 db for project {project.name}')
+      log.write(f'Backup mysql5 db for project {project.name}')
       mysql5_root_password = os.popen(f'cat /webcrate/secrets/mysql5.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
       os.system(f'mkdir -p /webcrate/backup/tmp')
       os.system(f'rm /webcrate/backup/tmp/*')
@@ -167,6 +176,7 @@ for projectname,project in projects.items():
     #backup postgresql
     if project.postgresql_db:
       print(f'backup postgresql db for project {project.name}')
+      log.write(f'Backup postgres db for project {project.name}')
       postgres_root_password = os.popen(f'cat /webcrate/secrets/postgres.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
       os.system(f'mkdir -p /webcrate/backup/tmp')
       os.system(f'rm /webcrate/backup/tmp/*')
@@ -194,3 +204,4 @@ for projectname,project in projects.items():
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/backup')
 os.system(f'chmod -R a-rw,u+rw /webcrate/backup')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/duplicity')
+log.write(f'Backup process ended')

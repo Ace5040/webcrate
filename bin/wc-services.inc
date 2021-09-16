@@ -28,6 +28,7 @@ else
     -v $(pwd)/config/telegraf:/etc/telegraf/telegraf.d:ro \
     -v $(pwd)/projects.yml:/webcrate/projects.yml:ro \
     -v $(pwd)/var/ssh:/webcrate/ssh_keys \
+    -v $(pwd)/var/meta:/webcrate/meta \
     -v $(pwd)/config/php-pool-templates:/webcrate/custom_templates:ro \
     -v $(pwd)/config/php/php56.ini:/etc/php56/conf.d/user.ini:ro \
     -v $(pwd)/config/php/php73.ini:/etc/php73/conf.d/user.ini:ro \

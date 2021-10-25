@@ -5,8 +5,8 @@ SCRIPTPATH=`dirname $SCRIPT`
 
 cd $SCRIPTPATH/..
 
-docker pull archlinux:latest
-docker pull nginx:stable
+#docker pull archlinux:latest
+#docker pull nginx:stable
 
 docker build -t ace5040/webcrate-nginx:stable ./src/webcrate-nginx
 docker build -t ace5040/webcrate-tools:stable ./src/webcrate-tools

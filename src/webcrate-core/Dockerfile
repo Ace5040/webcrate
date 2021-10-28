@@ -87,7 +87,10 @@ RUN systemctl enable php-fpm; \
     systemctl enable exim; \
     systemctl enable dnsmasq; \
     systemctl enable proftpd
+
 RUN printf "\ninclude=/etc/php56/php-fpm.d/*.conf" >> /etc/php56/php-fpm.conf; \
+    sed -i "s/Type=dbus/Type=simple/g" /usr/lib/systemd/system/dnsmasq.service; \
+    sed -i "s/--enable-dbus //g" /usr/lib/systemd/system/dnsmasq.service; \
     sed -i "s/;process_control_timeout = 0/process_control_timeout = 10s/g"  /etc/php/php-fpm.conf; \
     sed -i "s/;process_control_timeout = 0/process_control_timeout = 10s/g"  /etc/php74/php-fpm.conf; \
     sed -i "s/;process_control_timeout = 0/process_control_timeout = 10s/g"  /etc/php73/php-fpm.conf; \
@@ -98,7 +101,8 @@ RUN printf "\ninclude=/etc/php56/php-fpm.d/*.conf" >> /etc/php56/php-fpm.conf; \
     sed -i "s/.*open_basedir =.*/open_basedir =/g" /etc/php56/php.ini; \
     sed -i "s/# urls = \[\"http\:\/\/127\.0\.0\.1\:8086\"\]/urls = \[\"http\:\/\/influxdb\:8086\"\]/g" /etc/telegraf/telegraf.conf; \
     sed -i "s/# skip_database_creation = false/skip_database_creation = true/g" /etc/telegraf/telegraf.conf; \
-    sed -i "s/# database = \"telegraf\"/database = \"telegraf\"/g" /etc/telegraf/telegraf.conf;
+    sed -i "s/# database = \"telegraf\"/database = \"telegraf\"/g" /etc/telegraf/telegraf.conf; \
+    sed -i "s/#PubkeyAuthentication yes/PubkeyAuthentication yes/g" /etc/ssh/sshd_config;
 WORKDIR /
 COPY proftpd.conf /etc/proftpd.conf
 RUN printf "no-resolv\nno-poll\nno-hosts\naddn-hosts=/webcrate-dnsmasq/config/hosts_nginx\n" > /etc/dnsmasq.conf
@@ -155,7 +159,6 @@ RUN mkdir -p /webcrate-telegraf; \
     chmod o-rwx /webcrate-dnsmasq
 
 COPY ["toprc", "/etc/telegraf/.config/procps/"]
-COPY ["fishrc.fish", "/etc/fish/conf.d/"]
 COPY ["fishrc.fish", "/etc/fish/conf.d/"]
 COPY ["bashrc.sh", "/etc/profile.d/"]
 COPY ["stats_projects.sh", "stats_pools.sh", "/webcrate-telegraf/"]

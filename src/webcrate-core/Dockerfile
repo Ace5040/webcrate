@@ -102,7 +102,8 @@ RUN printf "\ninclude=/etc/php56/php-fpm.d/*.conf" >> /etc/php56/php-fpm.conf; \
     sed -i "s/# urls = \[\"http\:\/\/127\.0\.0\.1\:8086\"\]/urls = \[\"http\:\/\/influxdb\:8086\"\]/g" /etc/telegraf/telegraf.conf; \
     sed -i "s/# skip_database_creation = false/skip_database_creation = true/g" /etc/telegraf/telegraf.conf; \
     sed -i "s/# database = \"telegraf\"/database = \"telegraf\"/g" /etc/telegraf/telegraf.conf; \
-    sed -i "s/#PubkeyAuthentication yes/PubkeyAuthentication yes/g" /etc/ssh/sshd_config;
+    sed -i "s/#PubkeyAuthentication yes/PubkeyAuthentication yes/g" /etc/ssh/sshd_config; \
+    sed -i "s/#StrictModes yes/StrictModes no/g" /etc/ssh/sshd_config;
 WORKDIR /
 COPY proftpd.conf /etc/proftpd.conf
 RUN printf "no-resolv\nno-poll\nno-hosts\naddn-hosts=/webcrate-dnsmasq/config/hosts_nginx\n" > /etc/dnsmasq.conf

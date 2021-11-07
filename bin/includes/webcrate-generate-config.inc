@@ -4,7 +4,7 @@ SCRIPT=`realpath $0`
 SCRIPTPATH=`dirname $SCRIPT`
 cd $SCRIPTPATH/..
 source .env
-source ./bin/wc-init.inc
+source ./bin/includes/webcrate-init.inc
 uid=$(id -u);
 gid=$(id -u);
 

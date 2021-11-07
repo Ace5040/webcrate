@@ -1,0 +1,163 @@
+#!/bin/bash
+SCRIPT=`realpath $0`
+SCRIPTPATH=`dirname $SCRIPT`
+cd $SCRIPTPATH/..
+source .env
+source ./bin/includes/webcrate-functions.inc
+
+function Help() {
+  echo ''
+  echo 'Usage: webcrate _command_ [OPTIONS]'
+  echo ''
+  echo '  start   - Build config and start containers'
+  echo '  stop    - Stop and remove all containers'
+  echo '  restart - Same as Stop then Start'
+  echo '  dock    - Connect to project container with fish. Usage webcrate dock [project_name]'
+  echo '            if project_name is not preset connects as root'
+  echo '  update  - Update all images from dockerhub and pull fresh source from github'
+  echo '  pull    - Update all images from dockerhub'
+  echo '  log     - Print all docker logs'
+  echo '  backup  - Start backup process manually'
+  echo '  build   - Build images from source. Usage webcrate build _target_ [OPTIONS]'
+  echo '              _target_: can be one of nginx, core, tools, admin or all'
+  echo '              OPTIONS:'
+  echo '                -c, --no-cache : do not use docker build cache'
+  echo '                -u, --update-base-images : pulls fresh archlinux:latest and nginx:stable images before build'
+  echo '  push    - Push images to dockerhub. Usage webcrate push _image_'
+  echo '              _image_: can be one of nginx, core, tools, admin or all'
+  echo '  help    - Print this info'
+  echo ''
+}
+
+function Start() {
+  writeLog "webcrate start"
+  source ./bin/includes/webcrate-generate-config.inc
+  source ./bin/includes/webcrate-services.inc
+  echo "Started"
+  writeLog "Started"
+}
+
+function Stop() {
+  writeLog "webcrate stop"
+  writeLog "Stopping docker containers"
+  docker stop webcrate-core webcrate webcrate-nginx webcrate-tools influxdb grafana solr htmltopdf doctohtml phppgadmin phpmyadmin mysql mysql5 postgres memcached synapse-admin synapse turn
+  writeLog "Removing docker containers"
+  docker container rm webcrate-core webcrate webcrate-nginx webcrate-tools influxdb grafana solr htmltopdf doctohtml phppgadmin phpmyadmin mysql mysql5 postgres memcached synapse-admin synapse turn
+  writeLog "Removing docker networks"
+  docker network rm webcrate_network
+  echo 'Stopped'
+}
+
+function Restart() {
+  writeLog "webcrate restart"
+  Stop
+  Start
+}
+
+function Backup() {
+  writeLog "webcrate backup"
+  docker exec webcrate-tools /webcrate/backup.py
+}
+
+function Build() {
+  NOCACHE=''
+  BUILDTARGET=$1
+  if [ "$BUILDTARGET" != "all" ] && [ "$BUILDTARGET" != "nginx" ] && [ "$BUILDTARGET" != "tools" ] && [ "$BUILDTARGET" != "core" ] && [ "$BUILDTARGET" != "admin" ]; then
+    echo "Unknown target $1. Please use one of: all, nginx, tools, core, admin"
+    exit 1
+  fi
+  if [ "$2" = "-c" ] || [ "$3" = "-c" ] || [ "$2" = "-cu" ] || [ "$3" = "-cu" ] || [ "$2" = "-uc" ] || [ "$3" = "-uc" ] || [ "$2" = "--no-cache" ] || [ "$3" = "--no-cache" ]; then
+    NOCACHE=' --no-cache'
+  fi
+  if [ "$2" = "-u" ] || [ "$3" = "-u" ] || [ "$2" = "-cu" ] || [ "$3" = "-cu" ] || [ "$2" = "-uc" ] || [ "$3" = "-uc" ] || [ "$2" = "--update-base-images" ] || [ "$3" = "--update-base-images" ]; then
+    docker pull archlinux:latest
+    docker pull nginx:stable
+  fi
+  if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "nginx" ]; then
+    docker build -t ace5040/webcrate-nginx:stable ./src/webcrate-nginx$NOCACHE
+  fi
+  if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "tools" ]; then
+    docker build -t ace5040/webcrate-tools:stable ./src/webcrate-tools$NOCACHE
+  fi
+  if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core" ]; then
+    docker build -t ace5040/webcrate-core:stable ./src/webcrate-core$NOCACHE
+  fi
+  if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "admin" ]; then
+    docker build -t ace5040/webcrate-admin:stable ./src/webcrate-admin$NOCACHE
+  fi
+}
+
+function Pull() {
+  docker pull ace5040/webcrate-core:stable
+  docker pull ace5040/webcrate-admin:stable
+  docker pull ace5040/webcrate-tools:stable
+  docker pull ace5040/webcrate-nginx:stable
+  docker pull ace5040/doctohtml:latest
+  docker pull ace5040/htmltopdf:latest
+  docker pull memcached:1
+  docker pull mariadb:5
+  docker pull mariadb:10
+  docker pull phpmyadmin/phpmyadmin:5
+  docker pull postgres:12
+  docker pull bitnami/phppgadmin:7
+  docker pull solr:6
+  docker pull grafana/grafana:7.4.3
+  docker pull influxdb:1.8-alpine
+  docker pull matrixdotorg/synapse:latest
+  docker pull awesometechnologies/synapse-admin:latest
+  docker pull instrumentisto/coturn:4
+}
+
+function Push() {
+  IMAGE=$1
+  if [ "$IMAGE" != "all" ] && [ "$IMAGE" != "nginx" ] && [ "$IMAGE" != "tools" ] && [ "$IMAGE" != "core" ] && [ "$IMAGE" != "admin" ]; then
+    echo "Unknown image $1. Please use one of: all, nginx, tools, core, admin"
+    exit 1
+  fi
+  if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "nginx" ]; then
+    docker push ace5040/webcrate-nginx:stable
+  fi
+  if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "tools" ]; then
+    docker push ace5040/webcrate-tools:stable
+  fi
+  if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "core" ]; then
+    docker push ace5040/webcrate-core:stable
+  fi
+  if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "admin" ]; then
+    docker push ace5040/webcrate-admin:stable
+  fi
+}
+
+function Update() {
+  git pull
+  Pull
+}
+
+function Log() {
+  docker ps -q | xargs -L 1 docker logs -t
+}
+
+function Dock() {
+  if [ $# -eq 0 ]; then
+    docker exec -it webcrate-core fish
+  else
+    docker exec -it webcrate-core sudo --user ${1} fish
+  fi
+}
+
+case $1 in
+  start) Start;;
+  stop) Stop;;
+  restart) Restart;;
+  dock) Dock $2;;
+  pull) Pull;;
+  update) Update;;
+  build) Build $2 $3 $4;;
+  push) Push $2;;
+  log) Log;;
+  backup) Backup;;
+  help) Help;;
+  *) echo "Unknown command: '$1'. Use 'webcrate help' to get list of commands"
+esac
+
+exit 0

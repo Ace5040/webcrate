@@ -1,7 +1,7 @@
 writeLog "Initialization started"
 
 writeLog "Generate folders"
-var_folders=( "meta" "mysql" "synapse" "ssh" "mysql5" "postgres" "duplicity" "letsencrypt" "letsencrypt-meta/well-known" "openssl" "crontabs" "backup" "secrets" "solr/cores" "solr/logs" "influxdb" "logs/nginx" )
+var_folders=( "meta" "dnsmasq" "mysql" "synapse" "ssh" "mysql5" "postgres" "duplicity" "letsencrypt" "letsencrypt-meta/well-known" "openssl" "crontabs" "backup" "secrets" "solr/cores" "solr/logs" "influxdb" "logs/nginx" )
 for i in "${var_folders[@]}"
 do
   if [[ ! -d "./var/$i" ]] ; then mkdir -p "./var/$i"; fi

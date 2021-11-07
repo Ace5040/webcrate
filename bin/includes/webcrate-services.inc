@@ -1,3 +1,19 @@
+if [ "$WEBCRATE_MODE" == "DEV" ]; then
+  writeLog "Starting webcrate-dnsmasq container"
+  if docker container inspect webcrate-dnsmasq >/dev/null 2> /dev/null; then
+    echo service webcrate-dnsmasq exists
+  else
+    DNS_MASQ=;
+    docker run -d --hostname webcrate-dnsmasq --name webcrate-dnsmasq \
+      --network="webcrate_network" --dns=172.31.0.100 \
+      --restart="unless-stopped" \
+      -p "53:53/udp" \
+      -v $(pwd)/var/dnsmasq:/dnsmasq \
+      -v webcrate_dnsmasq_hosts:/dnsmasq-hosts \
+      ace5040/webcrate-dnsmasq:stable > /dev/null
+  fi
+fi
+
 writeLog "Starting webcrate-core container"
 
 if docker container inspect webcrate-core >/dev/null 2> /dev/null; then
@@ -5,11 +21,9 @@ if docker container inspect webcrate-core >/dev/null 2> /dev/null; then
 else
   if [ "$WEBCRATE_MODE" == "DEV" ]; then
     WDS=-p\ "8080:8080/tcp";
-    DNS_MASQ=-p\ "53:53/udp";
     FTP='';
   else
     WDS='';
-    DNS_MASQ='';
     FTP=-p\ "21:21"\ -p\ "20:20"\ -p\ "50000-50100:50000-50100";
   fi
 
@@ -18,7 +32,6 @@ else
     --restart="unless-stopped" \
     $WDS \
     $FTP \
-    $DNS_MASQ \
     -p "2222:22" \
     -e WEBCRATE_UID=$uid \
     -e WEBCRATE_GID=$gid \
@@ -39,7 +52,6 @@ else
     -v webcrate_php73_pools:/etc/php73/php-fpm.d \
     -v webcrate_php74_pools:/etc/php74/php-fpm.d \
     -v webcrate_php80_pools:/etc/php/php-fpm.d \
-    -v webcrate_dnsmasq_hosts:/webcrate-dnsmasq/config \
     ace5040/webcrate-core:stable > /dev/null
 fi
 

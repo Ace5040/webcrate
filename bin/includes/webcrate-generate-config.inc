@@ -1,5 +1,3 @@
-#!/bin/bash
-
 SCRIPT=`realpath $0`
 SCRIPTPATH=`dirname $SCRIPT`
 cd $SCRIPTPATH/..
@@ -8,8 +6,18 @@ source ./bin/includes/webcrate-init.inc
 uid=$(id -u);
 gid=$(id -u);
 
-writeLog "Parse projects started"
+if [ "$WEBCRATE_MODE" == "DEV" ] && [ "$WEBCRATE_EXTERNAL_DNS_IP" != "" ]; then
+  writeLog "Generate resolv.conf for dnsmasq"
+  rm -f ./var/dnsmasq/resolv.conf
+  touch ./var/dnsmasq/resolv.conf
+  for IP_ADDR in ${WEBCRATE_SECONDARY_INSTANCES[@]}
+  do
+    echo "nameserver $IP_ADDR" >> ./var/dnsmasq/resolv.conf
+  done
+  echo "nameserver $WEBCRATE_EXTERNAL_DNS_IP" >> ./var/dnsmasq/resolv.conf
+fi
 
+writeLog "Parse projects started"
 docker run --rm --env-file=$(pwd)/.env --entrypoint /webcrate/parse-projects.py \
   -e WEBCRATE_UID=$uid \
   -e WEBCRATE_GID=$gid \

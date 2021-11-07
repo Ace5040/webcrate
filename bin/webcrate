@@ -19,7 +19,7 @@ function Help() {
   echo '  log     - Print all docker logs'
   echo '  backup  - Start backup process manually'
   echo '  build   - Build images from source. Usage webcrate build _target_ [OPTIONS]'
-  echo '              _target_: can be one of nginx, core, tools, admin or all'
+  echo '              _target_: can be one of nginx, core, tools, admin, dnsmasq or all'
   echo '              OPTIONS:'
   echo '                -c, --no-cache : do not use docker build cache'
   echo '                -u, --update-base-images : pulls fresh archlinux:latest and nginx:stable images before build'
@@ -40,9 +40,9 @@ function Start() {
 function Stop() {
   writeLog "webcrate stop"
   writeLog "Stopping docker containers"
-  docker stop webcrate-core webcrate webcrate-nginx webcrate-tools influxdb grafana solr htmltopdf doctohtml phppgadmin phpmyadmin mysql mysql5 postgres memcached synapse-admin synapse turn
+  docker stop webcrate-core webcrate webcrate-nginx webcrate-tools webcrate-dnsmasq influxdb grafana solr htmltopdf doctohtml phppgadmin phpmyadmin mysql mysql5 postgres memcached synapse-admin synapse turn
   writeLog "Removing docker containers"
-  docker container rm webcrate-core webcrate webcrate-nginx webcrate-tools influxdb grafana solr htmltopdf doctohtml phppgadmin phpmyadmin mysql mysql5 postgres memcached synapse-admin synapse turn
+  docker container rm webcrate-core webcrate webcrate-nginx webcrate-tools webcrate-dnsmasq influxdb grafana solr htmltopdf doctohtml phppgadmin phpmyadmin mysql mysql5 postgres memcached synapse-admin synapse turn
   writeLog "Removing docker networks"
   docker network rm webcrate_network
   echo 'Stopped'
@@ -62,8 +62,14 @@ function Backup() {
 function Build() {
   NOCACHE=''
   BUILDTARGET=$1
-  if [ "$BUILDTARGET" != "all" ] && [ "$BUILDTARGET" != "nginx" ] && [ "$BUILDTARGET" != "tools" ] && [ "$BUILDTARGET" != "core" ] && [ "$BUILDTARGET" != "admin" ]; then
-    echo "Unknown target $1. Please use one of: all, nginx, tools, core, admin"
+  if [ "$BUILDTARGET" != "all" ]\
+    && [ "$BUILDTARGET" != "nginx" ]\
+    && [ "$BUILDTARGET" != "tools" ]\
+    && [ "$BUILDTARGET" != "core" ]\
+    && [ "$BUILDTARGET" != "admin" ]\
+    && [ "$BUILDTARGET" != "dnsmasq" ]\
+  ;then
+    echo "Unknown target $1. Please use one of: all, nginx, tools, core, admin, dnsmasq"
     exit 1
   fi
   if [ "$2" = "-c" ] || [ "$3" = "-c" ] || [ "$2" = "-cu" ] || [ "$3" = "-cu" ] || [ "$2" = "-uc" ] || [ "$3" = "-uc" ] || [ "$2" = "--no-cache" ] || [ "$3" = "--no-cache" ]; then
@@ -75,6 +81,9 @@ function Build() {
   fi
   if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "nginx" ]; then
     docker build -t ace5040/webcrate-nginx:stable ./src/webcrate-nginx$NOCACHE
+  fi
+  if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "dnsmasq" ]; then
+    docker build -t ace5040/webcrate-dnsmasq:stable ./src/dnsmasq$NOCACHE
   fi
   if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "tools" ]; then
     docker build -t ace5040/webcrate-tools:stable ./src/webcrate-tools$NOCACHE

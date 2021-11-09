@@ -40,9 +40,15 @@ function Start() {
 function Stop() {
   writeLog "webcrate stop"
   writeLog "Stopping docker containers"
-  docker stop webcrate-core webcrate webcrate-nginx webcrate-tools webcrate-dnsmasq influxdb grafana solr htmltopdf doctohtml phppgadmin phpmyadmin mysql mysql5 postgres memcached synapse-admin synapse turn
+  docker stop webcrate webcrate-nginx webcrate-tools webcrate-dnsmasq influxdb grafana solr htmltopdf doctohtml phppgadmin phpmyadmin mysql mysql5 postgres memcached synapse-admin synapse turn
   writeLog "Removing docker containers"
-  docker container rm webcrate-core webcrate webcrate-nginx webcrate-tools webcrate-dnsmasq influxdb grafana solr htmltopdf doctohtml phppgadmin phpmyadmin mysql mysql5 postgres memcached synapse-admin synapse turn
+  docker container rm webcrate webcrate-nginx webcrate-tools webcrate-dnsmasq influxdb grafana solr htmltopdf doctohtml phppgadmin phpmyadmin mysql mysql5 postgres memcached synapse-admin synapse turn
+  writeLog "Stopping and remove dynamic containers"
+  containers=$(docker ps -a -q --filter name=webcrate-core-)
+  if [ "$containers" != "" ]; then
+    docker stop $containers
+    docker container rm $containers
+  fi
   writeLog "Removing docker networks"
   docker network rm webcrate_network
   echo 'Stopped'
@@ -89,7 +95,11 @@ function Build() {
     docker build -t ace5040/webcrate-tools:stable ./src/webcrate-tools$NOCACHE
   fi
   if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core" ]; then
-    docker build -t ace5040/webcrate-core:stable ./src/webcrate-core$NOCACHE
+    docker build -t ace5040/webcrate-core-php:stable ./src/core-php$NOCACHE
+    docker build -t ace5040/webcrate-core-php56:stable ./src/core-php56$NOCACHE
+    docker build -t ace5040/webcrate-core-php73:stable ./src/core-php73$NOCACHE
+    docker build -t ace5040/webcrate-core-php74:stable ./src/core-php74$NOCACHE
+    docker build -t ace5040/webcrate-core-gunicorn:stable ./src/core-gunicorn$NOCACHE
   fi
   if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "admin" ]; then
     docker build -t ace5040/webcrate-admin:stable ./src/webcrate-admin$NOCACHE
@@ -97,7 +107,7 @@ function Build() {
 }
 
 function Pull() {
-  docker pull ace5040/webcrate-core:stable
+  docker pull ace5040/webcrate-core-php:stable
   docker pull ace5040/webcrate-admin:stable
   docker pull ace5040/webcrate-tools:stable
   docker pull ace5040/webcrate-nginx:stable
@@ -130,7 +140,7 @@ function Push() {
     docker push ace5040/webcrate-tools:stable
   fi
   if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "core" ]; then
-    docker push ace5040/webcrate-core:stable
+    docker push ace5040/webcrate-core-php:stable
   fi
   if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "admin" ]; then
     docker push ace5040/webcrate-admin:stable
@@ -148,9 +158,9 @@ function Log() {
 
 function Dock() {
   if [ $# -eq 0 ]; then
-    docker exec -it webcrate-core fish
+    docker exec -it webcrate-core-${1} fish
   else
-    docker exec -it webcrate-core sudo --user ${1} fish
+    docker exec -it webcrate-core-${1} sudo --user ${1} fish
   fi
 }
 

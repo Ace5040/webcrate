@@ -31,9 +31,16 @@ os.system(f'rm /webcrate/php73-fpm.d/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/php74-fpm.d/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/php80-fpm.d/* > /dev/null 2>&1')
 os.system(f'rm /webcrate-dnsmasq/config/* > /dev/null 2>&1')
+os.system(f'rm /webcrate/meta/projects-php56.list > /dev/null 2>&1')
+os.system(f'rm /webcrate/meta/projects-php73.list > /dev/null 2>&1')
+os.system(f'rm /webcrate/meta/projects-php74.list > /dev/null 2>&1')
+os.system(f'rm /webcrate/meta/projects-php.list > /dev/null 2>&1')
+os.system(f'rm /webcrate/meta/projects-gunicorn.list > /dev/null 2>&1')
 
 for projectname,project in projects.items():
   project.name = projectname
+  project.full_backend_version = f'{project.backend}' + ( '' if project.backend_version == 'latest' else f'{project.backend_version}' ) ;
+
   data_folder=project.root_folder.split("/")[0]
   port = CGI_PORT_START_NUMBER + project.uid - UID_START_NUMBER
 
@@ -144,6 +151,9 @@ for projectname,project in projects.items():
     conf = conf.replace('%port%', str(port))
     conf = conf.replace('%project_folder%', project.folder)
     conf = conf.replace('%root_folder%', project.root_folder)
+    conf = conf.replace('%core%', f'webcrate-core-{project.name}')
+
+    os.system(f'echo "{project.name} webcrate-core-{project.full_backend_version} webcrate-core-{project.name}"  >> /webcrate/meta/projects-{project.full_backend_version}.list')
 
     with open(f'/webcrate/nginx_configs/{project.name}.conf', 'w') as f:
       f.write(conf)
@@ -185,7 +195,7 @@ for projectname,project in projects.items():
             f'  auth_basic_user_file /webcrate/auth_locations_configs/{project.name}-{index}.password;\n'
             f'  location ~ \.php$ {{\n'
             f'    fastcgi_split_path_info ^(.+?\.php)(|/.*)$;\n'
-            f'    fastcgi_pass webcrate-core:{ str(port) };\n'
+            f'    fastcgi_pass webcrate-core-{project.name}:{ str(port) };\n'
             f'    try_files $fastcgi_script_name =404;\n'
             f'    include fastcgi_params;\n'
             f'    fastcgi_read_timeout 60;\n'

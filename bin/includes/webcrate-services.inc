@@ -1,58 +1,172 @@
+while read -r line; do
+  project=($line)
+  project_name=${project[0]}
+  image_name=${project[1]}
+  container_name=${project[2]}
+
+  writeLog "Starting $container_name container for $project_name"
+
+  if docker container inspect $container_name >/dev/null 2> /dev/null; then
+    echo service $container_name exists
+  else
+    docker run -d --env-file=$(pwd)/.env --hostname $container_name --name $container_name \
+      --network="webcrate_network" --dns=172.31.0.100 \
+      --restart="unless-stopped" \
+      -e WEBCRATE_UID=$uid \
+      -e WEBCRATE_GID=$gid \
+      -e WEBCRATE_PROJECT=$project_name \
+      -v /etc/localtime:/etc/localtime:ro \
+      $PROJECTS_VOLUMES \
+      -v $(pwd)/var/crontabs:/var/spool/cron \
+      -v $(pwd)/config/telegraf:/etc/telegraf/telegraf.d:ro \
+      -v $(pwd)/projects.yml:/webcrate/projects.yml:ro \
+      -v $(pwd)/var/ssh:/webcrate/ssh_keys \
+      -v $(pwd)/var/meta:/webcrate/meta \
+      -v $(pwd)/config/exim/exim.conf:/etc/mail/exim.original.conf \
+      ace5040/$image_name:stable > /dev/null
+  fi
+done < "./var/meta/projects-gunicorn.list"
+
+while read -r line; do
+  project=($line)
+  project_name=${project[0]}
+  image_name=${project[1]}
+  container_name=${project[2]}
+
+  writeLog "Starting $container_name container for $project_name"
+
+  if docker container inspect $container_name >/dev/null 2> /dev/null; then
+    echo service $container_name exists
+  else
+    docker run -d --env-file=$(pwd)/.env --hostname $container_name --name $container_name \
+      --network="webcrate_network" --dns=172.31.0.100 \
+      --restart="unless-stopped" \
+      -e WEBCRATE_UID=$uid \
+      -e WEBCRATE_GID=$gid \
+      -e WEBCRATE_PROJECT=$project_name \
+      -v /etc/localtime:/etc/localtime:ro \
+      $PROJECTS_VOLUMES \
+      -v $(pwd)/var/crontabs:/var/spool/cron \
+      -v $(pwd)/config/telegraf:/etc/telegraf/telegraf.d:ro \
+      -v $(pwd)/projects.yml:/webcrate/projects.yml:ro \
+      -v $(pwd)/var/ssh:/webcrate/ssh_keys \
+      -v $(pwd)/var/meta:/webcrate/meta \
+      -v $(pwd)/config/php-pool-templates:/webcrate/custom_templates:ro \
+      -v $(pwd)/config/php/php56.ini:/etc/php56/conf.d/user.ini:ro \
+      -v $(pwd)/config/exim/exim.conf:/etc/mail/exim.original.conf \
+      -v webcrate_php56_pools:/etc/php56/php-fpm.d \
+      ace5040/$image_name:stable > /dev/null
+  fi
+done < "./var/meta/projects-php56.list"
+
+while read -r line; do
+  project=($line)
+  project_name=${project[0]}
+  image_name=${project[1]}
+  container_name=${project[2]}
+
+  writeLog "Starting $container_name container for $project_name"
+
+  if docker container inspect $container_name >/dev/null 2> /dev/null; then
+    echo service $container_name exists
+  else
+    docker run -d --env-file=$(pwd)/.env --hostname $container_name --name $container_name \
+      --network="webcrate_network" --dns=172.31.0.100 \
+      --restart="unless-stopped" \
+      -e WEBCRATE_UID=$uid \
+      -e WEBCRATE_GID=$gid \
+      -e WEBCRATE_PROJECT=$project_name \
+      -v /etc/localtime:/etc/localtime:ro \
+      $PROJECTS_VOLUMES \
+      -v $(pwd)/var/crontabs:/var/spool/cron \
+      -v $(pwd)/config/telegraf:/etc/telegraf/telegraf.d:ro \
+      -v $(pwd)/projects.yml:/webcrate/projects.yml:ro \
+      -v $(pwd)/var/ssh:/webcrate/ssh_keys \
+      -v $(pwd)/var/meta:/webcrate/meta \
+      -v $(pwd)/config/php-pool-templates:/webcrate/custom_templates:ro \
+      -v $(pwd)/config/php/php73.ini:/etc/php73/conf.d/user.ini:ro \
+      -v $(pwd)/config/exim/exim.conf:/etc/mail/exim.original.conf \
+      -v webcrate_php73_pools:/etc/php73/php-fpm.d \
+      ace5040/$image_name:stable > /dev/null
+  fi
+done < "./var/meta/projects-php73.list"
+
+while read -r line; do
+  project=($line)
+  project_name=${project[0]}
+  image_name=${project[1]}
+  container_name=${project[2]}
+
+  writeLog "Starting $container_name container for $project_name"
+
+  if docker container inspect $container_name >/dev/null 2> /dev/null; then
+    echo service $container_name exists
+  else
+    docker run -d --env-file=$(pwd)/.env --hostname $container_name --name $container_name \
+      --network="webcrate_network" --dns=172.31.0.100 \
+      --restart="unless-stopped" \
+      -e WEBCRATE_UID=$uid \
+      -e WEBCRATE_GID=$gid \
+      -e WEBCRATE_PROJECT=$project_name \
+      -v /etc/localtime:/etc/localtime:ro \
+      $PROJECTS_VOLUMES \
+      -v $(pwd)/var/crontabs:/var/spool/cron \
+      -v $(pwd)/config/telegraf:/etc/telegraf/telegraf.d:ro \
+      -v $(pwd)/projects.yml:/webcrate/projects.yml:ro \
+      -v $(pwd)/var/ssh:/webcrate/ssh_keys \
+      -v $(pwd)/var/meta:/webcrate/meta \
+      -v $(pwd)/config/php-pool-templates:/webcrate/custom_templates:ro \
+      -v $(pwd)/config/php/php74.ini:/etc/php74/conf.d/user.ini:ro \
+      -v $(pwd)/config/exim/exim.conf:/etc/mail/exim.original.conf \
+      -v webcrate_php74_pools:/etc/php74/php-fpm.d \
+      ace5040/$image_name:stable > /dev/null
+  fi
+done < "./var/meta/projects-php74.list"
+
+while read -r line; do
+  project=($line)
+  project_name=${project[0]}
+  image_name=${project[1]}
+  container_name=${project[2]}
+
+  writeLog "Starting $container_name container for $project_name"
+
+  if docker container inspect $container_name >/dev/null 2> /dev/null; then
+    echo service $container_name exists
+  else
+    docker run -d --env-file=$(pwd)/.env --hostname $container_name --name $container_name \
+      --network="webcrate_network" --dns=172.31.0.100 \
+      --restart="unless-stopped" \
+      -e WEBCRATE_UID=$uid \
+      -e WEBCRATE_GID=$gid \
+      -v /etc/localtime:/etc/localtime:ro \
+      $PROJECTS_VOLUMES \
+      -v $(pwd)/var/crontabs:/var/spool/cron \
+      -v $(pwd)/config/telegraf:/etc/telegraf/telegraf.d:ro \
+      -v $(pwd)/projects.yml:/webcrate/projects.yml:ro \
+      -v $(pwd)/var/ssh:/webcrate/ssh_keys \
+      -v $(pwd)/var/meta:/webcrate/meta \
+      -v $(pwd)/config/php-pool-templates:/webcrate/custom_templates:ro \
+      -v $(pwd)/config/php/php80.ini:/etc/php/conf.d/user.ini:ro \
+      -v $(pwd)/config/exim/exim.conf:/etc/mail/exim.original.conf \
+      -v webcrate_php80_pools:/etc/php/php-fpm.d \
+      ace5040/$image_name:stable > /dev/null
+  fi
+done < "./var/meta/projects-php.list"
+
 if [ "$WEBCRATE_MODE" == "DEV" ]; then
   writeLog "Starting webcrate-dnsmasq container"
   if docker container inspect webcrate-dnsmasq >/dev/null 2> /dev/null; then
     echo service webcrate-dnsmasq exists
   else
-    DNS_MASQ=;
     docker run -d --hostname webcrate-dnsmasq --name webcrate-dnsmasq \
-      --network="webcrate_network" --dns=172.31.0.100 \
+      --network="webcrate_network" --dns=172.31.0.100 --ip=172.31.0.100 \
       --restart="unless-stopped" \
       -p "53:53/udp" \
       -v $(pwd)/var/dnsmasq:/dnsmasq \
       -v webcrate_dnsmasq_hosts:/dnsmasq-hosts \
       ace5040/webcrate-dnsmasq:stable > /dev/null
   fi
-fi
-
-writeLog "Starting webcrate-core container"
-
-if docker container inspect webcrate-core >/dev/null 2> /dev/null; then
-  echo service webcrate-core exists
-else
-  if [ "$WEBCRATE_MODE" == "DEV" ]; then
-    WDS=-p\ "8080:8080/tcp";
-    FTP='';
-  else
-    WDS='';
-    FTP=-p\ "21:21"\ -p\ "20:20"\ -p\ "50000-50100:50000-50100";
-  fi
-
-  docker run -d --env-file=$(pwd)/.env --hostname webcrate-core --name webcrate-core \
-    --network="webcrate_network" --dns=172.31.0.100 --ip=172.31.0.100 \
-    --restart="unless-stopped" \
-    $WDS \
-    $FTP \
-    -p "2222:22" \
-    -e WEBCRATE_UID=$uid \
-    -e WEBCRATE_GID=$gid \
-    -v /etc/localtime:/etc/localtime:ro \
-    $PROJECTS_VOLUMES \
-    -v $(pwd)/var/crontabs:/var/spool/cron \
-    -v $(pwd)/config/telegraf:/etc/telegraf/telegraf.d:ro \
-    -v $(pwd)/projects.yml:/webcrate/projects.yml:ro \
-    -v $(pwd)/var/ssh:/webcrate/ssh_keys \
-    -v $(pwd)/var/meta:/webcrate/meta \
-    -v $(pwd)/config/php-pool-templates:/webcrate/custom_templates:ro \
-    -v $(pwd)/config/php/php56.ini:/etc/php56/conf.d/user.ini:ro \
-    -v $(pwd)/config/php/php73.ini:/etc/php73/conf.d/user.ini:ro \
-    -v $(pwd)/config/php/php74.ini:/etc/php74/conf.d/user.ini:ro \
-    -v $(pwd)/config/php/php80.ini:/etc/php/conf.d/user.ini:ro \
-    -v $(pwd)/config/exim/exim.conf:/etc/mail/exim.original.conf \
-    -v webcrate_php56_pools:/etc/php56/php-fpm.d \
-    -v webcrate_php73_pools:/etc/php73/php-fpm.d \
-    -v webcrate_php74_pools:/etc/php74/php-fpm.d \
-    -v webcrate_php80_pools:/etc/php/php-fpm.d \
-    ace5040/webcrate-core:stable > /dev/null
 fi
 
 writeLog "Starting webcrate-admin container"
@@ -419,9 +533,6 @@ else
     -v webcrate_options_configs:/webcrate/options_configs \
     -v webcrate_block_configs:/webcrate/block_configs \
     -v webcrate_auth_locations_configs:/webcrate/auth_locations_configs \
-    -v webcrate_php56_pools:/webcrate/php56-fpm.d \
-    -v webcrate_php73_pools:/webcrate/php73-fpm.d \
-    -v webcrate_php74_pools:/webcrate/php74-fpm.d \
     -v webcrate_php80_pools:/webcrate/php80-fpm.d \
     -v webcrate_dnsmasq_hosts:/webcrate-dnsmasq/config \
     ace5040/webcrate-tools:stable > /dev/null

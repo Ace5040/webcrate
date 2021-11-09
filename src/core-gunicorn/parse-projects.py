@@ -48,4 +48,13 @@ for projectname,project in projects.items():
     password = str(project.password).replace("$", "\$")
     os.system(f'usermod -p {password} {project.name} > /dev/null 2>&1')
 
+    if project.backend == 'gunicorn':
+      log.write(f'Start gunicorn for {project.name}')
+      data_folder=project.root_folder.split("/")[0]
+      port = CGI_PORT_START_NUMBER + project.uid - UID_START_NUMBER
+      gunicorn_conf=''
+      if os.path.isfile(f'{project.folder}/{data_folder}/gunicorn.conf.py'):
+        gunicorn_conf=f'-c {project.folder}/{data_folder}/gunicorn.conf.py'
+      os.system(f'source {project.folder}/{data_folder}/env/bin/activate; sudo -u {project.name} gunicorn --daemon --bind :{port} --name {project.name} --user {project.name} --group {project.name} --pid ../tmp/gunicorn.pid --error-logfile ../log/gunicorn-error.log {gunicorn_conf} --chdir {project.folder}/{data_folder} {project.gunicorn_app_module}; deactivate')
+
     print(f'{project.name} - created')

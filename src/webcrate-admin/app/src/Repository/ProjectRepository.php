@@ -78,10 +78,8 @@ class ProjectRepository extends ServiceEntityRepository
         $sql = '
             SELECT uid FROM project p
             ORDER BY p.uid ASC
-            ';
-        $stmt = $conn->prepare($sql);
-        $stmt->execute();
-        $results = $stmt->fetchAll();
+        ';
+        $results = $conn->executeQuery($sql)->fetchAllAssociative();
         if ( !empty($results) ) {
             $freeUid = intval(end($results)['uid']) + 1;
         } else {

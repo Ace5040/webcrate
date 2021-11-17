@@ -537,17 +537,3 @@ else
     -v webcrate_dnsmasq_hosts:/webcrate-dnsmasq/config \
     ace5040/webcrate-tools:stable > /dev/null
 fi
-
-writeLog "Starting sshportal container"
-
-if docker container inspect sshportal >/dev/null 2> /dev/null; then
-  echo service sshportal exists
-else
-  docker run -d --env-file=$(pwd)/.env --hostname sshportal --name sshportal \
-    --network="webcrate_network" --dns=172.31.0.100 \
-    --restart="unless-stopped" \
-    -p "2222:2222" \
-    -e WEBCRATE_UID=$uid \
-    -e WEBCRATE_GID=$gid \
-    moul/sshportal:v1.18.4 > /dev/null
-fi

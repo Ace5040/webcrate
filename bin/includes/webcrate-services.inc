@@ -298,7 +298,7 @@ if [ "$WEBCRATE_SERVICE_DOCTOHTML" = true ]; then
       --network="webcrate_network" --dns=172.31.0.100 \
       --restart="unless-stopped" \
       -p "3000:3000" \
-      ace5040/doctohtml:latest > /dev/null
+      ace5040/doctohtml:stable > /dev/null
   fi
 fi
 
@@ -536,4 +536,24 @@ else
     -v webcrate_php80_pools:/webcrate/php80-fpm.d \
     -v webcrate_dnsmasq_hosts:/webcrate-dnsmasq/config \
     ace5040/webcrate-tools:stable > /dev/null
+fi
+
+writeLog "Starting teleport container"
+
+if docker container inspect teleport >/dev/null 2> /dev/null; then
+  echo service teleport exists
+else
+  docker run -d --env-file=$(pwd)/.env --hostname teleport --name teleport \
+    --network="webcrate_network" --dns=172.31.0.100 \
+    --restart="unless-stopped" \
+    -p "3023:3023" \
+    -p "3024:3024" \
+    -p "3025:3025" \
+    -p "1443:443" \
+    -e WEBCRATE_UID=$uid \
+    -e WEBCRATE_GID=$gid \
+    -v data:/var/lib/teleport \
+    -v certs:/mnt/shared/certs \
+    -v $(pwd)/config/teleport/teleport.yaml:/etc/teleport/teleport.yaml \
+    quay.io/gravitational/teleport:7 > /dev/null
 fi

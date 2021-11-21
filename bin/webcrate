@@ -40,9 +40,9 @@ function Start() {
 function Stop() {
   writeLog "webcrate stop"
   writeLog "Stopping docker containers"
-  docker stop webcrate webcrate-nginx webcrate-tools webcrate-dnsmasq influxdb grafana solr htmltopdf doctohtml phppgadmin phpmyadmin mysql mysql5 postgres memcached synapse-admin synapse turn
+  docker stop teleport webcrate webcrate-nginx webcrate-tools webcrate-dnsmasq influxdb grafana solr htmltopdf doctohtml phppgadmin phpmyadmin mysql mysql5 postgres memcached synapse-admin synapse turn
   writeLog "Removing docker containers"
-  docker container rm webcrate webcrate-nginx webcrate-tools webcrate-dnsmasq influxdb grafana solr htmltopdf doctohtml phppgadmin phpmyadmin mysql mysql5 postgres memcached synapse-admin synapse turn
+  docker container rm teleport webcrate webcrate-nginx webcrate-tools webcrate-dnsmasq influxdb grafana solr htmltopdf doctohtml phppgadmin phpmyadmin mysql mysql5 postgres memcached synapse-admin synapse turn
   writeLog "Stopping and remove dynamic containers"
   containers=$(docker ps -a -q --filter name=webcrate-core-)
   if [ "$containers" != "" ]; then
@@ -111,7 +111,7 @@ function Pull() {
   docker pull ace5040/webcrate-admin:stable
   docker pull ace5040/webcrate-tools:stable
   docker pull ace5040/webcrate-nginx:stable
-  docker pull ace5040/doctohtml:latest
+  docker pull ace5040/doctohtml:stable
   docker pull ace5040/htmltopdf:latest
   docker pull memcached:1
   docker pull mariadb:5

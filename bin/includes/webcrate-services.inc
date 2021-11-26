@@ -3,15 +3,16 @@ while read -r line; do
   project_name=${project[0]}
   image_name=${project[1]}
   container_name=${project[2]}
+  ssh_port=${project[3]}
 
   writeLog "Starting $container_name container for $project_name"
-
   if docker container inspect $container_name >/dev/null 2> /dev/null; then
     echo service $container_name exists
   else
     docker run -d --env-file=$(pwd)/.env --hostname $container_name --name $container_name \
       --network="webcrate_network" --dns=172.31.0.100 \
       --restart="unless-stopped" \
+      -p "$ssh_port:22" \
       -e WEBCRATE_UID=$uid \
       -e WEBCRATE_GID=$gid \
       -e WEBCRATE_PROJECT=$project_name \
@@ -32,15 +33,16 @@ while read -r line; do
   project_name=${project[0]}
   image_name=${project[1]}
   container_name=${project[2]}
+  ssh_port=${project[3]}
 
   writeLog "Starting $container_name container for $project_name"
-
   if docker container inspect $container_name >/dev/null 2> /dev/null; then
     echo service $container_name exists
   else
     docker run -d --env-file=$(pwd)/.env --hostname $container_name --name $container_name \
       --network="webcrate_network" --dns=172.31.0.100 \
       --restart="unless-stopped" \
+      -p "$ssh_port:22" \
       -e WEBCRATE_UID=$uid \
       -e WEBCRATE_GID=$gid \
       -e WEBCRATE_PROJECT=$project_name \
@@ -64,15 +66,16 @@ while read -r line; do
   project_name=${project[0]}
   image_name=${project[1]}
   container_name=${project[2]}
+  ssh_port=${project[3]}
 
   writeLog "Starting $container_name container for $project_name"
-
   if docker container inspect $container_name >/dev/null 2> /dev/null; then
     echo service $container_name exists
   else
     docker run -d --env-file=$(pwd)/.env --hostname $container_name --name $container_name \
       --network="webcrate_network" --dns=172.31.0.100 \
       --restart="unless-stopped" \
+      -p "$ssh_port:22" \
       -e WEBCRATE_UID=$uid \
       -e WEBCRATE_GID=$gid \
       -e WEBCRATE_PROJECT=$project_name \
@@ -96,15 +99,16 @@ while read -r line; do
   project_name=${project[0]}
   image_name=${project[1]}
   container_name=${project[2]}
+  ssh_port=${project[3]}
 
   writeLog "Starting $container_name container for $project_name"
-
   if docker container inspect $container_name >/dev/null 2> /dev/null; then
     echo service $container_name exists
   else
     docker run -d --env-file=$(pwd)/.env --hostname $container_name --name $container_name \
       --network="webcrate_network" --dns=172.31.0.100 \
       --restart="unless-stopped" \
+      -p "$ssh_port:22" \
       -e WEBCRATE_UID=$uid \
       -e WEBCRATE_GID=$gid \
       -e WEBCRATE_PROJECT=$project_name \
@@ -128,15 +132,16 @@ while read -r line; do
   project_name=${project[0]}
   image_name=${project[1]}
   container_name=${project[2]}
+  ssh_port=${project[3]}
 
   writeLog "Starting $container_name container for $project_name"
-
   if docker container inspect $container_name >/dev/null 2> /dev/null; then
     echo service $container_name exists
   else
     docker run -d --env-file=$(pwd)/.env --hostname $container_name --name $container_name \
       --network="webcrate_network" --dns=172.31.0.100 \
       --restart="unless-stopped" \
+      -p "$ssh_port:22" \
       -e WEBCRATE_UID=$uid \
       -e WEBCRATE_GID=$gid \
       -v /etc/localtime:/etc/localtime:ro \
@@ -215,7 +220,6 @@ else
     --restart="unless-stopped" \
     --user "$uid:$gid" \
     $MYSQL5_ROOT_PASS \
-    -p "3305:3306" \
     -v /etc/localtime:/etc/localtime:ro \
     -v $(pwd)/var/mysql5:/var/lib/mysql \
     -v $(pwd)/config/mysql/mysql5.cnf:/etc/mysql/conf.d/user.cnf \
@@ -233,7 +237,6 @@ else
     --restart="unless-stopped" \
     --user "$uid:$gid" \
     $MYSQL_ROOT_PASS \
-    -p "3306:3306" \
     -v /etc/localtime:/etc/localtime:ro \
     -v $(pwd)/var/mysql:/var/lib/mysql \
     -v $(pwd)/config/mysql/mysql.cnf:/etc/mysql/conf.d/user.cnf \
@@ -251,7 +254,6 @@ else
     --restart="unless-stopped" \
     --user "$uid:$gid" \
     $POSTGRES_PASS \
-    -p "5432:5432" \
     -v $(pwd)/var/postgres:/var/lib/postgresql/data \
     postgres:12 > /dev/null
 fi
@@ -345,7 +347,6 @@ if [ "$WEBCRATE_SERVICE_STATS" = true ]; then
       -e GF_PATHS_DATA=/data \
       -e GF_PATHS_LOGS=/log \
       -e GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/home.json \
-      -p "8181:3000" \
       -v /etc/localtime:/etc/localtime:ro \
       -v $(pwd)/var/grafana/data:/data \
       -v $(pwd)/var/grafana/log:/log \
@@ -472,17 +473,16 @@ if [ "$WEBCRATE_SERVICE_SYNAPSE" = true ]; then
 fi
 
 writeLog "Starting nginx container"
-
 if docker container inspect webcrate-nginx >/dev/null 2> /dev/null; then
   echo service webcrate-nginx exists
 else
   docker run -d --env-file=$(pwd)/.env --hostname webcrate-nginx --name webcrate-nginx \
     --network="webcrate_network" --dns=172.31.0.100 \
+    -p "80:1080" \
+    -p "443:1443" \
     --restart="unless-stopped" \
     -e WEBCRATE_UID=$uid \
     -e WEBCRATE_GID=$gid \
-    -p "80:1080" \
-    -p "443:1443" \
     $PROJECTS_VOLUMES \
     -v /etc/localtime:/etc/localtime:ro \
     -v $(pwd)/projects.yml:/webcrate/projects.yml:ro \

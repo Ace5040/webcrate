@@ -17,6 +17,7 @@ WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
 UID_START_NUMBER = 100000
 CGI_PORT_START_NUMBER = 9000
+SSH_PORT_START_NUMBER = 10000
 
 #cleanup configs
 os.system(f'rm /webcrate/ssl_configs/* > /dev/null 2>&1')
@@ -43,6 +44,7 @@ for projectname,project in projects.items():
 
   data_folder=project.root_folder.split("/")[0]
   port = CGI_PORT_START_NUMBER + project.uid - UID_START_NUMBER
+  ssh_port = SSH_PORT_START_NUMBER + project.uid - UID_START_NUMBER
 
   if hasattr(project, 'volume'):
     project.folder = f'/projects{(project.volume + 1) if project.volume else ""}/{project.name}'
@@ -153,7 +155,7 @@ for projectname,project in projects.items():
     conf = conf.replace('%root_folder%', project.root_folder)
     conf = conf.replace('%core%', f'webcrate-core-{project.name}')
 
-    os.system(f'echo "{project.name} webcrate-core-{project.full_backend_version} webcrate-core-{project.name}"  >> /webcrate/meta/projects-{project.full_backend_version}.list')
+    os.system(f'echo "{project.name} webcrate-core-{project.full_backend_version} webcrate-core-{project.name} {ssh_port}"  >> /webcrate/meta/projects-{project.full_backend_version}.list')
 
     with open(f'/webcrate/nginx_configs/{project.name}.conf', 'w') as f:
       f.write(conf)
@@ -241,7 +243,6 @@ for projectname,project in projects.items():
           f.write(conf)
           f.close()
         print(f'ssl config for {project.name} - generated')
-
 
 if WEBCRATE_MODE == "DEV":
   with open(f'/webcrate-dnsmasq/config/hosts_nginx', 'w') as f:

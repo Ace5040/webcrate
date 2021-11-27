@@ -40,7 +40,7 @@ os.system(f'rm /webcrate/meta/projects-gunicorn.list > /dev/null 2>&1')
 
 for projectname,project in projects.items():
   project.name = projectname
-  project.full_backend_version = f'{project.backend}' + ( '' if project.backend_version == 'latest' else f'{project.backend_version}' ) ;
+  project.full_backend_version = f'{project.backend}' + ( '' if ( project.backend_version == 'latest' or ( project.backend == 'php' and project.backend_version == '80') ) else f'{project.backend_version}' ) ;
 
   data_folder=project.root_folder.split("/")[0]
   port = CGI_PORT_START_NUMBER + project.uid - UID_START_NUMBER

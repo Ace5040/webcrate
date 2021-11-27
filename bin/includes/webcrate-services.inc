@@ -1,3 +1,4 @@
+if [ -f ./var/meta/projects-gunicorn.list ]; then
 while read -r line; do
   project=($line)
   project_name=${project[0]}
@@ -27,7 +28,9 @@ while read -r line; do
       ace5040/$image_name:stable > /dev/null
   fi
 done < "./var/meta/projects-gunicorn.list"
+fi
 
+if [ -f ./var/meta/projects-php56.list ]; then
 while read -r line; do
   project=($line)
   project_name=${project[0]}
@@ -60,7 +63,9 @@ while read -r line; do
       ace5040/$image_name:stable > /dev/null
   fi
 done < "./var/meta/projects-php56.list"
+fi
 
+if [ -f ./var/meta/projects-php73.list ]; then
 while read -r line; do
   project=($line)
   project_name=${project[0]}
@@ -93,7 +98,9 @@ while read -r line; do
       ace5040/$image_name:stable > /dev/null
   fi
 done < "./var/meta/projects-php73.list"
+fi
 
+if [ -f ./var/meta/projects-php74.list ]; then
 while read -r line; do
   project=($line)
   project_name=${project[0]}
@@ -126,7 +133,9 @@ while read -r line; do
       ace5040/$image_name:stable > /dev/null
   fi
 done < "./var/meta/projects-php74.list"
+fi
 
+if [ -f ./var/meta/projects-php.list ]; then
 while read -r line; do
   project=($line)
   project_name=${project[0]}
@@ -144,6 +153,7 @@ while read -r line; do
       -p "$ssh_port:22" \
       -e WEBCRATE_UID=$uid \
       -e WEBCRATE_GID=$gid \
+      -e WEBCRATE_PROJECT=$project_name \
       -v /etc/localtime:/etc/localtime:ro \
       $PROJECTS_VOLUMES \
       -v $(pwd)/var/crontabs:/var/spool/cron \
@@ -158,6 +168,7 @@ while read -r line; do
       ace5040/$image_name:stable > /dev/null
   fi
 done < "./var/meta/projects-php.list"
+fi
 
 if [ "$WEBCRATE_MODE" == "DEV" ]; then
   writeLog "Starting webcrate-dnsmasq container"

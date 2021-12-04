@@ -34,7 +34,10 @@ RUN yay --gpgflags "--keyserver hkp://keyserver.ubuntu.com" --noeditmenu --nodif
 
 USER root
 
+RUN python -m ensurepip --upgrade
+RUN pip3 install --upgrade pip
 RUN pip install pyyml munch
+
 RUN chown root:root /bin/systemctl.py
 RUN chmod a+x /bin/systemctl.py
 RUN mv /bin/systemctl /bin/systemctl_original

@@ -30,7 +30,7 @@ os.system(f'rm /webcrate/nginx_configs/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/php56-fpm.d/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/php73-fpm.d/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/php74-fpm.d/* > /dev/null 2>&1')
-os.system(f'rm /webcrate/php80-fpm.d/* > /dev/null 2>&1')
+os.system(f'rm /webcrate/php-fpm.d/* > /dev/null 2>&1')
 os.system(f'rm /webcrate-dnsmasq/config/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/meta/projects-php56.list > /dev/null 2>&1')
 os.system(f'rm /webcrate/meta/projects-php73.list > /dev/null 2>&1')
@@ -87,8 +87,8 @@ for projectname,project in projects.items():
   if os.path.isdir(f'{project.folder}'):
     if project.backend == 'php':
       php_path_prefix = {
-        'latest': '80',
-        '80': '80',
+        'latest': '',
+        '80': '',
         '56': '56',
         '73': '73',
         '74': '74'
@@ -264,6 +264,6 @@ os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/nginx_configs')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/php56-fpm.d')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/php73-fpm.d')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/php74-fpm.d')
-os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/php80-fpm.d')
+os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/php-fpm.d')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate-dnsmasq/config')
 sys.stdout.flush()

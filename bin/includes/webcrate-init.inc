@@ -68,7 +68,7 @@ fi
 WEBCRATE_SYNAPSE_DOMAIN=`cat ./services.yml | awk "/synapse:/,/port:/" | grep -oP "(?<=domain: ).*" | head -c -1`
 
 writeLog "Create docker volumes if they not exists"
-volumes=( webcrate_dnsmasq_hosts webcrate_nginx_configs webcrate_ssl_configs webcrate_redirect_configs webcrate_options_configs webcrate_block_configs webcrate_auth_locations_configs webcrate_gzip_configs webcrate_php56_pools webcrate_php73_pools webcrate_php74_pools webcrate_php80_pools webcrate_phpmyadmin webcrate_phpmyadmin_config webcrate_phpmyadmin_sessions webcrate_phppgadmin webcrate_phppgadmin_logs webcrate_coturn )
+volumes=( webcrate_dnsmasq_hosts webcrate_nginx_configs webcrate_ssl_configs webcrate_redirect_configs webcrate_options_configs webcrate_block_configs webcrate_auth_locations_configs webcrate_gzip_configs webcrate_php56_pools webcrate_php73_pools webcrate_php74_pools webcrate_php_pools webcrate_phpmyadmin webcrate_phpmyadmin_config webcrate_phpmyadmin_sessions webcrate_phppgadmin webcrate_phppgadmin_logs webcrate_coturn )
 for i in "${volumes[@]}"
 do
 	if docker volume inspect $i >/dev/null 2> /dev/null; then

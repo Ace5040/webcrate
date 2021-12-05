@@ -38,7 +38,7 @@ docker run --rm --env-file=$(pwd)/.env --entrypoint /webcrate/parse-projects.py 
   -v webcrate_php56_pools:/webcrate/php56-fpm.d \
   -v webcrate_php73_pools:/webcrate/php73-fpm.d \
   -v webcrate_php74_pools:/webcrate/php74-fpm.d \
-  -v webcrate_php80_pools:/webcrate/php80-fpm.d \
+  -v webcrate_php_pools:/webcrate/php-fpm.d \
   -v webcrate_dnsmasq_hosts:/webcrate-dnsmasq/config \
   ace5040/webcrate-tools:stable
 

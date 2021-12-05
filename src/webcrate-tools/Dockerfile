@@ -1,20 +1,14 @@
 FROM archlinux:latest
 
-#update pacman db
-RUN pacman --needed --noconfirm -Syu
+#install and add user
+RUN pacman --needed --noconfirm -Syu; \
+    pacman --needed --noconfirm -S base-devel git unzip mariadb-clients postgresql-libs cronie python python-pip certbot duplicity lftp pwgen docker; \
+    yes | pacman -Scc; \
+    useradd -m -s /bin/bash dev; \
+    usermod -p "dev" dev; \
+    echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo; \
+    sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j6\"/g" /etc/makepkg.conf
 
-#install system utils and services
-RUN pacman --needed --noconfirm -S base-devel git unzip mariadb-clients postgresql-libs cronie python python-pip certbot duplicity lftp pwgen docker;
-
-#add dev user
-RUN useradd -m -s /bin/bash dev
-RUN usermod -p "dev" dev
-
-#grant dev user sudo priviledges
-RUN echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo
-
-#enable 6 cores support for make
-RUN sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j6\"/g" /etc/makepkg.conf
 USER dev
 WORKDIR /home/dev
 

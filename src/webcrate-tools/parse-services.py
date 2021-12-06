@@ -8,7 +8,7 @@ from pprint import pprint
 with open('/webcrate/services.yml', 'r') as f:
   services = munchify(yaml.safe_load(f))
 
-WEBCRATE_MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
+WEBCRATE_MODE = os.environ.get('WEBCRATE_MODE', 'PRODUCTION')
 DOCKER_HOST_IP = os.environ.get('DOCKER_HOST_IP', '')
 WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')

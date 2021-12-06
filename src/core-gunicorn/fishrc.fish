@@ -15,8 +15,3 @@ end
 if test -d $HOME/$DATA_FOLDER/bin
     set PATH $HOME/$DATA_FOLDER/bin $PATH
 end
-if [ "$WEBCRATE_MODE" = "DEV" ]
-    function crontab
-        sudo bash -c "EDITOR=mcedit crontab -u $USER $argv"
-    end
-end

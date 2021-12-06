@@ -12,7 +12,6 @@ with open('/webcrate/services.yml', 'r') as f:
   services = munchify(yaml.safe_load(f))
   f.close()
 
-WEBCRATE_MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
 WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
 countryName = os.environ.get('WEBCRATE_countryName', '')
@@ -132,12 +131,6 @@ if any_letsencrypt_https_configs_found:
 #parse projects
 for projectname,project in projects.items():
   project.name = projectname
-  UID = project.uid
-  GID = project.uid
-
-  if WEBCRATE_MODE == 'DEV':
-    UID = WEBCRATE_UID
-    GID = WEBCRATE_GID
 
   if hasattr(project, 'volume'):
     project.folder = f'/projects{(project.volume + 1) if project.volume else ""}/{project.name}'
@@ -162,7 +155,7 @@ for projectname,project in projects.items():
           f.close()
         os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/secrets/{project.name}-mysql.txt')
         os.system(f'cp /webcrate/secrets/{project.name}-mysql.txt {project.folder}/mysql.txt')
-        os.system(f'chown {UID}:{GID} {project.folder}/mysql.txt')
+        os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} {project.folder}/mysql.txt')
         os.system(f'chmod a-rwx,u+rw {project.folder}/mysql.txt')
         os.system(f'mysql -u root -h mysql -p"{mysql_root_password}" -e "CREATE DATABASE \`{project.name}\`;"')
         os.system(f"mysql -u root -h mysql -p\"{mysql_root_password}\" -e \"CREATE USER \`{project.name}\`@'%' IDENTIFIED BY \\\"{mysql_user_password}\\\";\"")
@@ -190,7 +183,7 @@ for projectname,project in projects.items():
           f.close()
         os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/secrets/{project.name}-mysql5.txt')
         os.system(f'cp /webcrate/secrets/{project.name}-mysql5.txt {project.folder}/mysql5.txt')
-        os.system(f'chown {UID}:{GID} {project.folder}/mysql5.txt')
+        os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} {project.folder}/mysql5.txt')
         os.system(f'chmod a-rwx,u+rw {project.folder}/mysql5.txt')
         os.system(f'mysql -u root -h mysql5 -p"{mysql5_root_password}" -e "CREATE DATABASE \`{project.name}\`;"')
         os.system(f"mysql -u root -h mysql5 -p\"{mysql5_root_password}\" -e \"CREATE USER \`{project.name}\`@'%' IDENTIFIED BY \\\"{mysql5_user_password}\\\";\"")
@@ -218,7 +211,7 @@ for projectname,project in projects.items():
           f.close()
         os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/secrets/{project.name}-postgres.txt')
         os.system(f'cp /webcrate/secrets/{project.name}-postgres.txt {project.folder}/postgres.txt')
-        os.system(f'chown {UID}:{GID} {project.folder}/postgres.txt')
+        os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} {project.folder}/postgres.txt')
         os.system(f'chmod a-rwx,u+rw {project.folder}/postgres.txt')
         os.system(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "CREATE DATABASE {project.name};"')
         os.system(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "CREATE USER {project.name} WITH ENCRYPTED PASSWORD \'{postgres_user_password}\';"')

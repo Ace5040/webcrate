@@ -11,12 +11,11 @@ with open('/webcrate/projects.yml', 'r') as f:
   projects = munchify(yaml.safe_load(f))
   f.close()
 
-WEBCRATE_MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
+WEBCRATE_MODE = os.environ.get('WEBCRATE_MODE', 'PRODUCTION')
 DOCKER_HOST_IP = os.environ.get('DOCKER_HOST_IP', '')
 WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
 UID_START_NUMBER = 100000
-CGI_PORT_START_NUMBER = 9000
 SSH_PORT_START_NUMBER = 10000
 
 #cleanup configs
@@ -69,15 +68,15 @@ for projectname,project in projects.items():
         f'  return iter([data])\n')
         f.close()
       os.system(f'cd {project.folder}/{data_folder}; python -m venv env; source ./env/bin/activate; pip install gunicorn; pip freeze > requirements.txt; deactivate')
-    os.system(f'chown -R {WEBCRATE_UID if WEBCRATE_MODE == "DEV" else project.uid }:{WEBCRATE_GID if WEBCRATE_MODE == "DEV" else project.uid } {project.folder}/{data_folder}')
+    os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} {project.folder}/{data_folder}')
 
   if not os.path.isdir(f'{project.folder}/log'):
     os.system(f'mkdir -p {project.folder}/log')
-    os.system(f'chown -R {WEBCRATE_UID if WEBCRATE_MODE == "DEV" else project.uid }:{WEBCRATE_GID if WEBCRATE_MODE == "DEV" else project.uid } {project.folder}/log')
+    os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} {project.folder}/log')
 
   if not os.path.isdir(f'{project.folder}/tmp'):
     os.system(f'mkdir -p {project.folder}/tmp')
-    os.system(f'chown -R {WEBCRATE_UID if WEBCRATE_MODE == "DEV" else project.uid }:{WEBCRATE_GID if WEBCRATE_MODE == "DEV" else project.uid } {project.folder}/tmp')
+    os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} {project.folder}/tmp')
 
   if os.path.isdir(f'{project.folder}'):
     if project.backend == 'php':

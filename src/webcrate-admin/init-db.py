@@ -6,7 +6,6 @@ import time
 from munch import munchify
 from pprint import pprint
 
-WEBCRATE_MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
 WEBCRATE_PROJECTS_FOLDERS = os.environ.get('WEBCRATE_PROJECTS_FOLDERS', 'var/projects')
 WEBCRATE_ADMIN_EMAIL = os.environ.get('WEBCRATE_ADMIN_EMAIL', 'email@notset')
 WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')

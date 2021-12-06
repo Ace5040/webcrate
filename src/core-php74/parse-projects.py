@@ -11,7 +11,6 @@ with open('/webcrate/projects.yml', 'r') as f:
   projects = munchify(yaml.safe_load(f))
   f.close()
 
-WEBCRATE_MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
 WEBCRATE_PROJECT = os.environ.get('WEBCRATE_PROJECT', '')
 WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')

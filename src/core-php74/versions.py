@@ -7,8 +7,6 @@ import json
 from munch import munchify
 from pprint import pprint
 
-WEBCRATE_MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
-
 def execCommand(cmd):
   return os.popen(f'{cmd} | tr -d \'\\n\'').read().strip()
 

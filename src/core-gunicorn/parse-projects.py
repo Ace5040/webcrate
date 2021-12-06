@@ -15,46 +15,23 @@ WEBCRATE_MODE = os.environ.get('WEBCRATE_MODE', 'DEV')
 WEBCRATE_PROJECT = os.environ.get('WEBCRATE_PROJECT', '')
 WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
-UID_START_NUMBER = 100000
-CGI_PORT_START_NUMBER = 9000
-
-if WEBCRATE_MODE == 'PRODUCTION':
-  os.system(f'userdel dev > /dev/null 2>&1')
-
-if WEBCRATE_MODE == 'DEV':
-  os.system(f'usermod -u {WEBCRATE_UID} dev > /dev/null 2>&1')
-  os.system(f'groupmod -g {WEBCRATE_GID} dev > /dev/null 2>&1')
-  os.system(f'usermod -s /bin/fish dev > /dev/null 2>&1')
+os.system(f'userdel dev > /dev/null 2>&1')
 
 for projectname,project in projects.items():
   project.name = projectname
   if WEBCRATE_PROJECT == project.name:
-    if hasattr(project, 'volume'):
-      project.folder = f'/projects{(project.volume + 1) if project.volume else ""}/{project.name}'
-    else:
-      project.folder = f'/projects/{project.name}'
-
-    UID = project.uid
-    GID = project.uid
-
-    if WEBCRATE_MODE == 'DEV':
-      UID = WEBCRATE_UID
-      GID = WEBCRATE_GID
+    project.folder = f'/home/{project.name}'
     log.write(f'Create user and group for {project.name}')
-    os.system(f'groupadd --non-unique --gid {GID} {project.name}')
-    os.system(f'useradd --non-unique --no-create-home --uid {UID} --gid {GID} --home-dir {project.folder} {project.name}')
+    os.system(f'groupadd --non-unique --gid {WEBCRATE_GID} {project.name}')
+    os.system(f'useradd --non-unique --no-create-home --uid {WEBCRATE_UID} --gid {WEBCRATE_GID} --home-dir {project.folder} {project.name}')
     os.system(f'usermod -s /bin/fish {project.name} > /dev/null 2>&1')
-    os.system(f'chown {project.name}:{project.name} {project.folder}')
     password = str(project.password).replace("$", "\$")
     os.system(f'usermod -p {password} {project.name} > /dev/null 2>&1')
-
     if project.backend == 'gunicorn':
       log.write(f'Start gunicorn for {project.name}')
       data_folder=project.root_folder.split("/")[0]
-      port = CGI_PORT_START_NUMBER + project.uid - UID_START_NUMBER
       gunicorn_conf=''
       if os.path.isfile(f'{project.folder}/{data_folder}/gunicorn.conf.py'):
         gunicorn_conf=f'-c {project.folder}/{data_folder}/gunicorn.conf.py'
-      os.system(f'source {project.folder}/{data_folder}/env/bin/activate; sudo -u {project.name} gunicorn --daemon --bind :{port} --name {project.name} --user {project.name} --group {project.name} --pid ../tmp/gunicorn.pid --error-logfile ../log/gunicorn-error.log {gunicorn_conf} --chdir {project.folder}/{data_folder} {project.gunicorn_app_module}; deactivate')
-
+      os.system(f'source {project.folder}/{data_folder}/env/bin/activate; sudo -u {project.name} gunicorn --daemon --bind :9000 --name {project.name} --user {project.name} --group {project.name} --pid ../tmp/gunicorn.pid --error-logfile ../log/gunicorn-error.log {gunicorn_conf} --chdir {project.folder}/{data_folder} {project.gunicorn_app_module}; deactivate')
     print(f'{project.name} - created')

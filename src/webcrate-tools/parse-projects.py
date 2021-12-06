@@ -43,18 +43,13 @@ for projectname,project in projects.items():
   project.full_backend_version = f'{project.backend}' + ( '' if ( project.backend_version == 'latest' or ( project.backend == 'php' and project.backend_version == '80') ) else f'{project.backend_version}' ) ;
 
   data_folder=project.root_folder.split("/")[0]
-  port = CGI_PORT_START_NUMBER + project.uid - UID_START_NUMBER
+  port = 9000
   ssh_port = SSH_PORT_START_NUMBER + project.uid - UID_START_NUMBER
 
-  if hasattr(project, 'volume'):
-    project.folder = f'/projects{(project.volume + 1) if project.volume else ""}/{project.name}'
-  else:
-    project.folder = f'/projects/{project.name}'
+  project.folder = f'/home/{project.name}'
 
   if not os.path.isdir(f'{project.folder}'):
     os.system(f'mkdir -p {project.folder}')
-  os.system(f'chown {WEBCRATE_UID if WEBCRATE_MODE == "DEV" else project.uid }:{WEBCRATE_GID if WEBCRATE_MODE == "DEV" else project.uid } {project.folder}')
-  os.system(f'chmod 0770 {project.folder}')
 
   if not os.path.isdir(f'{project.folder}/{project.root_folder}'):
     os.system(f'mkdir -p {project.folder}/{project.root_folder}')
@@ -105,8 +100,8 @@ for projectname,project in projects.items():
         f.close()
 
       conf = conf.replace('%port%', str(port))
-      conf = conf.replace('%user%', 'dev' if WEBCRATE_MODE=='DEV' else project.name)
-      conf = conf.replace('%group%', 'dev' if WEBCRATE_MODE=='DEV' else project.name)
+      conf = conf.replace('%user%', project.name)
+      conf = conf.replace('%group%', project.name)
       conf = conf.replace('%path%', project.folder)
       conf = conf.replace('%pool%', project.name)
 
@@ -250,7 +245,6 @@ if WEBCRATE_MODE == "DEV":
       project.name = projectname
       f.write(f'{DOCKER_HOST_IP} {" ".join(project.domains)}\n')
     f.close()
-
 
 os.system('sha256sum /webcrate/projects.yml | awk \'{print $1}\' | tr -d \'\n\' > /webcrate/meta/projects.checksum')
 

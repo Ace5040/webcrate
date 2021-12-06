@@ -18,7 +18,7 @@ RUN git clone https://aur.archlinux.org/yay.git .; \
     rm -rf /home/dev/yay
 
 #install aur packages
-RUN yay --gpgflags "--keyserver hkp://keyserver.ubuntu.com" --noeditmenu --nodiffmenu --noconfirm --mflags --nocheck -S docker-systemctl-replacement-git telegraf-bin; \
+RUN yay --gpgflags "--keyserver hkp://keyserver.ubuntu.com" --noeditmenu --nodiffmenu --noconfirm --mflags --nocheck -S docker-systemctl-replacement-git telegraf-bin gunicorn; \
     yes | yay -Scc; \
     rm -rf /home/dev/.cache
 

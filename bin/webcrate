@@ -30,15 +30,12 @@ function Help() {
 }
 
 function Start() {
-  writeLog "webcrate start"
   source ./bin/includes/webcrate-generate-config.inc
   source ./bin/includes/webcrate-services.inc
-  echo "Started"
   writeLog "Started"
 }
 
 function Stop() {
-  writeLog "webcrate stop"
   writeLog "Stopping docker containers"
   docker stop webcrate webcrate-nginx webcrate-tools webcrate-dnsmasq influxdb grafana solr htmltopdf doctohtml phppgadmin phpmyadmin mysql mysql5 postgres memcached synapse-admin synapse turn
   writeLog "Removing docker containers"
@@ -51,7 +48,7 @@ function Stop() {
   fi
   writeLog "Removing docker networks"
   docker network rm webcrate_network
-  echo 'Stopped'
+  writeLog "Stopped"
 }
 
 function Restart() {
@@ -61,8 +58,8 @@ function Restart() {
 }
 
 function Backup() {
-  writeLog "webcrate backup"
   docker exec webcrate-tools /webcrate/backup.py
+  writeLog "webcrate backed up"
 }
 
 function Build() {

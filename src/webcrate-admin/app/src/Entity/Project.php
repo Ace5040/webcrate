@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Repository\ProjectRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -132,6 +131,16 @@ class Project
      * @ORM\Column(type="json", nullable=true)
      */
     private $DuplicityFilters = [];
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $Memcached;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $Solr;
 
     public function __construct()
     {
@@ -331,6 +340,8 @@ class Project
             'auth_locations' => $this->getKeyedAuthLocations(),
             'ftps' => $this->getKeyedFtps(),
             'duplicity_filters' => $this->getKeyedDuplicityFilters(),
+            'memcached' => (bool)$this->Memcached,
+            'solr' => (bool)$this->Solr,
             'mysql_db' => (bool)$this->mysql,
             'mysql5_db' => (bool)$this->mysql5,
             'postgresql_db' => (bool)$this->postgre,
@@ -556,6 +567,30 @@ class Project
     public function setDuplicityFilters(?array $DuplicityFilters): self
     {
         $this->DuplicityFilters = $DuplicityFilters;
+
+        return $this;
+    }
+
+    public function getMemcached(): ?bool
+    {
+        return $this->Memcached;
+    }
+
+    public function setMemcached(?bool $Memcached): self
+    {
+        $this->Memcached = $Memcached;
+
+        return $this;
+    }
+
+    public function getSolr(): ?bool
+    {
+        return $this->Solr;
+    }
+
+    public function setSolr(bool $Solr): self
+    {
+        $this->Solr = $Solr;
 
         return $this;
     }

@@ -13,13 +13,10 @@ use App\Entity\NginxTemplate;
 use App\Repository\BackendRepository;
 
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Type;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use App\Form\Type\DuplicityFiltersType;
@@ -37,7 +34,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 class ProjectType extends AbstractType
 {
     /**
-     * @var string
+     * @var array
      */
     private $projects_volumes;
 
@@ -142,6 +139,12 @@ class ProjectType extends AbstractType
             'allow_delete' => true,
             'delete_empty' => true,
             'prototype' => true,
+        ])
+        ->add('Memcached', CheckboxType::class, [
+            'required' => false,
+        ])
+        ->add('Solr', CheckboxType::class, [
+            'required' => false,
         ])
         ->add('mysql', CheckboxType::class, [
             'required' => false,

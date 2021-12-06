@@ -59,7 +59,7 @@ RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/down
     printf "\ninclude=/etc/php56/php-fpm.d/*.conf" >> /etc/php56/php-fpm.conf; \
     sed -i "s/;process_control_timeout = 0/process_control_timeout = 10s/g"  /etc/php56/php-fpm.conf; \
     sed -i "s/.*open_basedir =.*/open_basedir =/g" /etc/php56/php.ini; \
-    sed -i "s/# urls = \[\"http\:\/\/127\.0\.0\.1\:8086\"\]/urls = \[\"http\:\/\/influxdb\:8086\"\]/g" /etc/telegraf/telegraf.conf; \
+    sed -i "s/# urls = \[\"http\:\/\/127\.0\.0\.1\:8086\"\]/urls = \[\"http\:\/\/webcrate-influxdb\:8086\"\]/g" /etc/telegraf/telegraf.conf; \
     sed -i "s/# skip_database_creation = false/skip_database_creation = true/g" /etc/telegraf/telegraf.conf; \
     sed -i "s/# database = \"telegraf\"/database = \"telegraf\"/g" /etc/telegraf/telegraf.conf; \
     sed -i "s/#PubkeyAuthentication yes/PubkeyAuthentication yes/g" /etc/ssh/sshd_config; \
@@ -112,5 +112,6 @@ RUN chmod u+x /webcrate/sync_ssh_keys.sh; \
     rm /etc/mail/exim.conf; \
     chmod u+x /webcrate/parse-projects.py; \
     chmod u+x /webcrate/versions.py; \
+    chmod u+s /bin/ping; \
     chmod u+x /entrypoint.sh
 CMD ["/entrypoint.sh"]

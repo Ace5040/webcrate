@@ -45,7 +45,10 @@ for projectname,project in projects.items():
   ssh_port = SSH_PORT_START_NUMBER + project.uid - UID_START_NUMBER
   domain = project.domains[0]
 
-  project.folder = f'/home/{project.name}'
+  if hasattr(project, 'volume'):
+    project.folder = f'/projects{(project.volume + 1) if project.volume else ""}/{project.name}'
+  else:
+    project.folder = f'/projects/{project.name}'
 
   if not os.path.isdir(f'{project.folder}'):
     os.system(f'mkdir -p {project.folder}')
@@ -101,7 +104,7 @@ for projectname,project in projects.items():
       conf = conf.replace('%port%', str(port))
       conf = conf.replace('%user%', project.name)
       conf = conf.replace('%group%', project.name)
-      conf = conf.replace('%path%', project.folder)
+      conf = conf.replace('%path%', f'/home/{project.name}')
       conf = conf.replace('%pool%', project.name)
 
       with open(php_conf_path, 'w') as f:
@@ -113,9 +116,9 @@ for projectname,project in projects.items():
     with open(f'{project.folder}/config.sh', 'w') as f:
       if project.backend == 'php':
         f.write(f'PATH=/webcrate-bin/php{php_path_prefix}:$PATH\n')
-        f.write(f'PATH={project.folder}/.config/composer/vendor/bin:$PATH\n')
-        f.write(f'PATH={project.folder}/{data_folder}/vendor/bin:$PATH\n')
-        f.write(f'export COMPOSER_HOME={project.folder}/.config/composer\n')
+        f.write(f'PATH=/home/{project.name}/.config/composer/vendor/bin:$PATH\n')
+        f.write(f'PATH=/home/{project.name}/{data_folder}/vendor/bin:$PATH\n')
+        f.write(f'export COMPOSER_HOME=/home/{project.name}/.config/composer\n')
         f.write(f'export DRUSH_PHP=/webcrate-bin/php{php_path_prefix}/php\n')
       f.write(f'export DATA_FOLDER={data_folder}\n')
       f.close()
@@ -123,9 +126,9 @@ for projectname,project in projects.items():
     with open(f'{project.folder}/config.fish', 'w') as f:
       if project.backend == 'php':
         f.write(f'set PATH /webcrate-bin/php{php_path_prefix} $PATH\n')
-        f.write(f'set PATH {project.folder}/.config/composer/vendor/bin $PATH\n')
-        f.write(f'set PATH {project.folder}/{data_folder}/vendor/bin $PATH\n')
-        f.write(f'set -x COMPOSER_HOME {project.folder}/.config/composer\n')
+        f.write(f'set PATH /home/{project.name}/.config/composer/vendor/bin $PATH\n')
+        f.write(f'set PATH /home/{project.name}/{data_folder}/vendor/bin $PATH\n')
+        f.write(f'set -x COMPOSER_HOME /home/{project.name}/.config/composer\n')
         f.write(f'set -x DRUSH_PHP /webcrate-bin/php{php_path_prefix}/php\n')
       f.write(f'set -x DATA_FOLDER {data_folder}\n')
       f.close()
@@ -145,11 +148,18 @@ for projectname,project in projects.items():
     conf = conf.replace('%project%', project.name)
     conf = conf.replace('%domains%', " ".join(project.domains))
     conf = conf.replace('%port%', str(port))
-    conf = conf.replace('%project_folder%', project.folder)
+    conf = conf.replace('%project_folder%', f'/home/{project.name}')
     conf = conf.replace('%root_folder%', project.root_folder)
     conf = conf.replace('%core%', f'webcrate-core-{project.name}')
 
-    os.system(f'echo "{project.name} webcrate-core-{project.full_backend_version} webcrate-core-{project.name} {ssh_port} {domain}"  >> /webcrate/meta/projects-{project.full_backend_version}.list')
+    os.system(f'echo "{project.name} '
+      f'webcrate-core-{project.full_backend_version} '
+      f'webcrate-core-{project.name} '
+      f'{ssh_port} '
+      f'{domain}" '
+      f'{project.memcached}" '
+      f'{project.solr}" '
+      f'>> /webcrate/meta/projects-{project.full_backend_version}.list')
 
     with open(f'/webcrate/nginx_configs/{project.name}.conf', 'w') as f:
       f.write(conf)

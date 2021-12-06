@@ -36,7 +36,7 @@ RUN gem install compass --norc; \
     systemctl enable cronie; \
     systemctl enable telegraf; \
     systemctl enable exim; \
-    sed -i "s/# urls = \[\"http\:\/\/127\.0\.0\.1\:8086\"\]/urls = \[\"http\:\/\/influxdb\:8086\"\]/g" /etc/telegraf/telegraf.conf; \
+    sed -i "s/# urls = \[\"http\:\/\/127\.0\.0\.1\:8086\"\]/urls = \[\"http\:\/\/webcrate-influxdb\:8086\"\]/g" /etc/telegraf/telegraf.conf; \
     sed -i "s/# skip_database_creation = false/skip_database_creation = true/g" /etc/telegraf/telegraf.conf; \
     sed -i "s/# database = \"telegraf\"/database = \"telegraf\"/g" /etc/telegraf/telegraf.conf; \
     sed -i "s/#PubkeyAuthentication yes/PubkeyAuthentication yes/g" /etc/ssh/sshd_config; \
@@ -79,5 +79,6 @@ RUN chmod u+x /webcrate/sync_ssh_keys.sh; \
     chmod a+x /webcrate-bin/gunicorn_restart.sh; \
     chmod u+x /webcrate/parse-projects.py; \
     chmod u+x /webcrate/versions.py; \
+    chmod u+s /bin/ping; \
     chmod u+x /entrypoint.sh
 CMD ["/entrypoint.sh"]

@@ -38,8 +38,6 @@ os.system(f'duplicity --verbosity notice '
   f'--include {data_folder}/var/openssl '
   f'--include {data_folder}/var/secrets '
   f'--include {data_folder}/var/ssh '
-  f'--exclude "{data_folder}/var/solr/cores/**/data" '
-  f'--include {data_folder}/var/solr/cores '
   f'--include {data_folder}/var/synapse '
   f'--include {data_folder}/.env '
   f'--include {data_folder}/projects.yml '
@@ -86,12 +84,13 @@ os.system(f'duplicity --verbosity notice '
 for projectname,project in projects.items():
   project.name = projectname
   if project.backup:
+    if hasattr(project, 'volume'):
+      project.folder = f'/projects{(project.volume + 1) if project.volume else ""}/{project.name}'
+    else:
+      project.folder = f'/projects/{project.name}'
     #backup files
     log.write(f'Backup files for project {project.name}')
-    if hasattr(project, 'volume'):
-      data_folder = f'/projects{(project.volume + 1) if project.volume else ""}/{project.name}/{project.root_folder.split("/")[0]}'
-    else:
-      data_folder = f'/projects/{project.name}/{project.root_folder.split("/")[0]}'
+    data_folder = f'{project.folder}/{project.root_folder.split("/")[0]}'
     FILTERS = ''
     if hasattr(project, 'duplicity_filters'):
       for duplicity_filter in project.duplicity_filters:
@@ -117,6 +116,31 @@ for projectname,project in projects.items():
         f'--force '
         f'remove-all-but-n-full {WEBCRATE_MAX_FULL_BACKUPS} '
         f'"{REMOTE_BACKUP_URI}/projects/{project.name}/files"'
+      )
+    #backup solr cores
+    log.write(f'Backup solr cores for project {project.name}')
+    if os.path.isdir(f'{project.folder}/var/solr/cores'):
+      print(f'backup files for project {project.name}')
+      os.system(f'duplicity --verbosity notice '
+        f'--no-encryption '
+        f'--full-if-older-than {WEBCRATE_FULL_BACKUP_DAYS}D '
+        f'--num-retries 3 '
+        f'--asynchronous-upload '
+        f'--allow-source-mismatch '
+        f'--volsize 500 '
+        f'--archive-dir /webcrate/duplicity/.duplicity '
+        f'--log-file /webcrate/duplicity/duplicity.log '
+        f'--exclude "{project.folder}/var/solr/cores/**/data" '
+        f'--include {project.folder}/var/solr/cores '
+        f'"{project.folder}/var/solr/cores" '
+        f'"{REMOTE_BACKUP_URI}/projects/{project.name}/solr-cores"'
+      )
+      os.system(f'duplicity --verbosity notice '
+        f'--archive-dir /webcrate/duplicity/.duplicity '
+        f'--log-file /webcrate/duplicity/duplicity.log '
+        f'--force '
+        f'remove-all-but-n-full {WEBCRATE_MAX_FULL_BACKUPS} '
+        f'"{REMOTE_BACKUP_URI}/projects/{project.name}/solr-cores"'
       )
     #backup mysql
     if project.mysql_db:

@@ -17,7 +17,7 @@ def is_mysql_up(host, password):
 mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password="').read().strip().split("password=")[1][1:][:-1].replace("$", "\$")
 retries = 20
 retries2 = 20
-while retries > 0 and is_mysql_up('mysql', mysql_root_password) == 0:
+while retries > 0 and is_mysql_up('webcrate-mysql', mysql_root_password) == 0:
   retries -= 1
   time.sleep(5)
 if retries > 0:
@@ -33,18 +33,18 @@ if retries > 0:
       f.write(f'WEBCRATE_UID={WEBCRATE_UID}\n')
       f.write(f'WEBCRATE_GID={WEBCRATE_GID}\n')
       f.write(f'WEBCRATE_PROJECTS_FOLDERS={WEBCRATE_PROJECTS_FOLDERS}\n')
-      f.write(f'DATABASE_URL=mysql://webcrate:{mysql_service_password}@mysql:3306/webcrate\n')
+      f.write(f'DATABASE_URL=mysql://webcrate:{mysql_service_password}@webcrate-mysql:3306/webcrate\n')
       f.close()
-    mysql_database_found = int(os.popen(f'mysql -u webcrate -h mysql -p"{mysql_service_password}" -e "show databases like \'webcrate\';" | grep "Database (webcrate)" | wc -l').read().strip())
+    mysql_database_found = int(os.popen(f'mysql -u webcrate -h webcrate-mysql -p"{mysql_service_password}" -e "show databases like \'webcrate\';" | grep "Database (webcrate)" | wc -l').read().strip())
     if mysql_database_found != 0:
       os.system(f'cd /app; php bin/console doctrine:migrations:sync-metadata-storage')
       os.system(f'cd /app; yes | php bin/console doctrine:migrations:migrate')
-      admin_user_found = int(os.popen(f'mysql -u webcrate -h mysql -p"{mysql_service_password}" webcrate -e "select id from user where id=1" | wc -l').read().strip())
+      admin_user_found = int(os.popen(f'mysql -u webcrate -h webcrate-mysql -p"{mysql_service_password}" webcrate -e "select id from user where id=1" | wc -l').read().strip())
       if admin_user_found == 0:
         admin_password=os.popen("cat /webcrate/secrets/webcrate.secret | grep password= | awk '{split($0,a,\"password=\"); print a[2]}' | tr -d \"\n\"").read().strip()
         admin_password_encoded=os.popen(f'cd /app; php bin/console security:encode-password "{admin_password}" | grep "Encoded password" | awk \'{{split($0,a,"password"); print a[2]}}\' | tr -d " \n"').read().strip()
         admin_password_encoded = str(admin_password_encoded).replace("$", "\$").replace("&", "\&")
-        os.system(f'mysql -u webcrate -h mysql -p"{mysql_service_password}" webcrate -e "INSERT INTO \\`user\\` (\\`id\\`, \\`email\\`, \\`roles\\`, \\`password\\`) VALUES (NULL, \'{WEBCRATE_ADMIN_EMAIL}\', \'[\\"ROLE_ADMIN\\"]\', \'{admin_password_encoded}\')"')
+        os.system(f'mysql -u webcrate -h webcrate-mysql -p"{mysql_service_password}" webcrate -e "INSERT INTO \\`user\\` (\\`id\\`, \\`email\\`, \\`roles\\`, \\`password\\`) VALUES (NULL, \'{WEBCRATE_ADMIN_EMAIL}\', \'[\\"ROLE_ADMIN\\"]\', \'{admin_password_encoded}\')"')
         print(f'webcrate admin user created')
       else:
         print(f'webcrate admin user exists')

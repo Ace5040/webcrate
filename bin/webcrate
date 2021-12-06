@@ -36,24 +36,21 @@ function Start() {
 }
 
 function Stop() {
-  writeLog "Stopping docker containers"
-  docker stop webcrate webcrate-ftp webcrate-nginx webcrate-tools webcrate-dnsmasq influxdb grafana solr htmltopdf doctohtml phppgadmin phpmyadmin mysql mysql5 postgres memcached synapse-admin synapse turn
-  writeLog "Removing docker containers"
-  docker container rm webcrate webcrate-ftp webcrate-nginx webcrate-tools webcrate-dnsmasq influxdb grafana solr htmltopdf doctohtml phppgadmin phpmyadmin mysql mysql5 postgres memcached synapse-admin synapse turn
-  writeLog "Stopping and remove dynamic containers"
-  containers=$(docker ps -a -q --filter name=webcrate-core-)
+  writeLog "Stopping and removing containers"
+  docker stop synapse-admin synapse turn
+  docker container rm synapse-admin synapse turn
+  writeLog "Stopping and removing webcrate containers"
+  containers=$(docker ps -a -q --filter name=webcrate-)
   if [ "$containers" != "" ]; then
     docker stop $containers
     docker container rm $containers
   fi
-  writeLog "Removing docker networks"
-  docker network rm webcrate_network
-  writeLog "Remove dynamic neworks"
-  networks=$(docker network list -q --filter name=webcrate_network_)
+  writeLog "Removing networks"
+  networks=$(docker network list -q --filter name=webcrate_)
   if [ "$networks" != "" ]; then
     docker network rm $networks
   fi
-  writeLog "Stopped"
+  writeLog "Stopped and removed"
 }
 
 function Restart() {
@@ -89,13 +86,13 @@ function Build() {
     docker pull nginx:stable
   fi
   if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "nginx" ]; then
-    docker build -t ace5040/webcrate-nginx:stable ./src/webcrate-nginx$NOCACHE
+    docker build -t ace5040/webcrate-nginx:stable ./src/nginx$NOCACHE
   fi
   if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "dnsmasq" ]; then
     docker build -t ace5040/webcrate-dnsmasq:stable ./src/dnsmasq$NOCACHE
   fi
   if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "tools" ]; then
-    docker build -t ace5040/webcrate-tools:stable ./src/webcrate-tools$NOCACHE
+    docker build -t ace5040/webcrate-tools:stable ./src/tools$NOCACHE
   fi
   if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core" ]; then
     docker build -t ace5040/webcrate-core-php:stable ./src/core-php$NOCACHE
@@ -105,10 +102,10 @@ function Build() {
     docker build -t ace5040/webcrate-core-gunicorn:stable ./src/core-gunicorn$NOCACHE
   fi
   if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "admin" ]; then
-    docker build -t ace5040/webcrate-admin:stable ./src/webcrate-admin$NOCACHE
+    docker build -t ace5040/webcrate-admin:stable ./src/admin$NOCACHE
   fi
   if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "ftp" ]; then
-    docker build -t ace5040/webcrate-ftp:stable ./src/webcrate-ftp$NOCACHE
+    docker build -t ace5040/webcrate-ftp:stable ./src/ftp$NOCACHE
   fi
 }
 

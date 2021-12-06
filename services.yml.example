@@ -1,4 +1,4 @@
-webcrate:
+admin:
   domain: webcrate.test
   port: 80
   https: disabled
@@ -21,7 +21,7 @@ synapse-admin:
   postgresql_db: no
 phpmyadmin:
   domain: phpmyadmin.test
-  port: 8080
+  port: 80
   https: disabled
   mysql_db: no
   mysql5_db: no
@@ -50,13 +50,6 @@ htmltopdf:
 grafana:
   domain: grafana.test
   port: 3000
-  https: disabled
-  mysql_db: no
-  mysql5_db: no
-  postgresql_db: no
-solr:
-  domain: solr.test
-  port: 8983
   https: disabled
   mysql_db: no
   mysql5_db: no

@@ -481,6 +481,37 @@ else
   docker start webcrate-nginx
 fi
 
+writeLog "Starting ftp container"
+if docker container inspect webcrate-ftp >/dev/null 2> /dev/null; then
+   writeLog "service webcrate-ftp exists"
+else
+
+  PROJECTS_HOMES=""
+  for SITES_PATH in ${WEBCRATE_PROJECTS_FOLDERS[@]}
+  do
+    if [[ $SITES_PATH == /* ]]; then
+      SITES_ABSOLUTE_PATH=$SITES_PATH;
+    else
+      SITES_ABSOLUTE_PATH=$(pwd)/$SITES_PATH;
+    fi
+    for dir in $(find $SITES_ABSOLUTE_PATH -mindepth 1 -maxdepth 1 -type d); do
+      project_name=`basename $dir`
+      PROJECTS_HOMES="$PROJECTS_HOMES-v $SITES_ABSOLUTE_PATH/$project_name:/home/$project_name "
+    done
+  done
+
+  docker run -d --env-file=$(pwd)/.env --hostname webcrate-ftp --name webcrate-ftp \
+    --network="host" \
+    --restart="unless-stopped" \
+    -e WEBCRATE_UID=$uid \
+    -e WEBCRATE_GID=$gid \
+    $PROJECTS_HOMES \
+    -v /etc/localtime:/etc/localtime:ro \
+    -v $(pwd)/projects.yml:/webcrate/projects.yml:ro \
+    -v $(pwd)/var/meta:/webcrate/meta \
+    ace5040/webcrate-ftp:stable > /dev/null
+fi
+
 writeLog "Starting webcrate-tools container"
 
 if docker container inspect webcrate-tools >/dev/null 2> /dev/null; then

@@ -37,9 +37,9 @@ function Start() {
 
 function Stop() {
   writeLog "Stopping docker containers"
-  docker stop webcrate webcrate-nginx webcrate-tools webcrate-dnsmasq influxdb grafana solr htmltopdf doctohtml phppgadmin phpmyadmin mysql mysql5 postgres memcached synapse-admin synapse turn
+  docker stop webcrate webcrate-ftp webcrate-nginx webcrate-tools webcrate-dnsmasq influxdb grafana solr htmltopdf doctohtml phppgadmin phpmyadmin mysql mysql5 postgres memcached synapse-admin synapse turn
   writeLog "Removing docker containers"
-  docker container rm webcrate webcrate-nginx webcrate-tools webcrate-dnsmasq influxdb grafana solr htmltopdf doctohtml phppgadmin phpmyadmin mysql mysql5 postgres memcached synapse-admin synapse turn
+  docker container rm webcrate webcrate-ftp webcrate-nginx webcrate-tools webcrate-dnsmasq influxdb grafana solr htmltopdf doctohtml phppgadmin phpmyadmin mysql mysql5 postgres memcached synapse-admin synapse turn
   writeLog "Stopping and remove dynamic containers"
   containers=$(docker ps -a -q --filter name=webcrate-core-)
   if [ "$containers" != "" ]; then
@@ -76,6 +76,7 @@ function Build() {
     && [ "$BUILDTARGET" != "core" ]\
     && [ "$BUILDTARGET" != "admin" ]\
     && [ "$BUILDTARGET" != "dnsmasq" ]\
+    && [ "$BUILDTARGET" != "ftp" ]\
   ;then
     echo "Unknown target $1. Please use one of: all, nginx, tools, core, admin, dnsmasq"
     exit 1
@@ -106,10 +107,18 @@ function Build() {
   if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "admin" ]; then
     docker build -t ace5040/webcrate-admin:stable ./src/webcrate-admin$NOCACHE
   fi
+  if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "ftp" ]; then
+    docker build -t ace5040/webcrate-ftp:stable ./src/webcrate-ftp$NOCACHE
+  fi
 }
 
 function Pull() {
   docker pull ace5040/webcrate-core-php:stable
+  docker pull ace5040/webcrate-core-php56:stable
+  docker pull ace5040/webcrate-core-php73:stable
+  docker pull ace5040/webcrate-core-php74:stable
+  docker pull ace5040/webcrate-core-gunicorn:stable
+  docker pull ace5040/webcrate-ftp:stable
   docker pull ace5040/webcrate-admin:stable
   docker pull ace5040/webcrate-tools:stable
   docker pull ace5040/webcrate-nginx:stable
@@ -131,7 +140,13 @@ function Pull() {
 
 function Push() {
   IMAGE=$1
-  if [ "$IMAGE" != "all" ] && [ "$IMAGE" != "nginx" ] && [ "$IMAGE" != "tools" ] && [ "$IMAGE" != "core" ] && [ "$IMAGE" != "admin" ]; then
+  if [ "$IMAGE" != "all" ]\
+    && [ "$IMAGE" != "nginx" ]\
+    && [ "$IMAGE" != "tools" ]\
+    && [ "$IMAGE" != "core" ]\
+    && [ "$IMAGE" != "admin" ]\
+    && [ "$IMAGE" != "ftp" ];\
+  then
     echo "Unknown image $1. Please use one of: all, nginx, tools, core, admin"
     exit 1
   fi
@@ -143,6 +158,13 @@ function Push() {
   fi
   if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "core" ]; then
     docker push ace5040/webcrate-core-php:stable
+    docker push ace5040/webcrate-core-php56:stable
+    docker push ace5040/webcrate-core-php73:stable
+    docker push ace5040/webcrate-core-php74:stable
+    docker push ace5040/webcrate-core-gunicorn:stable
+  fi
+  if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "ftp" ]; then
+    docker push ace5040/webcrate-ftp:stable
   fi
   if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "admin" ]; then
     docker push ace5040/webcrate-admin:stable

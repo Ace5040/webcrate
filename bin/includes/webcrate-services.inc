@@ -8,6 +8,7 @@ do
       image_name=${project[1]}
       container_name=${project[2]}
       ssh_port=${project[3]}
+      project_domain=${project[4]}
 
       PROJECT_VOLUME=""
       for SITES_PATH in ${WEBCRATE_PROJECTS_FOLDERS[@]}
@@ -42,6 +43,7 @@ do
           -e WEBCRATE_UID=$uid \
           -e WEBCRATE_GID=$gid \
           -e WEBCRATE_PROJECT=$project_name \
+          -e WEBCRATE_DOMAIN=$project_domain \
           -v /etc/localtime:/etc/localtime:ro \
           $PROJECT_VOLUME \
           -v $(pwd)/var/crontabs:/var/spool/cron \

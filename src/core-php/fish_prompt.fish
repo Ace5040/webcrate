@@ -35,7 +35,7 @@ function fish_prompt
   end
 
   # Top
-  echo -n $cyan$u$normal@$yellow$__fish_prompt_hostname$normal $bred(prompt_pwd)$normal
+  echo -n $cyan$u$normal@$yellow$WEBCRATE_DOMAIN$normal $bred(prompt_pwd)$normal
   __fish_git_prompt
   echo -n " "
   echo -n $pcolor$__fish_prompt_char $normal

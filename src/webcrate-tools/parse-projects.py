@@ -44,6 +44,7 @@ for projectname,project in projects.items():
   data_folder=project.root_folder.split("/")[0]
   port = 9000
   ssh_port = SSH_PORT_START_NUMBER + project.uid - UID_START_NUMBER
+  domain = project.domains[0]
 
   project.folder = f'/home/{project.name}'
 
@@ -149,7 +150,7 @@ for projectname,project in projects.items():
     conf = conf.replace('%root_folder%', project.root_folder)
     conf = conf.replace('%core%', f'webcrate-core-{project.name}')
 
-    os.system(f'echo "{project.name} webcrate-core-{project.full_backend_version} webcrate-core-{project.name} {ssh_port}"  >> /webcrate/meta/projects-{project.full_backend_version}.list')
+    os.system(f'echo "{project.name} webcrate-core-{project.full_backend_version} webcrate-core-{project.name} {ssh_port} {domain}"  >> /webcrate/meta/projects-{project.full_backend_version}.list')
 
     with open(f'/webcrate/nginx_configs/{project.name}.conf', 'w') as f:
       f.write(conf)

@@ -8,7 +8,6 @@ from pprint import pprint
 with open('/webcrate/services.yml', 'r') as f:
   services = munchify(yaml.safe_load(f))
 
-WEBCRATE_MODE = os.environ.get('WEBCRATE_MODE', 'PRODUCTION')
 DOCKER_HOST_IP = os.environ.get('DOCKER_HOST_IP', '')
 WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
@@ -72,18 +71,17 @@ for servicename, service in services.items():
               f.close()
             print(f'ssl config for {service.name} - generated')
 
-if WEBCRATE_MODE == "DEV":
-  with open(f'/webcrate-dnsmasq/config/hosts_nginx', 'a') as f:
-    for servicename, service in services.items():
-      if  ( servicename != 'synapse' or WEBCRATE_SERVICE_SYNAPSE ) and \
-          ( servicename != 'synapse-admin' or WEBCRATE_SERVICE_SYNAPSE ) and \
-          ( servicename != 'doctohtml' or WEBCRATE_SERVICE_DOCTOHTML ) and \
-          ( servicename != 'htmltopdf' or WEBCRATE_SERVICE_HTMLTOPDF ) and \
-          ( servicename != 'grafana' or WEBCRATE_SERVICE_STATS ) and \
-          ( servicename != 'solr' or WEBCRATE_SERVICE_SOLR ):
-            service.name = servicename
-            f.write(f'{DOCKER_HOST_IP} {service.domain}\n')
-    f.close()
+with open(f'/webcrate-dnsmasq/config/hosts_nginx', 'a') as f:
+  for servicename, service in services.items():
+    if  ( servicename != 'synapse' or WEBCRATE_SERVICE_SYNAPSE ) and \
+        ( servicename != 'synapse-admin' or WEBCRATE_SERVICE_SYNAPSE ) and \
+        ( servicename != 'doctohtml' or WEBCRATE_SERVICE_DOCTOHTML ) and \
+        ( servicename != 'htmltopdf' or WEBCRATE_SERVICE_HTMLTOPDF ) and \
+        ( servicename != 'grafana' or WEBCRATE_SERVICE_STATS ) and \
+        ( servicename != 'solr' or WEBCRATE_SERVICE_SOLR ):
+          service.name = servicename
+          f.write(f'{DOCKER_HOST_IP} {service.domain}\n')
+  f.close()
 
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/nginx_configs')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate-dnsmasq/config')

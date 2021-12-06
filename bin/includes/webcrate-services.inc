@@ -1,4 +1,6 @@
 backends=( "gunicorn" "php56" "php73" "php74" "php" )
+PROJECT_COUNT=1
+PROJECTS_LIST=()
 for backend in "${backends[@]}"
 do
   if [ -f ./var/meta/projects-$backend.list ]; then
@@ -11,6 +13,7 @@ do
       project_domain=${project[4]}
 
       PROJECT_VOLUME=""
+      PROJECTS_LIST+=("${project_name}")
       for SITES_PATH in ${WEBCRATE_PROJECTS_FOLDERS[@]}
       do
         if [[ $SITES_PATH == /* ]]; then
@@ -32,12 +35,18 @@ do
         PHP_CONFIGS="-v $(pwd)/config/php/$backend.ini:/etc/$backend/conf.d/user.ini:ro -v webcrate_${backend}_pools:/webcrate/pools"
       fi
 
+      writeLog "Create docker network for ${project_name} if it not exists"
+      if docker network inspect webcrate_network_${project_name} >/dev/null 2> /dev/null; then
+        echo network webcrate_network_${project_name} exists
+      else
+        docker network create --driver=bridge --subnet=10.$PROJECT_COUNT.0.0/24 webcrate_network_${project_name} > /dev/null
+      fi
       writeLog "Starting $container_name container for $project_name"
       if docker container inspect $container_name >/dev/null 2> /dev/null; then
         writeLog "service $container_name exists"
       else
         docker run -d --env-file=$(pwd)/.env --hostname $container_name --name $container_name \
-          --network="webcrate_network" --dns=172.31.0.100 \
+          --network="webcrate_network_${project_name}" --dns=10.$PROJECT_COUNT.0.250 \
           --restart="unless-stopped" \
           -p "$ssh_port:22" \
           -e WEBCRATE_UID=$uid \
@@ -56,23 +65,33 @@ do
           $PHP_CONFIGS \
           ace5040/$image_name:stable > /dev/null
       fi
+      let PROJECT_COUNT+=1
     done < "./var/meta/projects-$backend.list"
   fi
 done
 
-if [ "$WEBCRATE_MODE" == "DEV" ]; then
-  writeLog "Starting webcrate-dnsmasq container"
-  if docker container inspect webcrate-dnsmasq >/dev/null 2> /dev/null; then
-    writeLog "service webcrate-dnsmasq exists"
-  else
-    docker run -d --hostname webcrate-dnsmasq --name webcrate-dnsmasq \
-      --network="webcrate_network" --dns=172.31.0.100 --ip=172.31.0.100 \
-      --restart="unless-stopped" \
-      -p "53:53/udp" \
-      -v $(pwd)/var/dnsmasq:/dnsmasq \
-      -v webcrate_dnsmasq_hosts:/dnsmasq-hosts \
-      ace5040/webcrate-dnsmasq:stable > /dev/null
+writeLog "Starting webcrate-dnsmasq container"
+if docker container inspect webcrate-dnsmasq >/dev/null 2> /dev/null; then
+  writeLog "service webcrate-dnsmasq exists"
+else
+  DNSPORT=""
+  if [ "$WEBCRATE_LOCALDNS" = true ]; then
+    DNSPORT=-p\ "53:53/udp"
   fi
+  docker create --hostname webcrate-dnsmasq --name webcrate-dnsmasq \
+    --network="webcrate_network" --ip=10.255.0.100 \
+    --restart="unless-stopped" \
+    $DNSPORT \
+    -v $(pwd)/var/dnsmasq:/dnsmasq \
+    -v webcrate_dnsmasq_hosts:/dnsmasq-hosts \
+    ace5040/webcrate-dnsmasq:stable > /dev/null
+  PROJECT_COUNT=1
+  for project_name in "${PROJECTS_LIST[@]}"
+  do
+    docker network connect --ip=10.$PROJECT_COUNT.0.250 webcrate_network_$project_name webcrate-dnsmasq
+    let PROJECT_COUNT+=1
+  done
+  docker start webcrate-dnsmasq
 fi
 
 writeLog "Starting webcrate-admin container"
@@ -82,7 +101,7 @@ if docker container inspect webcrate >/dev/null 2> /dev/null; then
 else
   if [ "$WEBCRATE_APP_MODE" == "DEV" ]; then WEBCRATE_APP_SRC=-v\ $(pwd)/src/webcrate-admin/app:/app; else WEBCRATE_APP_SRC=""; fi
   docker run -d --env-file=$(pwd)/.env --hostname webcrate --name webcrate \
-    --network="webcrate_network" --dns=172.31.0.100 \
+    --network="webcrate_network" --dns=10.255.0.100 \
     --restart="unless-stopped" \
     -e WEBCRATE_UID=$uid \
     -e WEBCRATE_GID=$gid \
@@ -103,10 +122,15 @@ if [ "$WEBCRATE_SERVICE_MEMCACHED" = true ]; then
   if docker container inspect memcached >/dev/null 2> /dev/null; then
     writeLog "service memcached exists"
   else
-    docker run -d --env-file=$(pwd)/.env --log-driver=none --name memcached \
-      --network="webcrate_network" --dns=172.31.0.100 \
+    docker create --env-file=$(pwd)/.env --log-driver=none --name memcached \
+      --network="webcrate_network" --dns=10.255.0.100 \
       --restart="unless-stopped" \
       memcached:1 > /dev/null
+    for project_name in "${PROJECTS_LIST[@]}"
+    do
+      docker network connect webcrate_network_$project_name memcached
+    done
+    docker start memcached
   fi
 fi
 
@@ -116,8 +140,8 @@ if docker container inspect mysql5 >/dev/null 2> /dev/null; then
   writeLog "service mysql5 exists"
 else
   if [ "$MYSQL5_ROOT_PASS" != "" ]; then MYSQL5_ROOT_PASS=-e\ MYSQL_ROOT_PASSWORD="$MYSQL5_ROOT_PASS"; fi
-  docker run -d --env-file=$(pwd)/.env --name mysql5 \
-    --network="webcrate_network" --dns=172.31.0.100 \
+  docker create --env-file=$(pwd)/.env --name mysql5 \
+    --network="webcrate_network" --dns=10.255.0.100 \
     --restart="unless-stopped" \
     --user "$uid:$gid" \
     $MYSQL5_ROOT_PASS \
@@ -125,6 +149,11 @@ else
     -v $(pwd)/var/mysql5:/var/lib/mysql \
     -v $(pwd)/config/mysql/mysql5.cnf:/etc/mysql/conf.d/user.cnf \
     mariadb:5 > /dev/null
+  for project_name in "${PROJECTS_LIST[@]}"
+  do
+    docker network connect webcrate_network_$project_name mysql5
+  done
+  docker start mysql5
 fi
 
 writeLog "Starting mysql container"
@@ -133,8 +162,8 @@ if docker container inspect mysql >/dev/null 2> /dev/null; then
   writeLog "service mysql exists"
 else
   if [ "$MYSQL_ROOT_PASS" != "" ]; then MYSQL_ROOT_PASS=-e\ MYSQL_ROOT_PASSWORD="$MYSQL_ROOT_PASS"; fi
-  docker run -d --env-file=$(pwd)/.env --name mysql \
-    --network="webcrate_network" --dns=172.31.0.100 \
+  docker create --env-file=$(pwd)/.env --name mysql \
+    --network="webcrate_network" --dns=10.255.0.100 \
     --restart="unless-stopped" \
     --user "$uid:$gid" \
     $MYSQL_ROOT_PASS \
@@ -142,6 +171,11 @@ else
     -v $(pwd)/var/mysql:/var/lib/mysql \
     -v $(pwd)/config/mysql/mysql.cnf:/etc/mysql/conf.d/user.cnf \
     mariadb:10 > /dev/null
+  for project_name in "${PROJECTS_LIST[@]}"
+  do
+    docker network connect webcrate_network_$project_name mysql
+  done
+  docker start mysql
 fi
 
 writeLog "Starting postgres container"
@@ -150,13 +184,18 @@ if docker container inspect postgres >/dev/null 2> /dev/null; then
   writeLog "service postgres exists"
 else
   if [ "$POSTGRES_PASS" != "" ]; then POSTGRES_PASS=-e\ POSTGRES_PASSWORD="$POSTGRES_PASS"; fi
-  docker run -d --env-file=$(pwd)/.env --name postgres \
-    --network="webcrate_network" --dns=172.31.0.100 \
+  docker create --env-file=$(pwd)/.env --name postgres \
+    --network="webcrate_network" --dns=10.255.0.100 \
     --restart="unless-stopped" \
     --user "$uid:$gid" \
     $POSTGRES_PASS \
     -v $(pwd)/var/postgres:/var/lib/postgresql/data \
     postgres:12 > /dev/null
+  for project_name in "${PROJECTS_LIST[@]}"
+  do
+    docker network connect webcrate_network_$project_name postgres
+  done
+  docker start postgres
 fi
 
 writeLog "Starting phpmyadmin container"
@@ -165,7 +204,7 @@ if docker container inspect phpmyadmin >/dev/null 2> /dev/null; then
   writeLog "service phpmyadmin exists"
 else
   docker run -d --env-file=$(pwd)/.env --name phpmyadmin \
-    --network="webcrate_network" --dns=172.31.0.100 \
+    --network="webcrate_network" --dns=10.255.0.100 \
     --restart="unless-stopped" \
     -e PMA_HOSTS=mysql,mysql5 \
     -e UPLOAD_LIMIT=2048M \
@@ -184,7 +223,7 @@ if docker container inspect phppgadmin >/dev/null 2> /dev/null; then
   writeLog "service phppgadmin exists"
 else
   docker run -d --env-file=$(pwd)/.env --name phppgadmin \
-    --network="webcrate_network" --dns=172.31.0.100 \
+    --network="webcrate_network" --dns=10.255.0.100 \
     --restart="unless-stopped" \
     -e DATABASE_HOST=postgres \
     -v /etc/localtime:/etc/localtime:ro \
@@ -197,11 +236,16 @@ if [ "$WEBCRATE_SERVICE_DOCTOHTML" = true ]; then
   if docker container inspect doctohtml >/dev/null 2> /dev/null; then
     writeLog "service doctohtml exists"
   else
-    docker run -d --env-file=$(pwd)/.env --name doctohtml \
-      --network="webcrate_network" --dns=172.31.0.100 \
+    docker create --env-file=$(pwd)/.env --name doctohtml \
+      --network="webcrate_network" --dns=10.255.0.100 \
       --restart="unless-stopped" \
       -p "3000:3000" \
       ace5040/doctohtml:stable > /dev/null
+    for project_name in "${PROJECTS_LIST[@]}"
+    do
+      docker network connect webcrate_network_$project_name doctohtml
+    done
+    docker start doctohtml
   fi
 fi
 
@@ -210,11 +254,16 @@ if [ "$WEBCRATE_SERVICE_HTMLTOPDF" = true ]; then
   if docker container inspect htmltopdf >/dev/null 2> /dev/null; then
     writeLog "service htmltopdf exists"
   else
-    docker run -d --env-file=$(pwd)/.env --name htmltopdf \
-      --network="webcrate_network" --dns=172.31.0.100 \
+    docker create --env-file=$(pwd)/.env --name htmltopdf \
+      --network="webcrate_network" --dns=10.255.0.100 \
       --restart="unless-stopped" \
       -p "3001:3000" \
       ace5040/htmltopdf:latest > /dev/null
+    for project_name in "${PROJECTS_LIST[@]}"
+    do
+      docker network connect webcrate_network_$project_name htmltopdf
+    done
+    docker start htmltopdf
   fi
 fi
 
@@ -223,8 +272,8 @@ if [ "$WEBCRATE_SERVICE_SOLR" = true ]; then
   if docker container inspect solr >/dev/null 2> /dev/null; then
     writeLog "service solr exists"
   else
-    docker run -d --env-file=$(pwd)/.env --log-driver=none --name solr \
-      --network="webcrate_network" --dns=172.31.0.100 \
+    docker create --env-file=$(pwd)/.env --log-driver=none --name solr \
+      --network="webcrate_network" \
       --restart="unless-stopped" \
       --user "$uid:$gid" \
       -p "8983:8983" \
@@ -233,6 +282,11 @@ if [ "$WEBCRATE_SERVICE_SOLR" = true ]; then
       -v $(pwd)/var/solr/cores:/opt/solr/server/solr/mycores \
       --entrypoint docker-entrypoint.sh \
       solr:6 solr -m 4096m -force -f > /dev/null
+    for project_name in "${PROJECTS_LIST[@]}"
+    do
+      docker network connect webcrate_network_$project_name solr
+    done
+    docker start solr
   fi
 fi
 
@@ -242,7 +296,7 @@ if [ "$WEBCRATE_SERVICE_STATS" = true ]; then
     writeLog "service grafana exists"
   else
     docker run -d --env-file=$(pwd)/.env --log-driver=none --name grafana \
-      --network="webcrate_network" --dns=172.31.0.100 \
+      --network="webcrate_network" --dns=10.255.0.100 \
       --restart="unless-stopped" \
       --user "$uid:$gid" \
       -e GF_PATHS_DATA=/data \
@@ -259,14 +313,19 @@ if [ "$WEBCRATE_SERVICE_STATS" = true ]; then
   if docker container inspect influxdb >/dev/null 2> /dev/null; then
     writeLog "service influxdb exists"
   else
-    docker run -d --env-file=$(pwd)/.env --log-driver=none --name influxdb \
-      --network="webcrate_network" --dns=172.31.0.100 \
+    docker create --env-file=$(pwd)/.env --log-driver=none --name influxdb \
+      --network="webcrate_network" --dns=10.255.0.100 \
       --restart="unless-stopped" \
       --user "$uid:$gid" \
       -e INFLUXDB_DB=telegraf \
       -v /etc/localtime:/etc/localtime:ro \
       -v $(pwd)/var/influxdb:/var/lib/influxdb \
       influxdb:1.8-alpine > /dev/null
+    for project_name in "${PROJECTS_LIST[@]}"
+    do
+      docker network connect webcrate_network_$project_name influxdb
+    done
+    docker start influxdb
   fi
   if [ "$GRAFANA_PASS" != "" ]; then
     sleep 10; docker exec --user $uid:$gid grafana grafana-cli admin reset-admin-password "$GRAFANA_PASS"
@@ -283,7 +342,7 @@ if [ "$WEBCRATE_SERVICE_SYNAPSE" = true ]; then
     if [[ ! -f "./var/synapse/homeserver.yaml" ]] ; then
       docker run -it --rm --hostname synapse --name synapse \
         --user "$uid:$gid" \
-        --network="webcrate_network" --dns=172.31.0.100 \
+        --network="webcrate_network" --dns=10.255.0.100 \
         -v $(pwd)/var/synapse:/data \
         -e SYNAPSE_SERVER_NAME=$WEBCRATE_SYNAPSE_DOMAIN \
         -e UID=$uid \
@@ -329,7 +388,7 @@ if [ "$WEBCRATE_SERVICE_SYNAPSE" = true ]; then
     fi
 
     docker run -d --hostname synapse --name synapse \
-      --network="webcrate_network" --dns=172.31.0.100 \
+      --network="webcrate_network" --dns=10.255.0.100 \
       --restart="unless-stopped" \
       --user "$uid:$gid" \
       -e UID=$uid \
@@ -343,7 +402,7 @@ if [ "$WEBCRATE_SERVICE_SYNAPSE" = true ]; then
     writeLog "service turn exists"
   else
     docker run -d --hostname turn --name turn \
-      --network="webcrate_network" --dns=172.31.0.100 \
+      --network="webcrate_network" --dns=10.255.0.100 \
       --restart="unless-stopped" \
       -v $(pwd)/config/turn:/webcrate \
       -v webcrate_coturn:/var/lib/coturn \
@@ -362,7 +421,7 @@ if [ "$WEBCRATE_SERVICE_SYNAPSE" = true ]; then
     writeLog "service synapse-admin exists"
   else
     docker run -d --env-file=$(pwd)/.env --hostname synapse-admin --name synapse-admin \
-      --network="webcrate_network" --dns=172.31.0.100 \
+      --network="webcrate_network" --dns=10.255.0.100 \
       --restart="unless-stopped" \
       awesometechnologies/synapse-admin:latest
   fi
@@ -378,7 +437,7 @@ if docker container inspect webcrate-nginx >/dev/null 2> /dev/null; then
    writeLog "service webcrate-nginx exists"
 else
 
-  PROJECTS_LIST=""
+  PROJECTS_HOMES=""
   for SITES_PATH in ${WEBCRATE_PROJECTS_FOLDERS[@]}
   do
     if [[ $SITES_PATH == /* ]]; then
@@ -388,19 +447,18 @@ else
     fi
     for dir in $(find $SITES_ABSOLUTE_PATH -mindepth 1 -maxdepth 1 -type d); do
       project_name=`basename $dir`
-      PROJECTS_LIST="$PROJECTS_LIST-v $SITES_ABSOLUTE_PATH/$project_name:/home/$project_name "
+      PROJECTS_HOMES="$PROJECTS_HOMES-v $SITES_ABSOLUTE_PATH/$project_name:/home/$project_name "
     done
-
   done
 
-  docker run -d --env-file=$(pwd)/.env --hostname webcrate-nginx --name webcrate-nginx \
-    --network="webcrate_network" --dns=172.31.0.100 \
+  docker create --env-file=$(pwd)/.env --hostname webcrate-nginx --name webcrate-nginx \
+    --network="webcrate_network" \
     -p "80:1080" \
     -p "443:1443" \
     --restart="unless-stopped" \
     -e WEBCRATE_UID=$uid \
     -e WEBCRATE_GID=$gid \
-    $PROJECTS_LIST \
+    $PROJECTS_HOMES \
     -v /etc/localtime:/etc/localtime:ro \
     -v $(pwd)/projects.yml:/webcrate/projects.yml:ro \
     -v $(pwd)/var/letsencrypt:/webcrate/letsencrypt:ro \
@@ -416,6 +474,11 @@ else
     -v webcrate_auth_locations_configs:/webcrate/auth_locations_configs:ro \
     -v webcrate_nginx_configs:/etc/nginx/conf.d:ro \
     ace5040/webcrate-nginx:stable > /dev/null
+  for project_name in "${PROJECTS_LIST[@]}"
+  do
+    docker network connect webcrate_network_$project_name webcrate-nginx
+  done
+  docker start webcrate-nginx
 fi
 
 writeLog "Starting webcrate-tools container"
@@ -424,7 +487,7 @@ if docker container inspect webcrate-tools >/dev/null 2> /dev/null; then
   writeLog "service webcrate-tools exists"
 else
   docker run -d --env-file=$(pwd)/.env --hostname webcrate-tools --name webcrate-tools \
-    --network="webcrate_network" --dns=172.31.0.100 \
+    --network="webcrate_network" --dns=10.255.0.100 \
     --restart="unless-stopped" \
     -e WEBCRATE_UID=$uid \
     -e WEBCRATE_GID=$gid \

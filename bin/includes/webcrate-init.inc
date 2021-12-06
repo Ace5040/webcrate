@@ -82,5 +82,5 @@ writeLog "Create docker network if it not exists"
 if docker network inspect webcrate_network >/dev/null 2> /dev/null; then
   echo network webcrate_network exists
 else
-  docker network create --driver=bridge --subnet=172.31.0.0/16 webcrate_network > /dev/null
+  docker network create --driver=bridge --subnet=10.255.0.0/24 webcrate_network > /dev/null
 fi

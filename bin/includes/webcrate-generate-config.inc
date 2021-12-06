@@ -6,7 +6,7 @@ source ./bin/includes/webcrate-init.inc
 uid=$(id -u);
 gid=$(id -u);
 
-if [ "$WEBCRATE_MODE" == "DEV" ] && [ "$WEBCRATE_EXTERNAL_DNS_IP" != "" ]; then
+if [ "$WEBCRATE_EXTERNAL_DNS_IP" != "" ]; then
   writeLog "Generate resolv.conf for dnsmasq"
   rm -f ./var/dnsmasq/resolv.conf
   touch ./var/dnsmasq/resolv.conf

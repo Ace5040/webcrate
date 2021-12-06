@@ -11,7 +11,6 @@ with open('/webcrate/projects.yml', 'r') as f:
   projects = munchify(yaml.safe_load(f))
   f.close()
 
-WEBCRATE_MODE = os.environ.get('WEBCRATE_MODE', 'PRODUCTION')
 DOCKER_HOST_IP = os.environ.get('DOCKER_HOST_IP', '')
 WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
@@ -239,12 +238,11 @@ for projectname,project in projects.items():
           f.close()
         print(f'ssl config for {project.name} - generated')
 
-if WEBCRATE_MODE == "DEV":
-  with open(f'/webcrate-dnsmasq/config/hosts_nginx', 'w') as f:
-    for projectname,project in projects.items():
-      project.name = projectname
-      f.write(f'{DOCKER_HOST_IP} {" ".join(project.domains)}\n')
-    f.close()
+with open(f'/webcrate-dnsmasq/config/hosts_nginx', 'w') as f:
+  for projectname,project in projects.items():
+    project.name = projectname
+    f.write(f'{DOCKER_HOST_IP} {" ".join(project.domains)}\n')
+  f.close()
 
 os.system('sha256sum /webcrate/projects.yml | awk \'{print $1}\' | tr -d \'\n\' > /webcrate/meta/projects.checksum')
 

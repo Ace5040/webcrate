@@ -48,6 +48,11 @@ function Stop() {
   fi
   writeLog "Removing docker networks"
   docker network rm webcrate_network
+  writeLog "Remove dynamic neworks"
+  networks=$(docker network list -q --filter name=webcrate_network_)
+  if [ "$networks" != "" ]; then
+    docker network rm $networks
+  fi
   writeLog "Stopped"
 }
 

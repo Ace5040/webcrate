@@ -12,7 +12,7 @@ if [ $WEBCRATE_GID != '0' ]; then
   chgrp -R $WEBCRATE_GID /app > /dev/null 2>&1
 fi
 
-if [ "$WEBCRATE_APP_MODE" == "DEV" ]; then
+if [ "$WEBCRATE_APP_MODE" = "DEV" ]; then
   cd /app
   sudo -u app composer install --no-scripts
   cd /app/assets/admin

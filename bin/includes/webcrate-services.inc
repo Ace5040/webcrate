@@ -85,7 +85,7 @@ do
       fi
 
       if [ "$memcached" = "True" ]; then
-        if docker container inspect memcached_$project_name >/dev/null 2> /dev/null; then
+        if docker container inspect webcrate-memcached_$project_name >/dev/null 2> /dev/null; then
           writeLog "Container webcrate-memcached_${project_name} exists"
         else
           writeLog "Starting webcrate-memcached_${project_name} container"
@@ -146,7 +146,7 @@ if docker container inspect webcrate-admin >/dev/null 2> /dev/null; then
   writeLog "Container webcrate-admin exists"
 else
   writeLog "Starting webcrate-admin container"
-  if [ "$WEBCRATE_APP_MODE" == "DEV" ]; then WEBCRATE_APP_SRC=-v\ $(pwd)/src/admin/app:/app; else WEBCRATE_APP_SRC=""; fi
+  if [ "$WEBCRATE_APP_MODE" = "DEV" ]; then WEBCRATE_APP_SRC=-v\ $(pwd)/src/admin/app:/app; else WEBCRATE_APP_SRC=""; fi
   docker run -d --env-file=$(pwd)/.env --hostname webcrate-admin --name webcrate-admin \
     --network="webcrate_network" --dns=10.255.0.100 \
     --restart="unless-stopped" \
@@ -207,7 +207,7 @@ else
 fi
 
 
-if docker container inspect postgres >/dev/null 2> /dev/null; then
+if docker container inspect webcrate-postgres >/dev/null 2> /dev/null; then
   writeLog "Container webcrate-postgres exists"
 else
   writeLog "Starting webcrate-postgres container"

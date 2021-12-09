@@ -119,6 +119,7 @@ function Pull() {
   docker pull ace5040/webcrate-admin:stable
   docker pull ace5040/webcrate-tools:stable
   docker pull ace5040/webcrate-nginx:stable
+  docker pull ace5040/webcrate-dnsmasq:stable
   docker pull ace5040/doctohtml:stable
   docker pull ace5040/htmltopdf:latest
   docker pull memcached:1
@@ -142,6 +143,7 @@ function Push() {
     && [ "$IMAGE" != "tools" ]\
     && [ "$IMAGE" != "core" ]\
     && [ "$IMAGE" != "admin" ]\
+    && [ "$IMAGE" != "dnsmasq" ];\
     && [ "$IMAGE" != "ftp" ];\
   then
     echo "Unknown image $1. Please use one of: all, nginx, tools, core, admin"
@@ -165,6 +167,9 @@ function Push() {
   fi
   if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "admin" ]; then
     docker push ace5040/webcrate-admin:stable
+  fi
+  if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "dnsmasq" ]; then
+    docker push ace5040/webcrate-dnsmasq:stable
   fi
 }
 

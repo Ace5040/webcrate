@@ -8,38 +8,42 @@ RUN pacman --needed --noconfirm -Syu; \
     usermod -p "dev" dev; \
     echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo; \
     sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j6\"/g" /etc/makepkg.conf
-
-RUN useradd -m -s /bin/bash dev; \
-    usermod -p "dev" dev; \
-    echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo; \
-    sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j6\"/g" /etc/makepkg.conf
+WORKDIR /home/dev
 
 #install yay
-WORKDIR /home/dev/yay
-RUN chown dev:dev /home/dev/yay
 USER dev
-RUN git clone https://aur.archlinux.org/yay.git .; \
-    makepkg -scir --noconfirm; \
+RUN git clone https://aur.archlinux.org/yay.git; \
+    cd ./yay; makepkg -scir --noconfirm; \
     rm -rf /home/dev/yay
 
 #install aur packages
-RUN yay --gpgflags "--keyserver hkp://keyserver.ubuntu.com" --noeditmenu --nodiffmenu --noconfirm --mflags --nocheck -S docker-systemctl-replacement-git symfony-cli telegraf-bin \
-    php73 php73-fpm php73-intl php73-sqlite php73-gd php73-xsl php73-tidy php73-imagick php73-memcached php73-xdebug; \
+RUN yay --gpgflags "--keyserver hkp://keyserver.ubuntu.com" --noeditmenu --nodiffmenu --noconfirm --mflags --nocheck -S docker-systemctl-replacement-git symfony-cli telegraf-bin; \
     yes | yay -Scc; \
     rm -rf /home/dev/.cache
 
-USER root
+#install php 73
+RUN gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 2F7956BC5DA04B5D D66C9593118BCCB6; \
+    git clone https://aur.archlinux.org/php73.git; \
+    cd ./php73; \
+    wget https://gitweb.gentoo.org/repo/gentoo.git/plain/dev-lang/php/files/php-icu-70.patch; \
+    sed -i "s/'freetype.patch'/'freetype.patch' 'php-icu-70.patch'/g" PKGBUILD; \
+    sed -i "s/patch -p1 -i \${srcdir}\/freetype.patch/patch -p1 -i \${srcdir}\/freetype.patch; patch -p1 -i \${srcdir}\/php-icu-70.patch/g" PKGBUILD; \
+    makepkg -scir --nocheck --noconfirm --skipchecksums; \
+    rm -rf /home/dev/php73
+
+#install php73-imagick php73-memcached php73-xdebug
+RUN yay --gpgflags "--keyserver hkp://keyserver.ubuntu.com" --noeditmenu --nodiffmenu --noconfirm --mflags --nocheck -S php73-imagick php73-memcached php73-xdebug; \
+    yes | yay -Scc; \
+    rm -rf /home/dev/.cache
 
 #misc install and config
 USER root
 WORKDIR /root
-
 RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/latest/download/drush.phar; \
     chmod +x drush.phar; \
     mv drush.phar /usr/bin/drush; \
     gem install compass --norc; \
     pip install pyyml munch; \
-    pacman --noconfirm -R postfix; \
     pacman --needed --noconfirm -S exim; \
     yes | pacman -Scc; \
     chown root:root /bin/systemctl.py; \

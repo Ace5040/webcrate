@@ -42,13 +42,13 @@ function Stop() {
   writeLog "Stopping and removing webcrate containers"
   containers=$(docker ps -a -q --filter name=webcrate-)
   if [ "$containers" != "" ]; then
-    docker stop $containers
-    docker container rm $containers
+    docker stop $containers > /dev/null
+    docker container rm $containers > /dev/null
   fi
   writeLog "Removing networks"
   networks=$(docker network list -q --filter name=webcrate_)
   if [ "$networks" != "" ]; then
-    docker network rm $networks
+    docker network rm $networks > /dev/null
   fi
   writeLog "Stopped and removed"
 }

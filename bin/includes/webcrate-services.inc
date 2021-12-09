@@ -7,6 +7,23 @@ do
     while read -r line; do
       project=($line)
       project_name=${project[0]}
+      if docker network inspect webcrate_network_${project_name} >/dev/null 2> /dev/null; then
+        writeLog "Network webcrate_network_${project_name} exists"
+      else
+        writeLog "Create docker network for ${project_name}"
+        docker network create --driver=bridge --subnet=10.$PROJECT_COUNT.0.0/24 webcrate_network_${project_name} > /dev/null
+      fi
+      let PROJECT_COUNT+=1
+    done < "./var/meta/projects-$backend.list"
+  fi
+done
+PROJECT_COUNT=1
+for backend in "${backends[@]}"
+do
+  if [ -f ./var/meta/projects-$backend.list ]; then
+    while read -r line; do
+      project=($line)
+      project_name=${project[0]}
       image_name=${project[1]}
       container_name=${project[2]}
       ssh_port=${project[3]}
@@ -39,17 +56,8 @@ do
       done
 
       PHP_CONFIGS=""
-      PHP_POOL_TEMPLATES=""
-      if [ $backend == 'php56' ] || [ $backend == 'php73' ] || [ $backend == 'php74' ] || [ $backend == 'php' ]; then
-        PHP_POOL_TEMPLATES="-v $(pwd)/config/php-pool-templates:/webcrate/custom_templates:ro"
+      if [ "$backend" = "php56" ] || [ "$backend" = "php73" ] || [ "$backend" = "php74" ] || [ "$backend" = "php" ]; then
         PHP_CONFIGS="-v $(pwd)/config/php/$backend.ini:/etc/$backend/conf.d/user.ini:ro -v webcrate_${backend}_pools:/webcrate/pools"
-      fi
-
-      if docker network inspect webcrate_network_${project_name} >/dev/null 2> /dev/null; then
-        writeLog "Network webcrate_network_${project_name} exists"
-      else
-        writeLog "Create docker network for ${project_name}"
-        docker network create --driver=bridge --subnet=10.$PROJECT_COUNT.0.0/24 webcrate_network_${project_name} > /dev/null
       fi
 
       if docker container inspect $container_name >/dev/null 2> /dev/null; then
@@ -72,7 +80,6 @@ do
           -v $(pwd)/var/ssh:/webcrate/ssh_keys \
           -v $(pwd)/var/meta:/webcrate/meta \
           -v $(pwd)/config/exim/exim.conf:/etc/mail/exim.original.conf \
-          $PHP_POOL_TEMPLATES \
           $PHP_CONFIGS \
           ace5040/$image_name:stable > /dev/null
       fi
@@ -132,7 +139,7 @@ else
     docker network connect --ip=10.$PROJECT_COUNT.0.250 webcrate_network_$project_name webcrate-dnsmasq
     let PROJECT_COUNT+=1
   done
-  docker start webcrate-dnsmasq
+  docker start webcrate-dnsmasq > /dev/null
 fi
 
 if docker container inspect webcrate-admin >/dev/null 2> /dev/null; then
@@ -174,7 +181,7 @@ else
   do
     docker network connect webcrate_network_$project_name webcrate-mysql5
   done
-  docker start webcrate-mysql5
+  docker start webcrate-mysql5 > /dev/null
 fi
 
 
@@ -196,7 +203,7 @@ else
   do
     docker network connect webcrate_network_$project_name webcrate-mysql
   done
-  docker start webcrate-mysql
+  docker start webcrate-mysql > /dev/null
 fi
 
 
@@ -216,7 +223,7 @@ else
   do
     docker network connect webcrate_network_$project_name webcrate-postgres
   done
-  docker start webcrate-postgres
+  docker start webcrate-postgres > /dev/null
 fi
 
 
@@ -266,7 +273,7 @@ if [ "$WEBCRATE_SERVICE_DOCTOHTML" = true ]; then
     do
       docker network connect webcrate_network_$project_name webcrate-doctohtml
     done
-    docker start webcrate-doctohtml
+    docker start webcrate-doctohtml > /dev/null
   fi
 fi
 
@@ -284,7 +291,7 @@ if [ "$WEBCRATE_SERVICE_HTMLTOPDF" = true ]; then
     do
       docker network connect webcrate_network_$project_name webcrate-htmltopdf
     done
-    docker start webcrate-htmltopdf
+    docker start webcrate-htmltopdf > /dev/null
   fi
 fi
 
@@ -324,7 +331,7 @@ if [ "$WEBCRATE_SERVICE_STATS" = true ]; then
     do
       docker network connect webcrate_network_$project_name webcrate-influxdb
     done
-    docker start webcrate-influxdb
+    docker start webcrate-influxdb > /dev/null
   fi
   if [ "$GRAFANA_PASS" != "" ]; then
     sleep 10; docker exec --user $uid:$gid grafana grafana-cli admin reset-admin-password "$GRAFANA_PASS"
@@ -475,7 +482,7 @@ else
   do
     docker network connect webcrate_network_$project_name webcrate-nginx
   done
-  docker start webcrate-nginx
+  docker start webcrate-nginx > /dev/null
 fi
 
 if docker container inspect webcrate-ftp >/dev/null 2> /dev/null; then
@@ -540,6 +547,9 @@ else
     -v webcrate_options_configs:/webcrate/options_configs \
     -v webcrate_block_configs:/webcrate/block_configs \
     -v webcrate_auth_locations_configs:/webcrate/auth_locations_configs \
+    -v webcrate_php56_pools:/webcrate/php56-fpm.d \
+    -v webcrate_php73_pools:/webcrate/php73-fpm.d \
+    -v webcrate_php74_pools:/webcrate/php74-fpm.d \
     -v webcrate_php_pools:/webcrate/php-fpm.d \
     -v webcrate_dnsmasq_hosts:/webcrate-dnsmasq/config \
     ace5040/webcrate-tools:stable > /dev/null

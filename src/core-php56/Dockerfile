@@ -8,32 +8,44 @@ RUN pacman --needed --noconfirm -Syu; \
     usermod -p "dev" dev; \
     echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo; \
     sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j6\"/g" /etc/makepkg.conf
-
-RUN useradd -m -s /bin/bash dev; \
-    usermod -p "dev" dev; \
-    echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo; \
-    sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j6\"/g" /etc/makepkg.conf
+WORKDIR /home/dev
 
 #install yay
-WORKDIR /home/dev/yay
-RUN chown dev:dev /home/dev/yay
 USER dev
-RUN git clone https://aur.archlinux.org/yay.git .; \
-    makepkg -scir --noconfirm; \
+RUN git clone https://aur.archlinux.org/yay.git; \
+    cd ./yay; makepkg -scir --noconfirm; \
     rm -rf /home/dev/yay
 
 #install aur packages
-RUN yay --gpgflags "--keyserver hkp://keyserver.ubuntu.com" --noeditmenu --nodiffmenu --noconfirm --mflags --nocheck -S docker-systemctl-replacement-git symfony-cli telegraf-bin \
-    php56 php56-fpm php56-intl php56-sqlite php56-gd php56-xsl php56-tidy php56-imagick php56-memcached; \
+RUN yay --gpgflags "--keyserver hkp://keyserver.ubuntu.com" --noeditmenu --nodiffmenu --noconfirm --mflags --nocheck -S docker-systemctl-replacement-git symfony-cli telegraf-bin; \
     yes | yay -Scc; \
     rm -rf /home/dev/.cache
 
+#install php 56
+RUN sudo mkdir -p /opt/icu69; \
+    wget "https://github.com/unicode-org/icu/releases/download/release-69-1/icu4c-69_1-src.tgz"; \
+    tar zxvf ./icu4c-69_1-src.tgz; \
+    cd ./icu/source; \
+    ./configure --prefix="/opt/icu69" && make && sudo make install
+
+RUN gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys C2BF0BC433CFC8B3 FE857D9A90D90EC1; \
+    git clone https://aur.archlinux.org/php56.git; \
+    cd ./php56; \
+    sed -i "s/--with-icu-dir=\/usr/--with-icu-dir=\/opt\/icu69/g" PKGBUILD; \
+    makepkg -scir --nocheck --noconfirm; \
+    rm -rf /home/dev/php56
+
 #install php56-xdebug
-WORKDIR /home/dev/php56-xdebug
-RUN git clone https://aur.archlinux.org/php56-xdebug.git .; \
+RUN git clone https://aur.archlinux.org/php56-xdebug.git; \
+    cd ./php56-xdebug; \
     sed -i '31,38d;51d' PKGBUILD; \
     makepkg -scir --noconfirm; \
     rm -rf /home/dev/php56-xdebug
+
+#install php56-imagick php56-memcached
+RUN yay --gpgflags "--keyserver hkp://keyserver.ubuntu.com" --noeditmenu --nodiffmenu --noconfirm --mflags --nocheck -S php56-imagick php56-memcached; \
+    yes | yay -Scc; \
+    rm -rf /home/dev/.cache
 
 #misc install and config
 USER root
@@ -43,7 +55,6 @@ RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/down
     mv drush.phar /usr/bin/drush; \
     gem install compass --norc; \
     pip install pyyml munch; \
-    pacman --noconfirm -R msmtp-mta; \
     pacman --needed --noconfirm -S exim; \
     yes | pacman -Scc; \
     chown root:root /bin/systemctl.py; \
@@ -95,7 +106,11 @@ RUN wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-
     tar xzf ioncube_loaders_lin_x86-64.tar.gz; \
     cp ./ioncube/ioncube_loader_lin_5.6.so /usr/lib/php56/modules/ioncube_loader_lin.so; \
     rm -rf /root/ioncube; \
-    rm -f /root/ioncube_loaders_lin_x86-64.tar.gz
+    rm -f /root/ioncube_loaders_lin_x86-64.tar.gz; \
+    ln -s /opt/icu69/lib/libicui18n.so.69.1 /usr/lib/libicui18n.so.69; \
+    ln -s /opt/icu69/lib/libicuuc.so.69.1 /usr/lib/libicuuc.so.69; \
+    ln -s /opt/icu69/lib/libicudata.so.69.1 /usr/lib/libicudata.so.69; \
+    ln -s /opt/icu69/lib/libicuio.so.69.1 /usr/lib/libicuio.so.69
 
 WORKDIR /
 #copy scripts

@@ -9,11 +9,6 @@ RUN pacman --needed --noconfirm -Syu; \
     echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo; \
     sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j6\"/g" /etc/makepkg.conf
 
-RUN useradd -m -s /bin/bash dev; \
-    usermod -p "dev" dev; \
-    echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo; \
-    sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j6\"/g" /etc/makepkg.conf
-
 #install yay
 WORKDIR /home/dev/yay
 RUN chown dev:dev /home/dev/yay
@@ -27,8 +22,6 @@ RUN yay --gpgflags "--keyserver hkp://keyserver.ubuntu.com" --noeditmenu --nodif
     php74 php74-fpm php74-intl php74-sqlite php74-gd php74-xsl php74-tidy php74-imagick php74-memcached php74-xdebug; \
     yes | yay -Scc; \
     rm -rf /home/dev/.cache
-
-USER root
 
 #misc install and config
 USER root

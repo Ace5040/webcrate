@@ -430,11 +430,11 @@ for servicename,service in services.items():
     os.system(f'rm /webcrate/ssl_configs/{service.name}.conf')
     print(f'ssl config for {service.name} - removed')
 
+os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/letsencrypt')
+os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/letsencrypt-meta')
+os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/openssl')
+os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/secrets')
 #reload nginx config if needed
 if nginx_reload_needed:
-  os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/letsencrypt')
-  os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/letsencrypt-meta')
-  os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/openssl')
-  os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/secrets')
   print(f'changes detected - reloading nginx config')
   os.system(f'docker exec webcrate-nginx nginx -s reload')

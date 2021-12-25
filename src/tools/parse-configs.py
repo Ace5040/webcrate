@@ -140,15 +140,15 @@ for projectname,project in projects.items():
   if project.mysql_db:
     mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password="').read().strip().split("password=")[1][1:][:-1].replace("$", "\$")
     retries = 20
-    while retries > 0 and is_mysql_up('mysql', mysql_root_password) == 0:
+    while retries > 0 and is_mysql_up('webcrate-mysql', mysql_root_password) == 0:
       retries -= 1
       time.sleep(5)
     if retries > 0:
-      mysql_database_found = int(os.popen(f'mysql -u root -h mysql -p"{mysql_root_password}" -e "show databases like \'{project.name}\';" | grep "Database ({project.name})" | wc -l').read().strip())
+      mysql_database_found = int(os.popen(f'mysql -u root -h webcrate-mysql -p"{mysql_root_password}" -e "show databases like \'{project.name}\';" | grep "Database ({project.name})" | wc -l').read().strip())
       if mysql_database_found == 0:
         mysql_user_password=os.popen(f"/webcrate/pwgen.sh").read().strip()
         with open(f'/webcrate/secrets/{project.name}-mysql.txt', 'w') as f:
-          f.write(f'host=mysql\n')
+          f.write(f'host=webcrate-mysql\n')
           f.write(f'name={project.name}\n')
           f.write(f'user={project.name}\n')
           f.write(f'password={mysql_user_password}\n')
@@ -157,10 +157,10 @@ for projectname,project in projects.items():
         os.system(f'cp /webcrate/secrets/{project.name}-mysql.txt {project.folder}/mysql.txt')
         os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} {project.folder}/mysql.txt')
         os.system(f'chmod a-rwx,u+rw {project.folder}/mysql.txt')
-        os.system(f'mysql -u root -h mysql -p"{mysql_root_password}" -e "CREATE DATABASE \`{project.name}\`;"')
-        os.system(f"mysql -u root -h mysql -p\"{mysql_root_password}\" -e \"CREATE USER \`{project.name}\`@'%' IDENTIFIED BY \\\"{mysql_user_password}\\\";\"")
-        os.system(f"mysql -u root -h mysql -p\"{mysql_root_password}\" -e \"GRANT ALL PRIVILEGES ON \`{project.name}\` . * TO \`{project.name}\`@'%';\"")
-        os.system(f"mysql -u root -h mysql -p\"{mysql_root_password}\" -e \"FLUSH PRIVILEGES;\"")
+        os.system(f'mysql -u root -h webcrate-mysql -p"{mysql_root_password}" -e "CREATE DATABASE \`{project.name}\`;"')
+        os.system(f"mysql -u root -h webcrate-mysql -p\"{mysql_root_password}\" -e \"CREATE USER \`{project.name}\`@'%' IDENTIFIED BY \\\"{mysql_user_password}\\\";\"")
+        os.system(f"mysql -u root -h webcrate-mysql -p\"{mysql_root_password}\" -e \"GRANT ALL PRIVILEGES ON \`{project.name}\` . * TO \`{project.name}\`@'%';\"")
+        os.system(f"mysql -u root -h webcrate-mysql -p\"{mysql_root_password}\" -e \"FLUSH PRIVILEGES;\"")
         print(f'mysql user {project.name} and db created')
       else:
         print(f'mysql user {project.name} and db already exists')
@@ -168,15 +168,15 @@ for projectname,project in projects.items():
   if project.mysql5_db:
     mysql5_root_password = os.popen(f'cat /webcrate/secrets/mysql5.cnf | grep "password="').read().strip().split("password=")[1][1:][:-1].replace("$", "\$")
     retries = 20
-    while retries > 0 and is_mysql_up('mysql5', mysql5_root_password) == 0:
+    while retries > 0 and is_mysql_up('webcrate-mysql5', mysql5_root_password) == 0:
       retries -= 1
       time.sleep(5)
     if retries > 0:
-      mysql5_database_found = int(os.popen(f'mysql -u root -h mysql5 -p"{mysql5_root_password}" -e "show databases like \'{project.name}\';" | grep "Database ({project.name})" | wc -l').read().strip())
+      mysql5_database_found = int(os.popen(f'mysql -u root -h webcrate-mysql5 -p"{mysql5_root_password}" -e "show databases like \'{project.name}\';" | grep "Database ({project.name})" | wc -l').read().strip())
       if mysql5_database_found == 0:
         mysql5_user_password=os.popen(f"/webcrate/pwgen.sh").read().strip()
         with open(f'/webcrate/secrets/{project.name}-mysql5.txt', 'w') as f:
-          f.write(f'host=mysql\n')
+          f.write(f'host=webcrate-mysql\n')
           f.write(f'db={project.name}\n')
           f.write(f'user={project.name}\n')
           f.write(f'password={mysql5_user_password}\n')
@@ -185,10 +185,10 @@ for projectname,project in projects.items():
         os.system(f'cp /webcrate/secrets/{project.name}-mysql5.txt {project.folder}/mysql5.txt')
         os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} {project.folder}/mysql5.txt')
         os.system(f'chmod a-rwx,u+rw {project.folder}/mysql5.txt')
-        os.system(f'mysql -u root -h mysql5 -p"{mysql5_root_password}" -e "CREATE DATABASE \`{project.name}\`;"')
-        os.system(f"mysql -u root -h mysql5 -p\"{mysql5_root_password}\" -e \"CREATE USER \`{project.name}\`@'%' IDENTIFIED BY \\\"{mysql5_user_password}\\\";\"")
-        os.system(f"mysql -u root -h mysql5 -p\"{mysql5_root_password}\" -e \"GRANT ALL PRIVILEGES ON \`{project.name}\` . * TO \`{project.name}\`@'%';\"")
-        os.system(f"mysql -u root -h mysql5 -p\"{mysql5_root_password}\" -e \"FLUSH PRIVILEGES;\"")
+        os.system(f'mysql -u root -h webcrate-mysql5 -p"{mysql5_root_password}" -e "CREATE DATABASE \`{project.name}\`;"')
+        os.system(f"mysql -u root -h webcrate-mysql5 -p\"{mysql5_root_password}\" -e \"CREATE USER \`{project.name}\`@'%' IDENTIFIED BY \\\"{mysql5_user_password}\\\";\"")
+        os.system(f"mysql -u root -h webcrate-mysql5 -p\"{mysql5_root_password}\" -e \"GRANT ALL PRIVILEGES ON \`{project.name}\` . * TO \`{project.name}\`@'%';\"")
+        os.system(f"mysql -u root -h webcrate-mysql5 -p\"{mysql5_root_password}\" -e \"FLUSH PRIVILEGES;\"")
         print(f'mysql5 user {project.name} and db created')
       else:
         print(f'mysql5 user {project.name} and db already exists')
@@ -196,15 +196,15 @@ for projectname,project in projects.items():
   if project.postgresql_db:
     postgres_root_password = os.popen(f'cat /webcrate/secrets/postgres.cnf | grep "password="').read().strip().split("password=")[1][1:][:-1].replace("$", "\$")
     retries = 20
-    while retries > 0 and is_postgresql_up('postgres', postgres_root_password) != '1':
+    while retries > 0 and is_postgresql_up('webcrate-postgres', postgres_root_password) != '1':
       retries -= 1
       time.sleep(5)
     if retries > 0:
-      postgres_database_found = os.popen(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "SELECT 1 FROM pg_database WHERE datname=\'{project.name}\';"').read().strip()
+      postgres_database_found = os.popen(f'psql -d "host=webcrate-postgres user=postgres password={postgres_root_password}" -tAc "SELECT 1 FROM pg_database WHERE datname=\'{project.name}\';"').read().strip()
       if postgres_database_found != '1':
         postgres_user_password=os.popen(f"/webcrate/pwgen.sh").read().strip()
         with open(f'/webcrate/secrets/{project.name}-postgres.txt', 'w') as f:
-          f.write(f'host=postgres\n')
+          f.write(f'host=webcrate-postgres\n')
           f.write(f'db={project.name}\n')
           f.write(f'user={project.name}\n')
           f.write(f'password={postgres_user_password}\n')
@@ -213,9 +213,9 @@ for projectname,project in projects.items():
         os.system(f'cp /webcrate/secrets/{project.name}-postgres.txt {project.folder}/postgres.txt')
         os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} {project.folder}/postgres.txt')
         os.system(f'chmod a-rwx,u+rw {project.folder}/postgres.txt')
-        os.system(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "CREATE DATABASE {project.name};"')
-        os.system(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "CREATE USER {project.name} WITH ENCRYPTED PASSWORD \'{postgres_user_password}\';"')
-        os.system(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "GRANT ALL PRIVILEGES ON DATABASE {project.name} TO {project.name};"')
+        os.system(f'psql -d "host=webcrate-postgres user=postgres password={postgres_root_password}" -tAc "CREATE DATABASE {project.name};"')
+        os.system(f'psql -d "host=webcrate-postgres user=postgres password={postgres_root_password}" -tAc "CREATE USER {project.name} WITH ENCRYPTED PASSWORD \'{postgres_user_password}\';"')
+        os.system(f'psql -d "host=webcrate-postgres user=postgres password={postgres_root_password}" -tAc "GRANT ALL PRIVILEGES ON DATABASE {project.name} TO {project.name};"')
         print(f'postgresql user {project.name} and db created')
       else:
         print(f'postgresql user {project.name} and db already exists')
@@ -275,11 +275,11 @@ for servicename,service in services.items():
   if service.mysql_db:
     mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password="').read().strip().split("password=")[1][1:][:-1].replace("$", "\$")
     retries = 20
-    while retries > 0 and is_mysql_up('mysql', mysql_root_password) == 0:
+    while retries > 0 and is_mysql_up('webcrate-mysql', mysql_root_password) == 0:
       retries -= 1
       time.sleep(5)
     if retries > 0:
-      mysql_database_found = int(os.popen(f'mysql -u root -h mysql -p"{mysql_root_password}" -e "show databases like \'{service.name}\';" | grep "Database ({service.name})" | wc -l').read().strip())
+      mysql_database_found = int(os.popen(f'mysql -u root -h webcrate-mysql -p"{mysql_root_password}" -e "show databases like \'{service.name}\';" | grep "Database ({service.name})" | wc -l').read().strip())
       if mysql_database_found == 0:
         if os.path.isfile(f'/webcrate/secrets/{service.name}-service-mysql.txt'):
           with open(f'/webcrate/secrets/{service.name}-service-mysql.txt', 'r') as f:
@@ -291,16 +291,16 @@ for servicename,service in services.items():
         else:
           mysql_service_password=os.popen(f"/webcrate/pwgen.sh").read().strip()
           with open(f'/webcrate/secrets/{service.name}-service-mysql.txt', 'w') as f:
-            f.write(f'host=mysql\n')
+            f.write(f'host=webcrate-mysql\n')
             f.write(f'name={service.name}\n')
             f.write(f'user={service.name}\n')
             f.write(f'password={mysql_service_password}\n')
             f.close()
         os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/secrets/{service.name}-service-mysql.txt')
-        os.system(f'mysql -u root -h mysql -p"{mysql_root_password}" -e "CREATE DATABASE \`{service.name}\`;"')
-        os.system(f"mysql -u root -h mysql -p\"{mysql_root_password}\" -e \"CREATE USER \`{service.name}\`@'%' IDENTIFIED BY \\\"{mysql_service_password}\\\";\"")
-        os.system(f"mysql -u root -h mysql -p\"{mysql_root_password}\" -e \"GRANT ALL PRIVILEGES ON \`{service.name}\` . * TO \`{service.name}\`@'%';\"")
-        os.system(f"mysql -u root -h mysql -p\"{mysql_root_password}\" -e \"FLUSH PRIVILEGES;\"")
+        os.system(f'mysql -u root -h webcrate-mysql -p"{mysql_root_password}" -e "CREATE DATABASE \`{service.name}\`;"')
+        os.system(f"mysql -u root -h webcrate-mysql -p\"{mysql_root_password}\" -e \"CREATE USER \`{service.name}\`@'%' IDENTIFIED BY \\\"{mysql_service_password}\\\";\"")
+        os.system(f"mysql -u root -h webcrate-mysql -p\"{mysql_root_password}\" -e \"GRANT ALL PRIVILEGES ON \`{service.name}\` . * TO \`{service.name}\`@'%';\"")
+        os.system(f"mysql -u root -h webcrate-mysql -p\"{mysql_root_password}\" -e \"FLUSH PRIVILEGES;\"")
         print(f'mysql user {service.name} and db created')
       else:
         print(f'mysql user {service.name} and db already exists')
@@ -308,11 +308,11 @@ for servicename,service in services.items():
   if service.mysql5_db:
     mysql5_root_password = os.popen(f'cat /webcrate/secrets/mysql5.cnf | grep "password="').read().strip().split("password=")[1][1:][:-1].replace("$", "\$")
     retries = 20
-    while retries > 0 and is_mysql_up('mysql5', mysql5_root_password) == 0:
+    while retries > 0 and is_mysql_up('webcrate-mysql5', mysql5_root_password) == 0:
       retries -= 1
       time.sleep(5)
     if retries > 0:
-      mysql5_database_found = int(os.popen(f'mysql -u root -h mysql5 -p"{mysql5_root_password}" -e "show databases like \'{service.name}\';" | grep "Database ({service.name})" | wc -l').read().strip())
+      mysql5_database_found = int(os.popen(f'mysql -u root -h webcrate-mysql5 -p"{mysql5_root_password}" -e "show databases like \'{service.name}\';" | grep "Database ({service.name})" | wc -l').read().strip())
       if mysql5_database_found == 0:
         if os.path.isfile(f'/webcrate/secrets/{service.name}-service-mysql5.txt'):
           with open(f'/webcrate/secrets/{service.name}-service-mysql5.txt', 'r') as f:
@@ -324,22 +324,22 @@ for servicename,service in services.items():
         else:
           mysql5_service_password=os.popen(f"/webcrate/pwgen.sh").read().strip()
           with open(f'/webcrate/secrets/{service.name}-service-mysql5.txt', 'w') as f:
-            f.write(f'host=mysql5\n')
+            f.write(f'host=webcrate-mysql5\n')
             f.write(f'name={service.name}\n')
             f.write(f'user={service.name}\n')
             f.write(f'password={mysql_service_password}\n')
             f.close()
         with open(f'/webcrate/secrets/{service.name}-service-mysql5.txt', 'w') as f:
-          f.write(f'host=mysql5\n')
+          f.write(f'host=webcrate-mysql5\n')
           f.write(f'db={service.name}\n')
           f.write(f'user={service.name}\n')
           f.write(f'password={mysql5_service_password}\n')
           f.close()
         os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/secrets/{service.name}-service-mysql5.txt')
-        os.system(f'mysql -u root -h mysql5 -p"{mysql5_root_password}" -e "CREATE DATABASE \`{service.name}\`;"')
-        os.system(f"mysql -u root -h mysql5 -p\"{mysql5_root_password}\" -e \"CREATE USER \`{service.name}\`@'%' IDENTIFIED BY \\\"{mysql5_service_password}\\\";\"")
-        os.system(f"mysql -u root -h mysql5 -p\"{mysql5_root_password}\" -e \"GRANT ALL PRIVILEGES ON \`{service.name}\` . * TO \`{service.name}\`@'%';\"")
-        os.system(f"mysql -u root -h mysql5 -p\"{mysql5_root_password}\" -e \"FLUSH PRIVILEGES;\"")
+        os.system(f'mysql -u root -h webcrate-mysql5 -p"{mysql5_root_password}" -e "CREATE DATABASE \`{service.name}\`;"')
+        os.system(f"mysql -u root -h webcrate-mysql5 -p\"{mysql5_root_password}\" -e \"CREATE USER \`{service.name}\`@'%' IDENTIFIED BY \\\"{mysql5_service_password}\\\";\"")
+        os.system(f"mysql -u root -h webcrate-mysql5 -p\"{mysql5_root_password}\" -e \"GRANT ALL PRIVILEGES ON \`{service.name}\` . * TO \`{service.name}\`@'%';\"")
+        os.system(f"mysql -u root -h webcrate-mysql5 -p\"{mysql5_root_password}\" -e \"FLUSH PRIVILEGES;\"")
         print(f'mysql5 user {service.name} and db created')
       else:
         print(f'mysql5 user {service.name} and db already exists')
@@ -347,11 +347,11 @@ for servicename,service in services.items():
   if service.postgresql_db:
     postgres_root_password = os.popen(f'cat /webcrate/secrets/postgres.cnf | grep "password="').read().strip().split("password=")[1][1:][:-1].replace("$", "\$")
     retries = 20
-    while retries > 0 and is_postgresql_up('postgres', postgres_root_password) != '1':
+    while retries > 0 and is_postgresql_up('webcrate-postgres', postgres_root_password) != '1':
       retries -= 1
       time.sleep(5)
     if retries > 0:
-      postgres_database_found = os.popen(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "SELECT 1 FROM pg_database WHERE datname=\'{service.name}\';"').read().strip()
+      postgres_database_found = os.popen(f'psql -d "host=webcrate-postgres user=postgres password={postgres_root_password}" -tAc "SELECT 1 FROM pg_database WHERE datname=\'{service.name}\';"').read().strip()
       if postgres_database_found != '1':
         if os.path.isfile(f'/webcrate/secrets/{service.name}-service-postgres.txt'):
           with open(f'/webcrate/secrets/{service.name}-service-postgres.txt', 'r') as f:
@@ -363,21 +363,21 @@ for servicename,service in services.items():
         else:
           postgres_service_password=os.popen(f"/webcrate/pwgen.sh").read().strip()
           with open(f'/webcrate/secrets/{service.name}-service-postgres.txt', 'w') as f:
-            f.write(f'host=postgres\n')
+            f.write(f'host=webcrate-postgres\n')
             f.write(f'name={service.name}\n')
             f.write(f'user={service.name}\n')
             f.write(f'password={postgres_service_password}\n')
             f.close()
         with open(f'/webcrate/secrets/{service.name}-service-postgres.txt', 'w') as f:
-          f.write(f'host=postgres\n')
+          f.write(f'host=webcrate-postgres\n')
           f.write(f'db={service.name}\n')
           f.write(f'user={service.name}\n')
           f.write(f'password={postgres_service_password}\n')
           f.close()
         os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/secrets/{service.name}-service-postgres.txt')
-        os.system(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "CREATE DATABASE {service.name} ENCODING \'UTF8\' TEMPLATE template0 LC_COLLATE=\'C\' LC_CTYPE=\'C\';"')
-        os.system(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "CREATE USER {service.name} WITH ENCRYPTED PASSWORD \'{postgres_service_password}\';"')
-        os.system(f'psql -d "host=postgres user=postgres password={postgres_root_password}" -tAc "GRANT ALL PRIVILEGES ON DATABASE {service.name} TO {service.name};"')
+        os.system(f'psql -d "host=webcrate-postgres user=postgres password={postgres_root_password}" -tAc "CREATE DATABASE {service.name} ENCODING \'UTF8\' TEMPLATE template0 LC_COLLATE=\'C\' LC_CTYPE=\'C\';"')
+        os.system(f'psql -d "host=webcrate-postgres user=postgres password={postgres_root_password}" -tAc "CREATE USER {service.name} WITH ENCRYPTED PASSWORD \'{postgres_service_password}\';"')
+        os.system(f'psql -d "host=webcrate-postgres user=postgres password={postgres_root_password}" -tAc "GRANT ALL PRIVILEGES ON DATABASE {service.name} TO {service.name};"')
         print(f'postgresql user {service.name} and db created')
       else:
         print(f'postgresql user {service.name} and db already exists')

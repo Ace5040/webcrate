@@ -60,7 +60,7 @@ print(f'backup mysql db for webcrate-admin')
 mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
 os.system(f'mkdir -p /webcrate/backup/tmp')
 os.system(f'rm /webcrate/backup/tmp/*')
-os.system(f'mysqldump --single-transaction --max_allowed_packet=64M -h mysql -u root -p"{mysql_root_password}" --result-file "/webcrate/backup/tmp/webcrate.sql" "webcrate"')
+os.system(f'mysqldump --single-transaction --max_allowed_packet=64M -h webcrate-mysql -u root -p"{mysql_root_password}" --result-file "/webcrate/backup/tmp/webcrate.sql" "webcrate"')
 os.system(f'duplicity --verbosity notice '
   f'--no-encryption '
   f'--full-if-older-than {WEBCRATE_FULL_BACKUP_DAYS}D '
@@ -149,7 +149,7 @@ for projectname,project in projects.items():
       mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
       os.system(f'mkdir -p /webcrate/backup/tmp')
       os.system(f'rm /webcrate/backup/tmp/*')
-      os.system(f'mysqldump --single-transaction --max_allowed_packet=64M -h mysql -u root -p"{mysql_root_password}" --result-file "/webcrate/backup/tmp/{project.name}.sql" "{project.name}"')
+      os.system(f'mysqldump --single-transaction --max_allowed_packet=64M -h webcrate-mysql -u root -p"{mysql_root_password}" --result-file "/webcrate/backup/tmp/{project.name}.sql" "{project.name}"')
       os.system(f'duplicity --verbosity notice '
         f'--no-encryption '
         f'--full-if-older-than {WEBCRATE_FULL_BACKUP_DAYS}D '
@@ -176,7 +176,7 @@ for projectname,project in projects.items():
       mysql5_root_password = os.popen(f'cat /webcrate/secrets/mysql5.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
       os.system(f'mkdir -p /webcrate/backup/tmp')
       os.system(f'rm /webcrate/backup/tmp/*')
-      os.system(f'mysqldump --single-transaction --max_allowed_packet=64M -h mysql5 -u root -p"{mysql5_root_password}" --result-file "/webcrate/backup/tmp/{project.name}.sql" "{project.name}"')
+      os.system(f'mysqldump --single-transaction --max_allowed_packet=64M -h webcrate-mysql5 -u root -p"{mysql5_root_password}" --result-file "/webcrate/backup/tmp/{project.name}.sql" "{project.name}"')
       os.system(f'duplicity --verbosity notice '
         f'--no-encryption '
         f'--full-if-older-than {WEBCRATE_FULL_BACKUP_DAYS}D '
@@ -203,7 +203,7 @@ for projectname,project in projects.items():
       postgres_root_password = os.popen(f'cat /webcrate/secrets/postgres.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
       os.system(f'mkdir -p /webcrate/backup/tmp')
       os.system(f'rm /webcrate/backup/tmp/*')
-      os.system(f'PGPASSWORD={postgres_root_password} pg_dump -U postgres -h postgres {project.name} > /webcrate/backup/tmp/{project.name}.pgsql')
+      os.system(f'PGPASSWORD={postgres_root_password} pg_dump -U postgres -h webcrate-postgres {project.name} > /webcrate/backup/tmp/{project.name}.pgsql')
       os.system(f'duplicity --verbosity notice '
         f'--no-encryption '
         f'--full-if-older-than {WEBCRATE_FULL_BACKUP_DAYS}D '

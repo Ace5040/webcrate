@@ -52,6 +52,7 @@ for projectname,project in projects.items():
 
   if not os.path.isdir(f'{project.folder}'):
     os.system(f'mkdir -p {project.folder}')
+    os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} {project.folder}')
 
   if not os.path.isdir(f'{project.folder}/{project.root_folder}'):
     os.system(f'mkdir -p {project.folder}/{project.root_folder}')

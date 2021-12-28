@@ -16,7 +16,6 @@ max_allowed_packet = 512M
 #innodb_force_recovery = 1
 #performance_schema = off
 #default_authentication_plugin = mysql_native_password
-log_error = /var/log/mysql/mysql_error.log
 
 #
 # Remove leading # and set to the amount of RAM for the most important data

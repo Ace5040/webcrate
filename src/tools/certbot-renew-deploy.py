@@ -3,7 +3,7 @@
 import os
 from log import log
 
-log = log('/webcrate/meta/webcrate.log')
+log = log('/webcrate/log/app.log')
 
 log.write(f'Deploy new certificates')
 

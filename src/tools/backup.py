@@ -6,7 +6,7 @@ from munch import munchify
 from pprint import pprint
 from log import log
 
-log = log('/webcrate/meta/webcrate.log')
+log = log('/webcrate/log/app.log')
 log.write(f'Starting backup process')
 
 with open('/webcrate/projects.yml', 'r') as f:
@@ -38,7 +38,6 @@ os.system(f'duplicity --verbosity notice '
   f'--include {data_folder}/var/openssl '
   f'--include {data_folder}/var/secrets '
   f'--include {data_folder}/var/ssh '
-  f'--include {data_folder}/var/synapse '
   f'--include {data_folder}/.env '
   f'--include {data_folder}/projects.yml '
   f'--include {data_folder}/services.yml '

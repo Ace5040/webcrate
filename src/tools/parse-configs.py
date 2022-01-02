@@ -42,8 +42,8 @@ def load_openssl_conf(name):
 
 def load_domains(name):
   domains = ''
-  if os.path.isfile(f'/webcrate/letsencrypt-meta/domains-{name}.txt'):
-    with open(f'/webcrate/letsencrypt-meta/domains-{name}.txt', 'r') as f:
+  if os.path.isfile(f'/webcrate/letsencrypt/meta/domains-{name}.txt'):
+    with open(f'/webcrate/letsencrypt/meta/domains-{name}.txt', 'r') as f:
       domains = f.read()
       f.close()
   return domains
@@ -115,18 +115,18 @@ if conf_old != conf or not os.path.exists(f'/webcrate/openssl/default/privkey.pe
 if any_letsencrypt_https_configs_found:
 
   LETSENCRYPT_EMAIL_prev = ''
-  if os.path.isfile('/webcrate/letsencrypt-meta/letsencrypt-email.txt'):
-    with open('/webcrate/letsencrypt-meta/letsencrypt-email.txt', 'r') as f:
+  if os.path.isfile('/webcrate/letsencrypt/meta/letsencrypt-email.txt'):
+    with open('/webcrate/letsencrypt/meta/letsencrypt-email.txt', 'r') as f:
       LETSENCRYPT_EMAIL_prev = f.read()
       f.close()
   if LETSENCRYPT_EMAIL_prev != LETSENCRYPT_EMAIL:
-    os.system('rm -r /webcrate/letsencrypt/*')
-    os.system('rm -r /webcrate/letsencrypt-meta/*')
-    with open('/webcrate/letsencrypt-meta/letsencrypt-email.txt', 'w') as f:
+    os.system('rm -r /webcrate/letsencrypt/certs/*')
+    os.system('rm -r /webcrate/letsencrypt/meta/*')
+    with open('/webcrate/letsencrypt/meta/letsencrypt-email.txt', 'w') as f:
       f.write(LETSENCRYPT_EMAIL)
       f.close()
-  if not os.path.isdir('/webcrate/letsencrypt/accounts/acme-v02.api.letsencrypt.org/directory') or not os.listdir('/webcrate/letsencrypt/accounts/acme-v02.api.letsencrypt.org/directory'):
-    os.system(f'certbot register --config-dir /webcrate/letsencrypt --agree-tos --eff-email --email {LETSENCRYPT_EMAIL}')
+  if not os.path.isdir('/webcrate/letsencrypt/certs/accounts/acme-v02.api.letsencrypt.org/directory') or not os.listdir('/webcrate/letsencrypt/certs/accounts/acme-v02.api.letsencrypt.org/directory'):
+    os.system(f'certbot register --config-dir /webcrate/letsencrypt/certs --agree-tos --eff-email --email {LETSENCRYPT_EMAIL}')
 
 #parse projects
 for projectname,project in projects.items():
@@ -223,14 +223,14 @@ for projectname,project in projects.items():
   if project.https == 'letsencrypt':
     domains = ",".join(list(filter(lambda domain: domain.split('.')[-1] != 'test', project.domains)))
     domains_prev = load_domains(project.name)
-    if ( domains != domains_prev or not os.path.isdir(f'/webcrate/letsencrypt/live/{project.name}') or not os.listdir(f'/webcrate/letsencrypt/live/{project.name}')) and len(domains):
-      with open(f'/webcrate/letsencrypt-meta/domains-{project.name}.txt', 'w') as f:
+    if ( domains != domains_prev or not os.path.isdir(f'/webcrate/letsencrypt/certs/live/{project.name}') or not os.listdir(f'/webcrate/letsencrypt/certs/live/{project.name}')) and len(domains):
+      with open(f'/webcrate/letsencrypt/meta/domains-{project.name}.txt', 'w') as f:
         f.write(domains)
         f.close()
-      path = f'/webcrate/letsencrypt-meta/well-known/{project.name}'
+      path = f'/webcrate/letsencrypt/well-known/{project.name}'
       if not os.path.isdir(path):
         os.system(f'mkdir -p {path}')
-      os.system(f'certbot certonly --keep-until-expiring --renew-with-new-domains --allow-subset-of-names --config-dir /webcrate/letsencrypt --cert-name {project.name} --expand --webroot --webroot-path {path} -d {domains}')
+      os.system(f'certbot certonly --keep-until-expiring --renew-with-new-domains --allow-subset-of-names --config-dir /webcrate/letsencrypt/certs --cert-name {project.name} --expand --webroot --webroot-path {path} -d {domains}')
       print(f'certificate for {project.name} - generated')
       nginx_reload_needed = True
 
@@ -250,7 +250,7 @@ for projectname,project in projects.items():
       nginx_reload_needed = True
 
   if project.https == 'openssl' or project.https == 'letsencrypt':
-    if not os.path.exists(f'/webcrate/ssl_configs/{project.name}.conf'):
+    if not os.path.exists(f'/webcrate/nginx/ssl/{project.name}.conf'):
       if (os.path.exists(f'/webcrate/openssl/{project.name}/privkey.pem') and os.path.exists(f'/webcrate/openssl/{project.name}/fullchain.pem')) or (os.path.isdir(f'/webcrate/letsencrypt/live/{project.name}') and os.listdir(f'/webcrate/letsencrypt/live/{project.name}')):
         nginx_reload_needed = True
         with open(f'/webcrate/ssl.conf', 'r') as f:
@@ -258,14 +258,14 @@ for projectname,project in projects.items():
           f.close()
         conf = conf.replace('%type%', project.https)
         conf = conf.replace('%path%', f'{"live/" if project.https == "letsencrypt" else ""}{project.name}')
-        with open(f'/webcrate/ssl_configs/{project.name}.conf', 'w') as f:
+        with open(f'/webcrate/nginx/ssl/{project.name}.conf', 'w') as f:
           f.write(conf)
           f.close()
         print(f'ssl config for {project.name} - generated')
 
-  if project.https == 'disabled' and os.path.exists(f'/webcrate/ssl_configs/{project.name}.conf'):
+  if project.https == 'disabled' and os.path.exists(f'/webcrate/nginx/ssl/{project.name}.conf'):
     nginx_reload_needed = True
-    os.system(f'rm /webcrate/ssl_configs/{project.name}.conf')
+    os.system(f'rm /webcrate/nginx/ssl/{project.name}.conf')
     print(f'ssl config for {project.name} - removed')
 
 #parse services
@@ -385,14 +385,14 @@ for servicename,service in services.items():
   if service.https == 'letsencrypt':
     domain = service.domain if service.domain.split('.')[-1] != 'test' else ''
     domain_prev = load_domains(service.name)
-    if ( domain != domain_prev or not os.path.isdir(f'/webcrate/letsencrypt/live/{service.name}') or not os.listdir(f'/webcrate/letsencrypt/live/{service.name}')) and domain != '':
-      with open(f'/webcrate/letsencrypt-meta/domains-{service.name}.txt', 'w') as f:
+    if ( domain != domain_prev or not os.path.isdir(f'/webcrate/letsencrypt/certs/live/{service.name}') or not os.listdir(f'/webcrate/letsencrypt/certs/live/{service.name}')) and domain != '':
+      with open(f'/webcrate/letsencrypt/meta/domains-{service.name}.txt', 'w') as f:
         f.write(domain)
         f.close()
-      path = f'/webcrate/letsencrypt-meta/well-known/{service.name}'
+      path = f'/webcrate/letsencrypt/well-known/{service.name}'
       if not os.path.isdir(path):
         os.system(f'mkdir -p {path}')
-      os.system(f'certbot certonly --keep-until-expiring --renew-with-new-domains --allow-subset-of-names --config-dir /webcrate/letsencrypt --cert-name {service.name} --expand --webroot --webroot-path {path} -d {domain}')
+      os.system(f'certbot certonly --keep-until-expiring --renew-with-new-domains --allow-subset-of-names --config-dir /webcrate/letsencrypt/certs --cert-name {service.name} --expand --webroot --webroot-path {path} -d {domain}')
       print(f'certificate for {service.name} - generated')
       nginx_reload_needed = True
 
@@ -412,7 +412,7 @@ for servicename,service in services.items():
       nginx_reload_needed = True
 
   if service.https == 'openssl' or service.https == 'letsencrypt':
-    if not os.path.exists(f'/webcrate/ssl_configs/{service.name}.conf'):
+    if not os.path.exists(f'/webcrate/nginx/ssl/{service.name}.conf'):
       if (os.path.exists(f'/webcrate/openssl/{service.name}/privkey.pem') and os.path.exists(f'/webcrate/openssl/{service.name}/fullchain.pem')) or (os.path.isdir(f'/webcrate/letsencrypt/live/{service.name}') and os.listdir(f'/webcrate/letsencrypt/live/{service.name}')):
         nginx_reload_needed = True
         with open(f'/webcrate/ssl.conf', 'r') as f:
@@ -420,18 +420,18 @@ for servicename,service in services.items():
           f.close()
         conf = conf.replace('%type%', service.https)
         conf = conf.replace('%path%', f'{"live/" if service.https == "letsencrypt" else ""}{service.name}')
-        with open(f'/webcrate/ssl_configs/{service.name}.conf', 'w') as f:
+        with open(f'/webcrate/nginx/ssl/{service.name}.conf', 'w') as f:
           f.write(conf)
           f.close()
         print(f'ssl config for {service.name} - generated')
 
-  if service.https == 'disabled' and os.path.exists(f'/webcrate/ssl_configs/{service.name}.conf'):
+  if service.https == 'disabled' and os.path.exists(f'/webcrate/nginx/ssl/{service.name}.conf'):
     nginx_reload_needed = True
-    os.system(f'rm /webcrate/ssl_configs/{service.name}.conf')
+    os.system(f'rm /webcrate/nginx/ssl/{service.name}.conf')
     print(f'ssl config for {service.name} - removed')
 
+os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/nginx')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/letsencrypt')
-os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/letsencrypt-meta')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/openssl')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/secrets')
 #reload nginx config if needed

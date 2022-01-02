@@ -5,7 +5,7 @@ import yaml
 from munch import munchify
 from log import log
 
-log = log('/webcrate/meta/webcrate.log')
+log = log('/webcrate/log/app.log')
 
 with open('/webcrate/projects.yml', 'r') as f:
   projects = munchify(yaml.safe_load(f))

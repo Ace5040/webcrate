@@ -9,17 +9,15 @@ function generatePassword () {
 
 function initDbFolder () {
   if [[ ! -d "./var/$1" ]] || [ ! "$(ls -A ./var/$1)" ] ; then
-      mkdir -p "./var/$1"
-      if [[ ! -f "./var/secrets/$1.cnf" ]]; then
-        mkdir -p "./var/secrets"
-        echo $(generatePassword $1)
-      fi
+    if [[ ! -f "./var/secrets/$1.cnf" ]]; then
+      echo $(generatePassword $1)
+    fi
   fi
   echo ''
 }
 
 function writeLog () {
-  if [[ ! -d "./var/meta" ]] ; then mkdir -p "./var/meta"; fi
+  if [[ ! -d "./var/log" ]] ; then mkdir -p "./var/log"; fi
   echo "$(date -Is):: $1"
-  echo "$(date -Is):: $1" >> ./var/meta/webcrate.log
+  echo "$(date -Is):: $1" >> ./var/log/app.log
 }

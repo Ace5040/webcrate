@@ -3,10 +3,11 @@
 exec dnsmasq \
   --no-hosts \
   --log-facility=- \
-  --hostsdir=/dnsmasq-hosts \
+  --addn-hosts=/dnsmasq/hosts/hosts_nginx \
   --resolv-file=/dnsmasq/resolv.conf \
   --keep-in-foreground
 
+#--hostsdir=/dnsmasq/hosts \
 # --all-servers \
 # --strict-order \
 # --no-negcache \

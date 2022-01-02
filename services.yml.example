@@ -5,20 +5,6 @@ admin:
   mysql_db: yes
   mysql5_db: no
   postgresql_db: no
-synapse:
-  domain: synapse.test
-  port: 8008
-  https: openssl
-  mysql_db: no
-  mysql5_db: no
-  postgresql_db: yes
-synapse-admin:
-  domain: synapse-admin.test
-  port: 80
-  https: disabled
-  mysql_db: no
-  mysql5_db: no
-  postgresql_db: no
 phpmyadmin:
   domain: phpmyadmin.test
   port: 80
@@ -28,7 +14,7 @@ phpmyadmin:
   postgresql_db: no
 phppgadmin:
   domain: phppgadmin.test
-  port: 80
+  port: 8080
   https: disabled
   mysql_db: no
   mysql5_db: no

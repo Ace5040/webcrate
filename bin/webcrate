@@ -3,7 +3,7 @@ SCRIPT=`realpath $0`
 SCRIPTPATH=`dirname $SCRIPT`
 cd $SCRIPTPATH/..
 source .env
-source ./bin/includes/webcrate-functions.inc
+source ./bin/includes/functions.inc
 
 function Help() {
   echo ''
@@ -30,15 +30,15 @@ function Help() {
 }
 
 function Start() {
-  source ./bin/includes/webcrate-generate-config.inc
-  source ./bin/includes/webcrate-services.inc
+  source ./bin/includes/generate-config.inc
+  source ./bin/includes/services.inc
+  source ./bin/includes/projects.inc
+  writeLog "Start nginx container"
+  docker start webcrate-nginx > /dev/null
   writeLog "Started"
 }
 
 function Stop() {
-  writeLog "Stopping and removing containers"
-  docker stop synapse-admin synapse turn
-  docker container rm synapse-admin synapse turn
   writeLog "Stopping and removing webcrate containers"
   containers=$(docker ps -a -q --filter name=webcrate-)
   if [ "$containers" != "" ]; then
@@ -131,9 +131,6 @@ function Pull() {
   docker pull solr:6
   docker pull grafana/grafana:7.4.3
   docker pull influxdb:1.8-alpine
-  docker pull matrixdotorg/synapse:latest
-  docker pull awesometechnologies/synapse-admin:latest
-  docker pull instrumentisto/coturn:4
 }
 
 function Push() {

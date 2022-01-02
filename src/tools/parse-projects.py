@@ -18,18 +18,18 @@ UID_START_NUMBER = 100000
 SSH_PORT_START_NUMBER = 10000
 
 #cleanup configs
-os.system(f'rm /webcrate/ssl_configs/* > /dev/null 2>&1')
-os.system(f'rm /webcrate/redirect_configs/* > /dev/null 2>&1')
-os.system(f'rm /webcrate/options_configs/* > /dev/null 2>&1')
-os.system(f'rm /webcrate/block_configs/* > /dev/null 2>&1')
-os.system(f'rm /webcrate/auth_locations_configs/* > /dev/null 2>&1')
-os.system(f'rm /webcrate/gzip_configs/* > /dev/null 2>&1')
-os.system(f'rm /webcrate/nginx_configs/* > /dev/null 2>&1')
-os.system(f'rm /webcrate/php56-fpm.d/* > /dev/null 2>&1')
-os.system(f'rm /webcrate/php73-fpm.d/* > /dev/null 2>&1')
-os.system(f'rm /webcrate/php74-fpm.d/* > /dev/null 2>&1')
-os.system(f'rm /webcrate/php-fpm.d/* > /dev/null 2>&1')
-os.system(f'rm /webcrate-dnsmasq/config/* > /dev/null 2>&1')
+os.system(f'rm /webcrate/nginx/ssl/* > /dev/null 2>&1')
+os.system(f'rm /webcrate/nginx/redirect/* > /dev/null 2>&1')
+os.system(f'rm /webcrate/nginx/options/* > /dev/null 2>&1')
+os.system(f'rm /webcrate/nginx/block/* > /dev/null 2>&1')
+os.system(f'rm /webcrate/nginx/auth/* > /dev/null 2>&1')
+os.system(f'rm /webcrate/nginx/gzip/* > /dev/null 2>&1')
+os.system(f'rm /webcrate/nginx/projects/* > /dev/null 2>&1')
+os.system(f'rm /webcrate/php_pools/php56/* > /dev/null 2>&1')
+os.system(f'rm /webcrate/php_pools/php73/* > /dev/null 2>&1')
+os.system(f'rm /webcrate/php_pools/php74/* > /dev/null 2>&1')
+os.system(f'rm /webcrate/php_pools/php/* > /dev/null 2>&1')
+os.system(f'rm /webcrate/dnsmasq/hosts/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/meta/projects-php56.list > /dev/null 2>&1')
 os.system(f'rm /webcrate/meta/projects-php73.list > /dev/null 2>&1')
 os.system(f'rm /webcrate/meta/projects-php74.list > /dev/null 2>&1')
@@ -91,7 +91,7 @@ for projectname,project in projects.items():
         '73': '73',
         '74': '74'
       }.get(str(project.backend_version), '')
-      php_conf_path = f'/webcrate/php{php_path_prefix}-fpm.d/{project.name}.conf';
+      php_conf_path = f'/webcrate/php_pools/php{php_path_prefix}/{project.name}.conf';
 
       if os.path.isfile(f'/webcrate/custom_templates/{project.name}.conf'):
         os.system(f'cp -rf /webcrate/custom_templates/{project.name}.conf {php_conf_path}')
@@ -157,12 +157,13 @@ for projectname,project in projects.items():
       f'webcrate-core-{project.full_backend_version} '
       f'webcrate-core-{project.name} '
       f'{ssh_port} '
-      f'{domain}" '
-      f'{project.memcached}" '
-      f'{project.solr}" '
-      f'>> /webcrate/meta/projects-{project.full_backend_version}.list')
+      f'{domain} '
+      f'{project.password} '
+      f'{project.memcached} '
+      f'{project.solr}'
+      f'" >> /webcrate/meta/projects-{project.full_backend_version}.list')
 
-    with open(f'/webcrate/nginx_configs/{project.name}.conf', 'w') as f:
+    with open(f'/webcrate/nginx/projects/{project.name}.conf', 'w') as f:
       f.write(conf)
       f.close()
 
@@ -173,33 +174,33 @@ for projectname,project in projects.items():
         conf = f.read()
         f.close()
       conf = conf.replace('%main-domain%', project.domains[0])
-      with open(f'/webcrate/redirect_configs/{project.name}.conf', 'w') as f:
+      with open(f'/webcrate/nginx/redirect/{project.name}.conf', 'w') as f:
         f.write(conf)
         f.close()
       print(f'redirect config for {project.name} - generated')
 
     if project.nginx_options:
-      with open(f'/webcrate/options_configs/{project.name}.conf', 'w') as f:
+      with open(f'/webcrate/nginx/options/{project.name}.conf', 'w') as f:
         for name, value in project.nginx_options.items():
           f.write(f'{name} {value};\n')
         f.close()
       print(f'nginx options config for {project.name} - generated')
 
     if project.nginx_block:
-      with open(f'/webcrate/block_configs/{project.name}.conf', 'w') as f:
+      with open(f'/webcrate/nginx/block/{project.name}.conf', 'w') as f:
         f.write(project.nginx_block)
         f.close()
       print(f'nginx block config for {project.name} - generated')
 
     if project.auth_locations:
-      with open(f'/webcrate/auth_locations_configs/{project.name}.conf', 'w') as f:
+      with open(f'/webcrate/nginx/auth/{project.name}.conf', 'w') as f:
         index = 0
         for auth_location in project.auth_locations:
           index = index + 1
           f.write(
             f'location ~ {auth_location.path}/.* {{\n'
             f'  auth_basic "{auth_location.title}";\n'
-            f'  auth_basic_user_file /webcrate/auth_locations_configs/{project.name}-{index}.password;\n'
+            f'  auth_basic_user_file /webcrate/nginx/auth/{project.name}-{index}.password;\n'
             f'  location ~ \.php$ {{\n'
             f'    fastcgi_split_path_info ^(.+?\.php)(|/.*)$;\n'
             f'    fastcgi_pass webcrate-core-{project.name}:{ str(port) };\n'
@@ -210,7 +211,7 @@ for projectname,project in projects.items():
             f'  }}\n'
             f'}}\n\n'
           )
-          with open(f'/webcrate/auth_locations_configs/{project.name}-{index}.password', 'w') as pf:
+          with open(f'/webcrate/nginx/auth/{project.name}-{index}.password', 'w') as pf:
             pf.write(f'{auth_location.user}:{auth_location.password}\n')
             pf.close()
         f.close()
@@ -220,19 +221,19 @@ for projectname,project in projects.items():
       with open(f'/webcrate/gzip.conf', 'r') as f:
         conf = f.read()
         f.close()
-      with open(f'/webcrate/gzip_configs/{project.name}.conf', 'w') as f:
+      with open(f'/webcrate/nginx/gzip/{project.name}.conf', 'w') as f:
         f.write(conf)
         f.close()
       print(f'gzip config for {project.name} - generated')
 
     if project.https == 'letsencrypt':
-      if os.path.isdir(f'/webcrate/letsencrypt/live/{project.name}'):
+      if os.path.isdir(f'/webcrate/letsencrypt/certs/live/{project.name}'):
         with open(f'/webcrate/ssl.conf', 'r') as f:
           conf = f.read()
           f.close()
         conf = conf.replace('%type%', 'letsencrypt')
         conf = conf.replace('%path%', f'live/{project.name}')
-        with open(f'/webcrate/ssl_configs/{project.name}.conf', 'w') as f:
+        with open(f'/webcrate/nginx/ssl/{project.name}.conf', 'w') as f:
           f.write(conf)
           f.close()
         print(f'ssl config for {project.name} - generated')
@@ -244,12 +245,12 @@ for projectname,project in projects.items():
           f.close()
         conf = conf.replace('%type%', 'openssl')
         conf = conf.replace('%path%', f'{project.name}')
-        with open(f'/webcrate/ssl_configs/{project.name}.conf', 'w') as f:
+        with open(f'/webcrate/nginx/ssl/{project.name}.conf', 'w') as f:
           f.write(conf)
           f.close()
         print(f'ssl config for {project.name} - generated')
 
-with open(f'/webcrate-dnsmasq/config/hosts_nginx', 'w') as f:
+with open(f'/webcrate/dnsmasq/hosts/hosts_nginx', 'w') as f:
   for projectname,project in projects.items():
     project.name = projectname
     f.write(f'{DOCKER_HOST_IP} {" ".join(project.domains)}\n')
@@ -258,15 +259,7 @@ with open(f'/webcrate-dnsmasq/config/hosts_nginx', 'w') as f:
 os.system('sha256sum /webcrate/projects.yml | awk \'{print $1}\' | tr -d \'\n\' > /webcrate/meta/projects.checksum')
 
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/meta')
-os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/ssl_configs')
-os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/options_configs')
-os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/auth_locations_configs')
-os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/redirect_configs')
-os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/gzip_configs')
-os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/nginx_configs')
-os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/php56-fpm.d')
-os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/php73-fpm.d')
-os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/php74-fpm.d')
-os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/php-fpm.d')
-os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate-dnsmasq/config')
+os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/nginx')
+os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/php_pools')
+os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/dnsmasq')
 sys.stdout.flush()

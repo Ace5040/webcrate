@@ -206,7 +206,7 @@ else
     -v $(pwd)/projects.yml:/webcrate/projects.yml:ro \
     -v $(pwd)/var/letsencrypt:/webcrate/letsencrypt:ro \
     -v $(pwd)/var/openssl:/webcrate/openssl:ro \
-    -v $(pwd)/var/logs/nginx:/webcrate/logs \
+    -v $(pwd)/var/log/nginx:/webcrate/log \
     -v $(pwd)/config/nginx:/webcrate/nginx-config:ro \
     -v $(pwd)/var/nginx:/webcrate/nginx:ro \
     -v $(pwd)/var/nginx/projects:/etc/nginx/conf.d:ro \

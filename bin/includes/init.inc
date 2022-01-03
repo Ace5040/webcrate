@@ -38,6 +38,8 @@ do
   if [[ ! -d "./var/$i" ]] ; then mkdir -p "./var/$i"; fi
   chmod -R a-rw,u+rw ./var/$i
 done
+chmod a-rw,u+rw ./var/dnsmasq
+chmod a-rw,o+r,u+rw ./var/dnsmasq/hosts
 
 MYSQL_ROOT_PASS=$(initDbFolder 'mysql')
 MYSQL5_ROOT_PASS=$(initDbFolder 'mysql5')

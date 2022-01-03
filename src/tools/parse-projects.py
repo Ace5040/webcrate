@@ -250,11 +250,9 @@ for projectname,project in projects.items():
           f.close()
         print(f'ssl config for {project.name} - generated')
 
-with open(f'/webcrate/dnsmasq/hosts/hosts_nginx', 'w') as f:
-  for projectname,project in projects.items():
-    project.name = projectname
-    f.write(f'{DOCKER_HOST_IP} {" ".join(project.domains)}\n')
-  f.close()
+    with open(f'/webcrate/dnsmasq/hosts/{project.name}.hosts', 'w') as f:
+      f.write(f'{DOCKER_HOST_IP} {" ".join(project.domains)}\n')
+      f.close()
 
 os.system('sha256sum /webcrate/projects.yml | awk \'{print $1}\' | tr -d \'\n\' > /webcrate/meta/projects.checksum')
 

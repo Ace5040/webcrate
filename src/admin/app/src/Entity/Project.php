@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Yaml\Yaml;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -320,10 +321,47 @@ class Project
         return $this;
     }
 
+    public function getActualSha256Sum()
+    {
+        $projectName = $this->getName();
+        $path = "/webcrate/meta/${projectName}.checksum";
+        if ( file_exists($path) ) {
+            return file_get_contents($path);
+        } else {
+            return '';
+        }
+    }
+
+    public function getSha256Sum()
+    {
+        $ymlData = $this->getYmlData();
+        return hash('sha256', $ymlData);
+    }
+
+    public function getYmlData()
+    {
+        $yamlData = Yaml::dump($this->toObject(), 3, 2, Yaml::DUMP_OBJECT_AS_MAP);
+        $yamlData = json_encode($this->toObject(), JSON_UNESCAPED_SLASHES);
+        $projectName = $this->getName();
+        $path = "/webcrate/meta/${projectName}.ymldata";
+        file_put_contents($path, $yamlData);
+        return $yamlData;
+    }
+
+    public function isActual()
+    {
+        return $this->getSha256Sum() === $this->getActualSha256Sum();
+    }
+
     public function toObject(): object
     {
+        $ftps = $this->getKeyedFtps();
+        $nginxOptions = $this->getKeyedNginxOptions();
+        $authLocations = $this->getKeyedAuthLocations();
+        $duplicityFilters = $this->getKeyedDuplicityFilters();
         return  (object)[
             'uid' => (int)$this->uid,
+            'active' => $this->getActive(),
             'password' => $this->password,
             'domains' => $this->domains,
             'volume' => (int)$this->volume,
@@ -336,10 +374,10 @@ class Project
             'gunicorn_app_module' => !empty($this->gunicornAppModule) ? $this->gunicornAppModule : '',
             'redirect' => (bool)$this->redirect,
             'gzip' => (bool)$this->gzip,
-            'nginx_options' => $this->getKeyedNginxOptions(),
-            'auth_locations' => $this->getKeyedAuthLocations(),
-            'ftps' => $this->getKeyedFtps(),
-            'duplicity_filters' => $this->getKeyedDuplicityFilters(),
+            'nginx_options' => !empty($nginxOptions)? $nginxOptions : (object)[],
+            'auth_locations' => !empty($authLocations) ? $authLocations : (object)[],
+            'ftps' => !empty($ftps) ? $ftps : (object)[],
+            'duplicity_filters' => !empty($duplicityFilters) ? $duplicityFilters : (object)[],
             'memcached' => (bool)$this->Memcached,
             'solr' => (bool)$this->Solr,
             'mysql_db' => (bool)$this->mysql,

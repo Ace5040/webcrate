@@ -22,9 +22,12 @@ docker run --rm --env-file=$(pwd)/.env --entrypoint /webcrate/parse-projects.py 
   -e WEBCRATE_UID=$uid \
   -e WEBCRATE_GID=$gid \
   $PROJECTS_VOLUMES \
+  -e WEBCRATE_PROJECTS_FOLDERS=$( IFS=:; printf '%s' "${WEBCRATE_PROJECTS_FOLDERS[*]}" ) \
+  -e WEBCRATE_PWD=$(pwd) \
   -v $(pwd)/projects.yml:/webcrate/projects.yml:ro \
   -v $(pwd)/var/log:/webcrate/log \
   -v $(pwd)/var/meta:/webcrate/meta \
+  -v $(pwd)/var/crontabs:/webcrate/crontabs \
   -v $(pwd)/config/nginx-templates:/webcrate/nginx-templates:ro \
   -v $(pwd)/config/php-pool-templates:/webcrate/custom_templates:ro \
   -v $(pwd)/var/letsencrypt:/webcrate/letsencrypt:ro \
@@ -38,6 +41,7 @@ writeLog "Parse projects ended"
 writeLog "Parse services started"
 
 docker run --rm --env-file=$(pwd)/.env --entrypoint /webcrate/parse-services.py \
+  -e WEBCRATE_PWD=$(pwd) \
   -v $(pwd)/services.yml:/webcrate/services.yml:ro \
   -v $(pwd)/config/nginx-templates:/webcrate/nginx-templates:ro \
   -v $(pwd)/var/letsencrypt:/webcrate/letsencrypt:ro \

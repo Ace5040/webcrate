@@ -51,13 +51,8 @@ class AdminController extends AbstractController
             $item->expiresAfter(604800);
             return $this->getVersions();
         });
-        $sha256sum = $this->getSha256Sum();
-        $actual_sha256sum = $this->getActualSha256Sum();
         return $this->render('admin/index.html.twig', [
             'controller_name' => 'AdminController',
-            'actual' => $sha256sum === $actual_sha256sum,
-            'currentsha256' => $sha256sum,
-            'actualsha256' => $actual_sha256sum,
             'soft' => $soft
         ]);
     }
@@ -87,12 +82,9 @@ class AdminController extends AbstractController
     public function projects()
     {
         $list = $this->repository->getListForTable();
-        $sha256sum = $this->getSha256Sum();
-        $actual_sha256sum = $this->getActualSha256Sum();
         return $this->render('admin/projects.html.twig', [
             'controller_name' => 'AdminController',
             'projects' => $list,
-            'actual' => $sha256sum === $actual_sha256sum
         ]);
     }
 
@@ -120,13 +112,13 @@ class AdminController extends AbstractController
                 return $this->redirectToRoute('admin-projects');
             }
         }
-        $sha256sum = $this->getSha256Sum();
-        $actual_sha256sum = $this->getActualSha256Sum();
+        // $sha256sum = $this->getSha256Sum();
+        // $actual_sha256sum = $this->getActualSha256Sum();
         return $this->render(
             'admin/project.html.twig',
             [
                 'form' => $form->createView(),
-                'actual' => $sha256sum === $actual_sha256sum
+                // 'actual' => $sha256sum === $actual_sha256sum
             ]
         );
     }
@@ -154,13 +146,10 @@ class AdminController extends AbstractController
                 return $this->redirectToRoute('admin-projects');
             }
         }
-        $sha256sum = $this->getSha256Sum();
-        $actual_sha256sum = $this->getActualSha256Sum();
         return $this->render(
             'admin/project.html.twig',
             [
-                'form' => $form->createView(),
-                'actual' => $sha256sum === $actual_sha256sum
+                'form' => $form->createView()
             ]
         );
     }
@@ -174,13 +163,11 @@ class AdminController extends AbstractController
         $this->manager->remove($project);
         $this->manager->flush();
         $list = $this->repository->getListForTable();
-        $sha256sum = $this->updateProjectsYaml();
-        $actual_sha256sum = $this->getActualSha256Sum();
+        $this->updateProjectsYaml();
         $response = new JsonResponse();
         $response->setData([
             'result' => 'ok',
-            'projects' => $list,
-            'actual' => $sha256sum === $actual_sha256sum
+            'projects' => $list
         ]);
         return $response;
     }
@@ -194,13 +181,38 @@ class AdminController extends AbstractController
         $project->setActive(true);
         $this->manager->flush();
         $list = $this->repository->getListForTable();
-        $sha256sum = $this->updateProjectsYaml();
-        $actual_sha256sum = $this->getActualSha256Sum();
+        $this->updateProjectsYaml();
         $response = new JsonResponse();
         $response->setData([
             'result' => 'ok',
-            'projects' => $list,
-            'actual' => $sha256sum === $actual_sha256sum
+            'projects' => $list
+        ]);
+        return $response;
+    }
+
+    /**
+     * @Route("/admin/project/{uid}/reload", name="admin-project-reload")
+     */
+    public function projectReload($uid)
+    {
+        $project = $this->repository->loadByUid($uid);
+        if ( !$project->isActual() ) {
+            try {
+                $name = $project->getName();
+                $process = Process::fromShellCommandline("sudo /webcrate/reload.py ${name}");
+                $process->run();
+                if (!$process->isSuccessful()) {
+                    throw new ProcessFailedException($process);
+                }
+            } catch (IOExceptionInterface $exception) {
+                $debug['error'] = $exception->getMessage();
+            }
+        }
+        $list = $this->repository->getListForTable();
+        $response = new JsonResponse();
+        $response->setData([
+            'result' => 'ok',
+            'projects' => $list
         ]);
         return $response;
     }
@@ -210,9 +222,9 @@ class AdminController extends AbstractController
      */
     public function projectReloadConfig()
     {
-        $sha256sum = $this->getSha256Sum();
-        $actual_sha256sum = $this->getActualSha256Sum();
-        if ( $sha256sum !== $actual_sha256sum ) {
+        // $sha256sum = $this->getSha256Sum();
+        // $actual_sha256sum = $this->getActualSha256Sum();
+        // if ( $sha256sum !== $actual_sha256sum ) {
             try {
                 $process = Process::fromShellCommandline('sudo /webcrate/reload.py');
                 $process->run();
@@ -222,13 +234,13 @@ class AdminController extends AbstractController
             } catch (IOExceptionInterface $exception) {
                 $debug['error'] = $exception->getMessage();
             }
-            $sha256sum = $this->getSha256Sum();
-            $actual_sha256sum = $this->getActualSha256Sum();
-        }
+            // $sha256sum = $this->getSha256Sum();
+            // $actual_sha256sum = $this->getActualSha256Sum();
+        // }
         $response = new JsonResponse();
         $response->setData([
             'result' => 'ok',
-            'actual' => $sha256sum === $actual_sha256sum
+            // 'actual' => $sha256sum === $actual_sha256sum
         ]);
         return $response;
     }
@@ -242,13 +254,11 @@ class AdminController extends AbstractController
         $project->setActive(false);
         $this->manager->flush();
         $list = $this->repository->getListForTable();
-        $sha256sum = $this->updateProjectsYaml();
-        $actual_sha256sum = $this->getActualSha256Sum();
+        $this->updateProjectsYaml();
         $response = new JsonResponse();
         $response->setData([
             'result' => 'ok',
-            'projects' => $list,
-            'actual' => $sha256sum === $actual_sha256sum
+            'projects' => $list
         ]);
         return $response;
     }
@@ -345,14 +355,12 @@ class AdminController extends AbstractController
             }
         }
         $this->manager->flush();
-        $sha256sum = $this->updateProjectsYaml();
-        $actual_sha256sum = $this->getActualSha256Sum();
+        $this->updateProjectsYaml();
         $list = $this->repository->getListForTable();
         $response = new JsonResponse();
         $response->setData([
             'result' => 'ok',
-            'projects' => $list,
-            'actual' => $sha256sum === $actual_sha256sum
+            'projects' => $list
         ]);
 
         return $response;
@@ -361,7 +369,6 @@ class AdminController extends AbstractController
     public function updateProjectsYaml()
     {
         $ymlData = $this->getYmlData();
-        $sha256sum = hash('sha256', $ymlData);
         try {
             $new_file_path = "/webcrate/updated-projects.yml";
             file_put_contents($new_file_path, $ymlData);
@@ -373,8 +380,6 @@ class AdminController extends AbstractController
         } catch (IOExceptionInterface $exception) {
             $debug['error'] = $exception->getMessage();
         }
-
-        return $sha256sum;
     }
 
     public function getYmlData()
@@ -382,26 +387,11 @@ class AdminController extends AbstractController
         $projects = $this->repository->getList();
         $projects_list = (object)[];
         foreach ( $projects as $project ) {
-            if ( $project->getActive() ) {
-                $projectname = $project->getName();
-                $projects_list->$projectname = $project->toObject();
-            }
+            $projectname = $project->getName();
+            $projects_list->$projectname = $project->toObject();
         }
         $ymlData = Yaml::dump($projects_list, 3, 2, Yaml::DUMP_OBJECT_AS_MAP);
         return $ymlData;
-    }
-
-    public function getSha256Sum()
-    {
-        $ymlData = $this->getYmlData();
-        $sha256sum = hash('sha256', $ymlData);
-        return $sha256sum;
-    }
-
-    public function getActualSha256Sum()
-    {
-        $sha256sum = file_get_contents('/webcrate/meta/projects.checksum');
-        return $sha256sum;
     }
 
 }

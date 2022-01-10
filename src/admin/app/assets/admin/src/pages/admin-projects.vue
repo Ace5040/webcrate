@@ -15,24 +15,23 @@
       </b-form>
     </div>
     <b-button href="/admin/project/add" variant="primary">Create new project</b-button>
-    <b-button v-if="!actual" variant="warning" :class="{disabled: applying}" @click="onApplyChanges">Apply Changes</b-button>
     <b-spinner v-if="applying" variant="success" label="Applying..."></b-spinner>
   </div>
   <div class="projects-table position-relative">
     <b-table v-if="projects.length" sort-by="uid" striped hover :items="projects" :fields="fields">
-        <template v-slot:cell(name)="row">
-          {{ row.value }}
-        </template>
-        <template v-slot:cell(active)="row">
-          <b-badge v-if="row.value" variant="success">active</b-badge>
-          <b-badge v-if="!row.value" variant="warning">inactive</b-badge>
-        </template>
-        <template v-slot:cell(actions)="row">
-          <b-button variant="primary" size="sm" :href="'/admin/project/'+row.item.uid">Edit</b-button>
-          <b-button variant="danger" size="sm" @click="onDelete(row.item.uid)">Delete</b-button>
-          <b-button v-if="row.item.active == false" variant="success" size="sm" @click="onActivate(row.item.uid)">Activate</b-button>
-          <b-button v-if="row.item.active" size="sm" @click="onDeactivate(row.item.uid)">Dectivate</b-button>
-        </template>
+      <template v-slot:cell(name)="row">
+        {{ row.value }}
+      </template>
+      <template v-slot:cell(active)="row">
+        <b-badge :variant="row.value?'success':'warning'">{{row.value?'active':'inactive'}}</b-badge>
+      </template>
+      <template v-slot:cell(actions)="row">
+        <b-button variant="primary" size="sm" :href="'/admin/project/'+row.item.uid">Edit</b-button>
+        <b-button variant="danger" size="sm" @click="onDelete(row.item.uid)">Delete</b-button>
+        <b-button v-if="row.item.active == false" variant="success" size="sm" @click="onActivate(row.item.uid)">Activate</b-button>
+        <b-button v-if="row.item.active" size="sm" @click="onDeactivate(row.item.uid)">Deactivate</b-button>
+        <b-button v-if="!row.item.actual" size="sm" variant="warning" @click="onApply(row.item)">Apply <b-spinner v-if="row.item.applying" small label="Applying..."></b-spinner></b-button>
+      </template>
     </b-table>
     <b-overlay :show="busy" no-wrap @shown="onShown" @hidden="onHidden">
       <template #overlay>
@@ -192,15 +191,15 @@ export default {
 
     },
 
-    onApplyChanges() {
-      if ( !this.applying ) {
-        this.applying = true
-        this.axios.get('/admin/reload-config')
+    onApply(item) {
+      if ( !item.applying ) {
+        item.applying = true
+        this.axios.get('/admin/project/' + item.uid + '/reload')
         .then((response) => {
             let data = response.data
             if (data && data.result === 'ok') {
-              this.applying = false
-              this.$store.commit('setActual', data.actual)
+              item.applying = false
+              this.projects = data.projects
             }
         })
         .catch(() => {

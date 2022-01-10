@@ -3,7 +3,7 @@ writeLog "Initialization..."
 writeLog "Creating var folders"
 var_folders=(\
   "secrets"\
-  "meta"\
+  "meta/projects"\
   "dnsmasq/hosts"\
   "crontabs"\
   "influxdb"\

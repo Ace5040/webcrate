@@ -253,12 +253,15 @@ else
     --restart="unless-stopped" \
     -e WEBCRATE_UID=$uid \
     -e WEBCRATE_GID=$gid \
+    -e WEBCRATE_PWD=$(pwd) \
     $PROJECTS_VOLUMES \
+    -e WEBCRATE_PROJECTS_FOLDERS=$( IFS=:; printf '%s' "${WEBCRATE_PROJECTS_FOLDERS[*]}" ) \
     -v $DOCKER_SOCKET:/var/run/docker.sock \
     -v /etc/localtime:/etc/localtime:ro \
     -v $(pwd):/webcrate-readonly:ro \
     -v $(pwd)/var/log:/webcrate/log \
     -v $(pwd)/var/meta:/webcrate/meta \
+    -v $(pwd)/var/crontabs:/webcrate/crontabs \
     -v $(pwd)/projects.yml:/webcrate/projects.yml:ro \
     -v $(pwd)/services.yml:/webcrate/services.yml:ro \
     -v $(pwd)/var/letsencrypt:/webcrate/letsencrypt \

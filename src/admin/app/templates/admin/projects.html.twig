@@ -15,7 +15,6 @@
     <script>
         var user = '{{ app.user ? app.user.email : '' }}';
         var projects = {{ projects|json_encode(constant('JSON_UNESCAPED_UNICODE'))|raw }};
-        var actual = {{ actual|json_encode(constant('JSON_UNESCAPED_UNICODE'))|raw }};
     </script>
     <div id="header"></div>
     <div id="app"></div>

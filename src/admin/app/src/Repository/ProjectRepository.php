@@ -47,12 +47,16 @@ class ProjectRepository extends ServiceEntityRepository
         foreach ($projects as $project) {
             $item = (object)[];
             $item->name = $project->getName();
+            $item->applying = false;
             $item->uid = $project->getUid();
             $item->backend = $project->getBackend()->getName() . ' ' . $project->getBackend()->getVersion();
             $item->backup = $project->getBackup() ? 'yes' : 'no';
             $item->https = $project->getHttps()->getName();
             $item->active = !empty($project->getActive());
             $item->template = !empty($project->getNginxTemplate()) ? $project->getNginxTemplate()->getLabel() : 'default';
+            $item->actual = $project->isActual();
+            $item->actualSha256 = $project->getActualSha256Sum();
+            $item->sha256 = $project->getSha256Sum();
             $list[] = $item;
         }
         return $list;

@@ -130,7 +130,6 @@ for projectname,project in projects.items():
         f'--archive-dir /webcrate/duplicity/.duplicity '
         f'--log-file /webcrate/duplicity/duplicity.log '
         f'--exclude "{project.folder}/var/solr/cores/**/data" '
-        f'--include {project.folder}/var/solr/cores '
         f'"{project.folder}/var/solr/cores" '
         f'"{REMOTE_BACKUP_URI}/projects/{project.name}/solr-cores"'
       )

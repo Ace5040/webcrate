@@ -28,7 +28,7 @@ os.system(f'rm /webcrate/dnsmasq/hosts/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/meta/projects/* > /dev/null 2>&1')
 
 for projectname,project in projects.items():
-  os.system(f'/webcrate/project-config.py {projectname}')
+  os.system(f'/webcrate/scripts/project-config.py {projectname}')
 
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/meta')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/nginx')

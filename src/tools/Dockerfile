@@ -34,20 +34,13 @@ RUN chown root:root /bin/systemctl.py; \
 RUN systemctl enable cronie;
 WORKDIR /
 RUN mkdir -p /webcrate;
-COPY ["ssl.conf", "gzip.conf", "gzip.conf", "redirect.conf", "project-config.py", "project-start.py", "parse-configs.py", "parse-projects.py", "parse-services.py", "certbot-renew.py", "certbot-renew-deploy.py", "backup.py", "log.py", "/webcrate/"]
+COPY ["pwgen.sh", "ssl.conf", "gzip.conf", "redirect.conf", "/webcrate/"]
 COPY ["entrypoint.sh", "/"]
-COPY ["pwgen.sh", "/webcrate/"]
-RUN chmod a+x /webcrate/parse-configs.py; \
-    chmod a+x /webcrate/parse-projects.py; \
-    chmod a+x /webcrate/project-config.py; \
-    chmod a+x /webcrate/project-start.py; \
-    chmod a+x /webcrate/parse-services.py; \
-    chmod a+x /webcrate/certbot-renew.py; \
-    chmod a+x /webcrate/certbot-renew-deploy.py; \
-    chmod a+x /webcrate/backup.py; \
+COPY scripts /webcrate/scripts
+RUN chmod -R u+x /webcrate/scripts; \
     chmod u+x /webcrate/pwgen.sh; \
     chmod u+x /entrypoint.sh
-RUN echo '0 6 * * 1 root . /docker.env; /webcrate/certbot-renew.py' > /etc/cron.d/certbot-renew
-RUN echo '0 3 * * * root . /docker.env; /webcrate/backup.py' > /etc/cron.d/backup
+RUN echo '0 6 * * 1 root . /docker.env; /webcrate/scripts/certbot-renew.py' > /etc/cron.d/certbot-renew
+RUN echo '0 3 * * * root . /docker.env; /webcrate/scripts/backup.py' > /etc/cron.d/backup
 WORKDIR /webcrate
 CMD ["/entrypoint.sh"]

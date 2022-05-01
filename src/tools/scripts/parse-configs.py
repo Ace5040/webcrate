@@ -132,6 +132,10 @@ if any_letsencrypt_https_configs_found:
 for projectname,project in projects.items():
   project.name = projectname
 
+for projectname,project in projects.items():
+  os.system(f'/webcrate/scripts/project-config.py {projectname}')
+
+
   if hasattr(project, 'volume'):
     project.folder = f'/projects{(project.volume + 1) if project.volume else ""}/{project.name}'
   else:

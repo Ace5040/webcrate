@@ -28,7 +28,7 @@ if any_letsencrypt_https_configs_found:
   WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
   print(f'reload nginx config after certificates renewal')
   log.write(f'Run certbot renew script')
-  os.system(f'certbot renew --config-dir /webcrate/letsencrypt/certs --deploy-hook /webcrate/certbot-renew-deploy.py');
+  os.system(f'certbot renew --config-dir /webcrate/letsencrypt/certs --deploy-hook /webcrate/scripts/certbot-renew-deploy.py');
   os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/letsencrypt')
 else:
   log.write(f'No letsencrypt configs found')

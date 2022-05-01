@@ -17,7 +17,7 @@ import './styles/admin.scss'
 const store = new Vuex.Store({
     state: {
       user: user,
-      actual: actual
+      actual: true
     },
     mutations: {
       setActual(state, value) {

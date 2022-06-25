@@ -36,6 +36,10 @@ class Backends extends Fixture
                 'name' => 'gunicorn',
                 'version' => 'latest'
             ],
+            [
+                'name' => 'symfony',
+                'version' => 'latest'
+            ],
         ];
 
         foreach ($backends as $backend) {

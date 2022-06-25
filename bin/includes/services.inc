@@ -196,8 +196,8 @@ else
   done
   docker create --env-file=$(pwd)/.env --hostname webcrate-nginx --name webcrate-nginx \
     --network="webcrate_network" \
-    -p "80:1080" \
-    -p "443:1443" \
+    -p "${WEBCRATE_APP_HTTP_PORT}:1080" \
+    -p "${WEBCRATE_APP_HTTPS_PORT}:1443" \
     --restart="unless-stopped" \
     -e WEBCRATE_UID=$uid \
     -e WEBCRATE_GID=$gid \

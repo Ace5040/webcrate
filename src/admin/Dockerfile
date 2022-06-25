@@ -46,7 +46,6 @@ RUN systemctl enable php-fpm;
 RUN systemctl enable nginx;
 RUN sed -i "s/.*open_basedir =.*/open_basedir =/g" /etc/php/php.ini; \
     sed -i "s/; extension = imagick/extension=imagick/g" /etc/php/conf.d/imagick.ini;
-RUN yes | sudo symfony self-update
 COPY pool.conf /etc/php/php-fpm.d/pool.conf
 COPY php.ini /etc/php/conf.d/user.ini
 RUN echo 'app ALL=(ALL) NOPASSWD: /webcrate/versions.py' | EDITOR='tee -a' visudo

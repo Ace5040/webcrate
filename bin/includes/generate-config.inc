@@ -18,7 +18,7 @@ if [ "$WEBCRATE_EXTERNAL_DNS_IP" != "" ]; then
 fi
 
 writeLog "Parse projects started"
-docker run --rm --env-file=$(pwd)/.env --entrypoint /webcrate/scripts/parse-projects.py \
+docker run --rm --env-file=$(pwd)/.env --entrypoint /webcrate/scripts/parse-projects.py --name webcrate-tools \
   -e WEBCRATE_UID=$uid \
   -e WEBCRATE_GID=$gid \
   $PROJECTS_VOLUMES \
@@ -40,7 +40,7 @@ docker run --rm --env-file=$(pwd)/.env --entrypoint /webcrate/scripts/parse-proj
 writeLog "Parse projects ended"
 writeLog "Parse services started"
 
-docker run --rm --env-file=$(pwd)/.env --entrypoint /webcrate/scripts/parse-services.py \
+docker run --rm --env-file=$(pwd)/.env --entrypoint /webcrate/scripts/parse-services.py --name webcrate-tools \
   -e WEBCRATE_PWD=$(pwd) \
   -v $(pwd)/services.yml:/webcrate/services.yml:ro \
   -v $(pwd)/config/nginx-templates:/webcrate/nginx-templates:ro \

@@ -13,11 +13,14 @@ def load_openssl_conf(name):
 
 def load_domains(name):
   domains = ''
-  if os.path.isfile(f'/webcrate/letsencrypt/meta/domains-{name}.txt'):
-    with open(f'/webcrate/letsencrypt/meta/domains-{name}.txt', 'r') as f:
+  if os.path.isfile(f'/webcrate/letsencrypt-meta/domains-{name}.txt'):
+    with open(f'/webcrate/letsencrypt-meta/domains-{name}.txt', 'r') as f:
       domains = f.read()
       f.close()
   return domains
+
+def is_nginx_up():
+  return "nginx is running" in os.popen(f'docker exec webcrate-nginx service nginx status').read().strip()
 
 def is_mysql_up(host, password):
   return int(os.popen(f'mysql -u root -h {host} -p"{password}" -e "show databases;" | grep "Database" | wc -l').read().strip())
@@ -99,7 +102,7 @@ def init_openssl_root_conf():
       f.close()
     os.system(f'openssl req -x509 -new -nodes -key /webcrate/secrets/rootCA.key -sha256 -days 825 -out /webcrate/secrets/rootCA.crt -config /webcrate/secrets/openssl-root.cnf')
   if openssl_root_conf_changed:
-    os.system(f'rm -r /webcrate/openssl/default')
+    os.system(f'rm -r /webcrate/openssl/*')
   conf = genereate_openssl_conf('default', ['default'])
   conf_old = load_openssl_conf('default')
   if conf_old != conf or not os.path.exists(f'/webcrate/openssl/default/privkey.pem') or not os.path.exists(f'/webcrate/openssl/default/fullchain.pem'):
@@ -130,15 +133,15 @@ def init_letsencrypt_conf():
       any_letsencrypt_https_configs_found = True
   if any_letsencrypt_https_configs_found:
     LETSENCRYPT_EMAIL_prev = ''
-    if os.path.isfile('/webcrate/letsencrypt/meta/letsencrypt-email.txt'):
-      with open('/webcrate/letsencrypt/meta/letsencrypt-email.txt', 'r') as f:
+    if os.path.isfile('/webcrate/letsencrypt-meta/letsencrypt-email.txt'):
+      with open('/webcrate/letsencrypt-meta/letsencrypt-email.txt', 'r') as f:
         LETSENCRYPT_EMAIL_prev = f.read()
         f.close()
     if LETSENCRYPT_EMAIL_prev != LETSENCRYPT_EMAIL:
-      os.system('rm -r /webcrate/letsencrypt/certs/*')
-      os.system('rm -r /webcrate/letsencrypt/meta/*')
-      with open('/webcrate/letsencrypt/meta/letsencrypt-email.txt', 'w') as f:
+      os.system('rm -r /webcrate/letsencrypt/*')
+      os.system('rm -r /webcrate/letsencrypt-meta/*')
+      with open('/webcrate/letsencrypt-meta/letsencrypt-email.txt', 'w') as f:
         f.write(LETSENCRYPT_EMAIL)
         f.close()
-    if not os.path.isdir('/webcrate/letsencrypt/certs/accounts/acme-v02.api.letsencrypt.org/directory') or not os.listdir('/webcrate/letsencrypt/certs/accounts/acme-v02.api.letsencrypt.org/directory'):
-      os.system(f'certbot register --config-dir /webcrate/letsencrypt/certs --agree-tos --eff-email --email {LETSENCRYPT_EMAIL}')
+    if not os.path.isdir('/webcrate/letsencrypt/accounts/acme-v02.api.letsencrypt.org/directory') or not os.listdir('/webcrate/letsencrypt/accounts/acme-v02.api.letsencrypt.org/directory'):
+      os.system(f'certbot register --config-dir /webcrate/letsencrypt --agree-tos --eff-email --email {LETSENCRYPT_EMAIL}')

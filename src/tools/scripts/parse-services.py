@@ -44,7 +44,7 @@ for servicename, service in services.items():
     print(f'{service.name} config - generated')
 
     if service.https == 'letsencrypt':
-      if os.path.isdir(f'/webcrate/letsencrypt/certs/live/{service.name}'):
+      if os.path.isdir(f'/webcrate/letsencrypt/live/{service.name}'):
         with open(f'/webcrate/ssl.conf', 'r') as f:
           conf = f.read()
           f.close()

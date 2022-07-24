@@ -39,6 +39,10 @@ class NginxTemplates extends Fixture
             [
                 'name' => 'opencart',
                 'label' => 'Opencart'
+            ],
+            [
+                'name' => 'symfony',
+                'label' => 'Symfony'
             ]
         ];
 

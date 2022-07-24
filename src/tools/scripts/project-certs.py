@@ -5,6 +5,7 @@ import sys
 import yaml
 from munch import munchify
 import helpers
+import time
 
 WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
@@ -28,20 +29,23 @@ for projectname,project in projects.items():
       if project.https == 'letsencrypt':
         domains = ",".join(list(filter(lambda domain: domain.split('.')[-1] != 'test', project.domains)))
         domains_prev = helpers.load_domains(project.name)
-        if ( domains != domains_prev or not os.path.isdir(f'/webcrate/letsencrypt/certs/live/{project.name}') or not os.listdir(f'/webcrate/letsencrypt/certs/live/{project.name}')) and len(domains):
-          with open(f'/webcrate/letsencrypt/meta/domains-{project.name}.txt', 'w') as f:
-            f.write(domains)
-            f.close()
-          path = f'/webcrate/letsencrypt/well-known/{project.name}'
-          if not os.path.isdir(path):
-            os.system(f'mkdir -p {path}')
-          os.system(f'certbot certonly --keep-until-expiring --renew-with-new-domains --allow-subset-of-names --config-dir /webcrate/letsencrypt/certs --cert-name {project.name} --expand --webroot --webroot-path {path} -d {domains}')
-          print(f'certificate for {project.name} - generated')
-          nginx_reload_needed = True
+        if ( domains != domains_prev or not os.path.isdir(f'/webcrate/letsencrypt/live/{project.name}') or not os.listdir(f'/webcrate/letsencrypt/live/{project.name}')) and len(domains):
+          retries = 10
+          while retries > 0 and not helpers.is_nginx_up():
+            retries -= 1
+            time.sleep(5)
+          if retries > 0:
+            with open(f'/webcrate/letsencrypt-meta/domains-{project.name}.txt', 'w') as f:
+              f.write(domains)
+              f.close()
+            path = f'/webcrate/letsencrypt-meta/well-known/{project.name}'
+            if not os.path.isdir(path):
+              os.system(f'mkdir -p {path}')
+            os.system(f'certbot certonly --keep-until-expiring --renew-with-new-domains --allow-subset-of-names --config-dir /webcrate/letsencrypt --cert-name {project.name} --expand --webroot --webroot-path {path} -d {domains}')
+            print(f'certificate for {project.name} - generated')
+            nginx_reload_needed = True
 
       if project.https == 'openssl':
-        if openssl_root_conf_changed:
-          os.system(f'rm -r /webcrate/openssl/{project.name}')
         conf = helpers.genereate_openssl_conf(project.name, project.domains)
         conf_old = helpers.load_openssl_conf(project.name)
         if conf_old != conf or not os.path.exists(f'/webcrate/openssl/{project.name}/privkey.pem') or not os.path.exists(f'/webcrate/openssl/{project.name}/fullchain.pem'):
@@ -75,6 +79,7 @@ for projectname,project in projects.items():
 
       os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/nginx')
       os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/letsencrypt')
+      os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/letsencrypt-meta')
       os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/openssl')
       os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/secrets')
 

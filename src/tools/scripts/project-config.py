@@ -231,7 +231,7 @@ for projectname,project in projects.items():
           print(f'gzip config for {project.name} - generated')
 
         if project.https == 'letsencrypt':
-          if os.path.isdir(f'/webcrate/letsencrypt/certs/live/{project.name}'):
+          if os.path.isdir(f'/webcrate/letsencrypt/live/{project.name}'):
             with open(f'/webcrate/ssl.conf', 'r') as f:
               conf = f.read()
               f.close()

@@ -14,9 +14,8 @@ var_folders=(\
   "duplicity"\
   "ssh"\
   "openssl"\
-  "letsencrypt/certs"\
-  "letsencrypt/well-known"\
-  "letsencrypt/meta"\
+  "letsencrypt"\
+  "letsencrypt-meta"\
   "log/nginx"\
   "log/duplicity"\
   "log/graphana"\

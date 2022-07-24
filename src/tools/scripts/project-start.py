@@ -33,11 +33,6 @@ for projectname,project in projects.items():
     else:
       log.write(f'Create docker network for {projectname}')
       os.system(f'docker network create --driver=bridge --subnet=10.{net_num}.0/24 webcrate_network_{projectname} > /dev/null')
-
-for projectname,project in projects.items():
-  if PROJECT_NAME == projectname:
-    net_num = project.uid - UID_START_NUMBER
-    net_num = f'{net_num // 256}.{net_num % 256}'
     project_name = projectname
     backend = f'{project.backend}' + ( '' if ( project.backend_version == 'latest' or ( project.backend == 'php' and project.backend_version == '80') ) else f'{project.backend_version}' )
     container_name = f'webcrate-core-{projectname}'

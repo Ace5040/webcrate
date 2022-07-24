@@ -205,6 +205,7 @@ else
     -v /etc/localtime:/etc/localtime:ro \
     -v $(pwd)/projects.yml:/webcrate/projects.yml:ro \
     -v $(pwd)/var/letsencrypt:/webcrate/letsencrypt:ro \
+    -v $(pwd)/var/letsencrypt-meta:/webcrate/letsencrypt-meta:ro \
     -v $(pwd)/var/openssl:/webcrate/openssl:ro \
     -v $(pwd)/var/log/nginx:/webcrate/log \
     -v $(pwd)/config/nginx:/webcrate/nginx-config:ro \
@@ -265,6 +266,7 @@ else
     -v $(pwd)/projects.yml:/webcrate/projects.yml:ro \
     -v $(pwd)/services.yml:/webcrate/services.yml:ro \
     -v $(pwd)/var/letsencrypt:/webcrate/letsencrypt \
+    -v $(pwd)/var/letsencrypt-meta:/webcrate/letsencrypt-meta \
     -v $(pwd)/var/openssl:/webcrate/openssl \
     -v $(pwd)/var/backup:/webcrate/backup \
     -v $(pwd)/var/secrets:/webcrate/secrets \

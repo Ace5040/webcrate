@@ -24,7 +24,6 @@ if helpers.init_letsencrypt_conf():
 
 #parse projects
 for projectname,project in projects.items():
-  os.system(f'/webcrate/scripts/project-config.py {projectname}')
   os.system(f'/webcrate/scripts/project-dbs.py {projectname}')
   if os.popen(f'/webcrate/scripts/project-certs.py {projectname}').read().strip() == 'True':
     nginx_reload_needed = True
@@ -146,20 +145,18 @@ for servicename,service in services.items():
   if service.https == 'letsencrypt':
     domain = service.domain if service.domain.split('.')[-1] != 'test' else ''
     domain_prev = helpers.load_domains(service.name)
-    if ( domain != domain_prev or not os.path.isdir(f'/webcrate/letsencrypt/certs/live/{service.name}') or not os.listdir(f'/webcrate/letsencrypt/certs/live/{service.name}')) and domain != '':
-      with open(f'/webcrate/letsencrypt/meta/domains-{service.name}.txt', 'w') as f:
+    if ( domain != domain_prev or not os.path.isdir(f'/webcrate/letsencrypt/live/{service.name}') or not os.listdir(f'/webcrate/letsencrypt/live/{service.name}')) and domain != '':
+      with open(f'/webcrate/letsencrypt-meta/domains-{service.name}.txt', 'w') as f:
         f.write(domain)
         f.close()
-      path = f'/webcrate/letsencrypt/well-known/{service.name}'
+      path = f'/webcrate/letsencrypt-meta/well-known/{service.name}'
       if not os.path.isdir(path):
         os.system(f'mkdir -p {path}')
-      os.system(f'certbot certonly --keep-until-expiring --renew-with-new-domains --allow-subset-of-names --config-dir /webcrate/letsencrypt/certs --cert-name {service.name} --expand --webroot --webroot-path {path} -d {domain}')
+      os.system(f'certbot certonly --keep-until-expiring --renew-with-new-domains --allow-subset-of-names --config-dir /webcrate/letsencrypt --cert-name {service.name} --expand --webroot --webroot-path {path} -d {domain}')
       print(f'certificate for {service.name} - generated')
       nginx_reload_needed = True
 
   if service.https == 'openssl':
-    if openssl_root_conf_changed:
-      os.system(f'rm -r /webcrate/openssl/{service.name}')
     conf = helpers.genereate_openssl_conf(service.name, [service.domain], countryName, organizationName, OPENSSL_EMAIL)
     conf_old = helpers.load_openssl_conf(service.name)
     if conf_old != conf or not os.path.exists(f'/webcrate/openssl/{service.name}/privkey.pem') or not os.path.exists(f'/webcrate/openssl/{service.name}/fullchain.pem'):

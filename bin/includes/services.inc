@@ -257,6 +257,7 @@ else
     -e WEBCRATE_PWD=$(pwd) \
     $PROJECTS_VOLUMES \
     -e WEBCRATE_PROJECTS_FOLDERS=$( IFS=:; printf '%s' "${WEBCRATE_PROJECTS_FOLDERS[*]}" ) \
+    -e WEBCRATE_BACKUP_URIS=$( IFS=^; printf '%s' "${WEBCRATE_BACKUP_URIS[*]}" ) \
     -v $DOCKER_SOCKET:/var/run/docker.sock \
     -v /etc/localtime:/etc/localtime:ro \
     -v $(pwd):/webcrate-readonly:ro \

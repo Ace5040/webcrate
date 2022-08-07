@@ -173,7 +173,7 @@ if [ "$WEBCRATE_SERVICE_STATS" = true ]; then
       influxdb:1.8-alpine > /dev/null
   fi
   if [ "$GRAFANA_PASS" != "" ]; then
-    sleep 10; docker exec --user $uid:$gid grafana grafana-cli admin reset-admin-password "$GRAFANA_PASS"
+    sleep 10; docker exec --user $uid:$gid webcrate-grafana grafana-cli admin reset-admin-password "$GRAFANA_PASS"
   fi
 fi
 

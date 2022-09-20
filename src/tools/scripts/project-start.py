@@ -75,7 +75,7 @@ for projectname,project in projects.items():
       if not os.path.isfile(f'/webcrate/crontabs/{projectname}'):
         os.system(f'echo "" > /webcrate/crontabs/{projectname}')
         os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/crontabs/{projectname}')
-      os.system(f'docker run -d --env-file=/webcrate-readonly/.env --hostname {project_domain} --name {container_name} '
+      os.system(f'docker run -d --env-file=/webcrate-readonly/.env --name {container_name} '
         f'--network="webcrate_network_{projectname}" --dns=10.{net_num}.250 '
         f'--restart="unless-stopped" '
         f'-p "{ssh_port}:22" '

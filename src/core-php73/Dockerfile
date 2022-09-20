@@ -96,6 +96,8 @@ RUN wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-
     rm -rf /root/ioncube; \
     rm -f /root/ioncube_loaders_lin_x86-64.tar.gz
 
+RUN pip install setuptools
+
 WORKDIR /
 #copy scripts
 COPY ["toprc", "/etc/telegraf/.config/procps/"]

@@ -76,6 +76,8 @@ RUN git clone https://github.com/oh-my-fish/oh-my-fish .; \
     cp /webcrate-fish/omf/themes/default/functions/fish_right_prompt.fish /webcrate-fish/omf/themes/cbjohnson/fish_right_prompt.fish;
 COPY fish_prompt.fish /webcrate-fish/omf/themes/cbjohnson/fish_prompt.fish
 
+RUN pip install setuptools
+
 WORKDIR /
 #copy scripts
 COPY ["toprc", "/etc/telegraf/.config/procps/"]

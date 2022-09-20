@@ -112,6 +112,8 @@ RUN wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-
     ln -s /opt/icu69/lib/libicudata.so.69.1 /usr/lib/libicudata.so.69; \
     ln -s /opt/icu69/lib/libicuio.so.69.1 /usr/lib/libicuio.so.69
 
+RUN pip install setuptools
+
 WORKDIR /
 #copy scripts
 COPY ["toprc", "/etc/telegraf/.config/procps/"]

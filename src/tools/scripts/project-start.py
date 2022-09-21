@@ -92,7 +92,7 @@ for projectname,project in projects.items():
         f'-v {WEBCRATE_PWD}/var/ssh:/webcrate/ssh_keys '
         f'-v {WEBCRATE_PWD}/var/meta:/webcrate/meta '
         f'-v {WEBCRATE_PWD}/var/log:/webcrate/log '
-        f'-v {WEBCRATE_PWD}/config/exim/exim.conf:/etc/mail/exim.original.conf '
+        f'-v {WEBCRATE_PWD}/config/exim/exim.conf.template:/etc/mail/exim.conf.template '
         f'{PHP_CONFIGS} '
         f'ace5040/webcrate-core-{backend}:stable > /dev/null')
 

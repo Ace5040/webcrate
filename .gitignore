@@ -4,10 +4,8 @@
 /services.yml
 /config/nginx-templates/*
 /config/nginx/*
-/config/exim
 /config/php-pool-templates/*
 !/*.example
-!/config/exim/*.example
 !/config/nginx/nginx.conf
 !/config/nginx-templates/default-*.conf
 !/config/nginx-templates/default.conf

@@ -9,19 +9,30 @@ RUN pacman --needed --noconfirm -Syu; \
     usermod -p "dev" dev; \
     echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo; \
     sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j6\"/g" /etc/makepkg.conf
+WORKDIR /home/dev
 
 #install yay
-WORKDIR /home/dev/yay
-RUN chown dev:dev /home/dev/yay
 USER dev
-RUN git clone https://aur.archlinux.org/yay.git .; \
-    makepkg -scir --noconfirm; \
+RUN git clone https://aur.archlinux.org/yay.git; \
+    cd ./yay; makepkg -scir --noconfirm; \
     rm -rf /home/dev/yay
 
 #install aur packages
 RUN yay --gpgflags "--keyserver hkp://keyserver.ubuntu.com" --noeditmenu --nodiffmenu --noconfirm --mflags --nocheck -S docker-systemctl-replacement-git symfony-cli telegraf-bin; \
     yes | yay -Scc; \
     rm -rf /home/dev/.cache
+
+#install php-pear
+RUN yay --gpgflags "--keyserver hkp://keyserver.ubuntu.com" --noeditmenu --nodiffmenu --noconfirm --mflags --nocheck -S php-pear; \
+    yes | yay -Scc; \
+    rm -rf /home/dev/.cache
+
+#install timezonedb
+RUN git clone https://aur.archlinux.org/pecl-timezonedb.git; \
+    cd pecl-timezonedb; \
+    sed -i "s/phpize/phpize/g" ./PKGBUILD; \
+    sed -i "s/configure --prefix=\/usr/configure --prefix=\/usr --with-php-config=php-config/g" ./PKGBUILD;\
+    makepkg -scir --nocheck --noconfirm --skipchecksums;
 
 #misc install and config
 USER root
@@ -52,6 +63,7 @@ RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/late
     sed -i "s/#StrictModes yes/StrictModes no/g" /etc/ssh/sshd_config; \
     rm /etc/php/conf.d/imagick.ini; \
     rm /etc/php/conf.d/xdebug.ini; \
+    sed -i "s/;extension=/extension=/g" /etc/php/conf.d/timezonedb.ini; \
     echo ". /etc/profile.d/bashrc.sh" >> /etc/bash.bashrc; \
     echo 'dev ALL=(ALL) NOPASSWD: /bin/crontab' | EDITOR='tee -a' visudo; \
     sed -i 's/test -r /test -e /g' /etc/profile; \

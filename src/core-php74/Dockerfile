@@ -8,13 +8,12 @@ RUN pacman --needed --noconfirm -Syu; \
     usermod -p "dev" dev; \
     echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo; \
     sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j6\"/g" /etc/makepkg.conf
+WORKDIR /home/dev
 
 #install yay
-WORKDIR /home/dev/yay
-RUN chown dev:dev /home/dev/yay
 USER dev
-RUN git clone https://aur.archlinux.org/yay.git .; \
-    makepkg -scir --noconfirm; \
+RUN git clone https://aur.archlinux.org/yay.git; \
+    cd ./yay; makepkg -scir --noconfirm; \
     rm -rf /home/dev/yay
 
 #install aur packages
@@ -22,6 +21,19 @@ RUN yay --gpgflags "--keyserver hkp://keyserver.ubuntu.com" --noeditmenu --nodif
     php74 php74-zip php74-xmlreader php74-xmlwriter php74-mbstring php74-openssl php74-xml php74-fpm php74-intl php74-sqlite php74-gd php74-xsl php74-simplexml php74-phar php74-tidy php74-cli php74-json php74-tokenizer php74-curl php74-opcache php74-iconv php74-mysql php74-pdo php74-soap php74-imagick php74-memcached php74-xdebug; \
     yes | yay -Scc; \
     rm -rf /home/dev/.cache
+
+#install php-pear
+RUN yay --gpgflags "--keyserver hkp://keyserver.ubuntu.com" --noeditmenu --nodiffmenu --noconfirm --mflags --nocheck -S php-pear; \
+    yes | yay -Scc; \
+    rm -rf /home/dev/.cache
+
+#install timezonedb
+RUN git clone https://aur.archlinux.org/pecl-timezonedb.git; \
+    cd pecl-timezonedb; \
+    sed -i "s/phpize/phpize74/g" ./PKGBUILD; \
+    sed -i "s/configure --prefix=\/usr/configure --prefix=\/usr --with-php-config=php-config74/g" ./PKGBUILD;\
+    sed -i "s/pkgdir\/etc\/php/pkgdir\/etc\/php74/g" ./PKGBUILD; \
+    makepkg -scir --nocheck --noconfirm --skipchecksums;
 
 #misc install and config
 USER root
@@ -54,6 +66,7 @@ RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/late
     sed -i "s/#StrictModes yes/StrictModes no/g" /etc/ssh/sshd_config; \
     rm /etc/php74/conf.d/imagick.ini; \
     rm /etc/php74/conf.d/xdebug.ini; \
+    sed -i "s/;extension=/extension=/g" /etc/php74/conf.d/timezonedb.ini; \
     echo ". /etc/profile.d/bashrc.sh" >> /etc/bash.bashrc; \
     echo 'dev ALL=(ALL) NOPASSWD: /bin/crontab' | EDITOR='tee -a' visudo; \
     sed -i 's/test -r /test -e /g' /etc/profile; \
@@ -84,6 +97,8 @@ RUN wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-
     cp ./ioncube/ioncube_loader_lin_7.4.so /usr/lib/php74/modules/ioncube_loader_lin.so; \
     rm -rf /root/ioncube; \
     rm -f /root/ioncube_loaders_lin_x86-64.tar.gz
+
+RUN pip install setuptools
 
 WORKDIR /
 #copy scripts

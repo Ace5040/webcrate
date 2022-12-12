@@ -686,7 +686,7 @@ dnslookup:
 
 # This closes the ROUTER_SMARTHOST ifdef around the choice of routing for
 # off-site mail.
-.endif
+#.endif
 
 
 # The remaining routers handle addresses in the local domain(s), that is those

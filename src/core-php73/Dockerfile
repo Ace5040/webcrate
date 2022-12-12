@@ -36,6 +36,19 @@ RUN yay --gpgflags "--keyserver hkp://keyserver.ubuntu.com" --noeditmenu --nodif
     yes | yay -Scc; \
     rm -rf /home/dev/.cache
 
+#install php-pear
+RUN yay --gpgflags "--keyserver hkp://keyserver.ubuntu.com" --noeditmenu --nodiffmenu --noconfirm --mflags --nocheck -S php-pear; \
+    yes | yay -Scc; \
+    rm -rf /home/dev/.cache
+
+#install timezonedb
+RUN git clone https://aur.archlinux.org/pecl-timezonedb.git; \
+    cd pecl-timezonedb; \
+    sed -i "s/phpize/phpize73/g" ./PKGBUILD; \
+    sed -i "s/configure --prefix=\/usr/configure --prefix=\/usr --with-php-config=php-config73/g" ./PKGBUILD;\
+    sed -i "s/pkgdir\/etc\/php/pkgdir\/etc\/php73/g" ./PKGBUILD; \
+    makepkg -scir --nocheck --noconfirm --skipchecksums;
+
 #misc install and config
 USER root
 WORKDIR /root
@@ -65,6 +78,7 @@ RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/late
     sed -i "s/#StrictModes yes/StrictModes no/g" /etc/ssh/sshd_config; \
     rm /etc/php73/conf.d/imagick.ini; \
     rm /etc/php73/conf.d/xdebug.ini; \
+    sed -i "s/;extension=/extension=/g" /etc/php73/conf.d/timezonedb.ini; \
     echo ". /etc/profile.d/bashrc.sh" >> /etc/bash.bashrc; \
     echo 'dev ALL=(ALL) NOPASSWD: /bin/crontab' | EDITOR='tee -a' visudo; \
     sed -i 's/test -r /test -e /g' /etc/profile; \

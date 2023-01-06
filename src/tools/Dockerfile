@@ -12,17 +12,11 @@ RUN pacman --needed --noconfirm -Syu; \
 USER dev
 WORKDIR /home/dev
 
-#install yay
-RUN git clone https://aur.archlinux.org/yay.git
-WORKDIR /home/dev/yay
-RUN makepkg -scir --noconfirm
-WORKDIR /home/dev
-
-#remove yay src
-RUN rm -rf /home/dev/yay
-
-#install soft from aur
-RUN yay --gpgflags "--keyserver hkp://keyserver.ubuntu.com" --noeditmenu --nodiffmenu --noconfirm --mflags --nocheck -S docker-systemctl-replacement-git
+#install docker-systemctl-replacement-git
+RUN git clone https://aur.archlinux.org/docker-systemctl-replacement-git.git; \
+    cd docker-systemctl-replacement-git; \
+    makepkg -scir --nocheck --noconfirm --skipchecksums; \
+    rm -rf /home/dev/docker-systemctl-replacement-git.git
 
 USER root
 

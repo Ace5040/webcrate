@@ -8,6 +8,6 @@ cp /etc/mail/exim.conf.template /etc/mail/exim.conf
 sed -i "s/# primary_hostname =/primary_hostname = $WEBCRATE_DOMAIN/g"  /etc/mail/exim.conf;
 chown root:root /etc/mail/exim.conf
 /webcrate/sync_ssh_keys.sh
-cp /webcrate/pools/$WEBCRATE_PROJECT.conf /etc/php/php-fpm.d/$WEBCRATE_PROJECT.conf
+cp /webcrate/pools/$WEBCRATE_PROJECT.conf /etc/php81/php-fpm.d/$WEBCRATE_PROJECT.conf
 /webcrate/parse-projects.py
 exec systemctl init

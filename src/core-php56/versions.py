@@ -13,7 +13,7 @@ def execCommand(cmd):
 php56 = execCommand("/usr/bin/php56 -v | awk 'NR<=1{ print $2 }'")
 php73 = execCommand("/usr/bin/php73 -v | awk 'NR<=1{ print $2 }'")
 php74 = execCommand("/usr/bin/php74 -v | awk 'NR<=1{ print $2 }'")
-php = execCommand("/usr/bin/php -v | awk 'NR<=1{ print $2 }'")
+php81 = execCommand("/usr/bin/php81 -v | awk 'NR<=1{ print $2 }'")
 composer = execCommand("composer -V | awk 'NR<=1{ print $3 }'")
 composer1 = execCommand("composer1 -V | awk 'NR<=1{ print $3 }'")
 npm = execCommand("npm -v | awk 'NR<=1{ print $1 }'")
@@ -25,7 +25,7 @@ pip = execCommand("pip -V | awk 'NR<=1{ print $2 }'")
 gem = execCommand("gem -v | awk 'NR<=1{ print $1 }'")
 tmux = execCommand("tmux -V | awk 'NR<=1{ print $2 }'")
 soft = [
-    dict( name = 'php', version = php ),
+    dict( name = 'php81', version = php81 ),
     dict( name = 'php74', version = php74 ),
     dict( name = 'php73', version = php73 ),
     dict( name = 'php56', version = php56 ),

@@ -27,10 +27,7 @@ var_folders=(\
   "nginx/block"\
   "nginx/auth"\
   "phppgadmin"\
-  "php_pools/php"\
-  "php_pools/php56"\
-  "php_pools/php73"\
-  "php_pools/php74"\
+  "php_pools"\
   )
 for i in "${var_folders[@]}"
 do

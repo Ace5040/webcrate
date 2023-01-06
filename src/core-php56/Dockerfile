@@ -96,12 +96,10 @@ RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/down
     sed -i 's/test -r /test -e /g' /etc/profile; \
     mkdir -p /webcrate; \
     mkdir -p /webcrate-bin; \
-    mkdir -p /webcrate-bin/php56; \
-    ln -s /bin/php56 /webcrate-bin/php56/php; \
+    ln -s /bin/php56 /webcrate-bin/php; \
     mkdir -p /webcrate-fish; \
     chmod o-rwx /webcrate; \
     mkdir -p /webcrate-telegraf; \
-    yes | sudo symfony self-update; \
     chown telegraf:telegraf /webcrate-telegraf; \
     chmod o-rwx /webcrate-telegraf;
 

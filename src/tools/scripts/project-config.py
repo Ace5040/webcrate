@@ -28,10 +28,7 @@ os.system(f'rm /webcrate/nginx/auth/{PROJECT_NAME}.conf > /dev/null 2>&1')
 os.system(f'rm /webcrate/nginx/auth/{PROJECT_NAME}-*.password > /dev/null 2>&1')
 os.system(f'rm /webcrate/nginx/gzip/{PROJECT_NAME}.conf > /dev/null 2>&1')
 os.system(f'rm /webcrate/nginx/projects/{PROJECT_NAME}.conf > /dev/null 2>&1')
-os.system(f'rm /webcrate/php_pools/php56/{PROJECT_NAME}.conf > /dev/null 2>&1')
-os.system(f'rm /webcrate/php_pools/php73/{PROJECT_NAME}.conf > /dev/null 2>&1')
-os.system(f'rm /webcrate/php_pools/php74/{PROJECT_NAME}.conf > /dev/null 2>&1')
-os.system(f'rm /webcrate/php_pools/php/{PROJECT_NAME}.conf > /dev/null 2>&1')
+os.system(f'rm /webcrate/php_pools/{PROJECT_NAME}.conf > /dev/null 2>&1')
 os.system(f'rm /webcrate/dnsmasq/hosts/{PROJECT_NAME}.hosts > /dev/null 2>&1')
 os.system(f'rm /webcrate/meta/projects/{PROJECT_NAME}.config > /dev/null 2>&1')
 
@@ -40,7 +37,7 @@ for projectname,project in projects.items():
     dump = json.dumps(project, separators=(',', ':'), ensure_ascii=True)
     if project.active:
       project.name = projectname
-      project.full_backend_version = f'{project.backend}' + ( '' if ( project.backend_version == 'latest' or ( project.backend == 'php' and project.backend_version == '80') ) else f'{project.backend_version}' ) ;
+      project.full_backend_version = f'{project.backend}{project.backend_version}'
 
       data_folder=project.root_folder.split("/")[0]
       port = 9000
@@ -88,13 +85,12 @@ for projectname,project in projects.items():
       if os.path.isdir(f'{project.folder}'):
         if project.backend == 'php':
           php_path_prefix = {
-            'latest': '',
-            '80': '',
+            '81': '81',
             '56': '56',
             '73': '73',
             '74': '74'
-          }.get(str(project.backend_version), '')
-          php_conf_path = f'/webcrate/php_pools/php{php_path_prefix}/{project.name}.conf';
+          }.get(str(project.backend_version), '81')
+          php_conf_path = f'/webcrate/php_pools/{project.name}.conf';
 
           if os.path.isfile(f'/webcrate/custom_templates/{project.name}.conf'):
             os.system(f'cp -rf /webcrate/custom_templates/{project.name}.conf {php_conf_path}')
@@ -119,21 +115,21 @@ for projectname,project in projects.items():
 
         with open(f'{project.folder}/config.sh', 'w') as f:
           if project.backend == 'php':
-            f.write(f'PATH=/webcrate-bin/php{php_path_prefix}:$PATH\n')
+            f.write(f'PATH=/webcrate-bin:$PATH\n')
             f.write(f'PATH=/home/{project.name}/.config/composer/vendor/bin:$PATH\n')
             f.write(f'PATH=/home/{project.name}/{data_folder}/vendor/bin:$PATH\n')
             f.write(f'export COMPOSER_HOME=/home/{project.name}/.config/composer\n')
-            f.write(f'export DRUSH_PHP=/webcrate-bin/php{php_path_prefix}/php\n')
+            f.write(f'export DRUSH_PHP=/webcrate-bin/php\n')
           f.write(f'export DATA_FOLDER={data_folder}\n')
           f.close()
 
         with open(f'{project.folder}/config.fish', 'w') as f:
           if project.backend == 'php':
-            f.write(f'set PATH /webcrate-bin/php{php_path_prefix} $PATH\n')
+            f.write(f'set PATH /webcrate-bin/php $PATH\n')
             f.write(f'set PATH /home/{project.name}/.config/composer/vendor/bin $PATH\n')
             f.write(f'set PATH /home/{project.name}/{data_folder}/vendor/bin $PATH\n')
             f.write(f'set -x COMPOSER_HOME /home/{project.name}/.config/composer\n')
-            f.write(f'set -x DRUSH_PHP /webcrate-bin/php{php_path_prefix}/php\n')
+            f.write(f'set -x DRUSH_PHP /webcrate-bin/php\n')
           f.write(f'set -x DATA_FOLDER {data_folder}\n')
           f.close()
 

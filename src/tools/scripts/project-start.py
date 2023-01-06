@@ -34,7 +34,7 @@ for projectname,project in projects.items():
       log.write(f'Create docker network for {projectname}')
       os.system(f'docker network create --driver=bridge --subnet=10.{net_num}.0/24 webcrate_network_{projectname} > /dev/null')
     project_name = projectname
-    backend = f'{project.backend}' + ( '' if ( project.backend_version == 'latest' or ( project.backend == 'php' and project.backend_version == '80') ) else f'{project.backend_version}' )
+    backend = f'{project.backend}{"" if project.backend_version == "latest" else project.backend_version }'
     container_name = f'webcrate-core-{projectname}'
     ssh_port = SSH_PORT_START_NUMBER + project.uid - UID_START_NUMBER
     project_domain = project.domains[0]
@@ -65,8 +65,8 @@ for projectname,project in projects.items():
       PROJECT_SOLR = f'-v {SOLR_LOGS}:/opt/solr/server/logs -v {SOLR_CORES}:/opt/solr/server/solr/mycores'
 
     PHP_CONFIGS=""
-    if backend in ['php56', 'php73', 'php74', 'php']:
-      PHP_CONFIGS = f'-v {WEBCRATE_PWD}/config/php/{backend}.ini:/etc/{backend}/conf.d/user.ini:ro -v {WEBCRATE_PWD}/var/php_pools/{backend}:/webcrate/pools'
+    if backend in ['php56', 'php73', 'php74', 'php81']:
+      PHP_CONFIGS = f'-v {WEBCRATE_PWD}/config/php/{backend}.ini:/etc/{backend}/conf.d/user.ini:ro -v {WEBCRATE_PWD}/var/php_pools:/webcrate/pools'
 
     if os.popen(f'docker container inspect {container_name} >/dev/null 2> /dev/null').read().strip():
       log.write(f'Core {container_name} exists')

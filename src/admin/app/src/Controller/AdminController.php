@@ -287,7 +287,7 @@ class AdminController extends AbstractController
                 $project_obj->password = !empty($project_obj->password) ? $project_obj->password : 'empty_password';
                 $project_obj->https = !empty($project_obj->https) ? $project_obj->https : 'disabled';
                 $project_obj->backend = !empty($project_obj->backend) ? $project_obj->backend : 'php';
-                $project_obj->backend_version = !empty($project_obj->backend_version) ? $project_obj->backend_version : 'latest';
+                $project_obj->backend_version = !empty($project_obj->backend_version) ? $project_obj->backend_version : '81';
                 $project_obj->gunicorn_app_module = !empty($project_obj->gunicorn_app_module) ? $project_obj->gunicorn_app_module : '';
                 $project_obj->nginx_template = !empty($project_obj->nginx_template) ? $project_obj->nginx_template : 'default';
                 $project_obj->volume = !empty($project_obj->volume) ? $project_obj->volume : 0;
@@ -310,7 +310,7 @@ class AdminController extends AbstractController
                 $project->setPasswordHash($project_obj->password);
                 $https = $this->https_repository->findByName($project_obj->https);
                 $project->setHttps($https);
-                $backend_version = empty($project_obj->backend_version) || $project_obj->backend_version == "7" ? 'latest' : $project_obj->backend_version;
+                $backend_version = empty($project_obj->backend_version) ? ( $project_obj->backend == 'php' ? '81' : 'latest' ) : $project_obj->backend_version;
                 $backend = $this->backend_repository->findByNameAndVersion($project_obj->backend, (string)$backend_version);
                 $project->setBackend($backend);
                 if ( !empty($project_obj->gunicorn_app_module) && ( $project_obj->backend == 'gunicorn' ) ) {

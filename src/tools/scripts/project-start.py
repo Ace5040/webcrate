@@ -66,7 +66,7 @@ for projectname,project in projects.items():
 
     PHP_CONFIGS=""
     if backend in ['php56', 'php73', 'php74', 'php81']:
-      PHP_CONFIGS = f'-v {WEBCRATE_PWD}/config/php/{backend}.ini:/etc/{backend}/conf.d/user.ini:ro -v {WEBCRATE_PWD}/var/php_pools:/webcrate/pools'
+      PHP_CONFIGS = f'-v {WEBCRATE_PWD}/config/php/{backend}.ini:/etc/{backend}/conf.d/00-user.ini:ro -v {WEBCRATE_PWD}/var/php_pools:/webcrate/pools'
 
     if os.popen(f'docker container inspect {container_name} >/dev/null 2> /dev/null').read().strip():
       log.write(f'Core {container_name} exists')

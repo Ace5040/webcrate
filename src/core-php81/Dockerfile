@@ -98,7 +98,7 @@ COPY fish_prompt.fish /webcrate-fish/omf/themes/cbjohnson/fish_prompt.fish
 #install ioncucbe
 RUN wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz; \
     tar xzf ioncube_loaders_lin_x86-64.tar.gz; \
-    cp ./ioncube/ioncube_loader_lin_7.4.so /usr/lib/php81/modules/ioncube_loader_lin.so; \
+    cp ./ioncube/ioncube_loader_lin_8.1.so /usr/lib/php81/modules/ioncube_loader_lin.so; \
     rm -rf /root/ioncube; \
     rm -f /root/ioncube_loaders_lin_x86-64.tar.gz
 

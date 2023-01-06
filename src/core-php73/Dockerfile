@@ -1,64 +1,61 @@
 FROM archlinux:latest
 
+#php73 repo
+RUN sed -Ei "s/default mirrors./default mirrors.\n\n[home_el_archphp_Arch]\nServer = https:\/\/download.opensuse.org\/repositories\/home:\/el:\/archphp\/Arch\/\$arch/g" /etc/pacman.conf; \
+    key=$(curl -fsSL https://download.opensuse.org/repositories/home:el:archphp/Arch/$(uname -m)/home_el_archphp_Arch.key); \
+    fingerprint=$(gpg --quiet --with-colons --import-options show-only --import --fingerprint <<< "${key}" | awk -F: '$1 == "fpr" { print $10 }'); \
+    pacman-key --init; \
+    pacman-key --add - <<< "${key}"; \
+    pacman-key --lsign-key "${fingerprint}";
+
 #install system utils and services
 RUN pacman --needed --noconfirm -Syu; \
-    pacman --needed --noconfirm -S git nano openssh base-devel unzip composer npm mariadb-clients mc iputils cronie inetutils wget tmux ruby python-pip fish; \
+    pacman --needed --noconfirm -S git nano exim openssh base-devel unzip npm mariadb-clients mc iputils cronie inetutils wget tmux ruby python-pip fish libmemcached-awesome; \
     yes | pacman -Scc; \
     useradd -m -s /bin/bash dev; \
     usermod -p "dev" dev; \
     echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo; \
-    sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j6\"/g" /etc/makepkg.conf
+    sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j6\"/g" /etc/makepkg.conf;
+
+#install php73
+RUN pacman --needed --noconfirm -S php73 php73-json php73-pecl php73-pear php73-zip php73-xmlreader php73-xmlwriter php73-mbstring php73-xml php73-fpm php73-intl php73-sqlite php73-gd php73-xsl php73-simplexml php73-phar php73-tidy php73-cli php73-tokenizer php73-curl php73-opcache php73-iconv php73-mysql php73-pdo php73-soap php73-imagick php73-xdebug
+RUN pecl73 install timezonedb-2021.5 memcached; \
+    echo extension=timezonedb.so > /etc/php73/conf.d/10-timezonedb.ini; \
+    echo extension=memcached.so > /etc/php73/conf.d/10-memcached.ini
+
 WORKDIR /home/dev
-
-#install yay
 USER dev
-RUN git clone https://aur.archlinux.org/yay.git; \
-    cd ./yay; makepkg -scir --noconfirm; \
-    rm -rf /home/dev/yay
 
-#install aur packages
-RUN yay --gpgflags "--keyserver hkp://keyserver.ubuntu.com" --noeditmenu --nodiffmenu --noconfirm --mflags --nocheck -S docker-systemctl-replacement-git symfony-cli telegraf-bin; \
-    yes | yay -Scc; \
-    rm -rf /home/dev/.cache
-
-#install php 73
-RUN gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 2F7956BC5DA04B5D D66C9593118BCCB6; \
-    git clone https://aur.archlinux.org/php73.git; \
-    cd ./php73; \
-    wget https://gitweb.gentoo.org/repo/gentoo.git/plain/dev-lang/php/files/php-icu-70.patch; \
-    sed -i "s/'freetype.patch'/'freetype.patch' 'php-icu-70.patch'/g" PKGBUILD; \
-    sed -i "s/patch -p1 -i \${srcdir}\/freetype.patch/patch -p1 -i \${srcdir}\/freetype.patch; patch -p1 -i \${srcdir}\/php-icu-70.patch/g" PKGBUILD; \
+#install telegraf-bin
+RUN git clone https://aur.archlinux.org/telegraf-bin.git; \
+    cd telegraf-bin; \
     makepkg -scir --nocheck --noconfirm --skipchecksums; \
-    rm -rf /home/dev/php73
+    rm -rf /home/dev/telegraf-bin
 
-#install php73-imagick php73-memcached php73-xdebug
-RUN yay --gpgflags "--keyserver hkp://keyserver.ubuntu.com" --noeditmenu --nodiffmenu --noconfirm --mflags --nocheck -S php73-imagick php73-memcached php73-xdebug; \
-    yes | yay -Scc; \
-    rm -rf /home/dev/.cache
+#install symfony-cli-bin
+RUN git clone https://aur.archlinux.org/symfony-cli-bin.git; \
+    cd symfony-cli-bin; \
+    makepkg -scir --nocheck --noconfirm --skipchecksums; \
+    rm -rf /home/dev/symfony-cli-bin
 
-#install php-pear
-RUN yay --gpgflags "--keyserver hkp://keyserver.ubuntu.com" --noeditmenu --nodiffmenu --noconfirm --mflags --nocheck -S php-pear; \
-    yes | yay -Scc; \
-    rm -rf /home/dev/.cache
-
-#install timezonedb
-RUN git clone https://aur.archlinux.org/pecl-timezonedb.git; \
-    cd pecl-timezonedb; \
-    sed -i "s/phpize/phpize73/g" ./PKGBUILD; \
-    sed -i "s/configure --prefix=\/usr/configure --prefix=\/usr --with-php-config=php-config73/g" ./PKGBUILD;\
-    sed -i "s/pkgdir\/etc\/php/pkgdir\/etc\/php73/g" ./PKGBUILD; \
-    makepkg -scir --nocheck --noconfirm --skipchecksums;
+#install docker-systemctl-replacement-git
+RUN git clone https://aur.archlinux.org/docker-systemctl-replacement-git.git; \
+    cd docker-systemctl-replacement-git; \
+    makepkg -scir --nocheck --noconfirm --skipchecksums; \
+    rm -rf /home/dev/docker-systemctl-replacement-git
 
 #misc install and config
 USER root
+
 WORKDIR /root
 RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/latest/download/drush.phar; \
     chmod +x drush.phar; \
     mv drush.phar /usr/bin/drush; \
+    wget -O composer.phar https://getcomposer.org/download/latest-stable/composer.phar; \
+    chmod +x composer.phar; \
+    mv composer.phar /usr/bin/composer; \
     gem install compass --norc; \
     pip install pyyml munch; \
-    pacman --needed --noconfirm -S exim; \
-    yes | pacman -Scc; \
     chown root:root /bin/systemctl.py; \
     chmod a+x /bin/systemctl.py; \
     mv /bin/systemctl /bin/systemctl_original; \
@@ -76,9 +73,6 @@ RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/late
     sed -i "s/# database = \"telegraf\"/database = \"telegraf\"/g" /etc/telegraf/telegraf.conf; \
     sed -i "s/#PubkeyAuthentication yes/PubkeyAuthentication yes/g" /etc/ssh/sshd_config; \
     sed -i "s/#StrictModes yes/StrictModes no/g" /etc/ssh/sshd_config; \
-    rm /etc/php73/conf.d/imagick.ini; \
-    rm /etc/php73/conf.d/xdebug.ini; \
-    sed -i "s/;extension=/extension=/g" /etc/php73/conf.d/timezonedb.ini; \
     echo ". /etc/profile.d/bashrc.sh" >> /etc/bash.bashrc; \
     echo 'dev ALL=(ALL) NOPASSWD: /bin/crontab' | EDITOR='tee -a' visudo; \
     sed -i 's/test -r /test -e /g' /etc/profile; \

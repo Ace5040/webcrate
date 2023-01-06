@@ -1,75 +1,60 @@
 FROM archlinux:latest
 
+#php56 repo
+RUN sed -Ei "s/default mirrors./default mirrors.\n\n[home_el_archphp_Arch]\nServer = https:\/\/download.opensuse.org\/repositories\/home:\/el:\/archphp\/Arch\/\$arch/g" /etc/pacman.conf; \
+    key=$(curl -fsSL https://download.opensuse.org/repositories/home:el:archphp/Arch/$(uname -m)/home_el_archphp_Arch.key); \
+    fingerprint=$(gpg --quiet --with-colons --import-options show-only --import --fingerprint <<< "${key}" | awk -F: '$1 == "fpr" { print $10 }'); \
+    pacman-key --init; \
+    pacman-key --add - <<< "${key}"; \
+    pacman-key --lsign-key "${fingerprint}";
+
 #install system utils and services
 RUN pacman --needed --noconfirm -Syu; \
-    pacman --needed --noconfirm -S git nano openssh base-devel unzip composer npm mariadb-clients mc iputils cronie inetutils wget tmux ruby python-pip fish; \
+    pacman --needed --noconfirm -S git nano exim openssh base-devel unzip npm mariadb-clients mc iputils cronie inetutils wget tmux ruby python-pip fish libmemcached-awesome; \
     yes | pacman -Scc; \
     useradd -m -s /bin/bash dev; \
     usermod -p "dev" dev; \
     echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo; \
-    sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j6\"/g" /etc/makepkg.conf
+    sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j6\"/g" /etc/makepkg.conf;
+
+#install php56
+RUN pacman --needed --noconfirm -S php56 php56-json php56-pecl php56-pear php56-zip php56-xmlreader php56-xmlwriter php56-mbstring php56-xml php56-fpm php56-intl php56-sqlite php56-gd php56-xsl php56-simplexml php56-phar php56-tidy php56-cli php56-tokenizer php56-curl php56-opcache php56-iconv php56-mysql php56-pdo php56-soap php56-imagick php56-xdebug
+RUN pecl56 install timezonedb-2021.5; \
+    echo extension=timezonedb.so > /etc/php56/conf.d/10-timezonedb.ini
+
 WORKDIR /home/dev
-
-#install yay
 USER dev
-RUN git clone https://aur.archlinux.org/yay.git; \
-    cd ./yay; makepkg -scir --noconfirm; \
-    rm -rf /home/dev/yay
 
-#install aur packages
-RUN yay --gpgflags "--keyserver hkp://keyserver.ubuntu.com" --noeditmenu --nodiffmenu --noconfirm --mflags --nocheck -S docker-systemctl-replacement-git symfony-cli telegraf-bin; \
-    yes | yay -Scc; \
-    rm -rf /home/dev/.cache
+#install telegraf-bin
+RUN git clone https://aur.archlinux.org/telegraf-bin.git; \
+    cd telegraf-bin; \
+    makepkg -scir --nocheck --noconfirm --skipchecksums; \
+    rm -rf /home/dev/telegraf-bin
 
-#install php 56
-RUN sudo mkdir -p /opt/icu69; \
-    wget "https://github.com/unicode-org/icu/releases/download/release-69-1/icu4c-69_1-src.tgz"; \
-    tar zxvf ./icu4c-69_1-src.tgz; \
-    cd ./icu/source; \
-    ./configure --prefix="/opt/icu69" && make && sudo make install
+#install symfony-cli-bin
+RUN git clone https://aur.archlinux.org/symfony-cli-bin.git; \
+    cd symfony-cli-bin; \
+    makepkg -scir --nocheck --noconfirm --skipchecksums; \
+    rm -rf /home/dev/symfony-cli-bin
 
-RUN gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys C2BF0BC433CFC8B3 FE857D9A90D90EC1; \
-    git clone https://aur.archlinux.org/php56.git; \
-    cd ./php56; \
-    sed -i "s/--with-icu-dir=\/usr/--with-icu-dir=\/opt\/icu69/g" PKGBUILD; \
-    makepkg -scir --nocheck --noconfirm; \
-    rm -rf /home/dev/php56
-
-#install php56-xdebug
-RUN git clone https://aur.archlinux.org/php56-xdebug.git; \
-    cd ./php56-xdebug; \
-    sed -i '31,38d;51d' PKGBUILD; \
-    makepkg -scir --noconfirm; \
-    rm -rf /home/dev/php56-xdebug
-
-#install php56-imagick php56-memcached
-RUN yay --gpgflags "--keyserver hkp://keyserver.ubuntu.com" --noeditmenu --nodiffmenu --noconfirm --mflags --nocheck -S php56-imagick php56-memcached; \
-    yes | yay -Scc; \
-    rm -rf /home/dev/.cache
-
-#install php-pear
-RUN yay --gpgflags "--keyserver hkp://keyserver.ubuntu.com" --noeditmenu --nodiffmenu --noconfirm --mflags --nocheck -S php-pear; \
-    yes | yay -Scc; \
-    rm -rf /home/dev/.cache
-
-#install timezonedb
-RUN git clone https://aur.archlinux.org/pecl-timezonedb.git; \
-    cd pecl-timezonedb; \
-    sed -i "s/phpize/phpize56/g" ./PKGBUILD; \
-    sed -i "s/configure --prefix=\/usr/configure --prefix=\/usr --with-php-config=php-config56/g" ./PKGBUILD;\
-    sed -i "s/pkgdir\/etc\/php/pkgdir\/etc\/php56/g" ./PKGBUILD; \
-    makepkg -scir --nocheck --noconfirm --skipchecksums;
+#install docker-systemctl-replacement-git
+RUN git clone https://aur.archlinux.org/docker-systemctl-replacement-git.git; \
+    cd docker-systemctl-replacement-git; \
+    makepkg -scir --nocheck --noconfirm --skipchecksums; \
+    rm -rf /home/dev/docker-systemctl-replacement-git
 
 #misc install and config
 USER root
+
 WORKDIR /root
 RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/download/0.8.0/drush.phar; \
     chmod +x drush.phar; \
     mv drush.phar /usr/bin/drush; \
+    wget -O composer.phar https://getcomposer.org/download/latest-2.2.x/composer.phar; \
+    chmod +x composer.phar; \
+    mv composer.phar /usr/bin/composer; \
     gem install compass --norc; \
     pip install pyyml munch; \
-    pacman --needed --noconfirm -S exim; \
-    yes | pacman -Scc; \
     chown root:root /bin/systemctl.py; \
     chmod a+x /bin/systemctl.py; \
     mv /bin/systemctl /bin/systemctl_original; \
@@ -88,9 +73,6 @@ RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/down
     sed -i "s/# database = \"telegraf\"/database = \"telegraf\"/g" /etc/telegraf/telegraf.conf; \
     sed -i "s/#PubkeyAuthentication yes/PubkeyAuthentication yes/g" /etc/ssh/sshd_config; \
     sed -i "s/#StrictModes yes/StrictModes no/g" /etc/ssh/sshd_config; \
-    rm /etc/php56/conf.d/imagick.ini; \
-    rm /etc/php56/conf.d/xdebug.ini; \
-    sed -i "s/;extension=/extension=/g" /etc/php56/conf.d/timezonedb.ini; \
     echo ". /etc/profile.d/bashrc.sh" >> /etc/bash.bashrc; \
     echo 'dev ALL=(ALL) NOPASSWD: /bin/crontab' | EDITOR='tee -a' visudo; \
     sed -i 's/test -r /test -e /g' /etc/profile; \
@@ -118,11 +100,7 @@ RUN wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-
     tar xzf ioncube_loaders_lin_x86-64.tar.gz; \
     cp ./ioncube/ioncube_loader_lin_5.6.so /usr/lib/php56/modules/ioncube_loader_lin.so; \
     rm -rf /root/ioncube; \
-    rm -f /root/ioncube_loaders_lin_x86-64.tar.gz; \
-    ln -s /opt/icu69/lib/libicui18n.so.69.1 /usr/lib/libicui18n.so.69; \
-    ln -s /opt/icu69/lib/libicuuc.so.69.1 /usr/lib/libicuuc.so.69; \
-    ln -s /opt/icu69/lib/libicudata.so.69.1 /usr/lib/libicudata.so.69; \
-    ln -s /opt/icu69/lib/libicuio.so.69.1 /usr/lib/libicuio.so.69
+    rm -f /root/ioncube_loaders_lin_x86-64.tar.gz
 
 RUN pip install setuptools
 

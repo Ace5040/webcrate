@@ -95,7 +95,7 @@ function Build() {
     docker build -t ace5040/webcrate-tools:stable ./src/tools$NOCACHE
   fi
   if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core" ]; then
-    docker build -t ace5040/webcrate-core-php:stable ./src/core-php$NOCACHE
+    docker build -t ace5040/webcrate-core-php81:stable ./src/core-php81$NOCACHE
     docker build -t ace5040/webcrate-core-php56:stable ./src/core-php56$NOCACHE
     docker build -t ace5040/webcrate-core-php73:stable ./src/core-php73$NOCACHE
     docker build -t ace5040/webcrate-core-php74:stable ./src/core-php74$NOCACHE
@@ -110,7 +110,7 @@ function Build() {
 }
 
 function Pull() {
-  docker pull ace5040/webcrate-core-php:stable
+  docker pull ace5040/webcrate-core-php81:stable
   docker pull ace5040/webcrate-core-php56:stable
   docker pull ace5040/webcrate-core-php73:stable
   docker pull ace5040/webcrate-core-php74:stable
@@ -153,7 +153,7 @@ function Push() {
     docker push ace5040/webcrate-tools:stable
   fi
   if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "core" ]; then
-    docker push ace5040/webcrate-core-php:stable
+    docker push ace5040/webcrate-core-php81:stable
     docker push ace5040/webcrate-core-php56:stable
     docker push ace5040/webcrate-core-php73:stable
     docker push ace5040/webcrate-core-php74:stable

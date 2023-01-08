@@ -25,7 +25,7 @@ RUN yay --gpgflags "--keyserver hkp://keyserver.ubuntu.com" --noeditmenu --nodif
 USER root
 
 #install phyton libs
-RUN pip install pyyml munch; \
+RUN pip install pyyml munch setuptools; \
     chown root:root /bin/systemctl.py; \
     chmod a+x /bin/systemctl.py; \
     mv /bin/systemctl /bin/systemctl_original; \

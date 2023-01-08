@@ -18,7 +18,7 @@ RUN pacman --needed --noconfirm -Syu; \
     sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j6\"/g" /etc/makepkg.conf;
 
 #install php81
-RUN pacman --needed --noconfirm -S php81 php81-pecl php81-pear php81-zip php81-xmlreader php81-xmlwriter php81-mbstring php81-openssl php81-xml php81-fpm php81-intl php81-sqlite php81-gd php81-xsl php81-simplexml php81-phar php81-tidy php81-cli php81-tokenizer php81-curl php81-opcache php81-iconv php81-mysql php81-pdo php81-soap php81-imagick php81-xdebug
+RUN pacman --needed --noconfirm -S php81 php81-ctype php81-pecl php81-pear php81-zip php81-xmlreader php81-xmlwriter php81-mbstring php81-openssl php81-xml php81-fpm php81-intl php81-sqlite php81-gd php81-xsl php81-simplexml php81-phar php81-tidy php81-cli php81-tokenizer php81-curl php81-opcache php81-iconv php81-mysql php81-pdo php81-soap php81-imagick php81-xdebug
 RUN pecl81 install timezonedb-2021.5 memcached; \
     echo extension=timezonedb.so > /etc/php81/conf.d/10-timezonedb.ini; \
     echo extension=memcached.so > /etc/php81/conf.d/10-memcached.ini

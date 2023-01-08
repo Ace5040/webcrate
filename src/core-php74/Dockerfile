@@ -18,7 +18,7 @@ RUN pacman --needed --noconfirm -Syu; \
     sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j6\"/g" /etc/makepkg.conf;
 
 #install php74
-RUN pacman --needed --noconfirm -S php74 php74-json php74-pecl php74-pear php74-zip php74-xmlreader php74-xmlwriter php74-mbstring php74-openssl php74-xml php74-fpm php74-intl php74-sqlite php74-gd php74-xsl php74-simplexml php74-phar php74-tidy php74-cli php74-tokenizer php74-curl php74-opcache php74-iconv php74-mysql php74-pdo php74-soap php74-imagick php74-xdebug
+RUN pacman --needed --noconfirm -S php74 php74-ctype php74-json php74-pecl php74-pear php74-zip php74-xmlreader php74-xmlwriter php74-mbstring php74-openssl php74-xml php74-fpm php74-intl php74-sqlite php74-gd php74-xsl php74-simplexml php74-phar php74-tidy php74-cli php74-tokenizer php74-curl php74-opcache php74-iconv php74-mysql php74-pdo php74-soap php74-imagick php74-xdebug
 RUN pecl74 install timezonedb-2021.5 memcached; \
     echo extension=timezonedb.so > /etc/php74/conf.d/10-timezonedb.ini; \
     echo extension=memcached.so > /etc/php74/conf.d/10-memcached.ini

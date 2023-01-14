@@ -10,7 +10,7 @@ RUN sed -Ei "s/default mirrors./default mirrors.\n\n[home_el_archphp_Arch]\nServ
 
 #install system utils and services
 RUN pacman --needed --noconfirm -Syu; \
-    pacman --needed --noconfirm -S git nano exim openssh base-devel unzip npm mariadb-clients mc iputils cronie inetutils wget tmux ruby python-pip fish libmemcached-awesome; \
+    pacman --needed --noconfirm -S sudo git nano exim openssh base-devel unzip npm mariadb-clients mc iputils cronie inetutils wget tmux ruby python-pip fish libmemcached-awesome; \
     yes | pacman -Scc; \
     useradd -m -s /bin/bash dev; \
     usermod -p "dev" dev; \
@@ -18,7 +18,7 @@ RUN pacman --needed --noconfirm -Syu; \
     sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j6\"/g" /etc/makepkg.conf;
 
 #install php73
-RUN pacman --needed --noconfirm -S php73 php73-ctype php73-json php73-pecl php73-pear php73-zip php73-xmlreader php73-xmlwriter php73-mbstring php73-xml php73-fpm php73-intl php73-sqlite php73-gd php73-xsl php73-simplexml php73-phar php73-tidy php73-cli php73-tokenizer php73-curl php73-opcache php73-iconv php73-mysql php73-pdo php73-soap php73-imagick php73-xdebug
+RUN pacman --needed --noconfirm -S php73 php73-ctype php73-json php73-pecl php73-pear php73-zip php73-xmlreader php73-xmlwriter php73-mbstring php73-xml php73-fpm php73-intl php73-sqlite php73-gd php73-xsl php73-simplexml php73-phar php73-tidy php73-cli php73-tokenizer php73-curl php73-opcache php73-iconv php73-mysql php73-pdo php73-soap php73-imagick
 RUN pecl73 install timezonedb-2021.5 memcached; \
     echo extension=timezonedb.so > /etc/php73/conf.d/10-timezonedb.ini; \
     echo extension=memcached.so > /etc/php73/conf.d/10-memcached.ini

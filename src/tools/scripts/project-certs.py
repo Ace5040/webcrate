@@ -41,7 +41,7 @@ for projectname,project in projects.items():
             path = f'/webcrate/letsencrypt-meta/well-known/{project.name}'
             if not os.path.isdir(path):
               os.system(f'mkdir -p {path}')
-            os.system(f'certbot certonly --keep-until-expiring --renew-with-new-domains --allow-subset-of-names --config-dir /webcrate/letsencrypt --cert-name {project.name} --expand --webroot --webroot-path {path} -d {domains}')
+            os.system(f'certbot certonly --key-type ecdsa --keep-until-expiring --renew-with-new-domains --allow-subset-of-names --config-dir /webcrate/letsencrypt --cert-name {project.name} --expand --webroot --webroot-path {path} -d {domains}')
             print(f'certificate for {project.name} - generated')
             nginx_reload_needed = True
 

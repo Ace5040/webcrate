@@ -46,9 +46,13 @@ if [[ ! -d "./var/grafana/data" ]] ; then
   writeLog "Init grafana folders and generate password"
   mkdir -p "./var/grafana/data"
   mkdir -p "./var/grafana/log"
-  GRAFANA_PASS=`docker run --rm ace5040/webcrate-tools:stable /webcrate/pwgen.sh`
-  echo "user=admin" > ./var/secrets/grafana.secret
-  echo "password=\"$GRAFANA_PASS\"" >> ./var/secrets/grafana.secret
+  if [[ ! -f "./var/secrets/grafana.secret" ]] ; then
+    GRAFANA_PASS=`docker run --rm ace5040/webcrate-tools:stable /webcrate/pwgen.sh`
+    echo "user=admin" > ./var/secrets/grafana.secret
+    echo "password=\"$GRAFANA_PASS\"" >> ./var/secrets/grafana.secret
+  else
+    GRAFANA_PASS=`grep 'password=' ./var/secrets/grafana.secret | sed -e 's/password=//' -e 's/^"//' -e 's/"$//'`
+  fi
 fi
 
 if [[ ! -f "./var/secrets/webcrate.secret" ]] ; then

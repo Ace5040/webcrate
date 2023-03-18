@@ -74,8 +74,9 @@ function Build() {
     && [ "$BUILDTARGET" != "admin" ]\
     && [ "$BUILDTARGET" != "dnsmasq" ]\
     && [ "$BUILDTARGET" != "ftp" ]\
+    && [ "$BUILDTARGET" != "stats" ]\
   ;then
-    echo "Unknown target $1. Please use one of: all, nginx, tools, core, admin, dnsmasq"
+    echo "Unknown target $1. Please use one of: all, nginx, tools, core, admin, dnsmasq, stats"
     exit 1
   fi
   if [ "$2" = "-c" ] || [ "$3" = "-c" ] || [ "$2" = "-cu" ] || [ "$3" = "-cu" ] || [ "$2" = "-uc" ] || [ "$3" = "-uc" ] || [ "$2" = "--no-cache" ] || [ "$3" = "--no-cache" ]; then
@@ -107,6 +108,9 @@ function Build() {
   if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "ftp" ]; then
     docker build -t ace5040/webcrate-ftp:stable ./src/ftp$NOCACHE
   fi
+  if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "stats" ]; then
+    docker build -t ace5040/webcrate-stats:stable ./src/stats$NOCACHE
+  fi
 }
 
 function Pull() {
@@ -120,6 +124,7 @@ function Pull() {
   docker pull ace5040/webcrate-tools:stable
   docker pull ace5040/webcrate-nginx:stable
   docker pull ace5040/webcrate-dnsmasq:stable
+  docker pull ace5040/webcrate-stats:stable
   docker pull ace5040/doctohtml:legacy
   docker pull ace5040/htmltopdf:latest
   docker pull memcached:1
@@ -141,9 +146,10 @@ function Push() {
     && [ "$IMAGE" != "core" ]\
     && [ "$IMAGE" != "admin" ]\
     && [ "$IMAGE" != "dnsmasq" ]\
-    && [ "$IMAGE" != "ftp" ];\
+    && [ "$IMAGE" != "ftp" ]\
+    && [ "$IMAGE" != "stats" ];\
   then
-    echo "Unknown image $1. Please use one of: all, nginx, tools, core, admin"
+    echo "Unknown image $1. Please use one of: all, nginx, tools, core, admin, stats"
     exit 1
   fi
   if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "nginx" ]; then
@@ -167,6 +173,9 @@ function Push() {
   fi
   if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "dnsmasq" ]; then
     docker push ace5040/webcrate-dnsmasq:stable
+  fi
+  if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "stats" ]; then
+    docker push ace5040/webcrate-stats:stable
   fi
 }
 

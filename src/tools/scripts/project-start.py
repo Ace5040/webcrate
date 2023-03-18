@@ -3,6 +3,7 @@
 import os
 import sys
 import yaml
+import idna
 from munch import munchify
 from log import log
 
@@ -83,11 +84,10 @@ for projectname,project in projects.items():
         f'-e WEBCRATE_GID={WEBCRATE_GID} '
         f'-e WEBCRATE_PROJECT={projectname} '
         f'-e WEBCRATE_PROJECT_PASSWORD={project_password} '
-        f'-e WEBCRATE_DOMAIN={project_domain} '
+        f'-e WEBCRATE_DOMAIN={idna.decode(project_domain)} '
         f'-v /etc/localtime:/etc/localtime:ro '
         f'{PROJECT_VOLUME} '
         f'-v {WEBCRATE_PWD}/var/crontabs/{projectname}:/var/spool/cron/{projectname} '
-        f'-v {WEBCRATE_PWD}/config/telegraf:/etc/telegraf/telegraf.d:ro '
         f'-v {WEBCRATE_PWD}/projects.yml:/webcrate/projects.yml:ro '
         f'-v {WEBCRATE_PWD}/var/ssh:/webcrate/ssh_keys '
         f'-v {WEBCRATE_PWD}/var/meta:/webcrate/meta '

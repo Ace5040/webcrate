@@ -1,31 +1,25 @@
 apiVersion: 1
 
 datasources:
-- name: InfluxDB
-  # <string, required> datasource type. Required
-  type: influxdb
-  # <string, required> access mode. direct or proxy. Required
-  access: proxy
-  # <int> org id. will default to orgId 1 if not specified
+- id: 1
+  uid: "oTST1j-4z"
   orgId: 1
-  # <string> url
-  url: http://webcrate-influxdb:8086
-  # <string> database password, if used
-  password:
-  # <string> database user, if used
-  user:
-  # <string> database name, if used
-  database: telegraf
-  # <bool> enable/disable basic auth
-  basicAuth:
-  # <string> basic auth username
-  basicAuthUser:
-  # <string> basic auth password
-  basicAuthPassword:
-  # <bool> enable/disable with credentials headers
-  withCredentials:
-  # <bool> mark as default datasource. Max one per org
-  isDefault: 1
-  version: 1
-  # <bool> allow users to edit datasources from the UI.
-  editable: false
+  name: "InfluxDB"
+  type: "influxdb"
+  typeName: "InfluxDB"
+  typeLogoUrl: "public/app/plugins/datasource/influxdb/img/influxdb_logo.svg"
+  access: "proxy"
+  url: "http://webcrate-influxdb:8086"
+  user: ""
+  database: ""
+  basicAuth: false
+  isDefault: true
+  jsonData:
+    defaultBucket: "webcrate"
+    httpMode: "POST"
+    organization: "webcrate"
+    timeInterval: "5s"
+    version: "Flux"
+  secureJsonData:
+    token: "webcrate"
+  readOnly: true

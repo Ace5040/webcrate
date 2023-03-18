@@ -144,7 +144,7 @@ if [ "$WEBCRATE_SERVICE_STATS" = true ]; then
     writeLog "Container grafana exists"
   else
     writeLog "Starting graphana container"
-    docker run -d --env-file=$(pwd)/.env --log-driver=none --name webcrate-grafana \
+    docker run -d --env-file=$(pwd)/.env --name webcrate-grafana \
       --network="webcrate_network" --dns=10.255.0.100 \
       --restart="unless-stopped" \
       --user "$uid:$gid" \
@@ -157,20 +157,26 @@ if [ "$WEBCRATE_SERVICE_STATS" = true ]; then
       -v $(pwd)/config/grafana/home.json:/home.json \
       -v $(pwd)/config/grafana/dashboard.yml:/etc/grafana/provisioning/dashboards/default.yml \
       -v $(pwd)/config/grafana/datasource.yml:/etc/grafana/provisioning/datasources/default.yml \
-      grafana/grafana:7.4.3 > /dev/null
+      grafana/grafana-oss:9.3.6 > /dev/null
   fi
   if docker container inspect webcrate-influxdb >/dev/null 2> /dev/null; then
     writeLog "Container webcrate-influxdb exists"
   else
     writeLog "Starting webcrate-influxdb container"
-    docker run -d --env-file=$(pwd)/.env --log-driver=none --name webcrate-influxdb \
+    docker run -d --env-file=$(pwd)/.env --name webcrate-influxdb \
       --network="webcrate_network" --dns=10.255.0.100 \
       --restart="unless-stopped" \
       --user "$uid:$gid" \
-      -e INFLUXDB_DB=telegraf \
+      -v $(pwd)/var/influxdb:/var/lib/influxdb2 \
+      -e DOCKER_INFLUXDB_INIT_MODE=setup \
+      -e DOCKER_INFLUXDB_INIT_USERNAME=influxdb \
+      -e DOCKER_INFLUXDB_INIT_PASSWORD=influxdb \
+      -e DOCKER_INFLUXDB_INIT_ORG=webcrate \
+      -e DOCKER_INFLUXDB_INIT_BUCKET=webcrate \
+      -e DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=webcrate \
       -v /etc/localtime:/etc/localtime:ro \
       -v $(pwd)/var/influxdb:/var/lib/influxdb \
-      influxdb:1.8-alpine > /dev/null
+      influxdb:2.6-alpine > /dev/null
   fi
   if [ "$GRAFANA_PASS" != "" ]; then
     sleep 10; docker exec --user $uid:$gid webcrate-grafana grafana-cli admin reset-admin-password "$GRAFANA_PASS"
@@ -278,4 +284,17 @@ else
     -v $(pwd)/var/nginx:/webcrate/nginx \
     -v $(pwd)/var/php_pools:/webcrate/php_pools \
     ace5040/webcrate-tools:stable > /dev/null
+fi
+
+if docker container inspect webcrate-stats >/dev/null 2> /dev/null; then
+  writeLog "Container webcrate-stats exists"
+else
+  writeLog "Starting webcrate-stats container"
+  docker run -d --env-file=$(pwd)/.env --hostname webcrate-stats --name webcrate-stats \
+    --network="webcrate_network" --dns=10.255.0.100 \
+    --restart="unless-stopped" \
+    $PROJECTS_VOLUMES \
+    -v $DOCKER_SOCKET:/var/run/docker.sock \
+    -v /etc/localtime:/etc/localtime:ro \
+    ace5040/webcrate-stats:stable > /dev/null
 fi

@@ -2,24 +2,21 @@ FROM archlinux:latest
 
 #install system utils and services
 RUN pacman --needed --noconfirm -Syu && \
-    pacman --needed --noconfirm -S git nano openssh base-devel unzip composer npm mc iputils cronie inetutils wget tmux ruby python-pip python-virtualenv fish exim postgresql-libs libjpeg && \
+    pacman --needed --noconfirm -S git nano openssh base-devel unzip composer npm mc iputils cronie inetutils wget tmux ruby python-pip python-virtualenv fish exim postgresql-libs libjpeg gunicorn && \
     yes | pacman -Scc && \
     useradd -m -s /bin/bash dev && \
     usermod -p "dev" dev && \
     echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo && \
     sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j6\"/g" /etc/makepkg.conf;
 
+WORKDIR /home/dev
+USER dev
+
 #install docker-systemctl-replacement-git
 RUN git clone https://aur.archlinux.org/docker-systemctl-replacement-git.git && \
     cd docker-systemctl-replacement-git && \
     makepkg -scir --nocheck --noconfirm --skipchecksums && \
     rm -rf /home/dev/docker-systemctl-replacement-git
-
-#install gunicorn
-RUN git clone https://aur.archlinux.org/gunicorn.git && \
-    cd gunicorn && \
-    makepkg -scir --nocheck --noconfirm --skipchecksums && \
-    rm -rf /home/dev/gunicorn
 
 #misc install and config
 USER root

@@ -72,7 +72,7 @@
       },
       "id": 7,
       "links": [],
-      "maxDataPoints": 100,
+      "maxDataPoints": 1,
       "options": {
         "colorMode": "background",
         "graphMode": "none",
@@ -156,7 +156,7 @@
       },
       "id": 12,
       "links": [],
-      "maxDataPoints": 500,
+      "maxDataPoints": 1,
       "options": {
         "orientation": "horizontal",
         "reduceOptions": {
@@ -271,7 +271,7 @@
       "id": 18,
       "interval": "",
       "links": [],
-      "maxDataPoints": 500,
+      "maxDataPoints": 1,
       "options": {
         "orientation": "horizontal",
         "reduceOptions": {
@@ -289,45 +289,11 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "WcUS1a04k"
+            "uid": "oTST1j-4z"
           },
-          "dsType": "influxdb",
-          "groupBy": [
-            {
-              "params": [
-                "$interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
           "hide": false,
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "from(bucket: \"webcrate\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"mem\" and r._field == \"used_percent\")",
-          "rawQuery": true,
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              }
-            ]
-          ],
-          "tags": []
+          "query": "from(bucket: \"webcrate\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"mem\" and r._field == \"used_percent\")\n  |> last()",
+          "refId": "A"
         }
       ],
       "title": "Memory",
@@ -387,7 +353,7 @@
       "id": 8,
       "interval": "",
       "links": [],
-      "maxDataPoints": 500,
+      "maxDataPoints": 1,
       "options": {
         "orientation": "horizontal",
         "reduceOptions": {
@@ -405,45 +371,11 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "WcUS1a04k"
+            "uid": "oTST1j-4z"
           },
-          "dsType": "influxdb",
-          "groupBy": [
-            {
-              "params": [
-                "$interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
           "hide": false,
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "from(bucket: \"webcrate\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"system\" and r._field == \"load1\")\n",
-          "rawQuery": true,
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              }
-            ]
-          ],
-          "tags": []
+          "query": "from(bucket: \"webcrate\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"system\" and r._field == \"load1\")\n  |> last()",
+          "refId": "A"
         }
       ],
       "title": "load 1",
@@ -503,7 +435,7 @@
       "id": 14,
       "interval": "",
       "links": [],
-      "maxDataPoints": 500,
+      "maxDataPoints": 1,
       "options": {
         "orientation": "horizontal",
         "reduceOptions": {
@@ -521,45 +453,11 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "WcUS1a04k"
+            "uid": "oTST1j-4z"
           },
-          "dsType": "influxdb",
-          "groupBy": [
-            {
-              "params": [
-                "$interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
           "hide": false,
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "from(bucket: \"webcrate\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"system\" and r._field == \"load5\")\n",
-          "rawQuery": true,
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              }
-            ]
-          ],
-          "tags": []
+          "query": "from(bucket: \"webcrate\") |> range(start: v.timeRangeStart, stop:v.timeRangeStop) |> filter(fn: (r) => r._measurement == \"system\" and r._field == \"load5\") |> last()",
+          "refId": "A"
         }
       ],
       "title": "load 5",
@@ -619,7 +517,7 @@
       "id": 15,
       "interval": "",
       "links": [],
-      "maxDataPoints": 500,
+      "maxDataPoints": 1,
       "options": {
         "orientation": "horizontal",
         "reduceOptions": {
@@ -637,45 +535,11 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "WcUS1a04k"
+            "uid": "oTST1j-4z"
           },
-          "dsType": "influxdb",
-          "groupBy": [
-            {
-              "params": [
-                "$interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
           "hide": false,
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "from(bucket: \"webcrate\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"system\" and r._field == \"load15\")\n",
-          "rawQuery": true,
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              }
-            ]
-          ],
-          "tags": []
+          "query": "from(bucket: \"webcrate\") |> range(start: v.timeRangeStart, stop:v.timeRangeStop) |> filter(fn: (r) => r._measurement == \"system\" and r._field == \"load15\")  |> last()",
+          "refId": "A"
         }
       ],
       "title": "load 15",
@@ -698,7 +562,7 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 3,
+            "fillOpacity": 10,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
@@ -749,7 +613,7 @@
       },
       "id": 24,
       "links": [],
-      "maxDataPoints": 500,
+      "maxDataPoints": 60,
       "options": {
         "legend": {
           "calcs": [],
@@ -765,55 +629,13 @@
       "pluginVersion": "9.3.6",
       "targets": [
         {
-          "alias": "load1",
           "datasource": {
             "type": "influxdb",
-            "uid": "WcUS1a04k"
+            "uid": "oTST1j-4z"
           },
-          "dsType": "influxdb",
-          "groupBy": [
-            {
-              "params": [
-                "$interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "host"
-              ],
-              "type": "tag"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
           "hide": false,
-          "interval": "$Interval",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "from(bucket: \"webcrate\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"system\" and (r._field == \"load1\" or r._field == \"load5\" or r._field == \"load15\") )\n",
-          "rawQuery": true,
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              }
-            ]
-          ],
-          "tags": []
+          "query": "from(bucket: \"webcrate\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"system\" and (r._field == \"load1\" or r._field == \"load5\" or r._field == \"load15\") )\n  |> aggregateWindow(every: $__interval, fn: mean)",
+          "refId": "B"
         }
       ],
       "title": "load",
@@ -834,7 +656,7 @@
             "axisColorMode": "text",
             "axisGridShow": true,
             "axisLabel": "",
-            "axisPlacement": "auto",
+            "axisPlacement": "left",
             "barAlignment": 0,
             "drawStyle": "line",
             "fillOpacity": 5,
@@ -863,6 +685,7 @@
               "mode": "off"
             }
           },
+          "decimals": 0,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -876,7 +699,8 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "percent"
         },
         "overrides": []
       },
@@ -888,13 +712,17 @@
       },
       "id": 2,
       "links": [],
-      "maxDataPoints": 500,
+      "maxDataPoints": 60,
       "options": {
         "legend": {
-          "calcs": [],
+          "calcs": [
+            "mean"
+          ],
           "displayMode": "table",
           "placement": "right",
-          "showLegend": true
+          "showLegend": true,
+          "sortBy": "Mean",
+          "sortDesc": true
         },
         "tooltip": {
           "mode": "single",
@@ -904,48 +732,13 @@
       "pluginVersion": "9.3.6",
       "targets": [
         {
-          "alias": "usage_idle",
           "datasource": {
             "type": "influxdb",
-            "uid": "WcUS1a04k"
+            "uid": "oTST1j-4z"
           },
-          "dsType": "influxdb",
-          "groupBy": [
-            {
-              "params": [
-                "$interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
           "hide": false,
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "from(bucket:\"webcrate\")\n    |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n    |> filter(fn: (r) => r._measurement == \"docker_container_cpu\" and r._field == \"usage_percent\" and r.WEBCRATE_DOMAIN != \"\")\n",
-          "rawQuery": true,
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              }
-            ]
-          ],
-          "tags": []
+          "query": "from(bucket:\"webcrate\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"docker_container_cpu\" and r._field == \"usage_percent\" and r.WEBCRATE_DOMAIN != \"\")\n  |> aggregateWindow(fn: mean, every: $__interval)",
+          "refId": "A"
         }
       ],
       "title": "sites cpu",
@@ -980,10 +773,10 @@
             "axisColorMode": "text",
             "axisGridShow": true,
             "axisLabel": "",
-            "axisPlacement": "auto",
+            "axisPlacement": "left",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 10,
+            "fillOpacity": 5,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
@@ -994,7 +787,7 @@
             "lineStyle": {
               "fill": "solid"
             },
-            "lineWidth": 2,
+            "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
@@ -1009,6 +802,7 @@
               "mode": "off"
             }
           },
+          "decimals": 0,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -1022,7 +816,8 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "percent"
         },
         "overrides": []
       },
@@ -1032,15 +827,19 @@
         "x": 12,
         "y": 5
       },
-      "id": 25,
+      "id": 28,
       "links": [],
-      "maxDataPoints": 500,
+      "maxDataPoints": 60,
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
+          "calcs": [
+            "mean"
+          ],
+          "displayMode": "table",
           "placement": "right",
-          "showLegend": true
+          "showLegend": true,
+          "sortBy": "Mean",
+          "sortDesc": true
         },
         "tooltip": {
           "mode": "single",
@@ -1050,48 +849,13 @@
       "pluginVersion": "9.3.6",
       "targets": [
         {
-          "alias": "usage_idle",
           "datasource": {
             "type": "influxdb",
-            "uid": "WcUS1a04k"
+            "uid": "oTST1j-4z"
           },
-          "dsType": "influxdb",
-          "groupBy": [
-            {
-              "params": [
-                "$interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
           "hide": false,
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "from(bucket:\"webcrate\")\n    |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n    |> filter(fn: (r) => r._measurement == \"docker_container_cpu\" and r._field == \"usage_percent\" and not exists r.WEBCRATE_DOMAIN)\n",
-          "rawQuery": true,
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              }
-            ]
-          ],
-          "tags": []
+          "query": "from(bucket:\"webcrate\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"docker_container_cpu\" and r._field == \"usage_percent\" and not exists r.WEBCRATE_DOMAIN)\n  |> aggregateWindow(fn: mean, every: $__interval)",
+          "refId": "A"
         }
       ],
       "title": "services cpu",
@@ -1106,6 +870,13 @@
             ],
             "mode": "columns",
             "valueLabel": "container_name"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "webcrate-(.*)",
+            "renamePattern": "$1"
           }
         }
       ],
@@ -1122,7 +893,7 @@
         "type": "influxdb",
         "uid": "oTST1j-4z"
       },
-      "decimals": 2,
+      "decimals": 1,
       "fieldConfig": {
         "defaults": {
           "unit": "decbytes"
@@ -1146,7 +917,7 @@
         "hideEmpty": true,
         "hideZero": true,
         "max": true,
-        "min": true,
+        "min": false,
         "rightSide": true,
         "show": true,
         "sort": "max",
@@ -1157,7 +928,7 @@
       "lines": true,
       "linewidth": 2,
       "links": [],
-      "maxDataPoints": 500,
+      "maxDataPoints": 60,
       "nullPointMode": "null",
       "options": {
         "alertThreshold": true
@@ -1173,49 +944,13 @@
       "steppedLine": false,
       "targets": [
         {
-          "alias": "available_percent",
           "datasource": {
             "type": "influxdb",
-            "uid": "WcUS1a04k"
+            "uid": "oTST1j-4z"
           },
-          "dsType": "influxdb",
-          "groupBy": [
-            {
-              "params": [
-                "$interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
           "hide": false,
-          "measurement": "mem",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "from(bucket:\"webcrate\")\n    |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n    |> filter(fn: (r) => r._measurement == \"docker_container_mem\" and r._field == \"usage\" and exists r.WEBCRATE_DOMAIN)\n",
-          "rawQuery": true,
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "available_percent"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              }
-            ]
-          ],
-          "tags": []
+          "query": "from(bucket:\"webcrate\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"docker_container_mem\" and r._field == \"usage\" and exists r.WEBCRATE_DOMAIN)\n  |> aggregateWindow(every: $__interval, fn: mean)",
+          "refId": "A"
         }
       ],
       "thresholds": [],
@@ -1255,7 +990,7 @@
           "format": "decbytes",
           "label": "",
           "logBase": 1,
-          "show": true
+          "show": false
         }
       ],
       "yaxis": {
@@ -1273,7 +1008,7 @@
         "type": "influxdb",
         "uid": "oTST1j-4z"
       },
-      "decimals": 2,
+      "decimals": 1,
       "fieldConfig": {
         "defaults": {
           "unit": "decbytes"
@@ -1289,7 +1024,7 @@
         "y": 14
       },
       "hiddenSeries": false,
-      "id": 26,
+      "id": 29,
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -1297,7 +1032,7 @@
         "hideEmpty": true,
         "hideZero": true,
         "max": true,
-        "min": true,
+        "min": false,
         "rightSide": true,
         "show": true,
         "sort": "max",
@@ -1308,7 +1043,7 @@
       "lines": true,
       "linewidth": 2,
       "links": [],
-      "maxDataPoints": 500,
+      "maxDataPoints": 60,
       "nullPointMode": "null",
       "options": {
         "alertThreshold": true
@@ -1324,49 +1059,13 @@
       "steppedLine": false,
       "targets": [
         {
-          "alias": "available_percent",
           "datasource": {
             "type": "influxdb",
-            "uid": "WcUS1a04k"
+            "uid": "oTST1j-4z"
           },
-          "dsType": "influxdb",
-          "groupBy": [
-            {
-              "params": [
-                "$interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
           "hide": false,
-          "measurement": "mem",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "from(bucket:\"webcrate\")\n    |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n    |> filter(fn: (r) => r._measurement == \"docker_container_mem\" and r._field == \"usage\" and not exists r.WEBCRATE_DOMAIN)\n",
-          "rawQuery": true,
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "available_percent"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              }
-            ]
-          ],
-          "tags": []
+          "query": "from(bucket:\"webcrate\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"docker_container_mem\" and r._field == \"usage\" and not exists r.WEBCRATE_DOMAIN)\n  |> aggregateWindow(every: $__interval, fn: mean)",
+          "refId": "A"
         }
       ],
       "thresholds": [],
@@ -1383,10 +1082,16 @@
           "options": {
             "keepLabels": [
               "WEBCRATE_DOMAIN",
-              "container_name",
-              "container_status"
+              "container_name"
             ],
             "valueLabel": "container_name"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "webcrate-(.*)",
+            "renamePattern": "$1"
           }
         }
       ],
@@ -1408,7 +1113,7 @@
           "format": "decbytes",
           "label": "",
           "logBase": 1,
-          "show": true
+          "show": false
         }
       ],
       "yaxis": {
@@ -1432,7 +1137,7 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 3,
+            "fillOpacity": 10,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
@@ -1498,11 +1203,11 @@
       },
       "id": 4,
       "links": [],
-      "maxDataPoints": 500,
+      "maxDataPoints": 60,
       "options": {
         "legend": {
           "calcs": [],
-          "displayMode": "table",
+          "displayMode": "list",
           "placement": "right",
           "showLegend": true
         },
@@ -1519,7 +1224,7 @@
             "uid": "oTST1j-4z"
           },
           "hide": false,
-          "query": "from(bucket: \"webcrate\")\n  |> range(start: 2023-03-16T22:42:21.701Z, stop:2023-03-18T22:42:21.701Z)\n  |> filter(fn: (r) => r._measurement == \"disk\" and r._field == \"used_percent\" )\n  |> drop(columns: [\"path\", \"fstype\", \"mode\"])\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n",
+          "query": "from(bucket: \"webcrate\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"disk\" and r._field == \"used_percent\" )\n  |> drop(columns: [\"path\", \"fstype\", \"mode\"])\n  |> aggregateWindow(every: $__interval, fn: mean)\n",
           "refId": "A"
         }
       ],
@@ -1528,6 +1233,7 @@
         {
           "id": "labelsToFields",
           "options": {
+            "mode": "columns",
             "valueLabel": "device"
           }
         }
@@ -1551,7 +1257,7 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 3,
+            "fillOpacity": 10,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
@@ -1574,7 +1280,7 @@
               "mode": "off"
             }
           },
-          "decimals": 2,
+          "decimals": 0,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -1606,22 +1312,6 @@
                 }
               }
             ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "disk.used_percent"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "percent"
-              },
-              {
-                "id": "custom.axisPlacement",
-                "value": "hidden"
-              }
-            ]
           }
         ]
       },
@@ -1631,13 +1321,13 @@
         "x": 12,
         "y": 23
       },
-      "id": 27,
+      "id": 30,
       "links": [],
-      "maxDataPoints": 500,
+      "maxDataPoints": 60,
       "options": {
         "legend": {
           "calcs": [],
-          "displayMode": "table",
+          "displayMode": "list",
           "placement": "right",
           "showLegend": true
         },
@@ -1654,7 +1344,7 @@
             "uid": "oTST1j-4z"
           },
           "hide": false,
-          "query": "from(bucket: \"webcrate\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"disk\" and r._field == \"used\" )\n  |> drop(columns: [\"path\", \"fstype\", \"mode\"])\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)",
+          "query": "from(bucket: \"webcrate\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"disk\" and r._field == \"used\" )\n  |> drop(columns: [\"path\", \"fstype\", \"mode\"])\n  |> aggregateWindow(every: $__interval, fn: mean)\n",
           "refId": "A"
         }
       ],
@@ -1663,6 +1353,7 @@
         {
           "id": "labelsToFields",
           "options": {
+            "mode": "columns",
             "valueLabel": "device"
           }
         }
@@ -1678,7 +1369,7 @@
     "list": []
   },
   "time": {
-    "from": "now-2d",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {
@@ -1709,7 +1400,7 @@
   },
   "timezone": "browser",
   "title": "Home",
-  "uid": "Wix2V3-4k",
-  "version": 5,
+  "uid": "gQ2zmgB4k",
+  "version": 4,
   "weekStart": ""
 }

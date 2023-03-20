@@ -958,7 +958,9 @@
           ],
           "displayMode": "table",
           "placement": "right",
-          "showLegend": true
+          "showLegend": true,
+          "sortBy": "Max",
+          "sortDesc": true
         },
         "tooltip": {
           "mode": "single",
@@ -1066,7 +1068,9 @@
           ],
           "displayMode": "table",
           "placement": "right",
-          "showLegend": true
+          "showLegend": true,
+          "sortBy": "Max",
+          "sortDesc": true
         },
         "tooltip": {
           "mode": "single",
@@ -1357,6 +1361,6 @@
   "timezone": "browser",
   "title": "Home",
   "uid": "Wix2V3-4k",
-  "version": 2,
+  "version": 4,
   "weekStart": ""
 }

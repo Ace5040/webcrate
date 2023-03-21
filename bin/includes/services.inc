@@ -157,7 +157,7 @@ if [ "$WEBCRATE_SERVICE_STATS" = true ]; then
       -v $(pwd)/config/grafana/home.json:/home.json \
       -v $(pwd)/config/grafana/dashboard.yml:/etc/grafana/provisioning/dashboards/default.yml \
       -v $(pwd)/config/grafana/datasource.yml:/etc/grafana/provisioning/datasources/default.yml \
-      grafana/grafana-oss:9.3.6 > /dev/null
+      grafana/grafana-oss:9.4.3 > /dev/null
   fi
   if docker container inspect webcrate-influxdb >/dev/null 2> /dev/null; then
     writeLog "Container webcrate-influxdb exists"

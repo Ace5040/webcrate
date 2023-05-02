@@ -134,6 +134,7 @@ function Pull() {
   docker pull postgres:12
   docker pull bitnami/phppgadmin:7
   docker pull solr:6
+  docker pull elasticsearch:7.17.9
   docker pull grafana/grafana-oss:9.4.3
   docker pull influxdb:2.6-alpine
 }

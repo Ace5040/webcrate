@@ -146,6 +146,9 @@ class ProjectType extends AbstractType
         ->add('Solr', CheckboxType::class, [
             'required' => false,
         ])
+        ->add('Elastic', CheckboxType::class, [
+            'required' => false,
+        ])
         ->add('mysql', CheckboxType::class, [
             'required' => false,
         ])

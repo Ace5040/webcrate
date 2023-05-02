@@ -143,6 +143,11 @@ class Project
      */
     private $Solr;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $Elastic;
+
     public function __construct()
     {
         $this->ftps = new ArrayCollection();
@@ -380,6 +385,7 @@ class Project
             'duplicity_filters' => !empty($duplicityFilters) ? $duplicityFilters : (object)[],
             'memcached' => (bool)$this->Memcached,
             'solr' => (bool)$this->Solr,
+            'elastic' => (bool)$this->Elastic,
             'mysql_db' => (bool)$this->mysql,
             'mysql5_db' => (bool)$this->mysql5,
             'postgresql_db' => (bool)$this->postgre,
@@ -629,6 +635,18 @@ class Project
     public function setSolr(bool $Solr): self
     {
         $this->Solr = $Solr;
+
+        return $this;
+    }
+
+    public function getElastic(): ?bool
+    {
+        return $this->Elastic;
+    }
+
+    public function setElastic(?bool $Elastic): self
+    {
+        $this->Elastic = $Elastic;
 
         return $this;
     }

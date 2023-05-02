@@ -63,7 +63,17 @@ for projectname,project in projects.items():
       SOLR_CORES = f'{SITES_ABSOLUTE_PATH}/{projectname}/var/solr/cores'
       os.system(f'mkdir -p {project.folder}/var/solr/logs')
       os.system(f'mkdir -p {project.folder}/var/solr/cores')
+      os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} {project.folder}/var/solr')
+      os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} {project.folder}/var/solr/logs')
+      os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} {project.folder}/var/solr/cores')
       PROJECT_SOLR = f'-v {SOLR_LOGS}:/opt/solr/server/logs -v {SOLR_CORES}:/opt/solr/server/solr/mycores'
+
+    if project.elastic:
+      ELASTIC_DATA = f'{SITES_ABSOLUTE_PATH}/{projectname}/var/elastic/data'
+      os.system(f'mkdir -p {project.folder}/var/elastic/data')
+      os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} {project.folder}/var/elastic')
+      os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} {project.folder}/var/elastic/data')
+      PROJECT_ELASTIC = f'-v {ELASTIC_DATA}:/usr/share/elasticsearch/data'
 
     PHP_CONFIGS=""
     if backend in ['php56', 'php73', 'php74', 'php81']:
@@ -119,6 +129,22 @@ for projectname,project in projects.items():
           f'{PROJECT_SOLR} '
           f'--entrypoint docker-entrypoint.sh '
           f'solr:6 solr -m 4096m -force -f > /dev/null')
+
+    if project.elastic:
+      if os.popen(f'docker container inspect webcrate-{projectname}-elsatic >/dev/null 2> /dev/null').read().strip():
+        log.write(f'Container webcrate-{projectname}-elsatic exists')
+      else:
+        log.write(f'Starting webcrate-{projectname}-elsatic container')
+        # os.system(f'docker run -d --env-file=/webcrate-readonly/.env --log-driver=none --name webcrate-{projectname}-elastic '
+        os.system(f'docker run -d --env-file=/webcrate-readonly/.env --name webcrate-{projectname}-elastic '
+          f'--network="webcrate_network_{projectname}" '
+          f'--restart="unless-stopped" '
+          f'-e "discovery.type=single-node" '
+          f'--user "{WEBCRATE_UID}:{WEBCRATE_GID}" '
+          f'-v /etc/localtime:/etc/localtime:ro '
+          f'{PROJECT_ELASTIC} '
+          f'--entrypoint docker-entrypoint.sh '
+          f'elasticsearch:7.17.9 > /dev/null')
 
     os.system(f'docker network connect --ip=10.{net_num}.250 webcrate_network_{projectname} webcrate-dnsmasq')
     os.system(f'docker network connect webcrate_network_{projectname} webcrate-mysql5')

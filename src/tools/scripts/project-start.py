@@ -58,7 +58,7 @@ for projectname,project in projects.items():
       os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} {project.folder}')
 
     PROJECT_VOLUME = f'-v {SITES_ABSOLUTE_PATH}/{projectname}:/home/{projectname}'
-    if project.solr:
+    if hasattr(project, 'solr') and project.solr:
       SOLR_LOGS = f'{SITES_ABSOLUTE_PATH}/{projectname}/var/solr/logs'
       SOLR_CORES = f'{SITES_ABSOLUTE_PATH}/{projectname}/var/solr/cores'
       os.system(f'mkdir -p {project.folder}/var/solr/logs')
@@ -68,7 +68,7 @@ for projectname,project in projects.items():
       os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} {project.folder}/var/solr/cores')
       PROJECT_SOLR = f'-v {SOLR_LOGS}:/opt/solr/server/logs -v {SOLR_CORES}:/opt/solr/server/solr/mycores'
 
-    if project.elastic:
+    if hasattr(project, 'elastic') and project.elastic:
       ELASTIC_DATA = f'{SITES_ABSOLUTE_PATH}/{projectname}/var/elastic/data'
       os.system(f'mkdir -p {project.folder}/var/elastic/data')
       os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} {project.folder}/var/elastic')
@@ -116,7 +116,7 @@ for projectname,project in projects.items():
           f'--restart="unless-stopped" '
           f'memcached:1 > /dev/null')
 
-    if project.solr:
+    if hasattr(project, 'solr') and project.solr:
       if os.popen(f'docker container inspect webcrate-{projectname}-solr >/dev/null 2> /dev/null').read().strip():
         log.write(f'Container webcrate-{projectname}-solr exists')
       else:
@@ -130,7 +130,7 @@ for projectname,project in projects.items():
           f'--entrypoint docker-entrypoint.sh '
           f'solr:6 solr -m 4096m -force -f > /dev/null')
 
-    if project.elastic:
+    if hasattr(project, 'elastic') and project.elastic:
       if os.popen(f'docker container inspect webcrate-{projectname}-elsatic >/dev/null 2> /dev/null').read().strip():
         log.write(f'Container webcrate-{projectname}-elsatic exists')
       else:
@@ -140,6 +140,8 @@ for projectname,project in projects.items():
           f'--network="webcrate_network_{projectname}" '
           f'--restart="unless-stopped" '
           f'-e "discovery.type=single-node" '
+          f'-e "discovery.type=single-node" '
+          f'-e "ES_JAVA_OPTS=-Xms8g -Xmx8g" '
           f'--user "{WEBCRATE_UID}:{WEBCRATE_GID}" '
           f'-v /etc/localtime:/etc/localtime:ro '
           f'{PROJECT_ELASTIC} '

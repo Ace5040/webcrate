@@ -26,9 +26,9 @@ for servicename, service in services.items():
     template = 'default';
     if os.path.isfile(f'/webcrate/nginx-templates/{service.name}-service.conf'):
       template = service.name
-    os.system(f'cp -rf /webcrate/nginx-templates/{template}-service.conf /webcrate/nginx/projects/{service.name}-service.conf')
+    os.system(f'cp -rf /webcrate/nginx-templates/{template}-service.conf /webcrate/nginx/confs/{service.name}-service.conf')
 
-    with open(f'/webcrate/nginx/projects/{service.name}-service.conf', 'r') as f:
+    with open(f'/webcrate/nginx/confs/{service.name}-service.conf', 'r') as f:
       conf = f.read()
       f.close()
 
@@ -37,7 +37,7 @@ for servicename, service in services.items():
     conf = conf.replace('%service%', service.name)
     conf = conf.replace('%port%', str(service.port))
 
-    with open(f'/webcrate/nginx/projects/{service.name}-service.conf', 'w') as f:
+    with open(f'/webcrate/nginx/confs/{service.name}-service.conf', 'w') as f:
       f.write(conf)
       f.close()
 
@@ -69,5 +69,5 @@ for servicename, service in services.items():
       f.write(f'{DOCKER_HOST_IP} {service.domain}\n')
       f.close()
 
-os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/nginx/projects')
+os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/nginx/confs')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/dnsmasq')

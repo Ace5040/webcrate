@@ -1,0 +1,7 @@
+test: #name
+  active: true #is active
+  domains: #domains list
+    - test.test
+    - test2.test
+  url: 'http://test3.test/redirect' #redirect destination
+  https: disabled #https type

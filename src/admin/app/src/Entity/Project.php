@@ -329,7 +329,7 @@ class Project
     public function getActualSha256Sum()
     {
         $projectName = $this->getName();
-        $path = "/webcrate/meta/${projectName}.checksum";
+        $path = "/webcrate/meta/$projectName.checksum";
         if ( file_exists($path) ) {
             return file_get_contents($path);
         } else {

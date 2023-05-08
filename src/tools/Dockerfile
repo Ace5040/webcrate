@@ -28,7 +28,7 @@ RUN chown root:root /bin/systemctl.py; \
 RUN systemctl enable cronie;
 WORKDIR /
 RUN mkdir -p /webcrate;
-COPY ["pwgen.sh", "ssl.conf", "gzip.conf", "redirect.conf", "/webcrate/"]
+COPY ["pwgen.sh", "ssl.conf", "redirect-ssl.conf", "gzip.conf", "redirect.conf", "/webcrate/"]
 COPY ["entrypoint.sh", "/"]
 COPY scripts /webcrate/scripts
 RUN chmod -R u+x /webcrate/scripts; \

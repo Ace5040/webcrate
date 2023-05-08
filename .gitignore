@@ -1,6 +1,7 @@
 /.env
 /var/*
 /projects.yml
+/redirects.yml
 /services.yml
 /config/nginx-templates/*
 /config/nginx/*

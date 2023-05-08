@@ -1,6 +1,5 @@
 module.exports = {
     outputDir: '../../public/build',
-//    publicPath: 'http://192.168.1.49:8080/build',
     publicPath: '/build',
     css: {
         sourceMap: true,
@@ -58,7 +57,10 @@ module.exports = {
         config.plugin('webpack-assets-manifest')
         .use(require('webpack-assets-manifest'))
         .tap(args => {
-            return [ {output: 'manifest.json', publicPath: true} ]
+            return [ {
+                output: 'manifest.json',
+                publicPath: true
+            } ]
         })
 
         //remove mains.js entry point
@@ -68,6 +70,8 @@ module.exports = {
             .entry('admin').add('./src/admin.js').end()
             .entry('admin-projects').add('./src/admin-projects.js').end()
             .entry('admin-project').add('./src/admin-project.js').end()
+            .entry('admin-redirects').add('./src/admin-redirects.js').end()
+            .entry('admin-redirect').add('./src/admin-redirect.js').end()
             .entry('icons').add('./src/icons/icons.js').end()
 
         //icon font generation

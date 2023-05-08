@@ -45,6 +45,8 @@ COPY pool.conf /etc/php/php-fpm.d/pool.conf
 COPY php.ini /etc/php/conf.d/user.ini
 RUN echo 'app ALL=(ALL) NOPASSWD: /webcrate/versions.py' | EDITOR='tee -a' visudo && \
     echo 'app ALL=(ALL) NOPASSWD: /webcrate/updateprojects.py' | EDITOR='tee -a' visudo && \
+    echo 'app ALL=(ALL) NOPASSWD: /webcrate/updateredirects.py' | EDITOR='tee -a' visudo && \
+    echo 'app ALL=(ALL) NOPASSWD: /webcrate/reload-redirect.py' | EDITOR='tee -a' visudo && \
     echo 'app ALL=(ALL) NOPASSWD: /webcrate/reload.py' | EDITOR='tee -a' visudo
 COPY app /app
 RUN mkdir /webcrate && \
@@ -64,11 +66,15 @@ COPY init-db.py /webcrate/init-db.py
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY versions.py /webcrate/versions.py
 COPY updateprojects.py /webcrate/updateprojects.py
+COPY updateredirects.py /webcrate/updateredirects.py
 COPY reload.py /webcrate/reload.py
+COPY reload-redirect.py /webcrate/reload-redirect.py
 COPY entrypoint.sh /entrypoint.sh
 CMD ["/entrypoint.sh"]
 RUN chmod u+x /webcrate/init-db.py && \
     chmod a+rxs /webcrate/versions.py && \
     chmod a+rxs /webcrate/updateprojects.py && \
+    chmod a+rxs /webcrate/updateredirects.py && \
     chmod a+rxs /webcrate/reload.py && \
+    chmod a+rxs /webcrate/reload-redirect.py && \
     chmod u+x /entrypoint.sh

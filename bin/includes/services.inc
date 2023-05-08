@@ -32,6 +32,7 @@ else
     -v $(pwd)/var/log:/webcrate/log \
     -v $(pwd)/var/secrets:/webcrate/secrets \
     -v $(pwd)/projects.yml:/webcrate/projects.yml \
+    -v $(pwd)/redirects.yml:/webcrate/redirects.yml \
     -v $(pwd)/services.yml:/webcrate/services.yml \
     ace5040/webcrate-admin:stable > /dev/null
 fi
@@ -209,14 +210,13 @@ else
     -e WEBCRATE_GID=$gid \
     $PROJECTS_HOMES \
     -v /etc/localtime:/etc/localtime:ro \
-    -v $(pwd)/projects.yml:/webcrate/projects.yml:ro \
     -v $(pwd)/var/letsencrypt:/webcrate/letsencrypt:ro \
     -v $(pwd)/var/letsencrypt-meta:/webcrate/letsencrypt-meta:ro \
     -v $(pwd)/var/openssl:/webcrate/openssl:ro \
     -v $(pwd)/var/log/nginx:/webcrate/log \
     -v $(pwd)/config/nginx:/webcrate/nginx-config:ro \
     -v $(pwd)/var/nginx:/webcrate/nginx:ro \
-    -v $(pwd)/var/nginx/projects:/etc/nginx/conf.d:ro \
+    -v $(pwd)/var/nginx/confs:/etc/nginx/conf.d:ro \
     ace5040/webcrate-nginx:stable > /dev/null
 fi
 
@@ -271,6 +271,7 @@ else
     -v $(pwd)/var/meta:/webcrate/meta \
     -v $(pwd)/var/crontabs:/webcrate/crontabs \
     -v $(pwd)/projects.yml:/webcrate/projects.yml:ro \
+    -v $(pwd)/redirects.yml:/webcrate/redirects.yml:ro \
     -v $(pwd)/services.yml:/webcrate/services.yml:ro \
     -v $(pwd)/var/letsencrypt:/webcrate/letsencrypt \
     -v $(pwd)/var/letsencrypt-meta:/webcrate/letsencrypt-meta \

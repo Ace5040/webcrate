@@ -14,12 +14,15 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use App\Repository\ProjectRepository;
+use App\Repository\RedirectRepository;
 use App\Repository\HttpsTypeRepository;
 use App\Repository\BackendRepository;
 use App\Repository\NginxTemplateRepository;
 use App\Entity\Project;
+use App\Entity\Redirect;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
+use App\Form\Type\RedirectType;
 use App\Form\Type\ProjectType;
 use App\Entity\Ftp;
 
@@ -28,14 +31,17 @@ class AdminController extends AbstractController
 
     private $cache;
     private $repository;
+    private $redirectsRepository;
     private $https_repository;
     private $backend_repository;
     private $nginx_template_repository;
+    private $manager;
 
-    public function __construct(CacheInterface $cache, ProjectRepository $repository, HttpsTypeRepository $https_repository, BackendRepository $backend_repository, NginxTemplateRepository $nginx_template_repository, EntityManagerInterface $manager)
+    public function __construct(CacheInterface $cache, ProjectRepository $repository, RedirectRepository $redirectsRepository, HttpsTypeRepository $https_repository, BackendRepository $backend_repository, NginxTemplateRepository $nginx_template_repository, EntityManagerInterface $manager)
     {
         $this->cache = $cache;
         $this->repository = $repository;
+        $this->redirectsRepository = $redirectsRepository;
         $this->https_repository = $https_repository;
         $this->backend_repository = $backend_repository;
         $this->nginx_template_repository = $nginx_template_repository;
@@ -89,6 +95,18 @@ class AdminController extends AbstractController
     }
 
     /**
+     * @Route("/admin/redirects", name="admin-redirects")
+     */
+    public function redirects()
+    {
+        $list = $this->redirectsRepository->getListForTable();
+        return $this->render('admin/redirects.html.twig', [
+            'controller_name' => 'AdminController',
+            'redirects' => $list,
+        ]);
+    }
+
+    /**
      * @Route("/admin/project/add", name="project-add")
      */
     public function newProject(Request $request)
@@ -112,13 +130,10 @@ class AdminController extends AbstractController
                 return $this->redirectToRoute('admin-projects');
             }
         }
-        // $sha256sum = $this->getSha256Sum();
-        // $actual_sha256sum = $this->getActualSha256Sum();
         return $this->render(
             'admin/project.html.twig',
             [
                 'form' => $form->createView(),
-                // 'actual' => $sha256sum === $actual_sha256sum
             ]
         );
     }
@@ -199,7 +214,7 @@ class AdminController extends AbstractController
         if ( !$project->isActual() ) {
             try {
                 $name = $project->getName();
-                $process = Process::fromShellCommandline("sudo /webcrate/reload.py ${name}");
+                $process = Process::fromShellCommandline("sudo /webcrate/reload.py $name");
                 $process->run();
                 if (!$process->isSuccessful()) {
                     throw new ProcessFailedException($process);
@@ -222,25 +237,18 @@ class AdminController extends AbstractController
      */
     public function projectReloadConfig()
     {
-        // $sha256sum = $this->getSha256Sum();
-        // $actual_sha256sum = $this->getActualSha256Sum();
-        // if ( $sha256sum !== $actual_sha256sum ) {
-            try {
-                $process = Process::fromShellCommandline('sudo /webcrate/reload.py');
-                $process->run();
-                if (!$process->isSuccessful()) {
-                    throw new ProcessFailedException($process);
-                }
-            } catch (IOExceptionInterface $exception) {
-                $debug['error'] = $exception->getMessage();
+        try {
+            $process = Process::fromShellCommandline('sudo /webcrate/reload.py');
+            $process->run();
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
             }
-            // $sha256sum = $this->getSha256Sum();
-            // $actual_sha256sum = $this->getActualSha256Sum();
-        // }
+        } catch (IOExceptionInterface $exception) {
+            $debug['error'] = $exception->getMessage();
+        }
         $response = new JsonResponse();
         $response->setData([
             'result' => 'ok',
-            // 'actual' => $sha256sum === $actual_sha256sum
         ]);
         return $response;
     }
@@ -391,6 +399,232 @@ class AdminController extends AbstractController
             $projects_list->$projectname = $project->toObject();
         }
         $ymlData = Yaml::dump($projects_list, 3, 2, Yaml::DUMP_OBJECT_AS_MAP);
+        return $ymlData;
+    }
+
+    /**
+     * @Route("/admin/redirect/add", name="redirect-add")
+     */
+    public function newRedirect(Request $request)
+    {
+        $redirect = new Redirect();
+        $form = $this->createForm(RedirectType::class, $redirect);
+        if ($request->isMethod('POST'))
+        {
+            $form->handleRequest($request);
+            if ($form->isSubmitted() && $form->isValid())
+            {
+                $redirect = $form->getData();
+                $this->manager->persist($redirect);
+                $this->manager->flush();
+                $this->updateRedirectsYaml();
+                return $this->redirectToRoute('admin-redirects');
+            }
+        }
+        return $this->render(
+            'admin/redirect.html.twig',
+            [
+                'form' => $form->createView()
+            ]
+        );
+    }
+
+    /**
+     * @Route("/admin/redirect/{name}", name="admin-redirect")
+     */
+    public function adminRedirect($name, Request $request)
+    {
+        $redirect = $this->redirectsRepository->loadByName($name);
+        $form = $this->createForm(RedirectType::class, $redirect);
+        if ($request->isMethod('POST'))
+        {
+            $form->handleRequest($request);
+            if ($form->isSubmitted() && $form->isValid())
+            {
+                $redirect = $form->getData();
+                $this->manager->persist($redirect);
+                $this->manager->flush();
+                $this->updateRedirectsYaml();
+                return $this->redirectToRoute('admin-redirects');
+            }
+        }
+        return $this->render(
+            'admin/redirect.html.twig',
+            [
+                'form' => $form->createView()
+            ]
+        );
+    }
+
+    /**
+     * @Route("/admin/redirect/{name}/delete", name="admin-redirect-delete")
+     */
+    public function redirectDelete($name)
+    {
+        $redirect = $this->redirectsRepository->loadByName($name);
+        $this->manager->remove($redirect);
+        $this->manager->flush();
+        $list = $this->redirectsRepository->getListForTable();
+        $this->updateRedirectsYaml();
+        $response = new JsonResponse();
+        $response->setData([
+            'result' => 'ok',
+            'redirects' => $list
+        ]);
+        return $response;
+    }
+
+    /**
+     * @Route("/admin/redirect/{name}/activate", name="admin-redirect-activate")
+     */
+    public function redirectActivate($name)
+    {
+        $redirect = $this->redirectsRepository->loadByName($name);
+        $redirect->setActive(true);
+        $this->manager->flush();
+        $list = $this->redirectsRepository->getListForTable();
+        $this->updateRedirectsYaml();
+        $response = new JsonResponse();
+        $response->setData([
+            'result' => 'ok',
+            'redirects' => $list
+        ]);
+        return $response;
+    }
+
+    /**
+     * @Route("/admin/redirect/{name}/reload", name="admin-redirect-reload")
+     */
+    public function redirectReload($name)
+    {
+        $redirect = $this->redirectsRepository->loadByName($name);
+        if ( !$redirect->isActual() ) {
+            try {
+                $name = $redirect->getName();
+                $process = Process::fromShellCommandline("sudo /webcrate/reload-redirect.py $name");
+                $process->run();
+                if (!$process->isSuccessful()) {
+                    throw new ProcessFailedException($process);
+                }
+            } catch (IOExceptionInterface $exception) {
+                $debug['error'] = $exception->getMessage();
+            }
+        }
+        $list = $this->redirectsRepository->getListForTable();
+        $response = new JsonResponse();
+        $response->setData([
+            'result' => 'ok',
+            'redirects' => $list
+        ]);
+        return $response;
+    }
+
+    /**
+     * @Route("/admin/reload-redirect-config", name="admin-reload-redirect-config")
+     */
+    public function redirectReloadConfig()
+    {
+        try {
+            $process = Process::fromShellCommandline('sudo /webcrate/reload-redirect.py');
+            $process->run();
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
+            }
+        } catch (IOExceptionInterface $exception) {
+            $debug['error'] = $exception->getMessage();
+        }
+        $response = new JsonResponse();
+        $response->setData([
+            'result' => 'ok'
+        ]);
+        return $response;
+    }
+
+    /**
+     * @Route("/admin/redirect/{name}/deactivate", name="admin-redirect-deactivate")
+     */
+    public function redirectDeactivate($name)
+    {
+        $redirect = $this->redirectsRepository->loadByName($name);
+        $redirect->setActive(false);
+        $this->manager->flush();
+        $list = $this->redirectsRepository->getListForTable();
+        $this->updateRedirectsYaml();
+        $response = new JsonResponse();
+        $response->setData([
+            'result' => 'ok',
+            'redirects' => $list
+        ]);
+        return $response;
+    }
+
+    /**
+     * @Route("/admin/import-redirects", name="import-redirects")
+     */
+    public function importRedirects(Request $request): Response
+    {
+        $file = $request->files->get('file');
+        $filename = $file->getClientOriginalName();
+        $filepath = $file->getPathname();
+        $redirects = Yaml::parseFile($filepath);
+        foreach ( $redirects as $redirectname => $redirect_obj ) {
+            $redirect_obj = (object)$redirect_obj;
+            $entity = $this->redirectsRepository->loadByName($redirect_obj->name);
+            if ( empty($entity) ) {
+                $redirect = new Redirect();
+                $redirect_obj->https = !empty($redirect_obj->https) ? $redirect_obj->https : 'disabled';
+                $redirect_obj->domains = !empty($redirect_obj->domains) ? $redirect_obj->domains : [$redirectname . '.test'];
+                $redirect->setName($redirectname);
+                $redirect->setName($redirectname);
+                $https = $this->https_repository->findByName($redirect_obj->https);
+                $redirect->setHttps($https);
+                $redirect->setDomains($redirect_obj->domains);
+                $options_array = [];
+                foreach ( $redirect_obj->nginx_options as $name => $value ) {
+                    $options_array[] = [ 'name' => $name, 'value' => $value ];
+                }
+
+
+                $this->manager->persist($redirect);
+            }
+        }
+        $this->manager->flush();
+        $this->updateRedirectsYaml();
+        $list = $this->redirectsRepository->getListForTable();
+        $response = new JsonResponse();
+        $response->setData([
+            'result' => 'ok',
+            'redirects' => $list
+        ]);
+
+        return $response;
+    }
+
+    public function updateRedirectsYaml()
+    {
+        $ymlData = $this->getRedirectsYmlData();
+        try {
+            $new_file_path = "/webcrate/updated-redirects.yml";
+            file_put_contents($new_file_path, $ymlData);
+            $process = Process::fromShellCommandline('sudo /webcrate/updateredirects.py');
+            $process->run();
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
+            }
+        } catch (IOExceptionInterface $exception) {
+            $debug['error'] = $exception->getMessage();
+        }
+    }
+
+    public function getRedirectsYmlData()
+    {
+        $redirects = $this->redirectsRepository->getList();
+        $redirects_list = (object)[];
+        foreach ( $redirects as $redirect ) {
+            $redirectname = $redirect->getName();
+            $redirects_list->$redirectname = $redirect->toObject();
+        }
+        $ymlData = Yaml::dump($redirects_list, 3, 2, Yaml::DUMP_OBJECT_AS_MAP);
         return $ymlData;
     }
 

@@ -58,6 +58,13 @@
     margin: 50px auto;
 }
 
+.redirect-edit-page {
+    width: 100%;
+    min-width: 320px;
+    max-width: 622px;
+    margin: 50px auto;
+}
+
 .form-group {
     border-bottom: 1px solid #ddd;
     padding-bottom: 15px;
@@ -109,7 +116,8 @@ fieldset .form-group {
 
 }
 
-#project_domains {
+#project_domains,
+#redirect_domains {
 
     .form-group {
         display: inline-block;

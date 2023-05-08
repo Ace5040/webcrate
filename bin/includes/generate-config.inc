@@ -36,10 +36,25 @@ docker run --rm --env-file=$(pwd)/.env --entrypoint /webcrate/scripts/parse-proj
   -v $(pwd)/var/nginx:/webcrate/nginx \
   -v $(pwd)/var/php_pools:/webcrate/php_pools \
   ace5040/webcrate-tools:stable
-
 writeLog "Parse projects ended"
-writeLog "Parse services started"
 
+writeLog "Parse redirects started"
+docker run --rm --env-file=$(pwd)/.env --entrypoint /webcrate/scripts/parse-redirects.py --name webcrate-tools \
+  -e WEBCRATE_UID=$uid \
+  -e WEBCRATE_GID=$gid \
+  -e WEBCRATE_PWD=$(pwd) \
+  -v $(pwd)/redirects.yml:/webcrate/redirects.yml:ro \
+  -v $(pwd)/var/log:/webcrate/log \
+  -v $(pwd)/var/meta:/webcrate/meta \
+  -v $(pwd)/config/nginx-templates:/webcrate/nginx-templates:ro \
+  -v $(pwd)/var/letsencrypt:/webcrate/letsencrypt:ro \
+  -v $(pwd)/var/openssl:/webcrate/openssl:ro \
+  -v $(pwd)/var/dnsmasq:/webcrate/dnsmasq \
+  -v $(pwd)/var/nginx:/webcrate/nginx \
+  ace5040/webcrate-tools:stable
+writeLog "Parse redirects ended"
+
+writeLog "Parse services started"
 docker run --rm --env-file=$(pwd)/.env --entrypoint /webcrate/scripts/parse-services.py --name webcrate-tools \
   -e WEBCRATE_PWD=$(pwd) \
   -v $(pwd)/services.yml:/webcrate/services.yml:ro \

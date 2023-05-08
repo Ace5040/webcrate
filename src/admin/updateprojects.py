@@ -8,5 +8,5 @@ with open('/webcrate/updated-projects.yml', 'r') as updated:
       projects.write(updated.read())
       projects.close()
   updated.close()
-os.system(f'rm /webcrate/webcrate/updated-projects.yml')
+os.system(f'rm /webcrate/updated-projects.yml')
 sys.exit(0)

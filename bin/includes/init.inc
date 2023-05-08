@@ -19,7 +19,7 @@ var_folders=(\
   "log/nginx"\
   "log/duplicity"\
   "log/graphana"\
-  "nginx/projects"\
+  "nginx/confs"\
   "nginx/ssl"\
   "nginx/gzip"\
   "nginx/redirect"\
@@ -67,6 +67,10 @@ fi
 if [[ ! -f "./projects.yml" ]] ; then
   writeLog "Create default projects.yml"
   cp ./projects.yml.example ./projects.yml
+fi
+if [[ ! -f "./redirects.yml" ]] ; then
+  writeLog "Create default redirects.yml"
+  cp ./redirects.yml.example ./redirects.yml
 fi
 if [[ ! -f "./services.yml" ]] ; then
   writeLog "Create default services.yml"

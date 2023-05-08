@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Webcrate - redirects list{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('chunk-vendors.css') }}">
+    <link rel="stylesheet" href="{{ asset('admin.css') }}">
+{% endblock %}
+{% block javascripts %}
+    <script src="{{ asset('chunk-vendors.js') }}"></script>
+    <script src="{{ asset('admin-redirects.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+    <script>
+        var user = '{{ app.user ? app.user.email : '' }}';
+        var redirects = {{ redirects|json_encode(constant('JSON_UNESCAPED_UNICODE'))|raw }};
+    </script>
+    <div id="header"></div>
+    <div id="app"></div>
+{% endblock %}

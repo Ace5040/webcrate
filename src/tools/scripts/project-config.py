@@ -27,7 +27,7 @@ os.system(f'rm /webcrate/nginx/block/{PROJECT_NAME}.conf > /dev/null 2>&1')
 os.system(f'rm /webcrate/nginx/auth/{PROJECT_NAME}.conf > /dev/null 2>&1')
 os.system(f'rm /webcrate/nginx/auth/{PROJECT_NAME}-*.password > /dev/null 2>&1')
 os.system(f'rm /webcrate/nginx/gzip/{PROJECT_NAME}.conf > /dev/null 2>&1')
-os.system(f'rm /webcrate/nginx/projects/{PROJECT_NAME}.conf > /dev/null 2>&1')
+os.system(f'rm /webcrate/nginx/confs/{PROJECT_NAME}.conf > /dev/null 2>&1')
 os.system(f'rm /webcrate/php_pools/{PROJECT_NAME}.conf > /dev/null 2>&1')
 os.system(f'rm /webcrate/dnsmasq/hosts/{PROJECT_NAME}.hosts > /dev/null 2>&1')
 os.system(f'rm /webcrate/meta/projects/{PROJECT_NAME}.config > /dev/null 2>&1')
@@ -163,7 +163,7 @@ for projectname,project in projects.items():
           f'{project.solr}'
           f'" >> /webcrate/meta/projects/{project.name}.config')
 
-        with open(f'/webcrate/nginx/projects/{project.name}.conf', 'w') as f:
+        with open(f'/webcrate/nginx/confs/{project.name}.conf', 'w') as f:
           f.write(conf)
           f.close()
 

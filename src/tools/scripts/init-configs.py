@@ -6,6 +6,9 @@ import time
 from munch import munchify
 import helpers
 
+with open('/webcrate/redirects.yml', 'r') as f:
+  redirects = munchify(yaml.safe_load(f))
+  f.close()
 with open('/webcrate/projects.yml', 'r') as f:
   projects = munchify(yaml.safe_load(f))
   f.close()
@@ -21,6 +24,11 @@ if helpers.init_openssl_root_conf():
   nginx_reload_needed = True
 if helpers.init_letsencrypt_conf():
   nginx_reload_needed = True
+
+#parse redirects
+for redirectname,redirect in redirects.items():
+  if os.popen(f'/webcrate/scripts/redirect-certs.py {redirectname}').read().strip() == 'True':
+    nginx_reload_needed = True
 
 #parse projects
 for projectname,project in projects.items():

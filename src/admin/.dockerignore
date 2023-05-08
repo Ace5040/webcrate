@@ -9,7 +9,7 @@ Dockerfile
 /app/var/
 /app/vendor/
 /app/logs/
-node_modules/
+/app/assets/admin/node_modules/
 ###< symfony/framework-bundle ###
 
 ###> symfony/phpunit-bridge ###

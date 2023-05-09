@@ -13,8 +13,8 @@ WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
 
 #cleanup configs
-os.system(f'rm /webcrate/nginx/ssl/* > /dev/null 2>&1')
-os.system(f'rm /webcrate/dnsmasq/hosts/* > /dev/null 2>&1')
+# os.system(f'rm /webcrate/nginx/ssl/* > /dev/null 2>&1')
+# os.system(f'rm /webcrate/dnsmasq/hosts/* > /dev/null 2>&1')
 os.system(f'rm /webcrate/meta/redirects/* > /dev/null 2>&1')
 
 for redirectname,redirect in redirects.items():

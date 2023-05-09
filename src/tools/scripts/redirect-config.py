@@ -20,16 +20,15 @@ SSH_PORT_START_NUMBER = 10000
 REDIRECT_NAME = sys.argv[1]
 
 #cleanup configs
-os.system(f'rm /webcrate/nginx/confs/{REDIRECT_NAME}.conf > /dev/null 2>&1')
-os.system(f'rm /webcrate/dnsmasq/hosts/{REDIRECT_NAME}.hosts > /dev/null 2>&1')
-os.system(f'rm /webcrate/meta/redirects/{REDIRECT_NAME}.config > /dev/null 2>&1')
+os.system(f'rm /webcrate/nginx/confs/redirect-{REDIRECT_NAME}.conf > /dev/null 2>&1')
+os.system(f'rm /webcrate/dnsmasq/hosts/redirect-{REDIRECT_NAME}.hosts > /dev/null 2>&1')
+os.system(f'rm /webcrate/meta/redirects/redirect-{REDIRECT_NAME}.config > /dev/null 2>&1')
 
 for redirectname,redirect in redirects.items():
   if REDIRECT_NAME == redirectname:
     dump = json.dumps(redirect, separators=(',', ':'), ensure_ascii=True)
+    redirect.name = f'redirect-{redirectname}'
     if redirect.active:
-      redirect.name = f'redirect-{redirectname}'
-
       if redirect.https == 'letsencrypt':
         if os.path.isdir(f'/webcrate/letsencrypt/live/{redirect.name}'):
           with open(f'/webcrate/redirect-ssl.conf', 'r') as f:

@@ -176,7 +176,7 @@ if [ "$WEBCRATE_SERVICE_STATS" = true ]; then
       -e DOCKER_INFLUXDB_INIT_BUCKET=webcrate \
       -e DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=webcrate \
       -v /etc/localtime:/etc/localtime:ro \
-      -v $(pwd)/var/influxdb:/var/lib/influxdb \
+      -v $(pwd)/var/influxdb:/var/lib/influxdb2 \
       influxdb:2.6-alpine > /dev/null
   fi
   if [ "$GRAFANA_PASS" != "" ]; then

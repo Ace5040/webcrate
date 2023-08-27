@@ -158,7 +158,7 @@ if [ "$WEBCRATE_SERVICE_STATS" = true ]; then
       -v $(pwd)/config/grafana/home.json:/home.json \
       -v $(pwd)/config/grafana/dashboard.yml:/etc/grafana/provisioning/dashboards/default.yml \
       -v $(pwd)/config/grafana/datasource.yml:/etc/grafana/provisioning/datasources/default.yml \
-      grafana/grafana-oss:9.4.3 > /dev/null
+      grafana/grafana-oss:9.5.8 > /dev/null
   fi
   if docker container inspect webcrate-influxdb >/dev/null 2> /dev/null; then
     writeLog "Container webcrate-influxdb exists"
@@ -177,7 +177,7 @@ if [ "$WEBCRATE_SERVICE_STATS" = true ]; then
       -e DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=webcrate \
       -v /etc/localtime:/etc/localtime:ro \
       -v $(pwd)/var/influxdb:/var/lib/influxdb2 \
-      influxdb:2.6-alpine > /dev/null
+      influxdb:2.7.1 > /dev/null
   fi
   if [ "$GRAFANA_PASS" != "" ]; then
     sleep 10; docker exec --user $uid:$gid webcrate-grafana grafana-cli admin reset-admin-password "$GRAFANA_PASS"

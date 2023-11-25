@@ -1,12 +1,12 @@
 FROM archlinux:latest
 
 #php81 repo
-RUN sed -Ei "s/default mirrors./default mirrors.\n\n[home_el_archphp_Arch]\nServer = https:\/\/download.opensuse.org\/repositories\/home:\/el:\/archphp\/Arch\/\$arch/g" /etc/pacman.conf && \
-    key=$(curl -fsSL https://download.opensuse.org/repositories/home:el:archphp/Arch/$(uname -m)/home_el_archphp_Arch.key) && \
-    fingerprint=$(gpg --quiet --with-colons --import-options show-only --import --fingerprint <<< "${key}" | awk -F: '$1 == "fpr" { print $10 }') && \
-    pacman-key --init && \
-    pacman-key --add - <<< "${key}" && \
-    pacman-key --lsign-key "${fingerprint}";
+#RUN sed -Ei "s/default mirrors./default mirrors.\n\n[home_el_archphp_Arch]\nSigLevel = Never\nServer = https:\/\/download.opensuse.org\/repositories\/home:\/el:\/archphp\/Arch\/\$arch/g" /etc/pacman.conf && \
+#    key=$(curl -fsSL https://download.opensuse.org/repositories/home:el:archphp/Arch/$(uname -m)/home_el_archphp_Arch.key) && \
+#    fingerprint=$(gpg --quiet --with-colons --import-options show-only --import --fingerprint <<< "${key}" | awk -F: '$1 == "fpr" { print $10 }') && \
+#    pacman-key --init && \
+#    pacman-key --add - <<< "${key}" && \
+#    pacman-key --lsign-key "${fingerprint}";
 
 #install system utils and services
 RUN pacman --needed --noconfirm -Syu && \
@@ -17,15 +17,32 @@ RUN pacman --needed --noconfirm -Syu && \
     echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo && \
     sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j6\"/g" /etc/makepkg.conf;
 
-#install php81
-RUN pacman --needed --noconfirm -S php81 php81-fileinfo php81-ctype php81-pecl php81-pear php81-zip php81-xmlreader php81-xmlwriter php81-mbstring php81-openssl php81-xml php81-fpm php81-intl php81-sqlite php81-gd php81-xsl php81-simplexml php81-phar php81-tidy php81-cli php81-tokenizer php81-curl php81-opcache php81-iconv php81-mysql php81-pdo php81-soap php81-imagick
-RUN pecl81 install timezonedb-2021.5 memcached && \
-    echo extension=timezonedb.so > /etc/php81/conf.d/10-timezonedb.ini && \
-    echo extension=memcached.so > /etc/php81/conf.d/10-memcached.ini
+#RUN sed -Ei "s/#XferCommand = \/usr\/bin\/wget --passive-ftp -c -O %o %u/XferCommand = \/usr\/bin\/wget --passive-ftp -c -O %o %u/g" /etc/pacman.conf
+#RUN sed -Ei "s/#XferCommand = \/usr\/bin\/curl -L -C - -f -o %o %u/XferCommand = \/usr\/bin\/curl -L -C - -f -o %o %u/g" /etc/pacman.conf
+#RUN find /var/cache/pacman/pkg/ -iname "*.part" -delete
+
+#install yay
+WORKDIR /home/dev/yay
+RUN chown dev:dev /home/dev/yay
+USER dev
+RUN git clone https://aur.archlinux.org/yay.git .; \
+    makepkg -scir --noconfirm; \
+    rm -rf /home/dev/yay
 
 WORKDIR /home/dev
 USER dev
 
+#install aur packages
+RUN yay --gpgflags "--keyserver hkp://keyserver.ubuntu.com" --noeditmenu --nodiffmenu --noconfirm --mflags --nocheck -S php81 php81-exif php81-fileinfo php81-ctype php81-pecl php81-pear php81-zip php81-xmlreader php81-xmlwriter php81-mbstring php81-openssl php81-xml php81-fpm php81-intl php81-sqlite php81-gd php81-xsl php81-simplexml php81-phar php81-tidy php81-cli php81-tokenizer php81-curl php81-opcache php81-iconv php81-mysql php81-pdo php81-soap php81-imagick; \
+    yes | yay -Scc; \
+    rm -rf /home/dev/.cache
+
+USER root
+RUN pecl81 install timezonedb-2021.5 memcached && \
+    echo extension=timezonedb.so > /etc/php81/conf.d/10-timezonedb.ini && \
+    echo extension=memcached.so > /etc/php81/conf.d/10-memcached.ini
+
+USER dev
 #install symfony-cli-bin
 RUN git clone https://aur.archlinux.org/symfony-cli-bin.git && \
     cd symfony-cli-bin && \
@@ -39,7 +56,10 @@ RUN git clone https://aur.archlinux.org/docker-systemctl-replacement-git.git && 
     rm -rf /home/dev/docker-systemctl-replacement-git
 
 #misc install and config
+
 USER root
+#install libreoffice
+RUN pacman --needed --noconfirm -S libreoffice ttf-liberation
 
 WORKDIR /root
 RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/latest/download/drush.phar && \
@@ -49,7 +69,7 @@ RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/late
     chmod +x composer.phar && \
     mv composer.phar /usr/bin/composer && \
     gem install compass --norc && \
-    pip install pyyml munch && \
+    pip install --break-system-packages pyyml munch setuptools && \
     chown root:root /bin/systemctl.py && \
     chmod a+x /bin/systemctl.py && \
     mv /bin/systemctl /bin/systemctl_original && \
@@ -88,7 +108,6 @@ RUN wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-
     cp ./ioncube/ioncube_loader_lin_8.1.so /usr/lib/php81/modules/ioncube_loader_lin.so && \
     rm -rf /root/ioncube && \
     rm -f /root/ioncube_loaders_lin_x86-64.tar.gz
-RUN pip install setuptools
 
 WORKDIR /
 COPY ["fishrc.fish", "/etc/fish/conf.d/"]

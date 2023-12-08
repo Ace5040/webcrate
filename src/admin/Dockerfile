@@ -13,7 +13,7 @@ RUN usermod -p "dev" dev
 RUN usermod -u 555 dev
 RUN groupmod -g 555 dev
 RUN echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo
-RUN sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j6\"/g" /etc/makepkg.conf
+RUN sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j12\"/g" /etc/makepkg.conf
 
 USER dev
 WORKDIR /home/dev
@@ -32,7 +32,7 @@ USER root
 
 RUN python -m ensurepip --upgrade && \
     pip3 install --upgrade pip && \
-    pip install pyyml munch && \
+    pip install --break-system-packages pyyml munch setuptools && \
     chown root:root /bin/systemctl.py && \
     chmod a+x /bin/systemctl.py && \
     mv /bin/systemctl /bin/systemctl_original && \

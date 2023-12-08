@@ -1,12 +1,12 @@
 FROM archlinux:latest
 
-#php56 repo
+#php repo
 RUN sed -Ei "s/default mirrors./default mirrors.\n\n[home_el_archphp_Arch]\nServer = https:\/\/download.opensuse.org\/repositories\/home:\/el:\/archphp\/Arch\/\$arch/g" /etc/pacman.conf && \
     key=$(curl -fsSL https://download.opensuse.org/repositories/home:el:archphp/Arch/$(uname -m)/home_el_archphp_Arch.key) && \
     fingerprint=$(gpg --quiet --with-colons --import-options show-only --import --fingerprint <<< "${key}" | awk -F: '$1 == "fpr" { print $10 }') && \
     pacman-key --init && \
     pacman-key --add - <<< "${key}" && \
-    pacman-key --lsign-key "${fingerprint}";
+    pacman-key --lsign-key "${fingerprint}"
 
 #install system utils and services
 RUN pacman --needed --noconfirm -Syu && \
@@ -15,7 +15,7 @@ RUN pacman --needed --noconfirm -Syu && \
     useradd -m -s /bin/bash dev && \
     usermod -p "dev" dev && \
     echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo && \
-    sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j6\"/g" /etc/makepkg.conf;
+    sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j12\"/g" /etc/makepkg.conf
 
 #install php56
 RUN pacman --needed --noconfirm -S php56 php56-fileinfo php56-ctype php56-json php56-pecl php56-pear php56-zip php56-xmlreader php56-xmlwriter php56-mbstring php56-xml php56-fpm php56-intl php56-sqlite php56-gd php56-xsl php56-simplexml php56-phar php56-tidy php56-cli php56-tokenizer php56-curl php56-opcache php56-iconv php56-mysql php56-pdo php56-soap php56-imagick
@@ -48,7 +48,7 @@ RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/down
     chmod +x composer.phar && \
     mv composer.phar /usr/bin/composer && \
     gem install compass --norc && \
-    pip install pyyml munch && \
+    pip install --break-system-packages pyyml munch setuptools && \
     chown root:root /bin/systemctl.py && \
     chmod a+x /bin/systemctl.py && \
     mv /bin/systemctl /bin/systemctl_original && \
@@ -70,7 +70,7 @@ RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/down
     mkdir -p /webcrate-bin && \
     ln -s /bin/php56 /webcrate-bin/php && \
     mkdir -p /webcrate-fish && \
-    chmod o-rwx /webcrate;
+    chmod o-rwx /webcrate
 
 #install fish
 WORKDIR /webcrate-fish/oh-my-fish
@@ -88,8 +88,6 @@ RUN wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-
     cp ./ioncube/ioncube_loader_lin_5.6.so /usr/lib/php56/modules/ioncube_loader_lin.so && \
     rm -rf /root/ioncube && \
     rm -f /root/ioncube_loaders_lin_x86-64.tar.gz
-
-RUN pip install setuptools
 
 WORKDIR /
 #copy scripts

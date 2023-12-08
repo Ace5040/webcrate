@@ -1,25 +1,13 @@
 FROM archlinux:latest
 
-#php81 repo
-#RUN sed -Ei "s/default mirrors./default mirrors.\n\n[home_el_archphp_Arch]\nSigLevel = Never\nServer = https:\/\/download.opensuse.org\/repositories\/home:\/el:\/archphp\/Arch\/\$arch/g" /etc/pacman.conf && \
-#    key=$(curl -fsSL https://download.opensuse.org/repositories/home:el:archphp/Arch/$(uname -m)/home_el_archphp_Arch.key) && \
-#    fingerprint=$(gpg --quiet --with-colons --import-options show-only --import --fingerprint <<< "${key}" | awk -F: '$1 == "fpr" { print $10 }') && \
-#    pacman-key --init && \
-#    pacman-key --add - <<< "${key}" && \
-#    pacman-key --lsign-key "${fingerprint}";
-
 #install system utils and services
 RUN pacman --needed --noconfirm -Syu && \
-    pacman --needed --noconfirm -S sudo git nano exim openssh base-devel unzip npm mariadb-clients mc iputils cronie inetutils wget tmux ruby python-pip fish libmemcached-awesome && \
+    pacman --needed --noconfirm -S sudo git nano exim openssh base-devel unzip npm mariadb-clients mc iputils cronie inetutils wget tmux ruby python-pip fish libmemcached-awesome libreoffice ttf-liberation fuse2 fuse3 && \
     yes | pacman -Scc && \
     useradd -m -s /bin/bash dev && \
     usermod -p "dev" dev && \
     echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo && \
-    sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j6\"/g" /etc/makepkg.conf;
-
-#RUN sed -Ei "s/#XferCommand = \/usr\/bin\/wget --passive-ftp -c -O %o %u/XferCommand = \/usr\/bin\/wget --passive-ftp -c -O %o %u/g" /etc/pacman.conf
-#RUN sed -Ei "s/#XferCommand = \/usr\/bin\/curl -L -C - -f -o %o %u/XferCommand = \/usr\/bin\/curl -L -C - -f -o %o %u/g" /etc/pacman.conf
-#RUN find /var/cache/pacman/pkg/ -iname "*.part" -delete
+    sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j12\"/g" /etc/makepkg.conf
 
 #install yay
 WORKDIR /home/dev/yay
@@ -33,8 +21,8 @@ WORKDIR /home/dev
 USER dev
 
 #install aur packages
-RUN yay --gpgflags "--keyserver hkp://keyserver.ubuntu.com" --noeditmenu --nodiffmenu --noconfirm --mflags --nocheck -S php81 php81-exif php81-fileinfo php81-ctype php81-pecl php81-pear php81-zip php81-xmlreader php81-xmlwriter php81-mbstring php81-openssl php81-xml php81-fpm php81-intl php81-sqlite php81-gd php81-xsl php81-simplexml php81-phar php81-tidy php81-cli php81-tokenizer php81-curl php81-opcache php81-iconv php81-mysql php81-pdo php81-soap php81-imagick; \
-    yes | yay -Scc; \
+RUN yay --gpgflags "--keyserver hkp://keyserver.ubuntu.com" --noeditmenu --nodiffmenu --noconfirm --mflags --nocheck -S php81 php81-exif php81-fileinfo php81-ctype php81-pecl php81-pear php81-zip php81-xmlreader php81-xmlwriter php81-mbstring php81-openssl php81-xml php81-fpm php81-intl php81-sqlite php81-gd php81-xsl php81-simplexml php81-phar php81-tidy php81-cli php81-tokenizer php81-curl php81-opcache php81-iconv php81-mysql php81-pdo php81-soap php81-imagick && \
+    yes | yay -Scc && \
     rm -rf /home/dev/.cache
 
 USER root
@@ -49,6 +37,12 @@ RUN git clone https://aur.archlinux.org/symfony-cli-bin.git && \
     makepkg -scir --nocheck --noconfirm --skipchecksums && \
     rm -rf /home/dev/symfony-cli-bin
 
+#install pdf2htmlex-appimage
+RUN git clone https://aur.archlinux.org/pdf2htmlex-appimage.git && \
+    cd pdf2htmlex-appimage && \
+    makepkg -scir --nocheck --noconfirm --skipchecksums && \
+    rm -rf /home/dev/pdf2htmlex-appimage
+
 #install docker-systemctl-replacement-git
 RUN git clone https://aur.archlinux.org/docker-systemctl-replacement-git.git && \
     cd docker-systemctl-replacement-git && \
@@ -56,11 +50,7 @@ RUN git clone https://aur.archlinux.org/docker-systemctl-replacement-git.git && 
     rm -rf /home/dev/docker-systemctl-replacement-git
 
 #misc install and config
-
 USER root
-#install libreoffice
-RUN pacman --needed --noconfirm -S libreoffice ttf-liberation
-
 WORKDIR /root
 RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/latest/download/drush.phar && \
     chmod +x drush.phar && \
@@ -90,7 +80,7 @@ RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/late
     mkdir -p /webcrate-bin && \
     ln -s /bin/php81 /webcrate-bin/php && \
     mkdir -p /webcrate-fish && \
-    chmod o-rwx /webcrate;
+    chmod o-rwx /webcrate
 
 #install fish
 WORKDIR /webcrate-fish/oh-my-fish

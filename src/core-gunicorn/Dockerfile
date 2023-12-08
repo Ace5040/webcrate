@@ -7,7 +7,7 @@ RUN pacman --needed --noconfirm -Syu && \
     useradd -m -s /bin/bash dev && \
     usermod -p "dev" dev && \
     echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo && \
-    sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j6\"/g" /etc/makepkg.conf;
+    sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j12\"/g" /etc/makepkg.conf
 
 WORKDIR /home/dev
 USER dev
@@ -22,7 +22,7 @@ RUN git clone https://aur.archlinux.org/docker-systemctl-replacement-git.git && 
 USER root
 WORKDIR /root
 RUN gem install compass --norc && \
-    pip install pyyml munch && \
+    pip install --break-system-packages pyyml munch setuptools && \
     chown root:root /bin/systemctl.py && \
     chmod a+x /bin/systemctl.py && \
     mv /bin/systemctl /bin/systemctl_original && \
@@ -39,7 +39,7 @@ RUN gem install compass --norc && \
     mkdir -p /webcrate && \
     mkdir -p /webcrate-bin && \
     mkdir -p /webcrate-fish && \
-    chmod o-rwx /webcrate;
+    chmod o-rwx /webcrate
 
 #install fish
 WORKDIR /webcrate-fish/oh-my-fish
@@ -48,7 +48,7 @@ RUN git clone https://github.com/oh-my-fish/oh-my-fish . && \
     rm -rf ./* && \
     cp /root/.config/fish/conf.d/omf.fish /etc/fish/conf.d/omf.fish && \
     fish -C "omf install cbjohnson" && \
-    cp /webcrate-fish/omf/themes/default/functions/fish_right_prompt.fish /webcrate-fish/omf/themes/cbjohnson/fish_right_prompt.fish;
+    cp /webcrate-fish/omf/themes/default/functions/fish_right_prompt.fish /webcrate-fish/omf/themes/cbjohnson/fish_right_prompt.fish
 COPY fish_prompt.fish /webcrate-fish/omf/themes/cbjohnson/fish_prompt.fish
 
 WORKDIR /

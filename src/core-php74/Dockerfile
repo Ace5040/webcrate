@@ -1,12 +1,12 @@
 FROM archlinux:latest
 
-#php74 repo
+#php repo
 RUN sed -Ei "s/default mirrors./default mirrors.\n\n[home_el_archphp_Arch]\nServer = https:\/\/download.opensuse.org\/repositories\/home:\/el:\/archphp\/Arch\/\$arch/g" /etc/pacman.conf && \
     key=$(curl -fsSL https://download.opensuse.org/repositories/home:el:archphp/Arch/$(uname -m)/home_el_archphp_Arch.key) && \
     fingerprint=$(gpg --quiet --with-colons --import-options show-only --import --fingerprint <<< "${key}" | awk -F: '$1 == "fpr" { print $10 }') && \
     pacman-key --init && \
     pacman-key --add - <<< "${key}" && \
-    pacman-key --lsign-key "${fingerprint}";
+    pacman-key --lsign-key "${fingerprint}"
 
 #install system utils and services
 RUN pacman --needed --noconfirm -Syu && \
@@ -15,7 +15,7 @@ RUN pacman --needed --noconfirm -Syu && \
     useradd -m -s /bin/bash dev && \
     usermod -p "dev" dev && \
     echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo && \
-    sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j6\"/g" /etc/makepkg.conf;
+    sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j12\"/g" /etc/makepkg.conf
 
 #install php74
 RUN pacman --needed --noconfirm -S php74 php74-fileinfo php74-ctype php74-json php74-pecl php74-pear php74-zip php74-xmlreader php74-xmlwriter php74-mbstring php74-openssl php74-xml php74-fpm php74-intl php74-sqlite php74-gd php74-xsl php74-simplexml php74-phar php74-tidy php74-cli php74-tokenizer php74-curl php74-opcache php74-iconv php74-mysql php74-pdo php74-soap php74-imagick
@@ -49,7 +49,7 @@ RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/late
     chmod +x composer.phar && \
     mv composer.phar /usr/bin/composer && \
     gem install compass --norc && \
-    pip install pyyml munch && \
+    pip install --break-system-packages pyyml munch setuptools && \
     chown root:root /bin/systemctl.py && \
     chmod a+x /bin/systemctl.py && \
     mv /bin/systemctl /bin/systemctl_original && \
@@ -70,7 +70,7 @@ RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/late
     mkdir -p /webcrate-bin && \
     ln -s /bin/php74 /webcrate-bin/php && \
     mkdir -p /webcrate-fish && \
-    chmod o-rwx /webcrate;
+    chmod o-rwx /webcrate
 
 #install fish
 WORKDIR /webcrate-fish/oh-my-fish
@@ -79,7 +79,7 @@ RUN git clone https://github.com/oh-my-fish/oh-my-fish . && \
     rm -rf ./* && \
     cp /root/.config/fish/conf.d/omf.fish /etc/fish/conf.d/omf.fish && \
     fish -C "omf install cbjohnson" && \
-    cp /webcrate-fish/omf/themes/default/functions/fish_right_prompt.fish /webcrate-fish/omf/themes/cbjohnson/fish_right_prompt.fish;
+    cp /webcrate-fish/omf/themes/default/functions/fish_right_prompt.fish /webcrate-fish/omf/themes/cbjohnson/fish_right_prompt.fish
 COPY fish_prompt.fish /webcrate-fish/omf/themes/cbjohnson/fish_prompt.fish
 
 #install ioncucbe
@@ -88,8 +88,6 @@ RUN wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-
     cp ./ioncube/ioncube_loader_lin_7.4.so /usr/lib/php74/modules/ioncube_loader_lin.so && \
     rm -rf /root/ioncube && \
     rm -f /root/ioncube_loaders_lin_x86-64.tar.gz
-
-RUN pip install setuptools
 
 WORKDIR /
 #copy scripts

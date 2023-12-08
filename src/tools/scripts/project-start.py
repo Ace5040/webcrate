@@ -87,6 +87,9 @@ for projectname,project in projects.items():
         os.system(f'echo "" > /webcrate/crontabs/{projectname}')
         os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/crontabs/{projectname}')
       os.system(f'docker run -d --env-file=/webcrate-readonly/.env --name {container_name} '
+        f'--device /dev/fuse '
+        f'--cap-add SYS_ADMIN '
+        f'--security-opt apparmor:unconfined '
         f'--network="webcrate_network_{projectname}" --dns=10.{net_num}.250 '
         f'--restart="unless-stopped" '
         f'-p "{ssh_port}:22" '

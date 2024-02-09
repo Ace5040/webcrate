@@ -168,7 +168,6 @@ if [ "$WEBCRATE_SERVICE_STATS" = true ]; then
       --network="webcrate_network" --dns=10.255.0.100 \
       --restart="unless-stopped" \
       --user "$uid:$gid" \
-      -v $(pwd)/var/influxdb:/var/lib/influxdb2 \
       -e DOCKER_INFLUXDB_INIT_MODE=setup \
       -e DOCKER_INFLUXDB_INIT_USERNAME=influxdb \
       -e DOCKER_INFLUXDB_INIT_PASSWORD=influxdb \

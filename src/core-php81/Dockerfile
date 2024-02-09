@@ -59,7 +59,7 @@ RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/late
     chmod +x composer.phar && \
     mv composer.phar /usr/bin/composer && \
     gem install compass --norc && \
-    pip install --break-system-packages pyyml munch setuptools && \
+    pip install --break-system-packages pyyml munch setuptools PyPDF2 python-docx && \
     chown root:root /bin/systemctl.py && \
     chmod a+x /bin/systemctl.py && \
     mv /bin/systemctl /bin/systemctl_original && \

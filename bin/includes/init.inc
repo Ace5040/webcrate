@@ -6,7 +6,8 @@ var_folders=(\
   "meta/projects"\
   "dnsmasq/hosts"\
   "crontabs"\
-  "influxdb"\
+  "influxdb/etc"\
+  "influxdb/data"\
   "mysql"\
   "mysql5"\
   "postgres"\

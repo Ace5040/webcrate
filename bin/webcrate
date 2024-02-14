@@ -132,7 +132,7 @@ function Pull() {
   docker pull mariadb:10
   docker pull phpmyadmin/phpmyadmin:5
   docker pull postgres:12
-  docker pull bitnami/phppgadmin:7
+  docker pull bitnami/phppgadmin-archived:7
   docker pull solr:6
   docker pull elasticsearch:7.17.9
   docker pull grafana/grafana-oss:9.5.15

@@ -111,7 +111,7 @@ else
     --restart="unless-stopped" \
     -e DATABASE_HOST=webcrate-postgres \
     -v /etc/localtime:/etc/localtime:ro \
-    bitnami/phppgadmin:7 > /dev/null
+    bitnami/phppgadmin-archived:7 > /dev/null
 fi
 
 if [ "$WEBCRATE_SERVICE_DOCTOHTML" = true ]; then

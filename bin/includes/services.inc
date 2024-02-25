@@ -183,7 +183,7 @@ fi
 if docker container inspect webcrate-nginx >/dev/null 2> /dev/null; then
   writeLog "Container webcrate-nginx exists"
 else
-  writeLog "Create nginx container"
+  writeLog "Starting nginx container"
   PROJECTS_HOMES=""
   for SITES_PATH in ${WEBCRATE_PROJECTS_FOLDERS[@]}
   do

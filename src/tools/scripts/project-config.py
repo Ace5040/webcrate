@@ -62,8 +62,15 @@ for projectname,project in projects.items():
             f.write(f'print "Welcome to webcrate. Happy coding!";\n')
             f.close()
         if project.backend == 'gunicorn':
-          with open(f'{project.folder}/{data_folder}/app.py', 'w') as f:
-            f.write(f'def app(environ, start_response):\n'
+          os.system(f'touch {project.folder}/{data_folder}/gunicorn.init')
+          path = "/".join(project.gunicorn_app_module.split(":")[0].split("."))
+          app_name = project.gunicorn_app_module.split(":")[1]
+          app_file_path = f'{project.folder}/{data_folder}/{path}.py'
+          app_file_dir = os.path.dirname(os.path.abspath(app_file_path))
+          if not os.path.isdir(f'{app_file_dir}'):
+            os.system(f'mkdir -p {app_file_dir}')
+          with open(f'{app_file_path}', 'w') as f:
+            f.write(f'def { app_name if app_name else "app"}(environ, start_response):\n'
             f'  data = b"Welcome to webcrate. Happy coding!"\n'
             f'  start_response("200 OK", [\n'
             f'  ("Content-Type", "text/plain"),\n'
@@ -71,7 +78,6 @@ for projectname,project in projects.items():
             f'  ])\n'
             f'  return iter([data])\n')
             f.close()
-          os.system(f'cd {project.folder}/{data_folder}; python -m venv env; source ./env/bin/activate; pip install gunicorn; pip freeze > requirements.txt; deactivate')
         os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} {project.folder}/{data_folder}')
 
       if not os.path.isdir(f'{project.folder}/log'):

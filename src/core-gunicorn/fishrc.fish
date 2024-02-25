@@ -15,3 +15,6 @@ end
 if test -d $HOME/$DATA_FOLDER/bin
     set PATH $HOME/$DATA_FOLDER/bin $PATH
 end
+pyenv init - | source
+pyenv install -s 3.10.13
+pyenv shell 3.10.13

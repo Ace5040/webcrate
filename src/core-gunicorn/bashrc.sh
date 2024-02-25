@@ -11,3 +11,6 @@ fi
 [ -d "$HOME/$DATA_FOLDER/bin" ] && PATH=$HOME/$DATA_FOLDER/bin:$PATH;
 alias ls='ls --color=auto'
 PS1='[$USER@$WEBCRATE_DOMAIN \W]\$ '
+pyenv init - | source
+pyenv install -s 3.10.13
+pyenv shell 3.10.13

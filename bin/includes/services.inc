@@ -53,7 +53,6 @@ else
     mariadb:5 > /dev/null
 fi
 
-
 if docker container inspect webcrate-mysql >/dev/null 2> /dev/null; then
   writeLog "Container webcrate-mysql exists"
 else
@@ -70,7 +69,6 @@ else
     mariadb:10 > /dev/null
 fi
 
-
 if docker container inspect webcrate-postgres >/dev/null 2> /dev/null; then
   writeLog "Container webcrate-postgres exists"
 else
@@ -84,7 +82,6 @@ else
     -v $(pwd)/var/postgres:/var/lib/postgresql/data \
     postgres:12 > /dev/null
 fi
-
 
 if docker container inspect webcrate-phpmyadmin >/dev/null 2> /dev/null; then
   writeLog "Container webcrate-phpmyadmin exists"
@@ -100,7 +97,6 @@ else
     -v $(pwd)/config/phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php:ro \
     phpmyadmin/phpmyadmin:5 > /dev/null
 fi
-
 
 if docker container inspect webcrate-phppgadmin >/dev/null 2> /dev/null; then
   writeLog "Container webcrate-phppgadmin exists"
@@ -201,7 +197,7 @@ else
       PROJECTS_HOMES="$PROJECTS_HOMES-v $SITES_ABSOLUTE_PATH/$project_name:/home/$project_name "
     done
   done
-  docker create --env-file=$(pwd)/.env --hostname webcrate-nginx --name webcrate-nginx \
+  docker run -d --env-file=$(pwd)/.env --hostname webcrate-nginx --name webcrate-nginx \
     --network="webcrate_network" \
     -p "${WEBCRATE_APP_HTTP_PORT}:1080" \
     -p "${WEBCRATE_APP_HTTPS_PORT}:1443" \

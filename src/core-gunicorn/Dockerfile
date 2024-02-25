@@ -2,7 +2,7 @@ FROM archlinux:latest
 
 #install system utils and services
 RUN pacman --needed --noconfirm -Syu && \
-    pacman --needed --noconfirm -S git nano openssh base-devel unzip composer npm mc iputils cronie inetutils wget tmux ruby python-pip python-virtualenv fish exim postgresql-libs libjpeg gunicorn && \
+    pacman --needed --noconfirm -S git nano openssh base-devel unzip composer npm mc iputils cronie inetutils wget tmux ruby pyenv python-yaml python-munch python-setuptools fish exim postgresql-libs libjpeg && \
     yes | pacman -Scc && \
     useradd -m -s /bin/bash dev && \
     usermod -p "dev" dev && \
@@ -22,7 +22,6 @@ RUN git clone https://aur.archlinux.org/docker-systemctl-replacement-git.git && 
 USER root
 WORKDIR /root
 RUN gem install compass --norc && \
-    pip install --break-system-packages pyyml munch setuptools && \
     chown root:root /bin/systemctl.py && \
     chmod a+x /bin/systemctl.py && \
     mv /bin/systemctl /bin/systemctl_original && \

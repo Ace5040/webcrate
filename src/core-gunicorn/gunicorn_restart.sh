@@ -21,7 +21,8 @@ if [[ $gunicorn_pids_count > 1 ]]; then
 
 else
   echo gunicorn process not found. starting new
-  source ~/$DATA_FOLDER/env/bin/activate
-  gunicorn --daemon --bind :9000 --name $user --user $user --group $user --pid ~/tmp/gunicorn.pid --error-logfile ~/log/gunicorn-error.log -c ~/$DATA_FOLDER/gunicorn.conf.py --chdir ~/$DATA_FOLDER --log-level DEBUG core.wsgi:application
-  deactivate
+  if [[ -f "~/$DATA_FOLDER/gunicorn.conf.py" ]] ; then
+    CONFIG=" -c ~/$DATA_FOLDER/gunicorn.conf.py"
+  fi
+  gunicorn --daemon --bind :9000 --name $user --user $user --group $user --pid ~/tmp/gunicorn.pid --error-logfile ~/log/gunicorn-error.log$CONFIG --chdir ~/$DATA_FOLDER core.wsgi:application
 fi

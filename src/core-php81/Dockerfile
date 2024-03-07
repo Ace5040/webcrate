@@ -2,7 +2,8 @@ FROM archlinux:latest
 
 #install system utils and services
 RUN pacman --needed --noconfirm -Syu && \
-    pacman --needed --noconfirm -S sudo git nano exim openssh base-devel unzip npm mariadb-clients mc iputils cronie inetutils wget tmux ruby python-pip fish libmemcached-awesome libreoffice ttf-liberation fuse2 fuse3 jdk11-openjdk && \
+    pacman --needed --noconfirm -S sudo git nano exim openssh base-devel unzip npm mariadb-clients mc iputils cronie inetutils \
+        wget tmux ruby python-pip fish libmemcached-awesome libreoffice ttf-liberation fuse2 fuse3 jdk11-openjdk supervisor && \
     yes | pacman -Scc && \
     useradd -m -s /bin/bash dev && \
     usermod -p "dev" dev && \
@@ -21,7 +22,7 @@ WORKDIR /home/dev
 USER dev
 
 #install aur packages
-RUN yay --gpgflags "--keyserver hkp://keyserver.ubuntu.com" --noeditmenu --nodiffmenu --noconfirm --mflags --nocheck -S php81 php81-exif php81-fileinfo php81-ctype php81-pecl php81-pear php81-zip php81-xmlreader php81-xmlwriter php81-mbstring php81-openssl php81-xml php81-fpm php81-intl php81-sqlite php81-gd php81-xsl php81-simplexml php81-phar php81-tidy php81-cli php81-tokenizer php81-curl php81-opcache php81-iconv php81-mysql php81-pdo php81-soap php81-imagick && \
+RUN yay --gpgflags "--keyserver hkp://keyserver.ubuntu.com" --answeredit n --answerdiff n --noconfirm --mflags --nocheck -S php81 php81-exif php81-fileinfo php81-ctype php81-pecl php81-pear php81-zip php81-xmlreader php81-xmlwriter php81-mbstring php81-openssl php81-xml php81-fpm php81-intl php81-sqlite php81-gd php81-xsl php81-simplexml php81-phar php81-tidy php81-cli php81-tokenizer php81-curl php81-opcache php81-iconv php81-mysql php81-pdo php81-soap php81-imagick && \
     yes | yay -Scc && \
     rm -rf /home/dev/.cache
 
@@ -69,6 +70,7 @@ RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/late
     systemctl enable sshd && \
     systemctl enable cronie && \
     systemctl enable exim && \
+    systemctl enable supervisord && \
     sed -i "s/;process_control_timeout = 0/process_control_timeout = 10s/g"  /etc/php81/php-fpm.conf && \
     sed -i "s/.*open_basedir =.*/open_basedir =/g" /etc/php81/php.ini && \
     sed -i "s/#PubkeyAuthentication yes/PubkeyAuthentication yes/g" /etc/ssh/sshd_config && \
@@ -102,7 +104,7 @@ RUN wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-
 WORKDIR /
 COPY ["fishrc.fish", "/etc/fish/conf.d/"]
 COPY ["bashrc.sh", "/etc/profile.d/"]
-COPY ["versions.py", "parse-projects.py", "sync_ssh_keys.sh", "log.py", "/webcrate/"]
+COPY ["versions.py", "parse-projects.py", "sync_ssh_keys.sh", "log.py", "supervisord.conf.template", "/webcrate/"]
 COPY ["entrypoint.sh", "/"]
 RUN chmod u+x /webcrate/sync_ssh_keys.sh && \
     rm /etc/mail/exim.conf && \

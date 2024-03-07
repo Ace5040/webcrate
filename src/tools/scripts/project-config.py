@@ -84,6 +84,10 @@ for projectname,project in projects.items():
         os.system(f'mkdir -p {project.folder}/log')
         os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} {project.folder}/log')
 
+      if not os.path.isdir(f'{project.folder}/supervisor/conf.d'):
+        os.system(f'mkdir -p {project.folder}/supervisor/conf.d')
+        os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} {project.folder}/supervisor')
+
       if not os.path.isdir(f'{project.folder}/exim-spool'):
         os.system(f'mkdir -p {project.folder}/exim-spool')
         os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} {project.folder}/exim-spool')

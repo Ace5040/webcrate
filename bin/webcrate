@@ -19,12 +19,12 @@ function Help() {
   echo '  log     - Print all docker logs'
   echo '  backup  - Start backup process manually'
   echo '  build   - Build images from source. Usage webcrate build _target_ [OPTIONS]'
-  echo '              _target_: can be one of nginx, core, core-gunicorn, core-php81, core-php74, core-php73, core-php56, tools, admin, dnsmasq or all'
+  echo '              _target_: can be one of nginx, core, core-gunicorn, core-php81, core-php74, core-php73, core-php56, tools, utils-pwgen, utils-docker, admin, dnsmasq or all'
   echo '              OPTIONS:'
   echo '                -c, --no-cache : do not use docker build cache'
   echo '                -u, --update-base-images : pulls fresh archlinux:latest and nginx:stable images before build'
   echo '  push    - Push images to dockerhub. Usage webcrate push _image_'
-  echo '              _image_: can be one of nginx, core, tools, admin or all'
+  echo '              _image_: can be one of nginx, core, tools, utils-pwgen, utils-docker, admin or all'
   echo '  help    - Print this info'
   echo ''
 }
@@ -68,6 +68,8 @@ function Build() {
   if [ "$BUILDTARGET" != "all" ]\
     && [ "$BUILDTARGET" != "nginx" ]\
     && [ "$BUILDTARGET" != "tools" ]\
+    && [ "$BUILDTARGET" != "utils-pwgen" ]\
+    && [ "$BUILDTARGET" != "utils-docker" ]\
     && [ "$BUILDTARGET" != "core" ]\
     && [ "$BUILDTARGET" != "core-gunicorn" ]\
     && [ "$BUILDTARGET" != "core-php81" ]\
@@ -79,7 +81,7 @@ function Build() {
     && [ "$BUILDTARGET" != "ftp" ]\
     && [ "$BUILDTARGET" != "stats" ]\
   ;then
-    echo "Unknown target $1. Please use one of: all, nginx, tools, core, core-gunicorn, core-php81, core-php74, core-php73, core-php56, admin, stats"
+    echo "Unknown target $1. Please use one of: all, nginx, tools, utils-pwgen, utils-docker, core, core-gunicorn, core-php81, core-php74, core-php73, core-php56, admin, stats"
     exit 1
   fi
   if [ "$2" = "-c" ] || [ "$3" = "-c" ] || [ "$2" = "-cu" ] || [ "$3" = "-cu" ] || [ "$2" = "-uc" ] || [ "$3" = "-uc" ] || [ "$2" = "--no-cache" ] || [ "$3" = "--no-cache" ]; then
@@ -97,6 +99,12 @@ function Build() {
   fi
   if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "tools" ]; then
     docker build -t ace5040/webcrate-tools:stable ./src/tools$NOCACHE
+  fi
+  if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "utils-pwgen" ]; then
+    docker build -t ace5040/webcrate-utils-pwgen:stable ./src/utils-pwgen$NOCACHE
+  fi
+  if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "utils-docker" ]; then
+    docker build -t ace5040/webcrate-utils-docker:stable ./src/utils-docker$NOCACHE
   fi
   if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core" ]; then
     docker build -t ace5040/webcrate-core-php81:stable ./src/core-php81$NOCACHE
@@ -140,6 +148,8 @@ function Pull() {
   docker pull ace5040/webcrate-ftp:stable
   docker pull ace5040/webcrate-admin:stable
   docker pull ace5040/webcrate-tools:stable
+  docker pull ace5040/webcrate-utils-pwgen:stable
+  docker pull ace5040/webcrate-utils-docker:stable
   docker pull ace5040/webcrate-nginx:stable
   docker pull ace5040/webcrate-dnsmasq:stable
   docker pull ace5040/webcrate-stats:stable
@@ -162,6 +172,8 @@ function Push() {
   if [ "$IMAGE" != "all" ]\
     && [ "$IMAGE" != "nginx" ]\
     && [ "$IMAGE" != "tools" ]\
+    && [ "$IMAGE" != "utils-pwgen" ]\
+    && [ "$IMAGE" != "utils-docker" ]\
     && [ "$IMAGE" != "core" ]\
     && [ "$IMAGE" != "core-gunicorn" ]\
     && [ "$IMAGE" != "core-php81" ]\
@@ -173,7 +185,7 @@ function Push() {
     && [ "$IMAGE" != "ftp" ]\
     && [ "$IMAGE" != "stats" ];\
   then
-    echo "Unknown image $1. Please use one of: all, nginx, tools, core, core-gunicorn, core-php81, core-php74, core-php73, core-php56, admin, stats"
+    echo "Unknown image $1. Please use one of: all, nginx, tools, utils-pwgen, utils-docker, core, core-gunicorn, core-php81, core-php74, core-php73, core-php56, admin, stats"
     exit 1
   fi
   if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "nginx" ]; then
@@ -181,6 +193,12 @@ function Push() {
   fi
   if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "tools" ]; then
     docker push ace5040/webcrate-tools:stable
+  fi
+  if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "utils-pwgen" ]; then
+    docker push ace5040/webcrate-utils-pwgen:stable
+  fi
+  if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "utils-docker" ]; then
+    docker push ace5040/webcrate-utils-docker:stable
   fi
   if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "core" ]; then
     docker push ace5040/webcrate-core-php81:stable

@@ -7,7 +7,7 @@
 /config/nginx/*
 /config/php-pool-templates/*
 !/*.example
-!/config/nginx/nginx.conf
+!/config/nginx/default.conf
 !/config/nginx-templates/default-*.conf
 !/config/nginx-templates/default.conf
 !/config/php-pool-templates/php56-default.conf

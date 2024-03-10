@@ -277,14 +277,17 @@ class AdminController extends AbstractController
     public function importProjects(Request $request): Response
     {
         $file = $request->files->get('file');
-        $filename = $file->getClientOriginalName();
-        $filepath = $file->getPathname();
+        $filepath = $file['tmp_name'];
         $projects = Yaml::parseFile($filepath);
         foreach ( $projects as $projectname => $project_obj ) {
             $project_obj = (object)$project_obj;
             $entity = $this->repository->loadByUid($project_obj->uid);
             if ( empty($entity) ) {
                 $project = new Project();
+                $project_obj->active = !empty($project_obj->active) ? $project_obj->active : false;
+                $project_obj->memcached = !empty($project_obj->memcached) ? $project_obj->memcached : false;
+                $project_obj->solr = !empty($project_obj->solr) ? $project_obj->solr : false;
+                $project_obj->elastic = !empty($project_obj->elastic) ? $project_obj->elastic : false;
                 $project_obj->redirect = !empty($project_obj->redirect) ? $project_obj->redirect : false;
                 $project_obj->backup = !empty($project_obj->backup) ? $project_obj->backup : false;
                 $project_obj->gzip = !empty($project_obj->gzip) ? $project_obj->gzip : false;
@@ -308,6 +311,10 @@ class AdminController extends AbstractController
                 $project->setUid($project_obj->uid);
                 $project->setName($projectname);
                 $project->setVolume($project_obj->volume);
+                $project->setActive($project_obj->active == 'yes' || $project_obj->active === true);
+                $project->setMemcached($project_obj->memcached == 'yes' || $project_obj->memcached === true);
+                $project->setSolr($project_obj->solr == 'yes' || $project_obj->solr === true);
+                $project->setElastic($project_obj->elastic == 'yes' || $project_obj->elastic === true);
                 $project->setBackup($project_obj->backup == 'yes' || $project_obj->backup === true);
                 $project->setRedirect($project_obj->redirect == 'yes' || $project_obj->redirect === true);
                 $project->setGzip($project_obj->gzip == 'yes' || $project_obj->gzip === true);
@@ -564,27 +571,22 @@ class AdminController extends AbstractController
     public function importRedirects(Request $request): Response
     {
         $file = $request->files->get('file');
-        $filename = $file->getClientOriginalName();
-        $filepath = $file->getPathname();
+        $filepath = $file['tmp_name'];
         $redirects = Yaml::parseFile($filepath);
         foreach ( $redirects as $redirectname => $redirect_obj ) {
             $redirect_obj = (object)$redirect_obj;
-            $entity = $this->redirectsRepository->loadByName($redirect_obj->name);
+            $entity = $this->redirectsRepository->loadByName($redirectname);
             if ( empty($entity) ) {
                 $redirect = new Redirect();
+                $redirect_obj->active = !empty($redirect_obj->active) ? $redirect_obj->active : false;
                 $redirect_obj->https = !empty($redirect_obj->https) ? $redirect_obj->https : 'disabled';
                 $redirect_obj->domains = !empty($redirect_obj->domains) ? $redirect_obj->domains : [$redirectname . '.test'];
+                $redirect->setActive($redirect_obj->active == 'yes' || $redirect_obj->active === true);
                 $redirect->setName($redirectname);
-                $redirect->setName($redirectname);
+                $redirect->setUrl($redirect_obj->url);
                 $https = $this->https_repository->findByName($redirect_obj->https);
                 $redirect->setHttps($https);
                 $redirect->setDomains($redirect_obj->domains);
-                $options_array = [];
-                foreach ( $redirect_obj->nginx_options as $name => $value ) {
-                    $options_array[] = [ 'name' => $name, 'value' => $value ];
-                }
-
-
                 $this->manager->persist($redirect);
             }
         }

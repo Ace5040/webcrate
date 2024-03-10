@@ -3,11 +3,18 @@ writeLog "Initialization..."
 writeLog "Creating var folders"
 var_folders=(\
   "secrets"\
+  "meta"\
   "meta/projects"\
+  "dnsmasq"\
   "dnsmasq/hosts"\
   "crontabs"\
+  "influxdb"\
   "influxdb/etc"\
   "influxdb/data"\
+  "mysql-projects"\
+  "mysql-services"\
+  "mysql5-projects"\
+  "postgresql-projects"\
   "mysql"\
   "mysql5"\
   "postgres"\
@@ -17,9 +24,11 @@ var_folders=(\
   "openssl"\
   "letsencrypt"\
   "letsencrypt-meta"\
+  "log"\
   "log/nginx"\
   "log/duplicity"\
   "log/graphana"\
+  "nginx"\
   "nginx/confs"\
   "nginx/ssl"\
   "nginx/gzip"\
@@ -32,11 +41,13 @@ var_folders=(\
   )
 for i in "${var_folders[@]}"
 do
-  if [[ ! -d "./var/$i" ]] ; then mkdir -p "./var/$i"; fi
-  chmod -R a-rw,u+rw ./var/$i
+  if [[ ! -d "./var/$i" ]]; then
+    mkdir -p "./var/$i";
+  fi
+  # start_path=$(echo "$i" | cut -d/ -f1)
+  chmod a-rw,u+rw ./var/$i
 done
-chmod a-rw,u+rw ./var/dnsmasq
-chmod a-rw,o+r,u+rw ./var/dnsmasq/hosts
+chmod -R a-rw,o+r,u+rw ./var/dnsmasq/hosts
 
 MYSQL_ROOT_PASS=$(initDbFolder 'mysql')
 MYSQL5_ROOT_PASS=$(initDbFolder 'mysql5')
@@ -48,7 +59,7 @@ if [[ ! -d "./var/grafana/data" ]] ; then
   mkdir -p "./var/grafana/data"
   mkdir -p "./var/grafana/log"
   if [[ ! -f "./var/secrets/grafana.secret" ]] ; then
-    GRAFANA_PASS=`docker run --rm ace5040/webcrate-tools:stable /webcrate/pwgen.sh`
+    GRAFANA_PASS=`docker run --rm ace5040/webcrate-utils-pwgen:stable /pwgen.sh`
     echo "user=admin" > ./var/secrets/grafana.secret
     echo "password=\"$GRAFANA_PASS\"" >> ./var/secrets/grafana.secret
   else
@@ -56,13 +67,13 @@ if [[ ! -d "./var/grafana/data" ]] ; then
   fi
 fi
 
-if [[ ! -f "./var/secrets/webcrate.secret" ]] ; then
+if [[ ! -f "./var/secrets/admin.secret" ]] ; then
   writeLog "Generate webcrate secret and admin password"
-  admin_password=`docker run --rm ace5040/webcrate-tools:stable /webcrate/pwgen.sh`
-  app_secret=`docker run --rm ace5040/webcrate-tools:stable pwgen -nAs1 32 1`
-  echo "user=admin" > ./var/secrets/webcrate.secret
-  echo "password=$admin_password" >> ./var/secrets/webcrate.secret
-  echo "secret=$app_secret" >> ./var/secrets/webcrate.secret
+  admin_password=`docker run --rm ace5040/webcrate-utils-pwgen:stable /pwgen.sh`
+  app_secret=`docker run --rm ace5040/webcrate-utils-pwgen:stable pwgen -nAs1 32 1`
+  echo "user=admin" > ./var/secrets/admin.secret
+  echo "password=$admin_password" >> ./var/secrets/admin.secret
+  echo "secret=$app_secret" >> ./var/secrets/admin.secret
 fi
 
 if [[ ! -f "./projects.yml" ]] ; then

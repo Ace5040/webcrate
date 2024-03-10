@@ -18,7 +18,7 @@ if [ "$WEBCRATE_EXTERNAL_DNS_IP" != "" ]; then
 fi
 
 writeLog "Parse projects started"
-docker run --rm --env-file=$(pwd)/.env --entrypoint /webcrate/scripts/parse-projects.py --name webcrate-tools \
+docker run --rm --env-file=$(pwd)/.env --entrypoint /parse-projects.py --name webcrate-docker-parse-projects \
   -e WEBCRATE_UID=$uid \
   -e WEBCRATE_GID=$gid \
   $PROJECTS_VOLUMES \
@@ -35,11 +35,11 @@ docker run --rm --env-file=$(pwd)/.env --entrypoint /webcrate/scripts/parse-proj
   -v $(pwd)/var/dnsmasq:/webcrate/dnsmasq \
   -v $(pwd)/var/nginx:/webcrate/nginx \
   -v $(pwd)/var/php_pools:/webcrate/php_pools \
-  ace5040/webcrate-tools:stable
+  ace5040/webcrate-utils-docker:stable
 writeLog "Parse projects ended"
 
 writeLog "Parse redirects started"
-docker run --rm --env-file=$(pwd)/.env --entrypoint /webcrate/scripts/parse-redirects.py --name webcrate-tools \
+docker run --rm --env-file=$(pwd)/.env --entrypoint /parse-redirects.py --name webcrate-docker-parse-redirects \
   -e WEBCRATE_UID=$uid \
   -e WEBCRATE_GID=$gid \
   -e WEBCRATE_PWD=$(pwd) \
@@ -51,11 +51,11 @@ docker run --rm --env-file=$(pwd)/.env --entrypoint /webcrate/scripts/parse-redi
   -v $(pwd)/var/openssl:/webcrate/openssl:ro \
   -v $(pwd)/var/dnsmasq:/webcrate/dnsmasq \
   -v $(pwd)/var/nginx:/webcrate/nginx \
-  ace5040/webcrate-tools:stable
+  ace5040/webcrate-utils-docker:stable
 writeLog "Parse redirects ended"
 
 writeLog "Parse services started"
-docker run --rm --env-file=$(pwd)/.env --entrypoint /webcrate/scripts/parse-services.py --name webcrate-tools \
+docker run --rm --env-file=$(pwd)/.env --entrypoint /parse-services.py --name webcrate-docker-parse-services \
   -e WEBCRATE_PWD=$(pwd) \
   -v $(pwd)/services.yml:/webcrate/services.yml:ro \
   -v $(pwd)/config/nginx-templates:/webcrate/nginx-templates:ro \
@@ -63,6 +63,6 @@ docker run --rm --env-file=$(pwd)/.env --entrypoint /webcrate/scripts/parse-serv
   -v $(pwd)/var/openssl:/webcrate/openssl:ro \
   -v $(pwd)/var/dnsmasq:/webcrate/dnsmasq \
   -v $(pwd)/var/nginx:/webcrate/nginx \
-  ace5040/webcrate-tools:stable
+  ace5040/webcrate-utils-docker:stable
 
 writeLog "Parse services ended"

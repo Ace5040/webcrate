@@ -2,7 +2,7 @@ FROM archlinux:latest
 
 #update pacman db
 RUN pacman --needed --noconfirm -Syu && \
-    pacman --needed --noconfirm -S fakeroot binutils git nano openssh unzip composer npm mariadb-clients iputils inetutils which python-pip nginx docker \
+    pacman --needed --noconfirm -S fakeroot binutils git nano openssh unzip composer npm mariadb-clients iputils inetutils which python-yaml python-munch python-setuptools nginx docker \
     php php-fpm php-intl php-sqlite php-gd php-xsl php-tidy php-imagick php-memcached
 
 #make automake bison binutils autoconf gcc patch
@@ -30,10 +30,7 @@ RUN git clone https://aur.archlinux.org/docker-systemctl-replacement-git.git && 
 
 USER root
 
-RUN python -m ensurepip --upgrade && \
-    pip3 install --upgrade pip && \
-    pip install --break-system-packages pyyml munch setuptools && \
-    chown root:root /bin/systemctl.py && \
+RUN chown root:root /bin/systemctl.py && \
     chmod a+x /bin/systemctl.py && \
     mv /bin/systemctl /bin/systemctl_original && \
     cp /bin/systemctl.py /bin/systemctl && \
@@ -59,19 +56,15 @@ RUN composer config --no-plugins allow-plugins.symfony/flex true && \
     rm -f composer.lock && \
     composer install --no-scripts
 WORKDIR /app/assets/admin
-RUN npm install && \
+RUN npm install --verbose && \
     NODE_OPTIONS=--openssl-legacy-provider npm run build
 USER root
-COPY init-db.py /webcrate/init-db.py
+COPY ["init-db.py", "log.py", "updateprojects.py", "updateredirects.py", "reload-redirect.py", "versions.py", "reload.py", "/webcrate"]
 COPY nginx.conf /etc/nginx/nginx.conf
-COPY versions.py /webcrate/versions.py
-COPY updateprojects.py /webcrate/updateprojects.py
-COPY updateredirects.py /webcrate/updateredirects.py
-COPY reload.py /webcrate/reload.py
-COPY reload-redirect.py /webcrate/reload-redirect.py
 COPY entrypoint.sh /entrypoint.sh
 CMD ["/entrypoint.sh"]
 RUN chmod u+x /webcrate/init-db.py && \
+    chmod a+rxs /webcrate/log.py && \
     chmod a+rxs /webcrate/versions.py && \
     chmod a+rxs /webcrate/updateprojects.py && \
     chmod a+rxs /webcrate/updateredirects.py && \

@@ -1,9 +1,12 @@
 FROM archlinux:latest
 
 #install and add user
-RUN pacman --needed --noconfirm -Syu && \
-    pacman --needed --noconfirm -S base-devel git unzip mariadb-clients postgresql-libs cronie python python-pip certbot duplicity lftp pwgen docker && \
-    yes | pacman -Scc && \
+RUN pacman --needed --noconfirm -Sy && \
+    pacman --needed --noconfirm --sync \
+    sudo fakeroot binutils \
+    git unzip mariadb-clients postgresql-libs cronie python python-yaml python-munch python-setuptools \
+    certbot duplicity lftp pwgen docker && \
+    yes | pacman --sync --clean --clean && \
     useradd -m -s /bin/bash dev && \
     usermod -p "dev" dev && \
     echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo && \
@@ -20,8 +23,7 @@ RUN git clone https://aur.archlinux.org/docker-systemctl-replacement-git.git && 
 
 USER root
 
-RUN pip install --break-system-packages pyyml munch setuptools && \
-    chown root:root /bin/systemctl.py && \
+RUN chown root:root /bin/systemctl.py && \
     chmod a+x /bin/systemctl.py && \
     mv /bin/systemctl /bin/systemctl_original && \
     cp /bin/systemctl.py /bin/systemctl && \

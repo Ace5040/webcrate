@@ -385,7 +385,7 @@ for projectname,project in projects.items():
 
     # START ELASTIC
     if hasattr(project, 'elastic') and project.elastic:
-      if helpers.is_container_exists(f'webcrate-{project.name}-elsatic'):
+      if helpers.is_container_exists(f'webcrate-{project.name}-elastic'):
         log.write(f'{project.name} - elsatic exists')
       else:
         log.write(f'{project.name} - starting elsatic container')
@@ -424,12 +424,14 @@ for projectname,project in projects.items():
       os.system(f'docker network connect webcrate_network_{project.name} webcrate-nginx')
     if not helpers.is_network_has_connection(f'webcrate_network_{project.name}', 'webcrate-phpmyadmin'):
       os.system(f'docker network connect webcrate_network_{project.name} webcrate-phpmyadmin')
+    if not helpers.is_network_has_connection(f'webcrate_network_{project.name}', 'webcrate-mysql'):
+      os.system(f'docker network connect webcrate_network_{project.name} webcrate-mysql')
 
-if nginx_reload_needed:
-  os.system(f'docker exec webcrate-nginx nginx -s reload')
-  log.write(f'{project.name} - changes detected - nginx config reloaded')
+    if nginx_reload_needed:
+      os.system(f'docker exec webcrate-nginx nginx -s reload')
+      log.write(f'{project.name} - changes detected - nginx config reloaded')
 
-log.write(f'{project.name} - started')
+    log.write(f'{project.name} - started')
 
 sys.stdout.flush()
 sys.exit(0)

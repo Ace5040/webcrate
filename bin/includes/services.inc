@@ -76,21 +76,21 @@ docker run --rm --env-file=$(pwd)/.env \
   ace5040/webcrate-utils-docker:stable /services-init.py
 writeLog "Services inited"
 
-# if docker container inspect webcrate-mysql >/dev/null 2> /dev/null; then
-#   writeLog "Container webcrate-mysql exists"
-# else
-#   writeLog "Starting webcrate-mysql container"
-#   if [ "$MYSQL_ROOT_PASS" != "" ]; then MYSQL_ROOT_PASS=-e\ MYSQL_ROOT_PASSWORD="$MYSQL_ROOT_PASS"; fi
-#   docker run -d --env-file=$(pwd)/.env --name webcrate-mysql \
-#     --network="webcrate_network" --dns=10.255.0.100 \
-#     --restart="unless-stopped" \
-#     --user "$uid:$gid" \
-#     $MYSQL_ROOT_PASS \
-#     -v /etc/localtime:/etc/localtime:ro \
-#     -v $(pwd)/var/mysql:/var/lib/mysql \
-#     -v $(pwd)/config/mysql/mysql.cnf:/etc/mysql/conf.d/user.cnf \
-#     mariadb:10 > /dev/null
-# fi
+if docker container inspect webcrate-mysql >/dev/null 2> /dev/null; then
+  writeLog "Container webcrate-mysql exists"
+else
+  writeLog "Starting webcrate-mysql container"
+  if [ "$MYSQL_ROOT_PASS" != "" ]; then MYSQL_ROOT_PASS=-e\ MYSQL_ROOT_PASSWORD="$MYSQL_ROOT_PASS"; fi
+  docker run -d --env-file=$(pwd)/.env --name webcrate-mysql \
+    --network="webcrate_network" --dns=10.255.0.100 \
+    --restart="unless-stopped" \
+    --user "$uid:$gid" \
+    $MYSQL_ROOT_PASS \
+    -v /etc/localtime:/etc/localtime:ro \
+    -v $(pwd)/var/mysql:/var/lib/mysql \
+    -v $(pwd)/config/mysql/mysql.cnf:/etc/mysql/conf.d/user.cnf \
+    mariadb:10 > /dev/null
+fi
 
 # if docker container inspect webcrate-postgres >/dev/null 2> /dev/null; then
 #   writeLog "Container webcrate-postgres exists"

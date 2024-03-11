@@ -58,8 +58,8 @@ function Restart() {
 }
 
 function Backup() {
-  docker exec webcrate-tools /webcrate/backup.py
-  writeLog "webcrate backed up"
+  docker exec webcrate-utils-docker /backup.py $1 $2
+  writeLog "webcrate backup finished"
 }
 
 function Build() {
@@ -263,7 +263,7 @@ case $1 in
   build) Build $2 $3 $4;;
   push) Push $2;;
   log) Log;;
-  backup) Backup;;
+  backup) Backup $2 $3;;
   help) Help;;
   *) echo "Unknown command: '$1'. Use 'webcrate help' to get list of commands"
 esac

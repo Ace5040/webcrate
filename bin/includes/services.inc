@@ -92,19 +92,19 @@ else
     mariadb:10 > /dev/null
 fi
 
-# if docker container inspect webcrate-postgres >/dev/null 2> /dev/null; then
-#   writeLog "Container webcrate-postgres exists"
-# else
-#   writeLog "Starting webcrate-postgres container"
-#   if [ "$POSTGRES_PASS" != "" ]; then POSTGRES_PASS=-e\ POSTGRES_PASSWORD="$POSTGRES_PASS"; fi
-#   docker run -d --env-file=$(pwd)/.env --name webcrate-postgres \
-#     --network="webcrate_network" --dns=10.255.0.100 \
-#     --restart="unless-stopped" \
-#     --user "$uid:$gid" \
-#     $POSTGRES_PASS \
-#     -v $(pwd)/var/postgres:/var/lib/postgresql/data \
-#     postgres:12 > /dev/null
-# fi
+if docker container inspect webcrate-postgres >/dev/null 2> /dev/null; then
+  writeLog "Container webcrate-postgres exists"
+else
+  writeLog "Starting webcrate-postgres container"
+  if [ "$POSTGRES_PASS" != "" ]; then POSTGRES_PASS=-e\ POSTGRES_PASSWORD="$POSTGRES_PASS"; fi
+  docker run -d --env-file=$(pwd)/.env --name webcrate-postgres \
+    --network="webcrate_network" --dns=10.255.0.100 \
+    --restart="unless-stopped" \
+    --user "$uid:$gid" \
+    $POSTGRES_PASS \
+    -v $(pwd)/var/postgres:/var/lib/postgresql/data \
+    postgres:12 > /dev/null
+fi
 
 if docker container inspect webcrate-admin >/dev/null 2> /dev/null; then
   writeLog "Container webcrate-admin exists"

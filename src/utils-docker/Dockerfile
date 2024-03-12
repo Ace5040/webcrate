@@ -26,6 +26,7 @@ COPY [ \
     "project-start.py", \
     "parse-redirects.py", \
     "redirect-config.py", \
+    "redirect-start.py", \
     "parse-services.py", \
     "services-init.py", \
     "log.py", \

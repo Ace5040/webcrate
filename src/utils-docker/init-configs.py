@@ -27,14 +27,8 @@ if helpers.init_letsencrypt_conf():
 
 #parse redirects
 for redirectname,redirect in redirects.items():
-  if os.popen(f'/webcrate/scripts/redirect-certs.py {redirectname}').read().strip() == 'True':
+  if os.popen(f'/webcrate/scripts/redirect-start.py {redirectname}').read().strip() == 'True':
     nginx_reload_needed = True
-
-#parse projects
-# for projectname,project in projects.items():
-#   os.system(f'/webcrate/scripts/project-dbs.py {projectname}')
-#   if os.popen(f'/webcrate/scripts/project-certs.py {projectname}').read().strip() == 'True':
-#     nginx_reload_needed = True
 
 #parse services
 for servicename,service in services.items():

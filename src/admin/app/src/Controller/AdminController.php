@@ -358,9 +358,10 @@ class AdminController extends AbstractController
                     ];
                 }
                 $project->setDuplicityFilters($duplicity_filters_array, true);
-                foreach ( $project_obj->ftps as $ftp_data ) {
+                foreach ( $project_obj->ftps as $index => $ftp_data ) {
                     $ftp = new Ftp();
                     $ftp->setName($ftp_data['name']);
+                    $ftp->setWeight($index);
                     $ftp->setPasswordHash($ftp_data['password']);
                     $ftp->setHome($ftp_data['home']);
                     $project->addFtp($ftp);

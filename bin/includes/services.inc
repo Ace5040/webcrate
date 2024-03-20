@@ -216,6 +216,7 @@ if [ "$WEBCRATE_SERVICE_STATS" = true ]; then
       -e DOCKER_INFLUXDB_INIT_PASSWORD=influxdb \
       -e DOCKER_INFLUXDB_INIT_ORG=webcrate \
       -e DOCKER_INFLUXDB_INIT_BUCKET=webcrate \
+      -e DOCKER_INFLUXDB_INIT_RETENTION=180d \
       -e DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=webcrate \
       -v /etc/localtime:/etc/localtime:ro \
       -v $(pwd)/var/influxdb/data:/var/lib/influxdb2 \

@@ -164,7 +164,7 @@ async def startMysql5 (project):
       f'-v /etc/localtime:/etc/localtime:ro '
       f'-v {WEBCRATE_PWD}/var/mysql5-projects/{project.name}:/var/lib/mysql '
       f'-v {WEBCRATE_PWD}/config/mysql/mysql5.cnf:/etc/mysql/conf.d/user.cnf '
-      f'mariadb:10 >/dev/null')
+      f'mariadb:5 >/dev/null')
 
   retries = 30
   while retries > 0 and helpers.is_mysql_up(f'webcrate-{project.name}-mysql5', mysql5_root_password) == 0:
@@ -426,6 +426,10 @@ for projectname,project in projects.items():
       os.system(f'docker network connect webcrate_network_{project.name} webcrate-phpmyadmin')
     if not helpers.is_network_has_connection(f'webcrate_network_{project.name}', 'webcrate-mysql'):
       os.system(f'docker network connect webcrate_network_{project.name} webcrate-mysql')
+    if not helpers.is_network_has_connection(f'webcrate_network_{project.name}', 'webcrate-mysql5'):
+      os.system(f'docker network connect webcrate_network_{project.name} webcrate-mysql5')
+    if not helpers.is_network_has_connection(f'webcrate_network_{project.name}', 'webcrate-postgres'):
+      os.system(f'docker network connect webcrate_network_{project.name} webcrate-postgres')
 
     if nginx_reload_needed:
       os.system(f'docker exec webcrate-nginx nginx -s reload')

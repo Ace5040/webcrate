@@ -411,9 +411,9 @@ for projectname,project in projects.items():
       os.system(f'docker network disconnect webcrate_network_{project.name} webcrate-utils-docker')
     else:
       os.system(f'docker network disconnect webcrate_network_{project.name} webcrate-utils-docker-{project.name}')
-    if WEBCRATE_LOCALDNS:
-      if not helpers.is_network_has_connection(f'webcrate_network_{project.name}', 'webcrate-dnsmasq'):
-        os.system(f'docker network connect --ip=10.{net_num}.250 webcrate_network_{project.name} webcrate-dnsmasq')
+    # if WEBCRATE_LOCALDNS:
+    if not helpers.is_network_has_connection(f'webcrate_network_{project.name}', 'webcrate-dnsmasq'):
+      os.system(f'docker network connect --ip=10.{net_num}.250 webcrate_network_{project.name} webcrate-dnsmasq')
     if WEBCRATE_SERVICE_DOCTOHTML:
       if not helpers.is_network_has_connection(f'webcrate_network_{project.name}', 'webcrate-doctohtml'):
         os.system(f'docker network connect webcrate_network_{project.name} webcrate-doctohtml')

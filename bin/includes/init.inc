@@ -19,6 +19,7 @@ var_folders=(\
   "mysql5"\
   "postgres"\
   "backup"\
+  "backup-tmp"\
   "duplicity"\
   "ssh"\
   "openssl"\

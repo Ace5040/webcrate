@@ -75,10 +75,10 @@ if PROJECT_NAME == 'admin' or PROJECT_NAME == 'all':
     print(f'=========================================')
     sys.stdout.flush()
     mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
-    os.system(f'mkdir -p /webcrate/backup/tmp')
-    if os.path.isdir(f'/webcrate/backup/tmp') and os.listdir(f'/webcrate/backup/tmp'):
-      os.system(f'rm /webcrate/backup/tmp/*')
-    os.system(f'mysqldump --single-transaction --max_allowed_packet=64M -h webcrate-mysql -u root -p"{mysql_root_password}" --result-file "/webcrate/backup/tmp/webcrate.sql" "webcrate"')
+    os.system(f'mkdir -p /webcrate/backup-tmp')
+    if os.path.isdir(f'/webcrate/backup-tmp') and os.listdir(f'/webcrate/backup-tmp'):
+      os.system(f'rm /webcrate/backup-tmp/*')
+    os.system(f'mysqldump --single-transaction --max_allowed_packet=64M -h webcrate-mysql -u root -p"{mysql_root_password}" --result-file "/webcrate/backup-tmp/webcrate.sql" "webcrate"')
     for BACKUP_URI in BACKUP_URIS:
       os.system(f'duplicity backup --verbosity notice '
         f'--no-encryption '
@@ -88,7 +88,7 @@ if PROJECT_NAME == 'admin' or PROJECT_NAME == 'all':
         f'--volsize 5000 '
         f'--archive-dir /webcrate/duplicity/.duplicity '
         f'--log-file /webcrate/duplicity/duplicity.log '
-        f'"/webcrate/backup/tmp" '
+        f'"/webcrate/backup-tmp" '
         f'"{BACKUP_URI}/webcrate/mysql"'
       )
       sys.stdout.flush()
@@ -101,8 +101,8 @@ if PROJECT_NAME == 'admin' or PROJECT_NAME == 'all':
         f'"{BACKUP_URI}/webcrate/mysql"'
       )
       sys.stdout.flush()
-    if os.path.isdir(f'/webcrate/backup/tmp') and os.listdir(f'/webcrate/backup/tmp'):
-      os.system(f'rm /webcrate/backup/tmp/*')
+    if os.path.isdir(f'/webcrate/backup-tmp') and os.listdir(f'/webcrate/backup-tmp'):
+      os.system(f'rm /webcrate/backup-tmp/*')
 
 for projectname,project in projects.items():
   project.name = projectname
@@ -187,10 +187,10 @@ for projectname,project in projects.items():
       print(f'=========================================')
       sys.stdout.flush()
       mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
-      os.system(f'mkdir -p /webcrate/backup/tmp')
-      if os.path.isdir(f'/webcrate/backup/tmp') and os.listdir(f'/webcrate/backup/tmp'):
-        os.system(f'rm /webcrate/backup/tmp/*')
-      os.system(f'mysqldump --single-transaction --max_allowed_packet=64M -h webcrate-mysql -u root -p"{mysql_root_password}" --result-file "/webcrate/backup/tmp/{project.name}.sql" "{project.name}"')
+      os.system(f'mkdir -p /webcrate/backup-tmp')
+      if os.path.isdir(f'/webcrate/backup-tmp') and os.listdir(f'/webcrate/backup-tmp'):
+        os.system(f'rm /webcrate/backup-tmp/*')
+      os.system(f'mysqldump --single-transaction --max_allowed_packet=64M -h webcrate-mysql -u root -p"{mysql_root_password}" --result-file "/webcrate/backup-tmp/{project.name}.sql" "{project.name}"')
       for BACKUP_URI in BACKUP_URIS:
         os.system(f'duplicity backup --verbosity notice '
           f'--no-encryption '
@@ -200,7 +200,7 @@ for projectname,project in projects.items():
           f'--volsize 5000 '
           f'--archive-dir /webcrate/duplicity/.duplicity '
           f'--log-file /webcrate/duplicity/duplicity.log '
-          f'"/webcrate/backup/tmp" '
+          f'"/webcrate/backup-tmp" '
           f'"{BACKUP_URI}/projects/{project.name}/mysql"'
         )
         sys.stdout.flush()
@@ -212,8 +212,8 @@ for projectname,project in projects.items():
           f'"{BACKUP_URI}/projects/{project.name}/mysql"'
         )
         sys.stdout.flush()
-      if os.path.isdir(f'/webcrate/backup/tmp') and os.listdir(f'/webcrate/backup/tmp'):
-        os.system(f'rm /webcrate/backup/tmp/*')
+      if os.path.isdir(f'/webcrate/backup-tmp') and os.listdir(f'/webcrate/backup-tmp'):
+        os.system(f'rm /webcrate/backup-tmp/*')
 
 
     #backup project mysql
@@ -224,10 +224,10 @@ for projectname,project in projects.items():
       print(f'=========================================')
       sys.stdout.flush()
       mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
-      os.system(f'mkdir -p /webcrate/backup/tmp')
-      if os.path.isdir(f'/webcrate/backup/tmp') and os.listdir(f'/webcrate/backup/tmp'):
-        os.system(f'rm /webcrate/backup/tmp/*')
-      os.system(f'mysqldump --single-transaction --max_allowed_packet=64M -h webcrate-{project.name}-mysql -u root -p"{mysql_root_password}" --result-file "/webcrate/backup/tmp/{project.name}.sql" "{project.name}"')
+      os.system(f'mkdir -p /webcrate/backup-tmp')
+      if os.path.isdir(f'/webcrate/backup-tmp') and os.listdir(f'/webcrate/backup-tmp'):
+        os.system(f'rm /webcrate/backup-tmp/*')
+      os.system(f'mysqldump --single-transaction --max_allowed_packet=64M -h webcrate-{project.name}-mysql -u root -p"{mysql_root_password}" --result-file "/webcrate/backup-tmp/{project.name}.sql" "{project.name}"')
       for BACKUP_URI in BACKUP_URIS:
         os.system(f'duplicity backup --verbosity notice '
           f'--no-encryption '
@@ -237,7 +237,7 @@ for projectname,project in projects.items():
           f'--volsize 5000 '
           f'--archive-dir /webcrate/duplicity/.duplicity '
           f'--log-file /webcrate/duplicity/duplicity.log '
-          f'"/webcrate/backup/tmp" '
+          f'"/webcrate/backup-tmp" '
           f'"{BACKUP_URI}/projects/{project.name}/project-mysql"'
         )
         sys.stdout.flush()
@@ -249,8 +249,8 @@ for projectname,project in projects.items():
           f'"{BACKUP_URI}/projects/{project.name}/project-mysql"'
         )
         sys.stdout.flush()
-      if os.path.isdir(f'/webcrate/backup/tmp') and os.listdir(f'/webcrate/backup/tmp'):
-        os.system(f'rm /webcrate/backup/tmp/*')
+      if os.path.isdir(f'/webcrate/backup-tmp') and os.listdir(f'/webcrate/backup-tmp'):
+        os.system(f'rm /webcrate/backup-tmp/*')
 
 
     #backup mysql5
@@ -261,11 +261,11 @@ for projectname,project in projects.items():
       sys.stdout.flush()
       log.write(f'Backup mysql5 db for project {project.name}')
       mysql5_root_password = os.popen(f'cat /webcrate/secrets/mysql5.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
-      os.system(f'mkdir -p /webcrate/backup/tmp')
-      if os.path.isdir(f'/webcrate/backup/tmp') and os.listdir(f'/webcrate/backup/tmp'):
-        os.system(f'rm /webcrate/backup/tmp/*')
+      os.system(f'mkdir -p /webcrate/backup-tmp')
+      if os.path.isdir(f'/webcrate/backup-tmp') and os.listdir(f'/webcrate/backup-tmp'):
+        os.system(f'rm /webcrate/backup-tmp/*')
 
-      os.system(f'mysqldump --single-transaction --max_allowed_packet=64M -h webcrate-mysql5 -u root -p"{mysql5_root_password}" --result-file "/webcrate/backup/tmp/{project.name}.sql" "{project.name}"')
+      os.system(f'mysqldump --single-transaction --max_allowed_packet=64M -h webcrate-mysql5 -u root -p"{mysql5_root_password}" --result-file "/webcrate/backup-tmp/{project.name}.sql" "{project.name}"')
       for BACKUP_URI in BACKUP_URIS:
         os.system(f'duplicity backup --verbosity notice '
           f'--no-encryption '
@@ -275,7 +275,7 @@ for projectname,project in projects.items():
           f'--volsize 5000 '
           f'--archive-dir /webcrate/duplicity/.duplicity '
           f'--log-file /webcrate/duplicity/duplicity.log '
-          f'"/webcrate/backup/tmp" '
+          f'"/webcrate/backup-tmp" '
           f'"{BACKUP_URI}/projects/{project.name}/mysql5"'
         )
         sys.stdout.flush()
@@ -287,8 +287,8 @@ for projectname,project in projects.items():
           f'"{BACKUP_URI}/projects/{project.name}/mysql5"'
         )
         sys.stdout.flush()
-      if os.path.isdir(f'/webcrate/backup/tmp') and os.listdir(f'/webcrate/backup/tmp'):
-        os.system(f'rm /webcrate/backup/tmp/*')
+      if os.path.isdir(f'/webcrate/backup-tmp') and os.listdir(f'/webcrate/backup-tmp'):
+        os.system(f'rm /webcrate/backup-tmp/*')
 
 
     #backup project mysql5
@@ -299,10 +299,10 @@ for projectname,project in projects.items():
       sys.stdout.flush()
       log.write(f'Backup project-mysql5 db for project {project.name}')
       mysql5_root_password = os.popen(f'cat /webcrate/secrets/mysql5.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
-      os.system(f'mkdir -p /webcrate/backup/tmp')
-      if os.path.isdir(f'/webcrate/backup/tmp') and os.listdir(f'/webcrate/backup/tmp'):
-        os.system(f'rm /webcrate/backup/tmp/*')
-      os.system(f'mysqldump --single-transaction --max_allowed_packet=64M -h webcrate-{project.name}-mysql5 -u root -p"{mysql5_root_password}" --result-file "/webcrate/backup/tmp/{project.name}.sql" "{project.name}"')
+      os.system(f'mkdir -p /webcrate/backup-tmp')
+      if os.path.isdir(f'/webcrate/backup-tmp') and os.listdir(f'/webcrate/backup-tmp'):
+        os.system(f'rm /webcrate/backup-tmp/*')
+      os.system(f'mysqldump --single-transaction --max_allowed_packet=64M -h webcrate-{project.name}-mysql5 -u root -p"{mysql5_root_password}" --result-file "/webcrate/backup-tmp/{project.name}.sql" "{project.name}"')
       for BACKUP_URI in BACKUP_URIS:
         os.system(f'duplicity backup --verbosity notice '
           f'--no-encryption '
@@ -312,7 +312,7 @@ for projectname,project in projects.items():
           f'--volsize 5000 '
           f'--archive-dir /webcrate/duplicity/.duplicity '
           f'--log-file /webcrate/duplicity/duplicity.log '
-          f'"/webcrate/backup/tmp" '
+          f'"/webcrate/backup-tmp" '
           f'"{BACKUP_URI}/projects/{project.name}/project-mysql5"'
         )
         sys.stdout.flush()
@@ -324,8 +324,8 @@ for projectname,project in projects.items():
           f'"{BACKUP_URI}/projects/{project.name}/project-mysql5"'
         )
         sys.stdout.flush()
-      if os.path.isdir(f'/webcrate/backup/tmp') and os.listdir(f'/webcrate/backup/tmp'):
-        os.system(f'rm /webcrate/backup/tmp/*')
+      if os.path.isdir(f'/webcrate/backup-tmp') and os.listdir(f'/webcrate/backup-tmp'):
+        os.system(f'rm /webcrate/backup-tmp/*')
 
     #backup postgresql
     if project.postgresql_db and ( BACKUP_TYPE == 'postgresql' or BACKUP_TYPE == 'all' ):
@@ -335,10 +335,10 @@ for projectname,project in projects.items():
       sys.stdout.flush()
       log.write(f'Backup postgres db for project {project.name}')
       postgres_root_password = os.popen(f'cat /webcrate/secrets/postgres.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
-      os.system(f'mkdir -p /webcrate/backup/tmp')
-      if os.path.isdir(f'/webcrate/backup/tmp') and os.listdir(f'/webcrate/backup/tmp'):
-        os.system(f'rm /webcrate/backup/tmp/*')
-      os.system(f'PGPASSWORD={postgres_root_password} pg_dump -U postgres -h webcrate-postgres {project.name} > /webcrate/backup/tmp/{project.name}.pgsql')
+      os.system(f'mkdir -p /webcrate/backup-tmp')
+      if os.path.isdir(f'/webcrate/backup-tmp') and os.listdir(f'/webcrate/backup-tmp'):
+        os.system(f'rm /webcrate/backup-tmp/*')
+      os.system(f'PGPASSWORD={postgres_root_password} pg_dump -U postgres -h webcrate-postgres {project.name} > /webcrate/backup-tmp/{project.name}.pgsql')
       for BACKUP_URI in BACKUP_URIS:
         os.system(f'duplicity backup --verbosity notice '
           f'--no-encryption '
@@ -348,7 +348,7 @@ for projectname,project in projects.items():
           f'--volsize 5000 '
           f'--archive-dir /webcrate/duplicity/.duplicity '
           f'--log-file /webcrate/duplicity/duplicity.log '
-          f'"/webcrate/backup/tmp" '
+          f'"/webcrate/backup-tmp" '
           f'"{BACKUP_URI}/projects/{project.name}/postgresql"'
         )
         sys.stdout.flush()
@@ -360,8 +360,8 @@ for projectname,project in projects.items():
           f'"{BACKUP_URI}/projects/{project.name}/postgresql"'
         )
         sys.stdout.flush()
-      if os.path.isdir(f'/webcrate/backup/tmp') and os.listdir(f'/webcrate/backup/tmp'):
-        os.system(f'rm /webcrate/backup/tmp/*')
+      if os.path.isdir(f'/webcrate/backup-tmp') and os.listdir(f'/webcrate/backup-tmp'):
+        os.system(f'rm /webcrate/backup-tmp/*')
 
     #backup project postgresql
     if project.postgresql_db and ( BACKUP_TYPE == 'postgresql' or BACKUP_TYPE == 'all' ):
@@ -371,10 +371,10 @@ for projectname,project in projects.items():
       sys.stdout.flush()
       log.write(f'Backup project-postgresql db for project {project.name}')
       postgres_root_password = os.popen(f'cat /webcrate/secrets/postgres.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
-      os.system(f'mkdir -p /webcrate/backup/tmp')
-      if os.path.isdir(f'/webcrate/backup/tmp') and os.listdir(f'/webcrate/backup/tmp'):
-        os.system(f'rm /webcrate/backup/tmp/*')
-      os.system(f'PGPASSWORD={postgres_root_password} pg_dump -U postgres -h webcrate-{project.name}-postgresql {project.name} > /webcrate/backup/tmp/{project.name}.pgsql')
+      os.system(f'mkdir -p /webcrate/backup-tmp')
+      if os.path.isdir(f'/webcrate/backup-tmp') and os.listdir(f'/webcrate/backup-tmp'):
+        os.system(f'rm /webcrate/backup-tmp/*')
+      os.system(f'PGPASSWORD={postgres_root_password} pg_dump -U postgres -h webcrate-{project.name}-postgresql {project.name} > /webcrate/backup-tmp/{project.name}.pgsql')
       for BACKUP_URI in BACKUP_URIS:
         os.system(f'duplicity backup --verbosity notice '
           f'--no-encryption '
@@ -384,7 +384,7 @@ for projectname,project in projects.items():
           f'--volsize 5000 '
           f'--archive-dir /webcrate/duplicity/.duplicity '
           f'--log-file /webcrate/duplicity/duplicity.log '
-          f'"/webcrate/backup/tmp" '
+          f'"/webcrate/backup-tmp" '
           f'"{BACKUP_URI}/projects/{project.name}/project-postgresql"'
         )
         sys.stdout.flush()
@@ -396,8 +396,8 @@ for projectname,project in projects.items():
           f'"{BACKUP_URI}/projects/{project.name}/project-postgresql"'
         )
         sys.stdout.flush()
-      if os.path.isdir(f'/webcrate/backup/tmp') and os.listdir(f'/webcrate/backup/tmp'):
-        os.system(f'rm /webcrate/backup/tmp/*')
+      if os.path.isdir(f'/webcrate/backup-tmp') and os.listdir(f'/webcrate/backup-tmp'):
+        os.system(f'rm /webcrate/backup-tmp/*')
     #disconnect from project network
     os.system(f'docker network disconnect webcrate_network_{project.name} webcrate-utils-docker')
 

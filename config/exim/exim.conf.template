@@ -810,6 +810,7 @@ begin transports
 remote_smtp:
   driver = smtp
   helo_data = %PROJECTDOMAIN%
+  headers_remove = received
   # message_size_limit = ${if > {$max_received_linelength}{998} {1}{0}}
 .ifdef _HAVE_DANE
   dnssec_request_domains = *

@@ -1,4 +1,4 @@
-FROM alpine:3
+FROM alpine:3.17
 RUN apk update &&\
     apk add \
     docker \
@@ -8,8 +8,8 @@ RUN apk update &&\
     lftp \
     pwgen \
     openssl \
-    python3 py3-yaml py3-idna py3-munch \
     mariadb-client \
+    python3 py3-yaml py3-idna py3-munch \
     postgresql-client &&\
     rm -rf /var/cache/apk/*
 RUN mkdir /webcrate

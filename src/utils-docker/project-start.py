@@ -174,7 +174,7 @@ async def startMysql5 (project):
     mysql5_database_found = int(os.popen(f'mysql -u root -h webcrate-{project.name}-mysql5 -p"{mysql5_root_password}" -e "show databases like \'{project.name}\';" | grep "Database ({project.name})" | wc -l').read().strip())
     if mysql5_database_found == 0:
       if os.path.isfile(f'/webcrate/secrets/{project.name}-project-mysql5.txt'):
-        with open(f'/webcrate/secrets/{project.name}-project-mysql.txt', 'r') as f:
+        with open(f'/webcrate/secrets/{project.name}-project-mysql5.txt', 'r') as f:
           for line in f:
             pair = line.strip().split('=', 1)
             if pair[0] == 'password':

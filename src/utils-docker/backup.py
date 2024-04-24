@@ -33,7 +33,7 @@ if PROJECT_NAME == 'admin' or PROJECT_NAME == 'all':
     print(f'=========================================')
     sys.stdout.flush()
     for BACKUP_URI in BACKUP_URIS:
-      os.system(f'duplicity backup --verbosity notice '
+      os.system(f'duplicity --verbosity notice '
         f'--no-encryption '
         f'--full-if-older-than {WEBCRATE_FULL_BACKUP_DAYS}D '
         f'--num-retries 3 '
@@ -80,7 +80,7 @@ if PROJECT_NAME == 'admin' or PROJECT_NAME == 'all':
       os.system(f'rm /webcrate/backup-tmp/*')
     os.system(f'mysqldump --single-transaction --max_allowed_packet=64M -h webcrate-mysql -u root -p"{mysql_root_password}" --result-file "/webcrate/backup-tmp/webcrate.sql" "webcrate"')
     for BACKUP_URI in BACKUP_URIS:
-      os.system(f'duplicity backup --verbosity notice '
+      os.system(f'duplicity --verbosity notice '
         f'--no-encryption '
         f'--full-if-older-than {WEBCRATE_FULL_BACKUP_DAYS}D '
         f'--num-retries 3 '
@@ -126,7 +126,7 @@ for projectname,project in projects.items():
           FILTERS = f'{FILTERS}--{duplicity_filter.mode} "{data_folder}/{duplicity_filter.path}" '
       if os.path.isdir(f'{data_folder}'):
         for BACKUP_URI in BACKUP_URIS:
-          os.system(f'duplicity backup --verbosity notice '
+          os.system(f'duplicity --verbosity notice '
             f'--no-encryption '
             f'--full-if-older-than {WEBCRATE_FULL_BACKUP_DAYS}D '
             f'--num-retries 3 '
@@ -152,7 +152,7 @@ for projectname,project in projects.items():
       log.write(f'Backup solr cores for project {project.name}')
       if os.path.isdir(f'{project.folder}/var/solr/cores'):
         for BACKUP_URI in BACKUP_URIS:
-          os.system(f'duplicity backup --verbosity notice '
+          os.system(f'duplicity --verbosity notice '
             f'--no-encryption '
             f'--full-if-older-than {WEBCRATE_FULL_BACKUP_DAYS}D '
             f'--num-retries 3 '
@@ -192,7 +192,7 @@ for projectname,project in projects.items():
         os.system(f'rm /webcrate/backup-tmp/*')
       os.system(f'mysqldump --single-transaction --max_allowed_packet=64M -h webcrate-mysql -u root -p"{mysql_root_password}" --result-file "/webcrate/backup-tmp/{project.name}.sql" "{project.name}"')
       for BACKUP_URI in BACKUP_URIS:
-        os.system(f'duplicity backup --verbosity notice '
+        os.system(f'duplicity --verbosity notice '
           f'--no-encryption '
           f'--full-if-older-than {WEBCRATE_FULL_BACKUP_DAYS}D '
           f'--num-retries 3 '
@@ -229,7 +229,7 @@ for projectname,project in projects.items():
         os.system(f'rm /webcrate/backup-tmp/*')
       os.system(f'mysqldump --single-transaction --max_allowed_packet=64M -h webcrate-{project.name}-mysql -u root -p"{mysql_root_password}" --result-file "/webcrate/backup-tmp/{project.name}.sql" "{project.name}"')
       for BACKUP_URI in BACKUP_URIS:
-        os.system(f'duplicity backup --verbosity notice '
+        os.system(f'duplicity --verbosity notice '
           f'--no-encryption '
           f'--full-if-older-than {WEBCRATE_FULL_BACKUP_DAYS}D '
           f'--num-retries 3 '
@@ -267,7 +267,7 @@ for projectname,project in projects.items():
 
       os.system(f'mysqldump --single-transaction --max_allowed_packet=64M -h webcrate-mysql5 -u root -p"{mysql5_root_password}" --result-file "/webcrate/backup-tmp/{project.name}.sql" "{project.name}"')
       for BACKUP_URI in BACKUP_URIS:
-        os.system(f'duplicity backup --verbosity notice '
+        os.system(f'duplicity --verbosity notice '
           f'--no-encryption '
           f'--full-if-older-than {WEBCRATE_FULL_BACKUP_DAYS}D '
           f'--num-retries 3 '
@@ -304,7 +304,7 @@ for projectname,project in projects.items():
         os.system(f'rm /webcrate/backup-tmp/*')
       os.system(f'mysqldump --single-transaction --max_allowed_packet=64M -h webcrate-{project.name}-mysql5 -u root -p"{mysql5_root_password}" --result-file "/webcrate/backup-tmp/{project.name}.sql" "{project.name}"')
       for BACKUP_URI in BACKUP_URIS:
-        os.system(f'duplicity backup --verbosity notice '
+        os.system(f'duplicity --verbosity notice '
           f'--no-encryption '
           f'--full-if-older-than {WEBCRATE_FULL_BACKUP_DAYS}D '
           f'--num-retries 3 '
@@ -340,7 +340,7 @@ for projectname,project in projects.items():
         os.system(f'rm /webcrate/backup-tmp/*')
       os.system(f'PGPASSWORD={postgres_root_password} pg_dump -U postgres -h webcrate-postgres {project.name} > /webcrate/backup-tmp/{project.name}.pgsql')
       for BACKUP_URI in BACKUP_URIS:
-        os.system(f'duplicity backup --verbosity notice '
+        os.system(f'duplicity --verbosity notice '
           f'--no-encryption '
           f'--full-if-older-than {WEBCRATE_FULL_BACKUP_DAYS}D '
           f'--num-retries 3 '
@@ -376,7 +376,7 @@ for projectname,project in projects.items():
         os.system(f'rm /webcrate/backup-tmp/*')
       os.system(f'PGPASSWORD={postgres_root_password} pg_dump -U postgres -h webcrate-{project.name}-postgresql {project.name} > /webcrate/backup-tmp/{project.name}.pgsql')
       for BACKUP_URI in BACKUP_URIS:
-        os.system(f'duplicity backup --verbosity notice '
+        os.system(f'duplicity --verbosity notice '
           f'--no-encryption '
           f'--full-if-older-than {WEBCRATE_FULL_BACKUP_DAYS}D '
           f'--num-retries 3 '

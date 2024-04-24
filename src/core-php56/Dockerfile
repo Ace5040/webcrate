@@ -10,7 +10,7 @@ RUN sed -Ei "s/default mirrors./default mirrors.\n\n[home_el_archphp_Arch]\nServ
 
 #install system utils and services
 RUN pacman --needed --noconfirm -Syu && \
-    pacman --needed --noconfirm -S sudo git nano exim openssh base-devel unzip npm mariadb-clients mc iputils cronie inetutils wget tmux ruby python-pip fish libmemcached-awesome && \
+    pacman --needed --noconfirm -S sudo git nano exim openssh base-devel unzip npm mc iputils cronie inetutils wget tmux ruby python-pip fish libmemcached-awesome && \
     yes | pacman -Scc && \
     useradd -m -s /bin/bash dev && \
     usermod -p "dev" dev && \
@@ -21,6 +21,9 @@ RUN pacman --needed --noconfirm -Syu && \
 RUN pacman --needed --noconfirm -S php56 php56-fileinfo php56-ctype php56-json php56-pecl php56-pear php56-zip php56-xmlreader php56-xmlwriter php56-mbstring php56-xml php56-fpm php56-intl php56-sqlite php56-gd php56-xsl php56-simplexml php56-phar php56-tidy php56-cli php56-tokenizer php56-curl php56-opcache php56-iconv php56-mysql php56-pdo php56-soap php56-imagick
 RUN pecl56 install timezonedb-2021.5 && \
     echo extension=timezonedb.so > /etc/php56/conf.d/10-timezonedb.ini
+
+# #install mysql5 compatible mariadb-clients
+RUN pacman --needed --noconfirm -U https://archive.archlinux.org/packages/m/mariadb-libs/mariadb-libs-10.10.3-1-x86_64.pkg.tar.zst https://archive.archlinux.org/packages/m/mariadb-clients/mariadb-clients-10.10.3-1-x86_64.pkg.tar.zst
 
 WORKDIR /home/dev
 USER dev

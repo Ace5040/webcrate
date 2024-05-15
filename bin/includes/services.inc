@@ -96,12 +96,12 @@ if docker container inspect webcrate-mysql5 >/dev/null 2> /dev/null; then
   writeLog "Container webcrate-mysql5 exists"
 else
   writeLog "Starting webcrate-mysql5 container"
-  if [ "$MYSQL_ROOT_PASS" != "" ]; then MYSQL_ROOT_PASS=-e\ MYSQL_ROOT_PASSWORD="$MYSQL_ROOT_PASS"; fi
+  if [ "$MYSQL5_ROOT_PASS" != "" ]; then MYSQL5_ROOT_PASS=-e\ MYSQL5_ROOT_PASSWORD="$MYSQL5_ROOT_PASS"; fi
   docker run -d --env-file=$(pwd)/.env --name webcrate-mysql5 \
     --network="webcrate_network" --dns=10.255.0.100 \
     --restart="unless-stopped" \
     --user "$uid:$gid" \
-    $MYSQL_ROOT_PASS \
+    $MYSQL5_ROOT_PASS \
     -v /etc/localtime:/etc/localtime:ro \
     -v $(pwd)/var/mysql5:/var/lib/mysql \
     -v $(pwd)/config/mysql/mysql5.cnf:/etc/mysql/conf.d/user.cnf \

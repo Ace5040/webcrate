@@ -7,20 +7,20 @@ RUN pacman --needed --noconfirm -Syu && \
     useradd -m -s /bin/bash dev && \
     usermod -p "dev" dev && \
     echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo && \
-    sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j12\"/g" /etc/makepkg.conf
+    sed -i "s/#MAKEFLAGS=\"-j6\"/MAKEFLAGS=\"-j12\"/g" /etc/makepkg.conf
 
-#install yay
-WORKDIR /home/dev/yay
-RUN chown dev:dev /home/dev/yay
 USER dev
-RUN git clone https://aur.archlinux.org/yay.git . && \
-    makepkg -scir --noconfirm; \
-    rm -rf /home/dev/yay
+WORKDIR /home/dev
 
-#install aur packages
-RUN yay --gpgflags "--keyserver hkp://keyserver.ubuntu.com" --noeditmenu --nodiffmenu --noconfirm --mflags --nocheck -S docker-systemctl-replacement-git proftpd && \
-    yes | yay -Scc && \
-    rm -rf /home/dev/.cache
+#install docker-systemctl-replacement-git
+RUN git clone https://aur.archlinux.org/docker-systemctl-replacement-git.git && \
+    cd docker-systemctl-replacement-git && \
+    makepkg -scir --nocheck --noconfirm --skipchecksums
+
+#install proftpd
+RUN git clone https://aur.archlinux.org/proftpd.git && \
+    cd proftpd && \
+    makepkg -scir --nocheck --noconfirm --skipchecksums
 
 USER root
 
@@ -40,3 +40,6 @@ COPY ["entrypoint.sh", "/"]
 RUN chmod u+x /webcrate/parse-projects.py && \
     chmod u+x /entrypoint.sh
 CMD ["/entrypoint.sh"]
+EXPOSE 21/tcp
+EXPOSE 20/udp
+EXPOSE 50000-60000/udp

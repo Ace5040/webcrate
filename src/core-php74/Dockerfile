@@ -1,5 +1,8 @@
 FROM archlinux:latest
 
+#set mirror
+RUN echo "Server = https://mirror.yandex.ru/archlinux/\$repo/os/\$arch" >> /etc/pacman.d/mirrorlist
+
 #php repo
 RUN sed -Ei "s/default mirrors./default mirrors.\n\n[home_el_archphp_Arch]\nServer = https:\/\/download.opensuse.org\/repositories\/home:\/el:\/archphp\/Arch\/\$arch/g" /etc/pacman.conf && \
     key=$(curl -fsSL https://download.opensuse.org/repositories/home:el:archphp/Arch/$(uname -m)/home_el_archphp_Arch.key) && \
@@ -10,7 +13,7 @@ RUN sed -Ei "s/default mirrors./default mirrors.\n\n[home_el_archphp_Arch]\nServ
 
 #install system utils and services
 RUN pacman --needed --noconfirm -Syu && \
-    pacman --needed --noconfirm -S sudo git nano exim openssh base-devel unzip npm mariadb-clients mc iputils cronie inetutils wget tmux ruby python-pip fish libmemcached-awesome && \
+    pacman --needed --noconfirm -S sudo git nano exim openssh base-devel unzip npm mariadb-clients mc iputils cronie inetutils wget tmux ruby python-pip libmemcached-awesome && \
     yes | pacman -Scc && \
     useradd -m -s /bin/bash dev && \
     usermod -p "dev" dev && \
@@ -23,8 +26,20 @@ RUN pecl74 install timezonedb-2021.5 memcached && \
     echo extension=timezonedb.so > /etc/php74/conf.d/10-timezonedb.ini && \
     echo extension=memcached.so > /etc/php74/conf.d/10-memcached.ini
 
-WORKDIR /home/dev
 USER dev
+WORKDIR /home/dev
+
+#install oh-my-bash
+RUN git clone https://aur.archlinux.org/oh-my-bash-git.git && \
+    cd oh-my-bash-git && \
+    makepkg -scir --nocheck --noconfirm --skipchecksums && \
+    rm -rf /home/dev/oh-my-bash-git
+
+#install blesh-git
+RUN git clone https://aur.archlinux.org/blesh-git.git && \
+    cd blesh-git && \
+    makepkg -scir --nocheck --noconfirm --skipchecksums && \
+    rm -rf /home/dev/blesh-git
 
 #install symfony-cli-bin
 RUN git clone https://aur.archlinux.org/symfony-cli-bin.git && \
@@ -38,10 +53,10 @@ RUN git clone https://aur.archlinux.org/docker-systemctl-replacement-git.git && 
     makepkg -scir --nocheck --noconfirm --skipchecksums && \
     rm -rf /home/dev/docker-systemctl-replacement-git
 
-#misc install and config
+#misc
 USER root
-
 WORKDIR /root
+
 RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/latest/download/drush.phar && \
     chmod +x drush.phar && \
     mv drush.phar /usr/bin/drush && \
@@ -69,18 +84,7 @@ RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/late
     mkdir -p /webcrate && \
     mkdir -p /webcrate-bin && \
     ln -s /bin/php74 /webcrate-bin/php && \
-    mkdir -p /webcrate-fish && \
     chmod o-rwx /webcrate
-
-#install fish
-WORKDIR /webcrate-fish/oh-my-fish
-RUN git clone https://github.com/oh-my-fish/oh-my-fish . && \
-    bin/install --offline --path=/webcrate-fish/omf --noninteractive --config=/webcrate-fish/omfconf && \
-    rm -rf ./* && \
-    cp /root/.config/fish/conf.d/omf.fish /etc/fish/conf.d/omf.fish && \
-    fish -C "omf install cbjohnson" && \
-    cp /webcrate-fish/omf/themes/default/functions/fish_right_prompt.fish /webcrate-fish/omf/themes/cbjohnson/fish_right_prompt.fish
-COPY fish_prompt.fish /webcrate-fish/omf/themes/cbjohnson/fish_prompt.fish
 
 #install ioncucbe
 RUN wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz && \
@@ -91,7 +95,6 @@ RUN wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-
 
 WORKDIR /
 #copy scripts
-COPY ["fishrc.fish", "/etc/fish/conf.d/"]
 COPY ["bashrc.sh", "/etc/profile.d/"]
 COPY ["versions.py", "parse-projects.py", "sync_ssh_keys.sh", "log.py", "/webcrate/"]
 COPY ["entrypoint.sh", "/"]

@@ -3,7 +3,7 @@
 exec dnsmasq \
   --no-hosts \
   --log-facility=- \
-  --hostsdir=/dnsmasq/hosts \
+  --hostsdir=/dnsmasq/hosts\
   --resolv-file=/dnsmasq/resolv.conf \
   --keep-in-foreground
 

@@ -1,5 +1,8 @@
 FROM archlinux:latest
 
+#set mirror
+RUN echo "Server = https://mirror.yandex.ru/archlinux/\$repo/os/\$arch" >> /etc/pacman.d/mirrorlist
+
 #php repo
 RUN sed -Ei "s/default mirrors./default mirrors.\n\n[home_el_archphp_Arch]\nServer = https:\/\/download.opensuse.org\/repositories\/home:\/el:\/archphp\/Arch\/\$arch/g" /etc/pacman.conf && \
     key=$(curl -fsSL https://download.opensuse.org/repositories/home:el:archphp/Arch/$(uname -m)/home_el_archphp_Arch.key) && \
@@ -25,8 +28,20 @@ RUN pecl56 install timezonedb-2021.5 && \
 # #install mysql5 compatible mariadb-clients
 RUN pacman --needed --noconfirm -U https://archive.archlinux.org/packages/m/mariadb-libs/mariadb-libs-10.10.3-1-x86_64.pkg.tar.zst https://archive.archlinux.org/packages/m/mariadb-clients/mariadb-clients-10.10.3-1-x86_64.pkg.tar.zst
 
-WORKDIR /home/dev
 USER dev
+WORKDIR /home/dev
+
+#install oh-my-bash
+RUN git clone https://aur.archlinux.org/oh-my-bash-git.git && \
+    cd oh-my-bash-git && \
+    makepkg -scir --nocheck --noconfirm --skipchecksums && \
+    rm -rf /home/dev/oh-my-bash-git
+
+#install blesh-git
+RUN git clone https://aur.archlinux.org/blesh-git.git && \
+    cd blesh-git && \
+    makepkg -scir --nocheck --noconfirm --skipchecksums && \
+    rm -rf /home/dev/blesh-git
 
 #install symfony-cli-bin
 RUN git clone https://aur.archlinux.org/symfony-cli-bin.git && \
@@ -72,18 +87,7 @@ RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/down
     mkdir -p /webcrate && \
     mkdir -p /webcrate-bin && \
     ln -s /bin/php56 /webcrate-bin/php && \
-    mkdir -p /webcrate-fish && \
     chmod o-rwx /webcrate
-
-#install fish
-WORKDIR /webcrate-fish/oh-my-fish
-RUN git clone https://github.com/oh-my-fish/oh-my-fish . && \
-    bin/install --offline --path=/webcrate-fish/omf --noninteractive --config=/webcrate-fish/omfconf && \
-    rm -rf ./* && \
-    cp /root/.config/fish/conf.d/omf.fish /etc/fish/conf.d/omf.fish && \
-    fish -C "omf install cbjohnson" && \
-    cp /webcrate-fish/omf/themes/default/functions/fish_right_prompt.fish /webcrate-fish/omf/themes/cbjohnson/fish_right_prompt.fish;
-COPY fish_prompt.fish /webcrate-fish/omf/themes/cbjohnson/fish_prompt.fish
 
 #install ioncucbe
 RUN wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz && \
@@ -94,7 +98,6 @@ RUN wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-
 
 WORKDIR /
 #copy scripts
-COPY ["fishrc.fish", "/etc/fish/conf.d/"]
 COPY ["bashrc.sh", "/etc/profile.d/"]
 COPY ["versions.py", "parse-projects.py", "sync_ssh_keys.sh", "log.py", "/webcrate/"]
 COPY ["entrypoint.sh", "/"]

@@ -1,8 +1,11 @@
 FROM archlinux:latest
 
+#set mirror
+RUN echo "Server = https://mirror.yandex.ru/archlinux/\$repo/os/\$arch" >> /etc/pacman.d/mirrorlist
+
 #install system utils and services
 RUN pacman --needed --noconfirm -Syu && \
-    pacman --needed --noconfirm -S git nano openssh base-devel unzip composer npm mc iputils cronie inetutils wget tmux ruby pyenv python-yaml python-munch python-setuptools fish exim postgresql-libs libjpeg && \
+    pacman --needed --noconfirm -S git nano openssh base-devel unzip composer npm mc iputils cronie inetutils wget tmux ruby pyenv python-yaml python-munch python-setuptools exim postgresql-libs libjpeg && \
     yes | pacman -Scc && \
     useradd -m -s /bin/bash dev && \
     usermod -p "dev" dev && \
@@ -11,6 +14,18 @@ RUN pacman --needed --noconfirm -Syu && \
 
 WORKDIR /home/dev
 USER dev
+
+#install oh-my-bash
+RUN git clone https://aur.archlinux.org/oh-my-bash-git.git && \
+    cd oh-my-bash-git && \
+    makepkg -scir --nocheck --noconfirm --skipchecksums && \
+    rm -rf /home/dev/oh-my-bash-git
+
+#install blesh-git
+RUN git clone https://aur.archlinux.org/blesh-git.git && \
+    cd blesh-git && \
+    makepkg -scir --nocheck --noconfirm --skipchecksums && \
+    rm -rf /home/dev/blesh-git
 
 #install docker-systemctl-replacement-git
 RUN git clone https://aur.archlinux.org/docker-systemctl-replacement-git.git && \
@@ -37,22 +52,10 @@ RUN gem install compass --norc && \
     sed -i 's/test -r /test -e /g' /etc/profile && \
     mkdir -p /webcrate && \
     mkdir -p /webcrate-bin && \
-    mkdir -p /webcrate-fish && \
     chmod o-rwx /webcrate
-
-#install fish
-WORKDIR /webcrate-fish/oh-my-fish
-RUN git clone https://github.com/oh-my-fish/oh-my-fish . && \
-    bin/install --offline --path=/webcrate-fish/omf --noninteractive --config=/webcrate-fish/omfconf && \
-    rm -rf ./* && \
-    cp /root/.config/fish/conf.d/omf.fish /etc/fish/conf.d/omf.fish && \
-    fish -C "omf install cbjohnson" && \
-    cp /webcrate-fish/omf/themes/default/functions/fish_right_prompt.fish /webcrate-fish/omf/themes/cbjohnson/fish_right_prompt.fish
-COPY fish_prompt.fish /webcrate-fish/omf/themes/cbjohnson/fish_prompt.fish
 
 WORKDIR /
 #copy scripts
-COPY ["fishrc.fish", "/etc/fish/conf.d/"]
 COPY ["bashrc.sh", "/etc/profile.d/"]
 COPY ["gunicorn_restart.sh", "/webcrate-bin/"]
 COPY ["versions.py", "parse-projects.py", "sync_ssh_keys.sh", "log.py", "/webcrate/"]

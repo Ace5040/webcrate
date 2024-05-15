@@ -137,18 +137,7 @@ for projectname,project in projects.items():
           f.write(f'export DATA_FOLDER={data_folder}\n')
           f.close()
 
-        with open(f'{project.folder}/config.fish', 'w') as f:
-          if project.backend == 'php':
-            f.write(f'set PATH /webcrate-bin/php $PATH\n')
-            f.write(f'set PATH /home/{project.name}/.config/composer/vendor/bin $PATH\n')
-            f.write(f'set PATH /home/{project.name}/{data_folder}/vendor/bin $PATH\n')
-            f.write(f'set -x COMPOSER_HOME /home/{project.name}/.config/composer\n')
-            f.write(f'set -x DRUSH_PHP /webcrate-bin/php\n')
-          f.write(f'set -x DATA_FOLDER {data_folder}\n')
-          f.close()
-
         os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} {project.folder}/config.sh')
-        os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} {project.folder}/config.fish')
 
         conf = ''
         template = f'default-{project.backend}' if project.nginx_template == 'default' else f'default-{project.nginx_template}'

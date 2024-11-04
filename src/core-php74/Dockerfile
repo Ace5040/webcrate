@@ -20,6 +20,18 @@ RUN pacman --needed --noconfirm -Syu && \
     echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo && \
     sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j12\"/g" /etc/makepkg.conf
 
+USER dev
+WORKDIR /home/dev
+
+#install icu74
+RUN git clone https://aur.archlinux.org/icu74.git && \
+    cd icu74 && \
+    makepkg -scir --nocheck --noconfirm --skipchecksums && \
+    rm -rf /home/dev/icu74
+
+USER root
+WORKDIR /root
+
 #install php74
 RUN pacman --needed --noconfirm -S php74 php74-fileinfo php74-ctype php74-json php74-pecl php74-pear php74-zip php74-xmlreader php74-xmlwriter php74-mbstring php74-openssl php74-xml php74-fpm php74-intl php74-sqlite php74-gd php74-xsl php74-simplexml php74-phar php74-tidy php74-cli php74-tokenizer php74-curl php74-opcache php74-iconv php74-mysql php74-pdo php74-soap php74-imagick
 RUN pecl74 install timezonedb-2021.5 memcached && \

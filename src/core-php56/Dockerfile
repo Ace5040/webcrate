@@ -22,6 +22,7 @@ RUN pacman --needed --noconfirm -Syu && \
 
 USER dev
 WORKDIR /home/dev
+
 #install icu74
 RUN git clone https://aur.archlinux.org/icu74.git && \
     cd icu74 && \
@@ -30,6 +31,7 @@ RUN git clone https://aur.archlinux.org/icu74.git && \
 
 USER root
 WORKDIR /root
+
 #install libvpx
 RUN pacman --needed --noconfirm -S libvpx && \
     ln /usr/lib/libvpx.so /usr/lib/libvpx.so.8

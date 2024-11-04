@@ -22,6 +22,7 @@ RUN pacman --needed --noconfirm -Syu && \
 
 USER dev
 WORKDIR /home/dev
+
 #install icu74
 RUN git clone https://aur.archlinux.org/icu74.git && \
     cd icu74 && \

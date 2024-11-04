@@ -22,7 +22,7 @@ function Help() {
   echo '              _target_: can be one of nginx, core, core-gunicorn, core-php81, core-php74, core-php73, core-php56, utils-pwgen, utils-docker, admin, dnsmasq or all'
   echo '              OPTIONS:'
   echo '                -c, --no-cache : do not use docker build cache'
-  echo '                -u, --update-base-images : pulls fresh archlinux:latest and nginx:stable images before build'
+  echo '                -u, --update-base-images : pulls fresh archlinux:base-20241027.0.273886 and nginx:stable images before build'
   echo '  push    - Push images to dockerhub. Usage webcrate push _image_'
   echo '              _image_: can be one of nginx, core, utils-pwgen, utils-docker, admin or all'
   echo '  help    - Print this info'
@@ -87,7 +87,7 @@ function Build() {
     NOCACHE=' --no-cache'
   fi
   if [ "$2" = "-u" ] || [ "$3" = "-u" ] || [ "$2" = "-cu" ] || [ "$3" = "-cu" ] || [ "$2" = "-uc" ] || [ "$3" = "-uc" ] || [ "$2" = "--update-base-images" ] || [ "$3" = "--update-base-images" ]; then
-    docker pull archlinux:latest
+    docker pull archlinux:base-20241027.0.273886
     docker pull nginx:stable
   fi
   if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "nginx" ]; then
@@ -119,7 +119,7 @@ function Build() {
     docker build -t ace5040/webcrate-core-php73:stable ./src/core-php73$NOCACHE
   fi
   if [ "$BUILDTARGET" = "core-php56" ]; then
-    docker build -t ace5040/webcrate-core-php56:stable ./src/core-php56$NOCACHE
+    docker build -t ace5040/webcrate-core-php56:stable ./src/core-php56$NOCACHE --progress=plain
   fi
   if [ "$BUILDTARGET" = "core-gunicorn" ]; then
     docker build -t ace5040/webcrate-core-gunicorn:stable ./src/core-gunicorn$NOCACHE

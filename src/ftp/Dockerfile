@@ -1,4 +1,4 @@
-FROM archlinux:latest
+FROM archlinux:base-20241027.0.273886
 
 #install system utils and services
 RUN pacman --needed --noconfirm -Syu && \

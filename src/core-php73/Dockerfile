@@ -1,4 +1,4 @@
-FROM archlinux:latest
+FROM archlinux:base-20241027.0.273886
 
 #set mirror
 RUN echo "Server = https://mirror.yandex.ru/archlinux/\$repo/os/\$arch" >> /etc/pacman.d/mirrorlist
@@ -19,6 +19,17 @@ RUN pacman --needed --noconfirm -Syu && \
     usermod -p "dev" dev && \
     echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo && \
     sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j12\"/g" /etc/makepkg.conf
+
+USER dev
+WORKDIR /home/dev
+#install icu74
+RUN git clone https://aur.archlinux.org/icu74.git && \
+    cd icu74 && \
+    makepkg -scir --nocheck --noconfirm --skipchecksums && \
+    rm -rf /home/dev/icu74
+
+USER root
+WORKDIR /root
 
 #install php73
 RUN pacman --needed --noconfirm -S php73 php73-fileinfo php73-ctype php73-json php73-pecl php73-pear php73-zip php73-xmlreader php73-xmlwriter php73-mbstring php73-xml php73-fpm php73-intl php73-sqlite php73-gd php73-xsl php73-simplexml php73-phar php73-tidy php73-cli php73-tokenizer php73-curl php73-opcache php73-iconv php73-mysql php73-pdo php73-soap php73-imagick

@@ -1,4 +1,4 @@
-FROM archlinux:latest
+FROM archlinux:base-20241027.0.273886
 
 #set mirror
 RUN echo "Server = https://mirror.yandex.ru/archlinux/\$repo/os/\$arch" >> /etc/pacman.d/mirrorlist

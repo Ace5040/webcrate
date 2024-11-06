@@ -183,47 +183,47 @@ function Push() {
     exit 1
   fi
   if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "nginx" ]; then
-    docker push ace5040/webcrate-nginx:stable
+    docker push ace5040/webcrate-nginx:latest
   fi
   if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "utils-pwgen" ]; then
-    docker push ace5040/webcrate-utils-pwgen:stable
+    docker push ace5040/webcrate-utils-pwgen:latest
   fi
   if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "utils-docker" ]; then
-    docker push ace5040/webcrate-utils-docker:stable
+    docker push ace5040/webcrate-utils-docker:latest
   fi
   if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "core" ]; then
-    docker push ace5040/webcrate-core-php81:stable
-    docker push ace5040/webcrate-core-php56:stable
-    docker push ace5040/webcrate-core-php73:stable
-    docker push ace5040/webcrate-core-php74:stable
-    docker push ace5040/webcrate-core-gunicorn:stable
+    docker push ace5040/webcrate-core-php81:latest
+    docker push ace5040/webcrate-core-php56:latest
+    docker push ace5040/webcrate-core-php73:latest
+    docker push ace5040/webcrate-core-php74:latest
+    docker push ace5040/webcrate-core-gunicorn:latest
   fi
   if [ "$IMAGE" = "core-gunicorn" ]; then
-    docker push ace5040/webcrate-core-gunicorn:stable
+    docker push ace5040/webcrate-core-gunicorn:latest
   fi
   if [ "$IMAGE" = "core-php81" ]; then
-    docker push ace5040/webcrate-core-php81:stable
+    docker push ace5040/webcrate-core-php81:latest
   fi
   if [ "$IMAGE" = "core-php74" ]; then
-    docker push ace5040/webcrate-core-php74:stable
+    docker push ace5040/webcrate-core-php74:latest
   fi
   if [ "$IMAGE" = "core-php73" ]; then
-    docker push ace5040/webcrate-core-php73:stable
+    docker push ace5040/webcrate-core-php73:latest
   fi
   if [ "$IMAGE" = "core-php56" ]; then
-    docker push ace5040/webcrate-core-php56:stable
+    docker push ace5040/webcrate-core-php56:latest
   fi
   if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "ftp" ]; then
-    docker push ace5040/webcrate-ftp:stable
+    docker push ace5040/webcrate-ftp:latest
   fi
   if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "admin" ]; then
-    docker push ace5040/webcrate-admin:stable
+    docker push ace5040/webcrate-admin:latest
   fi
   if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "dnsmasq" ]; then
-    docker push ace5040/webcrate-dnsmasq:stable
+    docker push ace5040/webcrate-dnsmasq:latest
   fi
   if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "stats" ]; then
-    docker push ace5040/webcrate-stats:stable
+    docker push ace5040/webcrate-stats:latest
   fi
 }
 

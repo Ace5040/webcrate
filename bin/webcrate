@@ -91,64 +91,64 @@ function Build() {
     docker pull nginx:stable
   fi
   if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "nginx" ]; then
-    docker build -t ace5040/webcrate-nginx:stable ./src/nginx$NOCACHE
+    docker build -t ace5040/webcrate-nginx:latest ./src/nginx$NOCACHE
   fi
   if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "dnsmasq" ]; then
-    docker build -t ace5040/webcrate-dnsmasq:stable ./src/dnsmasq$NOCACHE
+    docker build -t ace5040/webcrate-dnsmasq:latest ./src/dnsmasq$NOCACHE
   fi
   if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "utils-pwgen" ]; then
-    docker build -t ace5040/webcrate-utils-pwgen:stable ./src/utils-pwgen$NOCACHE
+    docker build -t ace5040/webcrate-utils-pwgen:latest ./src/utils-pwgen$NOCACHE
   fi
   if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "utils-docker" ]; then
-    docker build -t ace5040/webcrate-utils-docker:stable ./src/utils-docker$NOCACHE
+    docker build -t ace5040/webcrate-utils-docker:latest ./src/utils-docker$NOCACHE
   fi
   if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core" ]; then
-    docker build -t ace5040/webcrate-core-php81:stable ./src/core-php81$NOCACHE
-    docker build -t ace5040/webcrate-core-php56:stable ./src/core-php56$NOCACHE
-    docker build -t ace5040/webcrate-core-php73:stable ./src/core-php73$NOCACHE
-    docker build -t ace5040/webcrate-core-php74:stable ./src/core-php74$NOCACHE
-    docker build -t ace5040/webcrate-core-gunicorn:stable ./src/core-gunicorn$NOCACHE
+    docker build -t ace5040/webcrate-core-php81:latest ./src/core-php81$NOCACHE
+    docker build -t ace5040/webcrate-core-php56:latest ./src/core-php56$NOCACHE
+    docker build -t ace5040/webcrate-core-php73:latest ./src/core-php73$NOCACHE
+    docker build -t ace5040/webcrate-core-php74:latest ./src/core-php74$NOCACHE
+    docker build -t ace5040/webcrate-core-gunicorn:latest ./src/core-gunicorn$NOCACHE
   fi
   if [ "$BUILDTARGET" = "core-php81" ]; then
-    docker build -t ace5040/webcrate-core-php81:stable ./src/core-php81$NOCACHE
+    docker build -t ace5040/webcrate-core-php81:latest ./src/core-php81$NOCACHE
   fi
   if [ "$BUILDTARGET" = "core-php74" ]; then
-    docker build -t ace5040/webcrate-core-php74:stable ./src/core-php74$NOCACHE
+    docker build -t ace5040/webcrate-core-php74:latest ./src/core-php74$NOCACHE
   fi
   if [ "$BUILDTARGET" = "core-php73" ]; then
-    docker build -t ace5040/webcrate-core-php73:stable ./src/core-php73$NOCACHE
+    docker build -t ace5040/webcrate-core-php73:latest ./src/core-php73$NOCACHE
   fi
   if [ "$BUILDTARGET" = "core-php56" ]; then
-    docker build -t ace5040/webcrate-core-php56:stable ./src/core-php56$NOCACHE --progress=plain
+    docker build -t ace5040/webcrate-core-php56:latest ./src/core-php56$NOCACHE --progress=plain
   fi
   if [ "$BUILDTARGET" = "core-gunicorn" ]; then
-    docker build -t ace5040/webcrate-core-gunicorn:stable ./src/core-gunicorn$NOCACHE
+    docker build -t ace5040/webcrate-core-gunicorn:latest ./src/core-gunicorn$NOCACHE
   fi
   if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "admin" ]; then
-    docker build -t ace5040/webcrate-admin:stable ./src/admin$NOCACHE
+    docker build -t ace5040/webcrate-admin:latest ./src/admin$NOCACHE
   fi
   if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "ftp" ]; then
-    docker build -t ace5040/webcrate-ftp:stable ./src/ftp$NOCACHE
+    docker build -t ace5040/webcrate-ftp:latest ./src/ftp$NOCACHE
   fi
   if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "stats" ]; then
-    docker build -t ace5040/webcrate-stats:stable ./src/stats$NOCACHE
+    docker build -t ace5040/webcrate-stats:latest ./src/stats$NOCACHE
   fi
 }
 
 function Pull() {
-  docker pull ace5040/webcrate-core-php81:stable
-  docker pull ace5040/webcrate-core-php56:stable
-  docker pull ace5040/webcrate-core-php73:stable
-  docker pull ace5040/webcrate-core-php74:stable
-  docker pull ace5040/webcrate-core-gunicorn:stable
-  docker pull ace5040/webcrate-ftp:stable
-  docker pull ace5040/webcrate-admin:stable
-  docker pull ace5040/webcrate-utils-pwgen:stable
-  docker pull ace5040/webcrate-utils-docker:stable
-  docker pull ace5040/webcrate-nginx:stable
-  docker pull ace5040/webcrate-dnsmasq:stable
-  docker pull ace5040/webcrate-stats:stable
-  docker pull ace5040/doctohtml:legacy
+  docker pull ace5040/webcrate-core-php81:latest
+  docker pull ace5040/webcrate-core-php56:latest
+  docker pull ace5040/webcrate-core-php73:latest
+  docker pull ace5040/webcrate-core-php74:latest
+  docker pull ace5040/webcrate-core-gunicorn:latest
+  docker pull ace5040/webcrate-ftp:latest
+  docker pull ace5040/webcrate-admin:latest
+  docker pull ace5040/webcrate-utils-pwgen:latest
+  docker pull ace5040/webcrate-utils-docker:latest
+  docker pull ace5040/webcrate-nginx:latest
+  docker pull ace5040/webcrate-dnsmasq:latest
+  docker pull ace5040/webcrate-stats:latest
+  docker pull ace5040/doctohtml:latest
   docker pull ace5040/htmltopdf:latest
   docker pull memcached:1
   docker pull mariadb:5

@@ -1,5 +1,5 @@
 function generatePassword () {
-  pass=`docker run --rm ace5040/webcrate-utils-pwgen:stable /pwgen.sh`
+  pass=`docker run --rm ace5040/webcrate-utils-pwgen:latest /pwgen.sh`
   echo "[mysqldump]" > ./var/secrets/$1.cnf
   echo "user=root" >> ./var/secrets/$1.cnf
   echo "password=\"$pass\"" >> ./var/secrets/$1.cnf

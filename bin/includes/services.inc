@@ -195,7 +195,7 @@ if [ "$WEBCRATE_SERVICE_HTMLTOPDF" = true ]; then
       --network="webcrate_network" --dns=10.255.0.100 \
       --restart="unless-stopped" \
       -p "3001:3000" \
-      ace5040/htmltopdf:latest > /dev/null
+      ace5040/htmltopdf:stable > /dev/null
   fi
 fi
 

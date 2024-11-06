@@ -149,7 +149,7 @@ function Pull() {
   docker pull ace5040/webcrate-dnsmasq:stable
   docker pull ace5040/webcrate-stats:stable
   docker pull ace5040/doctohtml:stable
-  docker pull ace5040/htmltopdf:latest
+  docker pull ace5040/htmltopdf:stable
   docker pull memcached:1
   docker pull mariadb:5
   docker pull mariadb:10

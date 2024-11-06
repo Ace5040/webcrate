@@ -107,7 +107,7 @@ for projectname,project in projects.items():
         f'-v {WEBCRATE_PWD}/var/log:/webcrate/log '
         f'-v {WEBCRATE_PWD}/config/exim/exim.conf.template:/etc/mail/exim.conf.template '
         f'{PHP_CONFIGS} '
-        f'ace5040/webcrate-core-{backend}:stable > /dev/null')
+        f'ace5040/webcrate-core-{backend}:legacy > /dev/null')
 
     if project.memcached:
       if os.popen(f'docker container inspect webcrate-{projectname}-memcached >/dev/null 2> /dev/null').read().strip():

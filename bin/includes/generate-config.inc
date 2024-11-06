@@ -35,7 +35,7 @@ docker run --rm --env-file=$(pwd)/.env --entrypoint /parse-projects.py --name we
   -v $(pwd)/var/dnsmasq:/webcrate/dnsmasq \
   -v $(pwd)/var/nginx:/webcrate/nginx \
   -v $(pwd)/var/php_pools:/webcrate/php_pools \
-  ace5040/webcrate-utils-docker:stable
+  ace5040/webcrate-utils-docker:legacy
 writeLog "Parse projects ended"
 
 writeLog "Parse redirects started"
@@ -51,7 +51,7 @@ docker run --rm --env-file=$(pwd)/.env --entrypoint /parse-redirects.py --name w
   -v $(pwd)/var/openssl:/webcrate/openssl:ro \
   -v $(pwd)/var/dnsmasq:/webcrate/dnsmasq \
   -v $(pwd)/var/nginx:/webcrate/nginx \
-  ace5040/webcrate-utils-docker:stable
+  ace5040/webcrate-utils-docker:legacy
 writeLog "Parse redirects ended"
 
 writeLog "Parse services started"
@@ -63,6 +63,6 @@ docker run --rm --env-file=$(pwd)/.env --entrypoint /parse-services.py --name we
   -v $(pwd)/var/openssl:/webcrate/openssl:ro \
   -v $(pwd)/var/dnsmasq:/webcrate/dnsmasq \
   -v $(pwd)/var/nginx:/webcrate/nginx \
-  ace5040/webcrate-utils-docker:stable
+  ace5040/webcrate-utils-docker:legacy
 
 writeLog "Parse services ended"

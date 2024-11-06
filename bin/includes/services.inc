@@ -31,7 +31,7 @@ else
     -v $(pwd)/var/letsencrypt-meta:/webcrate/letsencrypt-meta:ro \
     -v $(pwd)/var/openssl:/webcrate/openssl:ro \
     -v $(pwd)/var/log/nginx:/webcrate/log \
-    ace5040/webcrate-nginx:stable > /dev/null
+    ace5040/webcrate-nginx:legacy > /dev/null
 fi
 
 if docker container inspect webcrate-dnsmasq >/dev/null 2> /dev/null; then
@@ -47,7 +47,7 @@ else
     --restart="unless-stopped" \
     $DNSPORT \
     -v $(pwd)/var/dnsmasq:/dnsmasq \
-    ace5040/webcrate-dnsmasq:stable > /dev/null
+    ace5040/webcrate-dnsmasq:legacy > /dev/null
 fi
 
 writeLog "Init services"
@@ -73,7 +73,7 @@ docker run --rm --env-file=$(pwd)/.env \
   -v $(pwd)/var/letsencrypt-meta:/webcrate/letsencrypt-meta \
   -v $(pwd)/var/crontabs:/webcrate/crontabs \
   -v $(pwd)/var/php_pools:/webcrate/php_pools \
-  ace5040/webcrate-utils-docker:stable /services-init.py
+  ace5040/webcrate-utils-docker:legacy /services-init.py
 writeLog "Services inited"
 
 if docker container inspect webcrate-mysql >/dev/null 2> /dev/null; then
@@ -142,7 +142,7 @@ else
     -v $(pwd)/projects.yml:/webcrate/projects.yml \
     -v $(pwd)/redirects.yml:/webcrate/redirects.yml \
     -v $(pwd)/services.yml:/webcrate/services.yml \
-    ace5040/webcrate-admin:stable > /dev/null
+    ace5040/webcrate-admin:legacy > /dev/null
 fi
 
 if docker container inspect webcrate-phpmyadmin >/dev/null 2> /dev/null; then
@@ -272,7 +272,7 @@ else
     -v $(pwd)/projects.yml:/webcrate/projects.yml:ro \
     -v $(pwd)/var/meta:/webcrate/meta \
     -v $(pwd)/var/log:/webcrate/log \
-    ace5040/webcrate-ftp:stable > /dev/null
+    ace5040/webcrate-ftp:legacy > /dev/null
 fi
 
 if docker container inspect webcrate-utils-docker >/dev/null 2>/dev/null; then
@@ -312,7 +312,7 @@ else
     -v $(pwd)/config/nginx-templates:/webcrate/nginx-templates:ro \
     -v $(pwd)/var/nginx:/webcrate/nginx \
     -v $(pwd)/var/php_pools:/webcrate/php_pools \
-    ace5040/webcrate-utils-docker:stable >/dev/null
+    ace5040/webcrate-utils-docker:legacy >/dev/null
 fi
 
 if docker container inspect webcrate-stats >/dev/null 2> /dev/null; then
@@ -325,5 +325,5 @@ else
     $PROJECTS_VOLUMES \
     -v $DOCKER_SOCKET:/var/run/docker.sock \
     -v /etc/localtime:/etc/localtime:ro \
-    ace5040/webcrate-stats:stable > /dev/null
+    ace5040/webcrate-stats:legacy > /dev/null
 fi

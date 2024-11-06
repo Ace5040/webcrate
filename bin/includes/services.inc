@@ -182,7 +182,7 @@ if [ "$WEBCRATE_SERVICE_DOCTOHTML" = true ]; then
       --network="webcrate_network" --dns=10.255.0.100 \
       --restart="unless-stopped" \
       -p "3000:3000" \
-      ace5040/doctohtml:legacy > /dev/null
+      ace5040/doctohtml:stable > /dev/null
   fi
 fi
 

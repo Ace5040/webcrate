@@ -13,7 +13,7 @@ RUN sed -Ei "s/default mirrors./default mirrors.\n\n[home_el_archphp_Arch]\nServ
 
 #install system utils and services
 RUN pacman --needed --noconfirm -Syu && \
-    pacman --needed --noconfirm -S sudo git nano exim openssh base-devel unzip npm mariadb-clients mc iputils cronie inetutils wget tmux ruby python-pip libmemcached-awesome libreoffice ttf-liberation fuse2 fuse3 jdk11-openjdk supervisor && \
+    pacman --needed --noconfirm -S sudo git nano exim openssh base-devel unzip npm mariadb-clients mc iputils cronie inetutils wget tmux ruby python-pip libmemcached-awesome supervisor && \
     yes | pacman -Scc && \
     useradd -m -s /bin/bash dev && \
     usermod -p "dev" dev && \

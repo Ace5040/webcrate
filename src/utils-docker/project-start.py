@@ -333,9 +333,7 @@ for projectname,project in projects.items():
       if not os.path.isfile(f'/webcrate/crontabs/{project.name}'):
         os.system(f'echo "" > /webcrate/crontabs/{project.name}')
         os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/crontabs/{project.name}')
-      #TODO: REMOVE --cap-add SYS_ADMIN --device /dev/fuse --security-opt apparmor:unconfined
       os.system(f'docker run -d '
-        f'--device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined '
         f'--name {container_name} '
         f'--network="webcrate_network_{project.name}" --dns=10.{net_num}.250 '
         f'--restart="unless-stopped" '

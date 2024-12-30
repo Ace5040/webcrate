@@ -1,5 +1,8 @@
 FROM archlinux:base-20241027.0.273886
 
+RUN echo "Server = https://mirror.yandex.ru/archlinux/\$repo/os/\$arch" >> /etc/pacman.d/mirrorlist
+
+#php repo
 RUN sed -Ei "s/default mirrors./default mirrors.\n\n[home_el_archphp_Arch]\nServer = https:\/\/download.opensuse.org\/repositories\/home:\/el:\/archphp\/Arch\/\$arch/g" /etc/pacman.conf && \
     key=$(curl -fsSL https://download.opensuse.org/repositories/home:el:archphp/Arch/$(uname -m)/home_el_archphp_Arch.key) && \
     fingerprint=$(gpg --quiet --with-colons --import-options show-only --import --fingerprint <<< "${key}" | awk -F: '$1 == "fpr" { print $10 }') && \
@@ -7,19 +10,34 @@ RUN sed -Ei "s/default mirrors./default mirrors.\n\n[home_el_archphp_Arch]\nServ
     pacman-key --add - <<< "${key}" && \
     pacman-key --lsign-key "${fingerprint}"
 
-#update pacman db
+#install system utils and services
 RUN pacman --needed --noconfirm -Syu && \
-    pacman --needed --noconfirm -S sudo wget pcre debugedit fakeroot binutils git nano openssh unzip npm mariadb-clients iputils inetutils which python-yaml python-munch python-setuptools nginx docker && \
-    yes | pacman -Scc
-
-#install php74
-RUN pacman --needed --noconfirm -S php74 php74-fileinfo php74-ctype php74-json php74-pecl php74-pear php74-zip php74-xmlreader php74-xmlwriter php74-mbstring php74-openssl php74-xml php74-fpm php74-intl php74-sqlite php74-gd php74-xsl php74-simplexml php74-phar php74-tidy php74-cli php74-tokenizer php74-curl php74-opcache php74-iconv php74-mysql php74-pdo php74-soap php74-imagick
-
-#add dev user
-RUN useradd -m -s /bin/bash dev && \
+    pacman --needed --noconfirm -S pcre debugedit fakeroot binutils which python-yaml python-munch python-setuptools nginx docker \
+    sudo git nano exim openssh base-devel unzip npm mariadb-clients mc iputils cronie inetutils wget tmux ruby python-pip libmemcached-awesome && \
+    yes | pacman -Scc && \
+    useradd -m -s /bin/bash dev && \
     usermod -p "dev" dev && \
     echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo && \
     sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j12\"/g" /etc/makepkg.conf
+
+USER dev
+WORKDIR /home/dev
+
+#install icu74
+RUN git clone https://aur.archlinux.org/icu74.git && \
+    cd icu74 && \
+    makepkg -scir --nocheck --noconfirm --skipchecksums && \
+    rm -rf /home/dev/icu74
+
+USER root
+WORKDIR /root
+
+#install php74
+RUN pacman --needed --noconfirm -S php74 php74-fileinfo php74-ctype php74-json php74-pecl php74-pear php74-zip php74-xmlreader php74-xmlwriter php74-mbstring php74-openssl php74-xml php74-fpm php74-intl php74-sqlite php74-gd php74-xsl php74-simplexml php74-phar php74-tidy php74-cli php74-tokenizer php74-curl php74-opcache php74-iconv php74-mysql php74-pdo php74-soap php74-imagick
+RUN pecl74 install timezonedb-2021.5 memcached && \
+    echo extension=timezonedb.so > /etc/php74/conf.d/10-timezonedb.ini && \
+    echo extension=memcached.so > /etc/php74/conf.d/10-memcached.ini
+
 USER dev
 WORKDIR /home/dev
 

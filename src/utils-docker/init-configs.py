@@ -35,7 +35,7 @@ for servicename,service in services.items():
   service.name = servicename
 
   if service.mysql_db:
-    mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password="').read().strip().split("password=")[1][1:][:-1].replace("$", "\$")
+    mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password="').read().strip().split("password=")[1][1:][:-1].replace("$", "\\$")
     retries = 20
     while retries > 0 and helpers.is_mysql_up('webcrate-mysql', mysql_root_password) == 0:
       retries -= 1
@@ -68,7 +68,7 @@ for servicename,service in services.items():
         print(f'mysql user {service.name} and db already exists')
 
   if service.mysql5_db:
-    mysql5_root_password = os.popen(f'cat /webcrate/secrets/mysql5.cnf | grep "password="').read().strip().split("password=")[1][1:][:-1].replace("$", "\$")
+    mysql5_root_password = os.popen(f'cat /webcrate/secrets/mysql5.cnf | grep "password="').read().strip().split("password=")[1][1:][:-1].replace("$", "\\$")
     retries = 20
     while retries > 0 and helpers.is_mysql_up('webcrate-mysql5', mysql5_root_password) == 0:
       retries -= 1
@@ -107,7 +107,7 @@ for servicename,service in services.items():
         print(f'mysql5 user {service.name} and db already exists')
 
   if service.postgresql_db:
-    postgres_root_password = os.popen(f'cat /webcrate/secrets/postgres.cnf | grep "password="').read().strip().split("password=")[1][1:][:-1].replace("$", "\$")
+    postgres_root_password = os.popen(f'cat /webcrate/secrets/postgres.cnf | grep "password="').read().strip().split("password=")[1][1:][:-1].replace("$", "\\$")
     retries = 20
     while retries > 0 and helpers.is_postgresql_up('webcrate-postgres', postgres_root_password) != '1':
       retries -= 1

@@ -14,6 +14,7 @@ with open('/webcrate/projects.yml', 'r') as f:
 WEBCRATE_PROJECT = os.environ.get('WEBCRATE_PROJECT', '')
 WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
+
 os.system(f'userdel dev > /dev/null 2>&1')
 
 for projectname,project in projects.items():
@@ -24,7 +25,7 @@ for projectname,project in projects.items():
     os.system(f'groupadd --non-unique --gid {WEBCRATE_GID} {project.name}')
     os.system(f'useradd --non-unique --no-create-home --uid {WEBCRATE_UID} --gid {WEBCRATE_GID} --home-dir {project.folder} {project.name}')
     os.system(f'usermod -s /bin/bash {project.name} > /dev/null 2>&1')
-    password = str(project.password).replace("$", "\$")
+    password = str(project.password).replace("$", "\\$")
     os.system(f'usermod -p {password} {project.name} > /dev/null 2>&1')
     if project.backend == 'gunicorn':
       log.write(f'Start gunicorn for {project.name}')

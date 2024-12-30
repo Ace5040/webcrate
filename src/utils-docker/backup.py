@@ -74,7 +74,7 @@ if PROJECT_NAME == 'admin' or PROJECT_NAME == 'all':
     print(f'backup mysql db for webcrate-admin')
     print(f'=========================================')
     sys.stdout.flush()
-    mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
+    mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\\$")
     os.system(f'mkdir -p /webcrate/backup-tmp')
     if os.path.isdir(f'/webcrate/backup-tmp') and os.listdir(f'/webcrate/backup-tmp'):
       os.system(f'rm /webcrate/backup-tmp/*')
@@ -186,7 +186,7 @@ for projectname,project in projects.items():
       print(f'backup mysql db for project {project.name}')
       print(f'=========================================')
       sys.stdout.flush()
-      mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
+      mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\\$")
       os.system(f'mkdir -p /webcrate/backup-tmp')
       if os.path.isdir(f'/webcrate/backup-tmp') and os.listdir(f'/webcrate/backup-tmp'):
         os.system(f'rm /webcrate/backup-tmp/*')
@@ -223,7 +223,7 @@ for projectname,project in projects.items():
       print(f'backup project mysql db for project {project.name}')
       print(f'=========================================')
       sys.stdout.flush()
-      mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
+      mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\\$")
       os.system(f'mkdir -p /webcrate/backup-tmp')
       if os.path.isdir(f'/webcrate/backup-tmp') and os.listdir(f'/webcrate/backup-tmp'):
         os.system(f'rm /webcrate/backup-tmp/*')
@@ -260,7 +260,7 @@ for projectname,project in projects.items():
       print(f'=========================================')
       sys.stdout.flush()
       log.write(f'Backup mysql5 db for project {project.name}')
-      mysql5_root_password = os.popen(f'cat /webcrate/secrets/mysql5.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
+      mysql5_root_password = os.popen(f'cat /webcrate/secrets/mysql5.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\\$")
       os.system(f'mkdir -p /webcrate/backup-tmp')
       if os.path.isdir(f'/webcrate/backup-tmp') and os.listdir(f'/webcrate/backup-tmp'):
         os.system(f'rm /webcrate/backup-tmp/*')
@@ -298,7 +298,7 @@ for projectname,project in projects.items():
       print(f'=========================================')
       sys.stdout.flush()
       log.write(f'Backup project-mysql5 db for project {project.name}')
-      mysql5_root_password = os.popen(f'cat /webcrate/secrets/mysql5.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
+      mysql5_root_password = os.popen(f'cat /webcrate/secrets/mysql5.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\\$")
       os.system(f'mkdir -p /webcrate/backup-tmp')
       if os.path.isdir(f'/webcrate/backup-tmp') and os.listdir(f'/webcrate/backup-tmp'):
         os.system(f'rm /webcrate/backup-tmp/*')
@@ -334,7 +334,7 @@ for projectname,project in projects.items():
       print(f'=========================================')
       sys.stdout.flush()
       log.write(f'Backup postgres db for project {project.name}')
-      postgres_root_password = os.popen(f'cat /webcrate/secrets/postgres.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
+      postgres_root_password = os.popen(f'cat /webcrate/secrets/postgres.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\\$")
       os.system(f'mkdir -p /webcrate/backup-tmp')
       if os.path.isdir(f'/webcrate/backup-tmp') and os.listdir(f'/webcrate/backup-tmp'):
         os.system(f'rm /webcrate/backup-tmp/*')
@@ -370,7 +370,7 @@ for projectname,project in projects.items():
       print(f'=========================================')
       sys.stdout.flush()
       log.write(f'Backup project-postgresql db for project {project.name}')
-      postgres_root_password = os.popen(f'cat /webcrate/secrets/postgres.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\$")
+      postgres_root_password = os.popen(f'cat /webcrate/secrets/postgres.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\\$")
       os.system(f'mkdir -p /webcrate/backup-tmp')
       if os.path.isdir(f'/webcrate/backup-tmp') and os.listdir(f'/webcrate/backup-tmp'):
         os.system(f'rm /webcrate/backup-tmp/*')

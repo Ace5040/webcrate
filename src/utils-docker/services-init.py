@@ -47,7 +47,7 @@ async def startMysql (service):
       f'-v /etc/localtime:/etc/localtime:ro '
       f'-v {WEBCRATE_PWD}/var/mysql-services/{service.name}:/var/lib/mysql '
       f'-v {WEBCRATE_PWD}/config/mysql/mysql.cnf:/etc/mysql/conf.d/user.cnf '
-      f'mariadb:10 >/dev/null')
+      f'$IMAGE_MARIADB10 >/dev/null')
 
   retries = 30
   while retries > 0 and helpers.is_mysql_up(f'webcrate-{service.name}-mysql', mysql_root_password) == 0:

@@ -31,7 +31,7 @@ else
     -v $(pwd)/var/letsencrypt-meta:/webcrate/letsencrypt-meta:ro \
     -v $(pwd)/var/openssl:/webcrate/openssl:ro \
     -v $(pwd)/var/log/nginx:/webcrate/log \
-    ace5040/webcrate-nginx:latest > /dev/null
+    $IMAGE_NGINX > /dev/null
 fi
 
 if docker container inspect webcrate-dnsmasq >/dev/null 2> /dev/null; then
@@ -47,7 +47,7 @@ else
     --restart="unless-stopped" \
     $DNSPORT \
     -v $(pwd)/var/dnsmasq:/dnsmasq \
-    ace5040/webcrate-dnsmasq:latest > /dev/null
+    $IMAGE_DNSMASQ > /dev/null
 fi
 
 writeLog "Init services"
@@ -73,7 +73,7 @@ docker run --rm --env-file=$(pwd)/.env \
   -v $(pwd)/var/letsencrypt-meta:/webcrate/letsencrypt-meta \
   -v $(pwd)/var/crontabs:/webcrate/crontabs \
   -v $(pwd)/var/php_pools:/webcrate/php_pools \
-  ace5040/webcrate-utils-docker:latest /services-init.py
+  $IMAGE_UTILS_DOCKER /services-init.py
 writeLog "Services inited"
 
 if docker container inspect webcrate-mysql >/dev/null 2> /dev/null; then
@@ -89,7 +89,7 @@ else
     -v /etc/localtime:/etc/localtime:ro \
     -v $(pwd)/var/mysql:/var/lib/mysql \
     -v $(pwd)/config/mysql/mysql.cnf:/etc/mysql/conf.d/user.cnf \
-    mariadb:10 > /dev/null
+    $IMAGE_MARIADB10 > /dev/null
 fi
 
 if docker container inspect webcrate-mysql5 >/dev/null 2> /dev/null; then
@@ -105,7 +105,7 @@ else
     -v /etc/localtime:/etc/localtime:ro \
     -v $(pwd)/var/mysql5:/var/lib/mysql \
     -v $(pwd)/config/mysql/mysql5.cnf:/etc/mysql/conf.d/user.cnf \
-    mariadb:5 > /dev/null
+    $IMAGE_MARIADB5 > /dev/null
 fi
 
 if docker container inspect webcrate-postgres >/dev/null 2> /dev/null; then
@@ -119,7 +119,7 @@ else
     --user "$uid:$gid" \
     $POSTGRES_PASS \
     -v $(pwd)/var/postgres:/var/lib/postgresql/data \
-    postgres:12 > /dev/null
+    $IMAGE_POSTGRES > /dev/null
 fi
 
 if docker container inspect webcrate-admin >/dev/null 2> /dev/null; then
@@ -142,7 +142,7 @@ else
     -v $(pwd)/projects.yml:/webcrate/projects.yml \
     -v $(pwd)/redirects.yml:/webcrate/redirects.yml \
     -v $(pwd)/services.yml:/webcrate/services.yml \
-    ace5040/webcrate-admin:latest > /dev/null
+    $IMAGE_ADMIN > /dev/null
 fi
 
 if docker container inspect webcrate-phpmyadmin >/dev/null 2> /dev/null; then
@@ -158,7 +158,7 @@ else
     -v /etc/localtime:/etc/localtime:ro \
     -v $(pwd)/config/phpmyadmin/php.ini:/usr/local/etc/php/php.ini:ro \
     -v $(pwd)/config/phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php:ro \
-    phpmyadmin/phpmyadmin:5 > /dev/null
+    $IMAGE_PHPMYADMIN > /dev/null
 fi
 
 # if docker container inspect webcrate-phppgadmin >/dev/null 2> /dev/null; then
@@ -170,7 +170,7 @@ fi
 #     --restart="unless-stopped" \
 #     -v /etc/localtime:/etc/localtime:ro \
 #     dockage/phppgadmin > /dev/null
-#     # bitnami/phppgadmin-archived:7 > /dev/null
+#     # $IMAGE_PHPPGADMIN > /dev/null
 # fi
 
 if [ "$WEBCRATE_SERVICE_DOCTOHTML" = true ]; then
@@ -182,7 +182,7 @@ if [ "$WEBCRATE_SERVICE_DOCTOHTML" = true ]; then
       --network="webcrate_network" --dns=10.255.0.100 \
       --restart="unless-stopped" \
       -p "3000:3000" \
-      ace5040/doctohtml:latest > /dev/null
+      $IMAGE_DOCTOHTML > /dev/null
   fi
 fi
 
@@ -195,7 +195,7 @@ if [ "$WEBCRATE_SERVICE_HTMLTOPDF" = true ]; then
       --network="webcrate_network" --dns=10.255.0.100 \
       --restart="unless-stopped" \
       -p "3001:3000" \
-      ace5040/htmltopdf:latest > /dev/null
+      $IMAGE_HTMLTOPDF > /dev/null
   fi
 fi
 
@@ -217,7 +217,7 @@ if [ "$WEBCRATE_SERVICE_STATS" = true ]; then
       -v $(pwd)/config/grafana/home.json:/home.json \
       -v $(pwd)/config/grafana/dashboard.yml:/etc/grafana/provisioning/dashboards/default.yml \
       -v $(pwd)/config/grafana/datasource.yml:/etc/grafana/provisioning/datasources/default.yml \
-      grafana/grafana-oss:9.5.15 >/dev/null 2>/dev/null
+      $IMAGE_GRAPHANA >/dev/null 2>/dev/null
   fi
   if docker container inspect webcrate-influxdb >/dev/null 2>/dev/null; then
     writeLog "Container webcrate-influxdb exists"
@@ -237,7 +237,7 @@ if [ "$WEBCRATE_SERVICE_STATS" = true ]; then
       -v /etc/localtime:/etc/localtime:ro \
       -v $(pwd)/var/influxdb/data:/var/lib/influxdb2 \
       -v $(pwd)/var/influxdb/etc:/etc/influxdb2 \
-      influxdb:2.7.5 >/dev/null 2>/dev/null
+      $IMAGE_INFLUXDB >/dev/null 2>/dev/null
   fi
   if [ "$GRAFANA_PASS" != "" ]; then
     sleep 10; docker exec --user $uid:$gid webcrate-grafana grafana-cli admin reset-admin-password "$GRAFANA_PASS"
@@ -272,7 +272,7 @@ else
     -v $(pwd)/projects.yml:/webcrate/projects.yml:ro \
     -v $(pwd)/var/meta:/webcrate/meta \
     -v $(pwd)/var/log:/webcrate/log \
-    ace5040/webcrate-ftp:latest > /dev/null
+    $IMAGE_FTP > /dev/null
 fi
 
 if docker container inspect webcrate-utils-docker >/dev/null 2>/dev/null; then
@@ -312,7 +312,7 @@ else
     -v $(pwd)/config/nginx-templates:/webcrate/nginx-templates:ro \
     -v $(pwd)/var/nginx:/webcrate/nginx \
     -v $(pwd)/var/php_pools:/webcrate/php_pools \
-    ace5040/webcrate-utils-docker:latest >/dev/null
+    $IMAGE_UTILS_DOCKER >/dev/null
 fi
 
 if docker container inspect webcrate-stats >/dev/null 2> /dev/null; then
@@ -325,5 +325,5 @@ else
     $PROJECTS_VOLUMES \
     -v $DOCKER_SOCKET:/var/run/docker.sock \
     -v /etc/localtime:/etc/localtime:ro \
-    ace5040/webcrate-stats:latest > /dev/null
+    $IMAGE_STATS > /dev/null
 fi

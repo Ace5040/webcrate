@@ -108,7 +108,7 @@ async def startMysql (project):
       f'-v /etc/localtime:/etc/localtime:ro '
       f'-v {WEBCRATE_PWD}/var/mysql-projects/{project.name}:/var/lib/mysql '
       f'-v {WEBCRATE_PWD}/config/mysql/mysql.cnf:/etc/mysql/conf.d/user.cnf '
-      f'mariadb:10 >/dev/null')
+      f'$IMAGE_MARIADB10 >/dev/null')
 
   retries = 30
   while retries > 0 and helpers.is_mysql_up(f'webcrate-{project.name}-mysql', mysql_root_password) == 0:
@@ -164,7 +164,7 @@ async def startMysql5 (project):
       f'-v /etc/localtime:/etc/localtime:ro '
       f'-v {WEBCRATE_PWD}/var/mysql5-projects/{project.name}:/var/lib/mysql '
       f'-v {WEBCRATE_PWD}/config/mysql/mysql5.cnf:/etc/mysql/conf.d/user.cnf '
-      f'mariadb:5 >/dev/null')
+      f'$IMAGE_MARIADB5 >/dev/null')
 
   retries = 30
   while retries > 0 and helpers.is_mysql_up(f'webcrate-{project.name}-mysql5', mysql5_root_password) == 0:
@@ -219,7 +219,7 @@ async def startPostgresql (project):
       f'--user "{WEBCRATE_UID}:{WEBCRATE_GID}" '
       f'-v /etc/localtime:/etc/localtime:ro '
       f'-v {WEBCRATE_PWD}/var/postgresql-projects/{project.name}:/var/lib/postgresql/data '
-      f'postgres:12 >/dev/null')
+      f'$IMAGE_POSTGRES >/dev/null')
 
   retries = 30
   while retries > 0 and helpers.is_postgresql_up(f'webcrate-{project.name}-postgresql', postgres_root_password) != '1':
@@ -364,7 +364,7 @@ for projectname,project in projects.items():
         os.system(f'docker run -d --env-file=/webcrate-readonly/.env --log-driver=none --name webcrate-{project.name}-memcached '
           f'--network="webcrate_network_{project.name}" '
           f'--restart="unless-stopped" '
-          f'memcached:1 >/dev/null')
+          f'$IMAGE_MEMCACHED >/dev/null')
 
     # START SOLR
     if hasattr(project, 'solr') and project.solr:
@@ -379,7 +379,7 @@ for projectname,project in projects.items():
           f'-v /etc/localtime:/etc/localtime:ro '
           f'{PROJECT_SOLR} '
           f'--entrypoint docker-entrypoint.sh '
-          f'solr:6 solr -m 4096m -force -f >/dev/null')
+          f'$IMAGE_SOLR solr -m 4096m -force -f >/dev/null')
 
     # START ELASTIC
     if hasattr(project, 'elastic') and project.elastic:
@@ -397,7 +397,7 @@ for projectname,project in projects.items():
           f'-v /etc/localtime:/etc/localtime:ro '
           f'{PROJECT_ELASTIC} '
           f'--entrypoint docker-entrypoint.sh '
-          f'elasticsearch:7.17.9 > /dev/null')
+          f'$IMAGE_ELASTICSEARCH > /dev/null')
 
     #START DATABASES
     if IS_RELOAD:

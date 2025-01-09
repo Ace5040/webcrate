@@ -18,7 +18,7 @@ if [ "$WEBCRATE_EXTERNAL_DNS_IP" != "" ]; then
 fi
 
 writeLog "Parse projects started"
-docker run --rm --env-file=$(pwd)/.env --entrypoint /parse-projects.py --name webcrate-docker-parse-projects \
+docker run --rm --env-file=$(pwd)/.env --env-file=$(pwd)/images.default --entrypoint /parse-projects.py --name webcrate-docker-parse-projects \
   -e WEBCRATE_UID=$uid \
   -e WEBCRATE_GID=$gid \
   $PROJECTS_VOLUMES \
@@ -35,7 +35,7 @@ docker run --rm --env-file=$(pwd)/.env --entrypoint /parse-projects.py --name we
   -v $(pwd)/var/dnsmasq:/webcrate/dnsmasq \
   -v $(pwd)/var/nginx:/webcrate/nginx \
   -v $(pwd)/var/php_pools:/webcrate/php_pools \
-  ace5040/webcrate-utils-docker:latest
+  $IMAGE_UTILS_DOCKER
 writeLog "Parse projects ended"
 
 writeLog "Parse redirects started"
@@ -51,11 +51,11 @@ docker run --rm --env-file=$(pwd)/.env --entrypoint /parse-redirects.py --name w
   -v $(pwd)/var/openssl:/webcrate/openssl:ro \
   -v $(pwd)/var/dnsmasq:/webcrate/dnsmasq \
   -v $(pwd)/var/nginx:/webcrate/nginx \
-  ace5040/webcrate-utils-docker:latest
+  $IMAGE_UTILS_DOCKER
 writeLog "Parse redirects ended"
 
 writeLog "Parse services started"
-docker run --rm --env-file=$(pwd)/.env --entrypoint /parse-services.py --name webcrate-docker-parse-services \
+docker run --rm --env-file=$(pwd)/.env --env-file=$(pwd)/images.default --entrypoint /parse-services.py --name webcrate-docker-parse-services \
   -e WEBCRATE_PWD=$(pwd) \
   -v $(pwd)/services.yml:/webcrate/services.yml:ro \
   -v $(pwd)/config/nginx-templates:/webcrate/nginx-templates:ro \
@@ -63,6 +63,6 @@ docker run --rm --env-file=$(pwd)/.env --entrypoint /parse-services.py --name we
   -v $(pwd)/var/openssl:/webcrate/openssl:ro \
   -v $(pwd)/var/dnsmasq:/webcrate/dnsmasq \
   -v $(pwd)/var/nginx:/webcrate/nginx \
-  ace5040/webcrate-utils-docker:latest
+  $IMAGE_UTILS_DOCKER
 
 writeLog "Parse services ended"

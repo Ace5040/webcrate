@@ -31,7 +31,7 @@ if [[ -d ./var/meta/projects && -n "$(ls -A ./var/meta/projects)" ]]; then
         -v $(pwd)/var/letsencrypt-meta:/webcrate/letsencrypt-meta \
         -v $(pwd)/var/crontabs:/webcrate/crontabs \
         -v $(pwd)/var/php_pools:/webcrate/php_pools \
-        ace5040/webcrate-utils-docker:latest /project-start.py $project_name
+        $IMAGE_UTILS_DOCKER /project-start.py $project_name
       writeLog "Project $project_name started"
     done < $projectConfig
   done

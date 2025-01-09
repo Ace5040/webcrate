@@ -1,4 +1,5 @@
-FROM alpine:3.17
+ARG IMAGE_ALPINE_BASE
+FROM $IMAGE_ALPINE_BASE
 RUN apk update &&\
     apk add \
     docker \

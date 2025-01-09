@@ -2,261 +2,114 @@
 SCRIPT=`realpath $0`
 SCRIPTPATH=`dirname $SCRIPT`
 cd $SCRIPTPATH/..
-source .env
+source ./.env
+source ./images.default
 source ./bin/includes/functions.inc
+source ./bin/commands/start.inc
+source ./bin/commands/stop.inc
+source ./bin/commands/restart.inc
+source ./bin/commands/build.inc
+source ./bin/commands/pull.inc
+source ./bin/commands/push.inc
+source ./bin/commands/update.inc
+source ./bin/commands/log.inc
+source ./bin/commands/dock.inc
+source ./bin/commands/backup.inc
+source ./bin/commands/help.inc
 
-function Help() {
-  echo ''
-  echo 'Usage: webcrate _command_ [OPTIONS]'
-  echo ''
-  echo '  start   - Build config and start containers'
-  echo '  stop    - Stop and remove all containers'
-  echo '  restart - Same as Stop then Start'
-  echo '  dock    - Connect to project container with bash. Usage webcrate dock [project_name]'
-  echo '            if project_name is not preset connects as root'
-  echo '  update  - Update all images from dockerhub and pull fresh source from github'
-  echo '  pull    - Update all images from dockerhub'
-  echo '  log     - Print all docker logs'
-  echo '  backup  - Start backup process manually'
-  echo '  build   - Build images from source. Usage webcrate build _target_ [OPTIONS]'
-  echo '              _target_: can be one of nginx, core, core-gunicorn, core-php81, core-php74, core-php73, core-php56, utils-pwgen, utils-docker, admin, dnsmasq or all'
-  echo '              OPTIONS:'
-  echo '                -c, --no-cache : do not use docker build cache'
-  echo '                -u, --update-base-images : pulls fresh archlinux:base-20241027.0.273886 and nginx:stable images before build'
-  echo '  push    - Push images to dockerhub. Usage webcrate push _image_'
-  echo '              _image_: can be one of nginx, core, utils-pwgen, utils-docker, admin or all'
-  echo '  help    - Print this info'
-  echo ''
-}
-
-function Start() {
-  source ./bin/includes/generate-config.inc
-  source ./bin/includes/services.inc
-  source ./bin/includes/projects.inc
-  writeLog "Started"
-}
-
-function Stop() {
-  writeLog "Stopping and removing webcrate containers"
-  containers=$(docker ps -a -q --filter name=webcrate-)
-  if [ "$containers" != "" ]; then
-    docker stop $containers > /dev/null
-    docker container rm $containers > /dev/null
-  fi
-  writeLog "Removing networks"
-  networks=$(docker network list -q --filter name=webcrate_)
-  if [ "$networks" != "" ]; then
-    docker network rm $networks > /dev/null
-  fi
-  writeLog "Stopped and removed"
-}
-
-function Restart() {
-  writeLog "webcrate restart"
-  Stop
-  Start
-}
-
-function Backup() {
-  docker exec webcrate-utils-docker /backup.py $1 $2
-  writeLog "webcrate backup finished"
-}
-
-function Build() {
-  NOCACHE=''
-  BUILDTARGET=$1
-  if [ "$BUILDTARGET" != "all" ]\
-    && [ "$BUILDTARGET" != "nginx" ]\
-    && [ "$BUILDTARGET" != "utils-pwgen" ]\
-    && [ "$BUILDTARGET" != "utils-docker" ]\
-    && [ "$BUILDTARGET" != "core" ]\
-    && [ "$BUILDTARGET" != "core-gunicorn" ]\
-    && [ "$BUILDTARGET" != "core-php81" ]\
-    && [ "$BUILDTARGET" != "core-php74" ]\
-    && [ "$BUILDTARGET" != "core-php73" ]\
-    && [ "$BUILDTARGET" != "core-php56" ]\
-    && [ "$BUILDTARGET" != "admin" ]\
-    && [ "$BUILDTARGET" != "dnsmasq" ]\
-    && [ "$BUILDTARGET" != "ftp" ]\
-    && [ "$BUILDTARGET" != "stats" ]\
-  ;then
-    echo "Unknown target $1. Please use one of: all, nginx, utils-pwgen, utils-docker, core, core-gunicorn, core-php81, core-php74, core-php73, core-php56, admin, stats"
+# More safety, by turning some bugs into errors.
+set -o errexit -o pipefail -o noclobber -o nounset
+# ignore errexit with `&& true`
+getopt --test > /dev/null && true
+if [[ $? -ne 4 ]]; then
+    echo 'getopt --test failed in this environment'
     exit 1
-  fi
-  if [ "$2" = "-c" ] || [ "$3" = "-c" ] || [ "$2" = "-cu" ] || [ "$3" = "-cu" ] || [ "$2" = "-uc" ] || [ "$3" = "-uc" ] || [ "$2" = "--no-cache" ] || [ "$3" = "--no-cache" ]; then
-    NOCACHE=' --no-cache'
-  fi
-  if [ "$2" = "-u" ] || [ "$3" = "-u" ] || [ "$2" = "-cu" ] || [ "$3" = "-cu" ] || [ "$2" = "-uc" ] || [ "$3" = "-uc" ] || [ "$2" = "--update-base-images" ] || [ "$3" = "--update-base-images" ]; then
-    docker pull archlinux:base-20241027.0.273886
-    docker pull nginx:stable
-  fi
-  if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "nginx" ]; then
-    docker build -t ace5040/webcrate-nginx:latest ./src/nginx$NOCACHE
-  fi
-  if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "dnsmasq" ]; then
-    docker build -t ace5040/webcrate-dnsmasq:latest ./src/dnsmasq$NOCACHE
-  fi
-  if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "utils-pwgen" ]; then
-    docker build -t ace5040/webcrate-utils-pwgen:latest ./src/utils-pwgen$NOCACHE
-  fi
-  if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "utils-docker" ]; then
-    docker build -t ace5040/webcrate-utils-docker:latest ./src/utils-docker$NOCACHE
-  fi
-  if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core" ]; then
-    docker build -t ace5040/webcrate-core-php81:latest ./src/core-php81$NOCACHE
-    docker build -t ace5040/webcrate-core-php56:latest ./src/core-php56$NOCACHE
-    docker build -t ace5040/webcrate-core-php73:latest ./src/core-php73$NOCACHE
-    docker build -t ace5040/webcrate-core-php74:latest ./src/core-php74$NOCACHE
-    docker build -t ace5040/webcrate-core-gunicorn:latest ./src/core-gunicorn$NOCACHE
-  fi
-  if [ "$BUILDTARGET" = "core-php81" ]; then
-    docker build -t ace5040/webcrate-core-php81:latest ./src/core-php81$NOCACHE
-  fi
-  if [ "$BUILDTARGET" = "core-php74" ]; then
-    docker build -t ace5040/webcrate-core-php74:latest ./src/core-php74$NOCACHE
-  fi
-  if [ "$BUILDTARGET" = "core-php73" ]; then
-    docker build -t ace5040/webcrate-core-php73:latest ./src/core-php73$NOCACHE
-  fi
-  if [ "$BUILDTARGET" = "core-php56" ]; then
-    docker build -t ace5040/webcrate-core-php56:latest ./src/core-php56$NOCACHE --progress=plain
-  fi
-  if [ "$BUILDTARGET" = "core-gunicorn" ]; then
-    docker build -t ace5040/webcrate-core-gunicorn:latest ./src/core-gunicorn$NOCACHE
-  fi
-  if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "admin" ]; then
-    docker build -t ace5040/webcrate-admin:latest ./src/admin$NOCACHE
-  fi
-  if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "ftp" ]; then
-    docker build -t ace5040/webcrate-ftp:latest ./src/ftp$NOCACHE
-  fi
-  if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "stats" ]; then
-    docker build -t ace5040/webcrate-stats:latest ./src/stats$NOCACHE
-  fi
-}
+fi
 
-function Pull() {
-  docker pull ace5040/webcrate-core-php81:latest
-  docker pull ace5040/webcrate-core-php56:latest
-  docker pull ace5040/webcrate-core-php73:latest
-  docker pull ace5040/webcrate-core-php74:latest
-  docker pull ace5040/webcrate-core-gunicorn:latest
-  docker pull ace5040/webcrate-ftp:latest
-  docker pull ace5040/webcrate-admin:latest
-  docker pull ace5040/webcrate-utils-pwgen:latest
-  docker pull ace5040/webcrate-utils-docker:latest
-  docker pull ace5040/webcrate-nginx:latest
-  docker pull ace5040/webcrate-dnsmasq:latest
-  docker pull ace5040/webcrate-stats:latest
-  docker pull ace5040/doctohtml:latest
-  docker pull ace5040/htmltopdf:latest
-  docker pull memcached:1
-  docker pull mariadb:5
-  docker pull mariadb:10
-  docker pull phpmyadmin/phpmyadmin:5
-  docker pull postgres:12
-  docker pull bitnami/phppgadmin-archived:7
-  docker pull solr:6
-  docker pull elasticsearch:7.17.9
-  docker pull grafana/grafana-oss:9.5.15
-  docker pull influxdb:2.7.5
-}
+ALLOWED_SERVICES=(\
+  nginx\
+  utils-pwgen\
+  utils-docker\
+  core\
+  core-gunicorn\
+  core-php81\
+  core-php74\
+  core-php73\
+  core-php56\
+  admin\
+  dnsmasq\
+  ftp\
+  stats\
+)
 
-function Push() {
-  IMAGE=$1
-  if [ "$IMAGE" != "all" ]\
-    && [ "$IMAGE" != "nginx" ]\
-    && [ "$IMAGE" != "utils-pwgen" ]\
-    && [ "$IMAGE" != "utils-docker" ]\
-    && [ "$IMAGE" != "core" ]\
-    && [ "$IMAGE" != "core-gunicorn" ]\
-    && [ "$IMAGE" != "core-php81" ]\
-    && [ "$IMAGE" != "core-php74" ]\
-    && [ "$IMAGE" != "core-php73" ]\
-    && [ "$IMAGE" != "core-php56" ]\
-    && [ "$IMAGE" != "admin" ]\
-    && [ "$IMAGE" != "dnsmasq" ]\
-    && [ "$IMAGE" != "ftp" ]\
-    && [ "$IMAGE" != "stats" ];\
-  then
-    echo "Unknown image $1. Please use one of: all, nginx, utils-pwgen, utils-docker, core, core-gunicorn, core-php81, core-php74, core-php73, core-php56, admin, stats"
-    exit 1
-  fi
-  if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "nginx" ]; then
-    docker push ace5040/webcrate-nginx:latest
-  fi
-  if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "utils-pwgen" ]; then
-    docker push ace5040/webcrate-utils-pwgen:latest
-  fi
-  if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "utils-docker" ]; then
-    docker push ace5040/webcrate-utils-docker:latest
-  fi
-  if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "core" ]; then
-    docker push ace5040/webcrate-core-php81:latest
-    docker push ace5040/webcrate-core-php56:latest
-    docker push ace5040/webcrate-core-php73:latest
-    docker push ace5040/webcrate-core-php74:latest
-    docker push ace5040/webcrate-core-gunicorn:latest
-  fi
-  if [ "$IMAGE" = "core-gunicorn" ]; then
-    docker push ace5040/webcrate-core-gunicorn:latest
-  fi
-  if [ "$IMAGE" = "core-php81" ]; then
-    docker push ace5040/webcrate-core-php81:latest
-  fi
-  if [ "$IMAGE" = "core-php74" ]; then
-    docker push ace5040/webcrate-core-php74:latest
-  fi
-  if [ "$IMAGE" = "core-php73" ]; then
-    docker push ace5040/webcrate-core-php73:latest
-  fi
-  if [ "$IMAGE" = "core-php56" ]; then
-    docker push ace5040/webcrate-core-php56:latest
-  fi
-  if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "ftp" ]; then
-    docker push ace5040/webcrate-ftp:latest
-  fi
-  if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "admin" ]; then
-    docker push ace5040/webcrate-admin:latest
-  fi
-  if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "dnsmasq" ]; then
-    docker push ace5040/webcrate-dnsmasq:latest
-  fi
-  if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "stats" ]; then
-    docker push ace5040/webcrate-stats:latest
-  fi
-}
-
-function Update() {
-  git pull
-  Pull
-}
-
-function Log() {
-  docker ps -q | xargs -L 1 docker logs -t
-}
-
-function Dock() {
-  if [ $# -eq 0 ]; then
-    docker exec -it webcrate-core-${1} bash
-  else
-    docker exec -it webcrate-core-${1} sudo --user ${1} bash
-  fi
-}
-
-case $1 in
-  start) Start;;
-  stop) Stop;;
+COMMAND=$1;
+shift;
+case $COMMAND in
+  start) Start $@;;
+  stop) Stop $@;;
   restart) Restart;;
-  dock) Dock $2;;
-  pull) Pull;;
-  update) Update;;
-  build) Build $2 $3 $4;;
-  push) Push $2;;
-  log) Log;;
-  backup) Backup $2 $3;;
-  help) Help;;
-  *) echo "Unknown command: '$1'. Use 'webcrate help' to get list of commands"
+  dock) Dock $@;;
+  pull) Pull $@;;
+  update) Update $@;;
+  build) Build $@;;
+  push) Push $@;;
+  log) Log $@;;
+  backup) Backup $@;;
+  help) Help $@;;
+  *) echo "Unknown command: '$COMMAND'. Use 'webcrate help' to get list of commands"
 esac
 
 exit 0
+
+
+# # option --output/-o requires 1 argument
+# LONGOPTS=debug,force,output:,verbose
+# OPTIONS=dfo:v
+
+# # -temporarily store output to be able to check for errors
+# # -activate quoting/enhanced mode (e.g. by writing out “--options”)
+# # -pass arguments only via -- "$@" to separate them correctly
+# # -if getopt fails, it complains itself to stdout
+# PARSED=$(getopt --options=$OPTIONS --longoptions=$LONGOPTS --name "$0" -- "$@") || exit 2
+# # read getopt’s output this way to handle the quoting right:
+# eval set -- "$PARSED"
+# d=n f=n v=n outFile=-
+
+# # now enjoy the options in order and nicely split until we see --
+# while true; do
+#     case "$1" in
+#         -d|--debug)
+#             d=y
+#             shift
+#             ;;
+#         -f|--force)
+#             f=y
+#             shift
+#             ;;
+#         -v|--verbose)
+#             v=y
+#             shift
+#             ;;
+#         -o|--output)
+#             outFile="$2"
+#             shift 2
+#             ;;
+#         --)
+#             shift
+#             break
+#             ;;
+#         *)
+#             echo "Programming error"
+#             exit 3
+#             ;;
+#     esac
+# done
+
+# # handle non-option arguments
+# if [[ $# -ne 1 ]]; then
+#     echo "$0: A single input file is required."
+#     exit 4
+# fi
+
+# echo "verbose: $v, force: $f, debug: $d, in: $1, out: $outFile"
+# exit 999

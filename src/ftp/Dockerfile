@@ -1,4 +1,5 @@
-FROM archlinux:base-20241027.0.273886
+ARG IMAGE_LINUX_BASE
+FROM $IMAGE_LINUX_BASE
 
 #install system utils and services
 RUN pacman --needed --noconfirm -Syu && \

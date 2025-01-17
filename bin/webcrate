@@ -17,9 +17,7 @@ source ./bin/commands/dock.inc
 source ./bin/commands/backup.inc
 source ./bin/commands/help.inc
 
-# More safety, by turning some bugs into errors.
 set -o errexit -o pipefail -o noclobber -o nounset
-# ignore errexit with `&& true`
 getopt --test > /dev/null && true
 if [[ $? -ne 4 ]]; then
     echo 'getopt --test failed in this environment'
@@ -60,7 +58,6 @@ case $COMMAND in
 esac
 
 exit 0
-
 
 # # option --output/-o requires 1 argument
 # LONGOPTS=debug,force,output:,verbose

@@ -1,6 +1,6 @@
 function Update() {
 
-  git pull
-  Pull
+	git pull
+	Pull
 
 }

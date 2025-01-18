@@ -20,41 +20,41 @@ source ./bin/commands/help.inc
 set -o errexit -o pipefail -o noclobber -o nounset
 getopt --test > /dev/null && true
 if [[ $? -ne 4 ]]; then
-    echo 'getopt --test failed in this environment'
-    exit 1
+		echo 'getopt --test failed in this environment'
+		exit 1
 fi
 
 ALLOWED_SERVICES=(\
-  nginx\
-  utils-pwgen\
-  utils-docker\
-  core\
-  core-gunicorn\
-  core-php81\
-  core-php74\
-  core-php73\
-  core-php56\
-  admin\
-  dnsmasq\
-  ftp\
-  stats\
+	nginx\
+	utils-pwgen\
+	utils-docker\
+	core\
+	core-gunicorn\
+	core-php81\
+	core-php74\
+	core-php73\
+	core-php56\
+	admin\
+	dnsmasq\
+	ftp\
+	stats\
 )
 
 COMMAND=$1;
 shift;
 case $COMMAND in
-  start) Start $@;;
-  stop) Stop $@;;
-  restart) Restart;;
-  dock) Dock $@;;
-  pull) Pull $@;;
-  update) Update $@;;
-  build) Build $@;;
-  push) Push $@;;
-  log) Log $@;;
-  backup) Backup $@;;
-  help) Help $@;;
-  *) echo "Unknown command: '$COMMAND'. Use 'webcrate help' to get list of commands"
+	start) Start $@;;
+	stop) Stop $@;;
+	restart) Restart;;
+	dock) Dock $@;;
+	pull) Pull $@;;
+	update) Update $@;;
+	build) Build $@;;
+	push) Push $@;;
+	log) Log $@;;
+	backup) Backup $@;;
+	help) Help $@;;
+	*) echo "Unknown command: '$COMMAND'. Use 'webcrate help' to get list of commands"
 esac
 
 exit 0

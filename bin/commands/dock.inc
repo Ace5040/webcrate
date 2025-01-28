@@ -25,10 +25,8 @@ function Dock() {
 	then
 		if [ "$r" = "y" ]
 		then
-			exit 2
 			docker exec -it webcrate-core-${1} sudo bash
 		else
-			exit 3
 			docker exec -it webcrate-core-${1} sudo --user ${1} bash
 		fi
 	else

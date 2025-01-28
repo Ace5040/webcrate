@@ -5,7 +5,7 @@ if [[ -d ./var/meta/projects && -n "$(ls -A ./var/meta/projects)" ]]; then
 			project=($line)
 			project_name=${project[1]}
 			writeLog "Starting project $project_name"
-			docker run --rm --env-file=$(pwd)/.env \
+			docker run --rm --env-file=$(pwd)/.env --env-file=$(pwd)/images.default \
 				--name webcrate-utils-docker-$project_name \
 				-e WEBCRATE_UID=$uid \
 				-e WEBCRATE_GID=$gid \

@@ -51,7 +51,7 @@ else
 fi
 
 writeLog "Init services"
-docker run --rm --env-file=$(pwd)/.env \
+docker run --rm --env-file=$(pwd)/.env --env-file=$(pwd)/images.default \
 	--name webcrate-utils-docker-services-init \
 	-e WEBCRATE_UID=$uid \
 	-e WEBCRATE_GID=$gid \

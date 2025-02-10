@@ -7,6 +7,7 @@ function Build() {
 		&& [ "$BUILDTARGET" != "utils-docker" ]\
 		&& [ "$BUILDTARGET" != "core" ]\
 		&& [ "$BUILDTARGET" != "core-gunicorn" ]\
+		&& [ "$BUILDTARGET" != "core-php83" ]\
 		&& [ "$BUILDTARGET" != "core-php81" ]\
 		&& [ "$BUILDTARGET" != "core-php74" ]\
 		&& [ "$BUILDTARGET" != "core-php73" ]\
@@ -16,7 +17,7 @@ function Build() {
 		&& [ "$BUILDTARGET" != "ftp" ]\
 		&& [ "$BUILDTARGET" != "stats" ]\
 	;then
-		echo "Unknown target $1. Please use one of: all, nginx, utils-pwgen, utils-docker, core, core-gunicorn, core-php81, core-php74, core-php73, core-php56, admin, stats"
+		echo "Unknown target $1. Please use one of: all, nginx, utils-pwgen, utils-docker, core, core-gunicorn, core-php83, core-php81, core-php74, core-php73, core-php56, admin, stats"
 		exit 1
 	fi
 
@@ -74,6 +75,9 @@ function Build() {
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "utils-docker" ]; then
 		docker build -t $IMAGE_UTILS_DOCKER --build-arg IMAGE_ALPINE_BASE=$IMAGE_ALPINE_BASE ./src/utils-docker$BUILD_OPTIONS
+	fi
+	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core" ] || [ "$BUILDTARGET" = "core-php83" ]; then
+		docker build -t $IMAGE_CORE_PHP83 --build-arg IMAGE_ALPINE_321_BASE=$IMAGE_ALPINE_321_BASE ./src/core-php83$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core" ] || [ "$BUILDTARGET" = "core-php81" ]; then
 		docker build -t $IMAGE_CORE_PHP81 --build-arg IMAGE_LINUX_BASE=$IMAGE_LINUX_BASE ./src/core-php81$BUILD_OPTIONS

@@ -4,6 +4,7 @@ function Pull() {
 	docker pull $IMAGE_CORE_PHP73
 	docker pull $IMAGE_CORE_PHP74
 	docker pull $IMAGE_CORE_PHP81
+	docker pull $IMAGE_CORE_PHP83
 	docker pull $IMAGE_CORE_GUNICORN
 	docker pull $IMAGE_FTP
 	docker pull $IMAGE_ADMIN

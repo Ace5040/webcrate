@@ -29,6 +29,7 @@ function Push() {
 		docker push $IMAGE_UTILS_DOCKER
 	fi
 	if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "core" ]; then
+		docker push $IMAGE_CORE_PHP83
 		docker push $IMAGE_CORE_PHP81
 		docker push $IMAGE_CORE_PHP56
 		docker push $IMAGE_CORE_PHP73
@@ -37,6 +38,9 @@ function Push() {
 	fi
 	if [ "$IMAGE" = "core-gunicorn" ]; then
 		docker push $IMAGE_CORE_GUNICORN
+	fi
+	if [ "$IMAGE" = "core-php81" ]; then
+		docker push $IMAGE_CORE_PHP83
 	fi
 	if [ "$IMAGE" = "core-php81" ]; then
 		docker push $IMAGE_CORE_PHP81

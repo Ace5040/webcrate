@@ -1,10 +1,12 @@
 IMAGE_LINUX_BASE=archlinux:base-20241027.0.273886
 IMAGE_ALPINE_BASE=alpine:3.17
+IMAGE_ALPINE_321_BASE=alpine:3.21
 IMAGE_NGINX_BASE=nginx:stable
 IMAGE_CORE_PHP56=ace5040/webcrate-core-php56:latest
 IMAGE_CORE_PHP73=ace5040/webcrate-core-php73:latest
 IMAGE_CORE_PHP74=ace5040/webcrate-core-php74:latest
 IMAGE_CORE_PHP81=ace5040/webcrate-core-php81:latest
+IMAGE_CORE_PHP83=ace5040/webcrate-core-php83:latest
 IMAGE_CORE_GUNICORN=ace5040/webcrate-core-gunicorn:latest
 IMAGE_FTP=ace5040/webcrate-ftp:latest
 IMAGE_ADMIN=ace5040/webcrate-admin:latest

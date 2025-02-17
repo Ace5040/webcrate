@@ -375,7 +375,7 @@ class Project
             'root_folder' => $this->rootFolder,
             'https' => !empty($this->https) ? $this->https->getName() : 'disabled',
             'backend' => !empty($this->backend) ? $this->backend->getName() : 'php',
-            'backend_version' => !empty($this->backend) ? $this->backend->getVersion() : '81',
+            'backend_version' => !empty($this->backend) ? $this->backend->getVersion() : '83',
             'gunicorn_app_module' => !empty($this->gunicornAppModule) ? $this->gunicornAppModule : '',
             'redirect' => (bool)$this->redirect,
             'gzip' => (bool)$this->gzip,

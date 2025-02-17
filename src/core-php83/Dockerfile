@@ -1,7 +1,7 @@
 ARG IMAGE_ALPINE_321_BASE
 FROM $IMAGE_ALPINE_321_BASE
 
-RUN apk update && apk add --no-cache sudo git nano exim openssh unzip mariadb-client mc iputils cronie wget tmux py3-pip libmemcached supervisor shadow
+RUN apk update && apk add --no-cache sudo git nano exim openssh unzip mariadb-client mc iputils cronie wget tmux py3-pip python3 py3-yaml py3-munch libmemcached supervisor shadow
 
 RUN chsh -s /bin/bash root
 
@@ -48,9 +48,10 @@ RUN apk add symfony-cli
 #misc install and config
 # USER root
 # WORKDIR /root
-RUN sed -i "s/;process_control_timeout = 0/process_control_timeout = 10s/g"  /etc/php83/php-fpm.conf && \
+RUN sed -i "s/;process_control_timeout = 0/process_control_timeout = 10s/g" /etc/php83/php-fpm.conf && \
     sed -i "s/#PubkeyAuthentication yes/PubkeyAuthentication yes/g" /etc/ssh/sshd_config && \
     sed -i "s/#StrictModes yes/StrictModes no/g" /etc/ssh/sshd_config && \
+    rm /etc/php83/php-fpm.d/www.conf && \
     mkdir -p /webcrate && \
     mkdir -p /webcrate-bin && \
     ln -s /bin/php83 /webcrate-bin/php && \
@@ -62,8 +63,7 @@ RUN sed -i "s/;process_control_timeout = 0/process_control_timeout = 10s/g"  /et
 
 WORKDIR /
 COPY ["bashrc.sh", "/etc/profile.d/"]
-COPY ["versions.py", "parse-projects.py", "sync_ssh_keys.sh", "log.py", "supervisord.conf.template", "/webcrate/"]
-COPY ["supervisord.conf", "/etc/"]
+COPY ["versions.py", "parse-projects.py", "sync_ssh_keys.sh", "log.py", "supervisord.conf.template" "supervisord-user.conf.template", "/webcrate/"]
 COPY ["entrypoint.sh", "/"]
 RUN chmod u+x /webcrate/sync_ssh_keys.sh && \
     chmod u+x /webcrate/parse-projects.py && \
@@ -71,4 +71,3 @@ RUN chmod u+x /webcrate/sync_ssh_keys.sh && \
     chmod u+s /bin/ping && \
     chmod u+x /entrypoint.sh
 CMD ["/entrypoint.sh"]
-# CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]

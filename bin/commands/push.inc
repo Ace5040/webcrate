@@ -7,6 +7,7 @@ function Push() {
 		&& [ "$IMAGE" != "utils-docker" ]\
 		&& [ "$IMAGE" != "core" ]\
 		&& [ "$IMAGE" != "core-gunicorn" ]\
+		&& [ "$IMAGE" != "core-php83" ]\
 		&& [ "$IMAGE" != "core-php81" ]\
 		&& [ "$IMAGE" != "core-php74" ]\
 		&& [ "$IMAGE" != "core-php73" ]\
@@ -16,7 +17,7 @@ function Push() {
 		&& [ "$IMAGE" != "ftp" ]\
 		&& [ "$IMAGE" != "stats" ];\
 	then
-		echo "Unknown image $IMAGE. Please use one of: all, nginx, utils-pwgen, utils-docker, core, core-gunicorn, core-php81, core-php74, core-php73, core-php56, admin, stats"
+		echo "Unknown image $IMAGE. Please use one of: all, nginx, utils-pwgen, utils-docker, core, core-gunicorn, core-php83, core-php81, core-php74, core-php73, core-php56, admin, stats"
 		exit 1
 	fi
 	if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "nginx" ]; then
@@ -39,7 +40,7 @@ function Push() {
 	if [ "$IMAGE" = "core-gunicorn" ]; then
 		docker push $IMAGE_CORE_GUNICORN
 	fi
-	if [ "$IMAGE" = "core-php81" ]; then
+	if [ "$IMAGE" = "core-php83" ]; then
 		docker push $IMAGE_CORE_PHP83
 	fi
 	if [ "$IMAGE" = "core-php81" ]; then

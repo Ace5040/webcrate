@@ -322,7 +322,7 @@ for projectname,project in projects.items():
 
     # INIT PHP
     PHP_CONFIGS=''
-    if backend in ['php56', 'php73', 'php74', 'php81']:
+    if backend in ['php56', 'php73', 'php74', 'php81', 'php83']:
       PHP_CONFIGS = f'-v {WEBCRATE_PWD}/config/php/{backend}.ini:/etc/{backend}/conf.d/00-user.ini:ro -v {WEBCRATE_PWD}/var/php_pools:/webcrate/pools'
 
     # START CONTAINER

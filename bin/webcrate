@@ -30,6 +30,7 @@ ALLOWED_SERVICES=(\
 	utils-docker\
 	core\
 	core-gunicorn\
+	core-php83\
 	core-php81\
 	core-php74\
 	core-php73\

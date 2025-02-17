@@ -99,11 +99,12 @@ for projectname,project in projects.items():
       if os.path.isdir(f'{project.folder}'):
         if project.backend == 'php':
           php_path_prefix = {
+            '83': '83',
             '81': '81',
             '56': '56',
             '73': '73',
             '74': '74'
-          }.get(str(project.backend_version), '81')
+          }.get(str(project.backend_version), '83')
           php_conf_path = f'/webcrate/php_pools/{project.name}.conf';
 
           if os.path.isfile(f'/webcrate/custom_templates/{project.name}.conf'):

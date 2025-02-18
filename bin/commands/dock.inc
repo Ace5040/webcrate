@@ -25,9 +25,9 @@ function Dock() {
 	then
 		if [ "$r" = "y" ]
 		then
-			docker exec -it webcrate-core-${1} sudo bash
+			docker exec -it webcrate-core-${1} sudo -i bash
 		else
-			docker exec -it webcrate-core-${1} sudo --user ${1} bash
+			docker exec -it webcrate-core-${1} sudo -i --user ${1} bash
 		fi
 	else
 		echo "Wrong number of args"

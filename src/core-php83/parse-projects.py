@@ -27,5 +27,5 @@ for projectname,project in projects.items():
     os.system(f'rm -r /home/dev > /dev/null 2>&1')
     os.system(f'chown -R {project.name}:{project.name} /run > /dev/null 2>&1')
     password = str(project.password).replace("$", "\\$")
-    os.system(f'echo \'{project.name}:{password}\' | chpasswd')
+    os.system(f'usermod -p {password} {project.name} > /dev/null 2>&1')
     print(f'{project.name} - created')

@@ -36,8 +36,7 @@ RUN apk add --no-cache gawk
 #install oh-my-bash
 RUN wget https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh && \
     chmod u+x install.sh && \
-    ./install.sh --prefix=/usr && \
-    echo ". /etc/profile.d/bashrc.sh" >> /etc/bash/bashrc
+    ./install.sh --prefix=/usr
 
 RUN git clone --recursive --depth 1 --shallow-submodules https://github.com/akinomyoga/ble.sh.git && \
     make -C ble.sh install PREFIX=/usr
@@ -45,29 +44,23 @@ RUN git clone --recursive --depth 1 --shallow-submodules https://github.com/akin
 RUN curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.alpine.sh' | sudo -E bash
 RUN apk add symfony-cli
 
-#misc install and config
-# USER root
-# WORKDIR /root
+#misc config
 RUN sed -i "s/;process_control_timeout = 0/process_control_timeout = 10s/g" /etc/php83/php-fpm.conf && \
     sed -i "s/#PubkeyAuthentication yes/PubkeyAuthentication yes/g" /etc/ssh/sshd_config && \
+    sed -i "s/#PasswordAuthentication yes/PasswordAuthentication yes/g" /etc/ssh/sshd_config && \
     sed -i "s/#StrictModes yes/StrictModes no/g" /etc/ssh/sshd_config && \
+    echo ". /etc/bashrc.sh" >> /etc/profile && \
+    cat > /etc/motd && \
     rm /etc/php83/php-fpm.d/www.conf && \
     mkdir -p /webcrate && \
-    mkdir -p /webcrate-bin && \
-    ln -s /bin/php83 /webcrate-bin/php && \
     chmod o-rwx /webcrate
-    ###     sed -i "s/.*open_basedir =.*/open_basedir =/g" /etc/php83/php.ini && \
-    ###     echo 'dev ALL=(ALL) NOPASSWD: /bin/crontab' | EDITOR='tee -a' visudo && \
-    ###     sed -i 's/test -r /test -e /g' /etc/profile && \
-    ###     echo ". /etc/bash/bashrc" >> /etc/bash.bashrc
 
 WORKDIR /
-COPY ["bashrc.sh", "/etc/profile.d/"]
-COPY ["versions.py", "parse-projects.py", "sync_ssh_keys.sh", "log.py", "supervisord.conf.template" "supervisord-user.conf.template", "/webcrate/"]
+COPY ["versions.py", "parse-projects.py", "sync_ssh_keys.sh", "log.py", "supervisord.conf.template", "supervisord-user.conf.template", "/webcrate/"]
+COPY ["bashrc.sh", "/etc/"]
 COPY ["entrypoint.sh", "/"]
 RUN chmod u+x /webcrate/sync_ssh_keys.sh && \
     chmod u+x /webcrate/parse-projects.py && \
     chmod u+x /webcrate/versions.py && \
-    chmod u+s /bin/ping && \
     chmod u+x /entrypoint.sh
 CMD ["/entrypoint.sh"]

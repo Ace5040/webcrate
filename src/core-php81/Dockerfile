@@ -21,7 +21,7 @@ RUN apk add --no-cache composer ruby py3-setuptools py3-munch py3-pypdf bash mak
 #install ioncube
 RUN wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz && \
     tar xzf ioncube_loaders_lin_x86-64.tar.gz && \
-    cp ./ioncube/ioncube_loader_lin_8.3.so /usr/lib/php81/modules/ioncube_loader_lin.so && \
+    cp ./ioncube/ioncube_loader_lin_8.1.so /usr/lib/php81/modules/ioncube_loader_lin.so && \
     rm -rf /root/ioncube && \
     rm -f /root/ioncube_loaders_lin_x86-64.tar.gz
 

@@ -16,7 +16,7 @@ WORKDIR /root
 RUN apk add --no-cache php83 php83-fileinfo php83-ctype php83-pear php83-zip php83-xmlreader php83-xmlwriter php83-mbstring php83-openssl php83-xml php83-fpm php83-intl php83-gd php83-xsl php83-simplexml php83-phar php83-tidy php83-tokenizer php83-curl php83-opcache php83-iconv php83-pdo php83-soap
 RUN apk add --no-cache php83-pdo_sqlite php83-sqlite3 php83-pdo_mysql php83-mysqli php83-pecl-imagick
 RUN apk add --no-cache php83-pecl-timezonedb php83-pecl-memcached
-RUN apk add --no-cache composer ruby py3-setuptools py3-munch py3-pypdf bash make curl
+RUN apk add --no-cache composer ruby py3-setuptools py3-munch py3-pypdf bash make curl less
 
 #install ioncube
 RUN wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz && \
@@ -28,8 +28,11 @@ RUN wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-
 RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/latest/download/drush.phar && \
     chmod +x drush.phar && \
     mv drush.phar /usr/bin/drush && \
-    gem install compass --norc && \
     ssh-keygen -A
+
+RUN gem install rubygems-update && \
+    gem update --system && \
+    gem install compass
 
 RUN apk add --no-cache gawk
 
@@ -49,7 +52,6 @@ RUN sed -i "s/;process_control_timeout = 0/process_control_timeout = 10s/g" /etc
     sed -i "s/#PubkeyAuthentication yes/PubkeyAuthentication yes/g" /etc/ssh/sshd_config && \
     sed -i "s/#PasswordAuthentication yes/PasswordAuthentication yes/g" /etc/ssh/sshd_config && \
     sed -i "s/#StrictModes yes/StrictModes no/g" /etc/ssh/sshd_config && \
-    echo ". /etc/bashrc.sh" >> /etc/profile && \
     cat > /etc/motd && \
     rm /etc/php83/php-fpm.d/www.conf && \
     mkdir -p /webcrate && \
@@ -57,7 +59,7 @@ RUN sed -i "s/;process_control_timeout = 0/process_control_timeout = 10s/g" /etc
 
 WORKDIR /
 COPY ["versions.py", "parse-projects.py", "sync_ssh_keys.sh", "log.py", "supervisord.conf.template", "supervisord-user.conf.template", "/webcrate/"]
-COPY ["bashrc.sh", "/etc/"]
+COPY bashrc.sh /etc/30-bashrc.sh
 COPY ["entrypoint.sh", "/"]
 RUN chmod u+x /webcrate/sync_ssh_keys.sh && \
     chmod u+x /webcrate/parse-projects.py && \

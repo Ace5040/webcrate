@@ -28,8 +28,11 @@ RUN wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-
 RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/latest/download/drush.phar && \
     chmod +x drush.phar && \
     mv drush.phar /usr/bin/drush && \
-    gem install compass --norc && \
     ssh-keygen -A
+
+RUN gem install rubygems-update && \
+    gem update --system && \
+    gem install compass
 
 RUN apk add --no-cache gawk
 
@@ -57,7 +60,7 @@ RUN sed -i "s/;process_control_timeout = 0/process_control_timeout = 10s/g" /etc
 
 WORKDIR /
 COPY ["versions.py", "parse-projects.py", "sync_ssh_keys.sh", "log.py", "supervisord.conf.template", "supervisord-user.conf.template", "/webcrate/"]
-COPY ["bashrc.sh", "/etc/"]
+COPY bashrc.sh /etc/30-bashrc.sh
 COPY ["entrypoint.sh", "/"]
 RUN chmod u+x /webcrate/sync_ssh_keys.sh && \
     chmod u+x /webcrate/parse-projects.py && \

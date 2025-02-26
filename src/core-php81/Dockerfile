@@ -16,11 +16,7 @@ RUN adduser --no-create-home --disabled-login -shell /bin/bash dev && \
 USER root
 WORKDIR /root
 
-# php83-fileinfo php83-ctype php83-xmlreader php83-xmlwriter php83-openssl
-# php83-simplexml php83-phar php83-tokenizer php83-iconv php83-pdo
-# php83-pdo_sqlite  php83-pdo_mysql php83-mysqli
-
-#install php83
+#install php81
 RUN curl -sSLo /tmp/debsuryorg-archive-keyring.deb https://packages.sury.su/debsuryorg-archive-keyring.deb && \
     dpkg -i /tmp/debsuryorg-archive-keyring.deb && \
     sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.su/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' && \
@@ -29,8 +25,6 @@ RUN apt-get --assume-yes install php8.1 php8.1-zip php8.1-xml php8.1-mbstring ph
     php8.1-intl php8.1-gd php8.1-xsl php8.1-tidy php8.1-curl php8.1-opcache php8.1-soap \
     php8.1-sqlite3 php8.1-mysql \
     php-pear php8.1-dev
-
-#RUN apt-get --assume-yes install
 
 RUN pecl channel-update pecl.php.net
 RUN pecl install timezonedb

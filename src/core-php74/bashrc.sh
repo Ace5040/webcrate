@@ -25,7 +25,7 @@ export OSH_CACHE_DIR=$HOME/.cache/oh-my-bash
 if [[ ! -d $OSH_CACHE_DIR ]]; then
 	mkdir -p $OSH_CACHE_DIR
 fi
-OSH_THEME="powerline"
+OSH_THEME="powerline-multiline"
 DISABLE_AUTO_UPDATE="true"
 OMB_USE_SUDO=true
 aliases=(
@@ -41,7 +41,8 @@ function __powerline_project_prompt {
   echo "$USER@$WEBCRATE_DOMAIN|${USER_INFO_THEME_PROMPT_COLOR}"
 }
 
-POWERLINE_PROMPT="clock project scm customcwd"
+POWERLINE_LEFT_PROMPT="scm customcwd"
+POWERLINE_RIGHT_PROMPT="project clock"
 [[ ${BLE_VERSION-} ]] && ble-attach
 ble-face syntax_error="fg=203"
 ble-face auto_complete="fg=238"

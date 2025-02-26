@@ -1,27 +1,41 @@
-ARG IMAGE_ALPINE_315_BASE
-FROM $IMAGE_ALPINE_315_BASE
+ARG IMAGE=debian-slim
+FROM $IMAGE
 
-RUN apk update && apk add --no-cache sudo git nano exim openssh unzip mariadb-client mc iputils cronie wget tmux py3-pip python3 py3-yaml py3-munch libmemcached supervisor shadow
+RUN sed -i "s/deb.debian.org/mirror.truenetwork.ru/g" /etc/apt/sources.list.d/debian.sources
+RUN apt-get update
+RUN apt-get --assume-yes install sudo git nano exim4-base openssh-server \
+    unzip mariadb-client mc iputils-ping cron wget tmux supervisor \
+    curl lsb-release ca-certificates ruby ruby-dev \
+    python3 python3-pip python3-yaml python3-munch libmemcached-tools python3-pypdf
 
 RUN usermod -s /bin/bash root
 
-RUN adduser -D -s /bin/bash dev && \
-    echo 'dev:dev' | chpasswd && \
+RUN adduser --no-create-home --disabled-login -shell /bin/bash dev && \
     echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo
 
 USER root
 WORKDIR /root
 
 #install php74
-RUN apk add --no-cache php7 php7-json php7-fileinfo php7-ctype php7-pear php7-zip php7-xmlreader php7-xmlwriter php7-mbstring php7-openssl php7-xml php7-fpm php7-intl php7-gd php7-xsl php7-simplexml php7-phar php7-tidy php7-tokenizer php7-curl php7-opcache php7-iconv php7-pdo php7-soap
-RUN apk add --no-cache php7-pdo_sqlite php7-sqlite3 php7-pdo_mysql php7-mysqli php7-pecl-imagick
-RUN apk add --no-cache php7-pecl-timezonedb php7-pecl-memcached
-RUN apk add --no-cache composer ruby py3-setuptools py3-munch py3-pypdf2 bash make curl
+RUN curl -sSLo /tmp/debsuryorg-archive-keyring.deb https://packages.sury.su/debsuryorg-archive-keyring.deb && \
+    dpkg -i /tmp/debsuryorg-archive-keyring.deb && \
+    sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.su/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' && \
+    apt-get update
+RUN apt-get --assume-yes install php7.4 php7.4-zip php7.4-xml php7.4-mbstring php7.4-fpm \
+    php7.4-intl php7.4-gd php7.4-xsl php7.4-tidy php7.4-curl php7.4-opcache php7.4-soap \
+    php7.4-sqlite3 php7.4-mysql \
+    php-pear php7.4-dev
+
+RUN pecl channel-update pecl.php.net
+RUN pecl install timezonedb
+RUN apt-get --assume-yes install php7.4-imagick imagemagick
+RUN apt-get --assume-yes install php7.4-memcached
+RUN apt-get --assume-yes install composer
 
 #install ioncube
 RUN wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz && \
     tar xzf ioncube_loaders_lin_x86-64.tar.gz && \
-    cp ./ioncube/ioncube_loader_lin_7.4.so /usr/lib/php7/modules/ioncube_loader_lin.so && \
+    cp ./ioncube/ioncube_loader_lin_7.4.so $(php-config --extension-dir)/ioncube_loader_lin.so && \
     rm -rf /root/ioncube && \
     rm -f /root/ioncube_loaders_lin_x86-64.tar.gz
 
@@ -30,37 +44,38 @@ RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/late
     mv drush.phar /usr/bin/drush && \
     ssh-keygen -A
 
-RUN gem install rubygems-update && \
-    gem update --system && \
-    gem install compass
-
-RUN apk add --no-cache gawk
+#install compass
+RUN gem install compass
 
 #install oh-my-bash
+RUN apt-get --assume-yes install gawk
 RUN wget https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh && \
     chmod u+x install.sh && \
     ./install.sh --prefix=/usr
 
+#install ble.sh
 RUN git clone --recursive --depth 1 --shallow-submodules https://github.com/akinomyoga/ble.sh.git && \
     make -C ble.sh install PREFIX=/usr
 
-RUN curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.alpine.sh' | sudo -E bash
-RUN apk add symfony-cli
+#install symfony-cli
+RUN wget https://get.symfony.com/cli/installer -O - | bash && \
+    mv /root/.symfony5/bin/symfony /usr/local/bin/symfony
 
 #misc config
-RUN sed -i "s/;process_control_timeout = 0/process_control_timeout = 10s/g" /etc/php7/php-fpm.conf && \
+RUN sed -i "s/;process_control_timeout = 0/process_control_timeout = 10s/g" /etc/php/7.4/fpm/php-fpm.conf && \
     sed -i "s/#PubkeyAuthentication yes/PubkeyAuthentication yes/g" /etc/ssh/sshd_config && \
     sed -i "s/#PasswordAuthentication yes/PasswordAuthentication yes/g" /etc/ssh/sshd_config && \
     sed -i "s/#StrictModes yes/StrictModes no/g" /etc/ssh/sshd_config && \
-    echo ". /etc/bashrc.sh" >> /etc/profile && \
+    sed -i "s/PrintMotd no/PrintMotd yes/g" /etc/ssh/sshd_config && \
     cat > /etc/motd && \
-    rm /etc/php7/php-fpm.d/www.conf && \
+    rm /etc/update-motd.d/10-uname && \
+    rm /etc/php/7.4/fpm/pool.d/www.conf && \
     mkdir -p /webcrate && \
     chmod o-rwx /webcrate
 
 WORKDIR /
 COPY ["versions.py", "parse-projects.py", "sync_ssh_keys.sh", "log.py", "supervisord.conf.template", "supervisord-user.conf.template", "/webcrate/"]
-COPY bashrc.sh /etc/30-bashrc.sh
+COPY bashrc.sh /etc/bashrc.sh
 COPY ["entrypoint.sh", "/"]
 RUN chmod u+x /webcrate/sync_ssh_keys.sh && \
     chmod u+x /webcrate/parse-projects.py && \

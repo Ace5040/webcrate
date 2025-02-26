@@ -30,8 +30,6 @@ RUN apt-get --assume-yes install php8.3 php8.3-zip php8.3-xml php8.3-mbstring ph
     php8.3-sqlite3 php8.3-mysql \
     php-pear php8.3-dev
 
-#RUN apt-get --assume-yes install
-
 RUN pecl channel-update pecl.php.net
 RUN pecl install timezonedb
 RUN apt-get --assume-yes install php8.3-imagick imagemagick

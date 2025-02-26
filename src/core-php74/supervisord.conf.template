@@ -9,13 +9,12 @@ command=/usr/sbin/sshd -D
 [program:php-fpm]
 autorestart=true
 user=%USERNAME%
-command=/usr/sbin/php-fpm7 -F
+command=/usr/sbin/php-fpm7.4 -F
 
-[program:cronie]
-command=/usr/sbin/crond -n
+[program:cron]
+command=/usr/sbin/cron -f
 
 [program:exim]
-user=%USERNAME%
 command=/usr/sbin/exim -bdf -q30m
 
 [program:supervisor-user]

@@ -77,7 +77,7 @@ function Build() {
 		docker build -t $IMAGE_UTILS_DOCKER --build-arg IMAGE_ALPINE_BASE=$IMAGE_ALPINE_BASE ./src/utils-docker$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core" ] || [ "$BUILDTARGET" = "core-php83" ]; then
-		docker build -t $IMAGE_CORE_PHP83 --build-arg IMAGE_ALPINE_321_BASE=$IMAGE_ALPINE_321_BASE ./src/core-php83$BUILD_OPTIONS
+		docker build -t $IMAGE_CORE_PHP83 --build-arg IMAGE=$IMAGE_DEBIAN_SLIM ./src/core-php83$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core" ] || [ "$BUILDTARGET" = "core-php81" ]; then
 		docker build -t $IMAGE_CORE_PHP81 --build-arg IMAGE_ALPINE_319_BASE=$IMAGE_ALPINE_319_BASE ./src/core-php81$BUILD_OPTIONS

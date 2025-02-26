@@ -1,27 +1,47 @@
-ARG IMAGE_ALPINE_319_BASE
-FROM $IMAGE_ALPINE_319_BASE
+ARG IMAGE=debian-slim
+FROM $IMAGE
 
-RUN apk update && apk add --no-cache sudo git nano exim openssh unzip mariadb-client mc iputils cronie wget tmux py3-pip python3 py3-yaml py3-munch libmemcached supervisor shadow
+RUN sed -i "s/deb.debian.org/mirror.truenetwork.ru/g" /etc/apt/sources.list.d/debian.sources
+RUN apt-get update
+RUN apt-get --assume-yes install sudo git nano exim4-base openssh-server \
+    unzip mariadb-client mc iputils-ping cron wget tmux supervisor \
+    curl lsb-release ca-certificates ruby ruby-dev \
+    python3 python3-pip python3-yaml python3-munch libmemcached-tools python3-pypdf
 
-RUN chsh -s /bin/bash root
+RUN usermod -s /bin/bash root
 
-RUN adduser -D -s /bin/bash dev && \
-    echo 'dev:dev' | chpasswd && \
+RUN adduser --no-create-home --disabled-login -shell /bin/bash dev && \
     echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo
 
 USER root
 WORKDIR /root
 
-#install php81
-RUN apk add --no-cache php81 php81-fileinfo php81-ctype php81-pear php81-zip php81-xmlreader php81-xmlwriter php81-mbstring php81-openssl php81-xml php81-fpm php81-intl php81-gd php81-xsl php81-simplexml php81-phar php81-tidy php81-tokenizer php81-curl php81-opcache php81-iconv php81-pdo php81-soap
-RUN apk add --no-cache php81-pdo_sqlite php81-sqlite3 php81-pdo_mysql php81-mysqli php81-pecl-imagick
-RUN apk add --no-cache php81-pecl-timezonedb php81-pecl-memcached
-RUN apk add --no-cache composer ruby py3-setuptools py3-munch py3-pypdf bash make curl
+# php83-fileinfo php83-ctype php83-xmlreader php83-xmlwriter php83-openssl
+# php83-simplexml php83-phar php83-tokenizer php83-iconv php83-pdo
+# php83-pdo_sqlite  php83-pdo_mysql php83-mysqli
+
+#install php83
+RUN curl -sSLo /tmp/debsuryorg-archive-keyring.deb https://packages.sury.su/debsuryorg-archive-keyring.deb && \
+    dpkg -i /tmp/debsuryorg-archive-keyring.deb && \
+    sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.su/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' && \
+    apt-get update
+RUN apt-get --assume-yes install php8.1 php8.1-zip php8.1-xml php8.1-mbstring php8.1-fpm \
+    php8.1-intl php8.1-gd php8.1-xsl php8.1-tidy php8.1-curl php8.1-opcache php8.1-soap \
+    php8.1-sqlite3 php8.1-mysql \
+    php-pear php8.1-dev
+
+#RUN apt-get --assume-yes install
+
+RUN pecl channel-update pecl.php.net
+RUN pecl install timezonedb
+RUN apt-get --assume-yes install php8.1-imagick imagemagick
+RUN apt-get --assume-yes install php8.1-memcached
+RUN apt-get --assume-yes install composer
 
 #install ioncube
 RUN wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz && \
     tar xzf ioncube_loaders_lin_x86-64.tar.gz && \
-    cp ./ioncube/ioncube_loader_lin_8.1.so /usr/lib/php81/modules/ioncube_loader_lin.so && \
+    cp ./ioncube/ioncube_loader_lin_8.1.so $(php-config --extension-dir)/ioncube_loader_lin.so && \
     rm -rf /root/ioncube && \
     rm -f /root/ioncube_loaders_lin_x86-64.tar.gz
 
@@ -30,37 +50,38 @@ RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/late
     mv drush.phar /usr/bin/drush && \
     ssh-keygen -A
 
-RUN gem install rubygems-update && \
-    gem update --system && \
-    gem install compass
-
-RUN apk add --no-cache gawk
+#install compass
+RUN gem install compass
 
 #install oh-my-bash
+RUN apt-get --assume-yes install gawk
 RUN wget https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh && \
     chmod u+x install.sh && \
     ./install.sh --prefix=/usr
 
+#install ble.sh
 RUN git clone --recursive --depth 1 --shallow-submodules https://github.com/akinomyoga/ble.sh.git && \
     make -C ble.sh install PREFIX=/usr
 
-RUN curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.alpine.sh' | sudo -E bash
-RUN apk add symfony-cli
+#install symfony-cli
+RUN wget https://get.symfony.com/cli/installer -O - | bash && \
+    mv /root/.symfony5/bin/symfony /usr/local/bin/symfony
 
 #misc config
-RUN sed -i "s/;process_control_timeout = 0/process_control_timeout = 10s/g" /etc/php81/php-fpm.conf && \
+RUN sed -i "s/;process_control_timeout = 0/process_control_timeout = 10s/g" /etc/php/8.1/fpm/php-fpm.conf && \
     sed -i "s/#PubkeyAuthentication yes/PubkeyAuthentication yes/g" /etc/ssh/sshd_config && \
     sed -i "s/#PasswordAuthentication yes/PasswordAuthentication yes/g" /etc/ssh/sshd_config && \
     sed -i "s/#StrictModes yes/StrictModes no/g" /etc/ssh/sshd_config && \
-    echo ". /etc/bashrc.sh" >> /etc/profile && \
+    sed -i "s/PrintMotd no/PrintMotd yes/g" /etc/ssh/sshd_config && \
     cat > /etc/motd && \
-    rm /etc/php81/php-fpm.d/www.conf && \
+    rm /etc/update-motd.d/10-uname && \
+    rm /etc/php/8.1/fpm/pool.d/www.conf && \
     mkdir -p /webcrate && \
     chmod o-rwx /webcrate
 
 WORKDIR /
 COPY ["versions.py", "parse-projects.py", "sync_ssh_keys.sh", "log.py", "supervisord.conf.template", "supervisord-user.conf.template", "/webcrate/"]
-COPY bashrc.sh /etc/30-bashrc.sh
+COPY bashrc.sh /etc/bashrc.sh
 COPY ["entrypoint.sh", "/"]
 RUN chmod u+x /webcrate/sync_ssh_keys.sh && \
     chmod u+x /webcrate/parse-projects.py && \

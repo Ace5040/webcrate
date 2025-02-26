@@ -86,7 +86,7 @@ function Build() {
 		docker build -t $IMAGE_CORE_PHP74 --build-arg IMAGE=$IMAGE_DEBIAN_SLIM ./src/core-php74$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core" ] || [ "$BUILDTARGET" = "core-php73" ]; then
-		docker build -t $IMAGE_CORE_PHP73 --build-arg IMAGE_LINUX_BASE=$IMAGE_LINUX_BASE ./src/core-php73$BUILD_OPTIONS
+		docker build -t $IMAGE_CORE_PHP73 --build-arg IMAGE=$IMAGE_DEBIAN_SLIM ./src/core-php73$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core" ] || [ "$BUILDTARGET" = "core-php56" ]; then
 		docker build -t $IMAGE_CORE_PHP56 --build-arg IMAGE_LINUX_BASE=$IMAGE_LINUX_BASE ./src/core-php56$BUILD_OPTIONS

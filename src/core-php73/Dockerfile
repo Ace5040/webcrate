@@ -1,120 +1,86 @@
-ARG IMAGE_LINUX_BASE
-FROM $IMAGE_LINUX_BASE
+ARG IMAGE=debian-slim
+FROM $IMAGE
 
-#set mirror
-RUN echo "Server = https://mirror.yandex.ru/archlinux/\$repo/os/\$arch" >> /etc/pacman.d/mirrorlist
+RUN sed -i "s/deb.debian.org/mirror.truenetwork.ru/g" /etc/apt/sources.list.d/debian.sources
+RUN apt-get update
+RUN apt-get --assume-yes install sudo git nano exim4-base openssh-server \
+    unzip mariadb-client mc iputils-ping cron wget tmux supervisor \
+    curl lsb-release ca-certificates ruby ruby-dev \
+    python3 python3-pip python3-yaml python3-munch libmemcached-tools python3-pypdf
 
-#php repo
-RUN sed -Ei "s/default mirrors./default mirrors.\n\n[home_el_archphp_Arch]\nServer = https:\/\/download.opensuse.org\/repositories\/home:\/el:\/archphp\/Arch\/\$arch/g" /etc/pacman.conf && \
-    key=$(curl -fsSL https://download.opensuse.org/repositories/home:el:archphp/Arch/$(uname -m)/home_el_archphp_Arch.key) && \
-    fingerprint=$(gpg --quiet --with-colons --import-options show-only --import --fingerprint <<< "${key}" | awk -F: '$1 == "fpr" { print $10 }') && \
-    pacman-key --init && \
-    pacman-key --add - <<< "${key}" && \
-    pacman-key --lsign-key "${fingerprint}"
+RUN usermod -s /bin/bash root
 
-#install system utils and services
-RUN pacman --needed --noconfirm -Syu && \
-    pacman --needed --noconfirm -S sudo git nano exim openssh base-devel unzip npm mariadb-clients mc iputils cronie inetutils wget tmux ruby python-pip libmemcached-awesome && \
-    yes | pacman -Scc && \
-    useradd -m -s /bin/bash dev && \
-    usermod -p "dev" dev && \
-    echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo && \
-    sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j12\"/g" /etc/makepkg.conf
-
-USER dev
-WORKDIR /home/dev
-
-#install icu74
-RUN git clone https://aur.archlinux.org/icu74.git && \
-    cd icu74 && \
-    makepkg -scir --nocheck --noconfirm --skipchecksums && \
-    rm -rf /home/dev/icu74
+RUN adduser --no-create-home --disabled-login -shell /bin/bash dev && \
+    echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo
 
 USER root
 WORKDIR /root
 
 #install php73
-RUN pacman --needed --noconfirm -S php73 php73-fileinfo php73-ctype php73-json php73-pecl php73-pear php73-zip php73-xmlreader php73-xmlwriter php73-mbstring php73-xml php73-fpm php73-intl php73-sqlite php73-gd php73-xsl php73-simplexml php73-phar php73-tidy php73-cli php73-tokenizer php73-curl php73-opcache php73-iconv php73-mysql php73-pdo php73-soap php73-imagick
-RUN pecl73 install timezonedb-2021.5 memcached && \
-    echo extension=timezonedb.so > /etc/php73/conf.d/10-timezonedb.ini && \
-    echo extension=memcached.so > /etc/php73/conf.d/10-memcached.ini
+RUN curl -sSLo /tmp/debsuryorg-archive-keyring.deb https://packages.sury.su/debsuryorg-archive-keyring.deb && \
+    dpkg -i /tmp/debsuryorg-archive-keyring.deb && \
+    sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.su/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' && \
+    apt-get update
+RUN apt-get --assume-yes install php7.3 php7.3-zip php7.3-xml php7.3-mbstring php7.3-fpm \
+    php7.3-intl php7.3-gd php7.3-xsl php7.3-tidy php7.3-curl php7.3-opcache php7.3-soap \
+    php7.3-sqlite3 php7.3-mysql \
+    php-pear php7.3-dev
 
-USER dev
-WORKDIR /home/dev
+RUN pecl channel-update pecl.php.net
+RUN pecl install timezonedb
+RUN apt-get --assume-yes install php7.3-imagick imagemagick
+RUN apt-get --assume-yes install php7.3-memcached
+RUN apt-get --assume-yes install composer
 
-#install oh-my-bash
-RUN git clone https://aur.archlinux.org/oh-my-bash-git.git && \
-    cd oh-my-bash-git && \
-    makepkg -scir --nocheck --noconfirm --skipchecksums && \
-    rm -rf /home/dev/oh-my-bash-git
-
-#install blesh-git
-RUN git clone https://aur.archlinux.org/blesh-git.git && \
-    cd blesh-git && \
-    makepkg -scir --nocheck --noconfirm --skipchecksums && \
-    rm -rf /home/dev/blesh-git
-
-#install symfony-cli-bin
-RUN git clone https://aur.archlinux.org/symfony-cli-bin.git && \
-    cd symfony-cli-bin && \
-    makepkg -scir --nocheck --noconfirm --skipchecksums && \
-    rm -rf /home/dev/symfony-cli-bin
-
-#install docker-systemctl-replacement-git
-RUN git clone https://aur.archlinux.org/docker-systemctl-replacement-git.git && \
-    cd docker-systemctl-replacement-git && \
-    makepkg -scir --nocheck --noconfirm --skipchecksums && \
-    rm -rf /home/dev/docker-systemctl-replacement-git
-
-#misc install and config
-USER root
-
-WORKDIR /root
-RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/latest/download/drush.phar && \
-    chmod +x drush.phar && \
-    mv drush.phar /usr/bin/drush && \
-    wget -O composer.phar https://getcomposer.org/download/latest-stable/composer.phar && \
-    chmod +x composer.phar && \
-    mv composer.phar /usr/bin/composer && \
-    gem install compass --norc && \
-    pip install --break-system-packages pyyml munch setuptools && \
-    chown root:root /bin/systemctl.py && \
-    chmod a+x /bin/systemctl.py && \
-    mv /bin/systemctl /bin/systemctl_original && \
-    cp /bin/systemctl.py /bin/systemctl && \
-    ssh-keygen -A && \
-    systemctl enable php73-fpm && \
-    systemctl enable sshd && \
-    systemctl enable cronie && \
-    systemctl enable exim && \
-    sed -i "s/;process_control_timeout = 0/process_control_timeout = 10s/g"  /etc/php73/php-fpm.conf && \
-    sed -i "s/.*open_basedir =.*/open_basedir =/g" /etc/php73/php.ini && \
-    sed -i "s/#PubkeyAuthentication yes/PubkeyAuthentication yes/g" /etc/ssh/sshd_config && \
-    sed -i "s/#StrictModes yes/StrictModes no/g" /etc/ssh/sshd_config && \
-    echo ". /etc/profile.d/bashrc.sh" >> /etc/bash.bashrc && \
-    echo 'dev ALL=(ALL) NOPASSWD: /bin/crontab' | EDITOR='tee -a' visudo && \
-    sed -i 's/test -r /test -e /g' /etc/profile && \
-    mkdir -p /webcrate && \
-    mkdir -p /webcrate-bin && \
-    ln -s /bin/php73 /webcrate-bin/php && \
-    chmod o-rwx /webcrate
-
-#install ioncucbe
+#install ioncube
 RUN wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz && \
     tar xzf ioncube_loaders_lin_x86-64.tar.gz && \
-    cp ./ioncube/ioncube_loader_lin_7.3.so /usr/lib/php73/modules/ioncube_loader_lin.so && \
+    cp ./ioncube/ioncube_loader_lin_7.3.so $(php-config --extension-dir)/ioncube_loader_lin.so && \
     rm -rf /root/ioncube && \
     rm -f /root/ioncube_loaders_lin_x86-64.tar.gz
 
+RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/latest/download/drush.phar && \
+    chmod +x drush.phar && \
+    mv drush.phar /usr/bin/drush && \
+    ssh-keygen -A
+
+#install compass
+RUN gem install compass
+
+#install oh-my-bash
+RUN apt-get --assume-yes install gawk
+RUN wget https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh && \
+    chmod u+x install.sh && \
+    ./install.sh --prefix=/usr
+
+#install ble.sh
+RUN git clone --recursive --depth 1 --shallow-submodules https://github.com/akinomyoga/ble.sh.git && \
+    make -C ble.sh install PREFIX=/usr
+
+#install symfony-cli
+RUN wget https://get.symfony.com/cli/installer -O - | bash && \
+    mv /root/.symfony5/bin/symfony /usr/local/bin/symfony
+
+#misc config
+RUN sed -i "s/;process_control_timeout = 0/process_control_timeout = 10s/g" /etc/php/7.3/fpm/php-fpm.conf && \
+    sed -i "s/#PubkeyAuthentication yes/PubkeyAuthentication yes/g" /etc/ssh/sshd_config && \
+    sed -i "s/#PasswordAuthentication yes/PasswordAuthentication yes/g" /etc/ssh/sshd_config && \
+    sed -i "s/#StrictModes yes/StrictModes no/g" /etc/ssh/sshd_config && \
+    sed -i "s/PrintMotd no/PrintMotd yes/g" /etc/ssh/sshd_config && \
+    cat > /etc/motd && \
+    rm /etc/update-motd.d/10-uname && \
+    rm /etc/php/7.3/fpm/pool.d/www.conf && \
+    mkdir -p /webcrate && \
+    chmod o-rwx /webcrate
+
+RUN apt-get --assume-yes install php7.3-ctype
+
 WORKDIR /
-#copy scripts
-COPY ["bashrc.sh", "/etc/profile.d/"]
-COPY ["versions.py", "parse-projects.py", "sync_ssh_keys.sh", "log.py", "/webcrate/"]
+COPY ["versions.py", "parse-projects.py", "sync_ssh_keys.sh", "log.py", "supervisord.conf.template", "supervisord-user.conf.template", "/webcrate/"]
+COPY bashrc.sh /etc/bashrc.sh
 COPY ["entrypoint.sh", "/"]
 RUN chmod u+x /webcrate/sync_ssh_keys.sh && \
-    rm /etc/mail/exim.conf && \
     chmod u+x /webcrate/parse-projects.py && \
     chmod u+x /webcrate/versions.py && \
-    chmod u+s /bin/ping && \
     chmod u+x /entrypoint.sh
 CMD ["/entrypoint.sh"]

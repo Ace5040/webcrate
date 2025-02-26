@@ -1,21 +1,5 @@
 #!/bin/bash
 
-if [[ -f /webcrate/ssh_keys/ssh_host_dsa_key ]];
-  then
-    rm /etc/ssh/ssh_host_dsa_key
-    cp /webcrate/ssh_keys/ssh_host_dsa_key /etc/ssh/ssh_host_dsa_key
-  else
-    cp /etc/ssh/ssh_host_dsa_key /webcrate/ssh_keys/ssh_host_dsa_key
-fi
-
-if [[ -f /webcrate/ssh_keys/ssh_host_dsa_key.pub ]];
-  then
-    rm /etc/ssh/ssh_host_dsa_key.pub
-    cp /webcrate/ssh_keys/ssh_host_dsa_key.pub /etc/ssh/ssh_host_dsa_key.pub
-  else
-    cp /etc/ssh/ssh_host_dsa_key.pub /webcrate/ssh_keys/ssh_host_dsa_key.pub
-fi
-
 if [[ -f /webcrate/ssh_keys/ssh_host_ecdsa_key ]];
   then
     rm /etc/ssh/ssh_host_ecdsa_key

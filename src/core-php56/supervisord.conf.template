@@ -1,0 +1,22 @@
+[supervisord]
+logfile=/home/%USERNAME%/log/supervisor.log
+nodaemon=true
+user=root
+
+[program:sshd]
+command=/usr/sbin/sshd -D
+
+[program:php-fpm]
+autorestart=true
+user=%USERNAME%
+command=/usr/sbin/php-fpm5.6 -F
+
+[program:cron]
+command=/usr/sbin/cron -f
+
+[program:exim]
+command=/usr/sbin/exim -bdf -q30m
+
+[program:supervisor-user]
+user=%USERNAME%
+command=/usr/bin/supervisord --config /etc/supervisord-user.conf

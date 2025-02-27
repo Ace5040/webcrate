@@ -95,7 +95,7 @@ function Build() {
 		docker build -t $IMAGE_CORE_GUNICORN --build-arg IMAGE_LINUX_BASE=$IMAGE_LINUX_BASE ./src/core-gunicorn$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "admin" ]; then
-		docker build -t $IMAGE_ADMIN --build-arg IMAGE_LINUX_BASE=$IMAGE_LINUX_BASE ./src/admin$BUILD_OPTIONS
+		docker build -t $IMAGE_ADMIN --build-arg IMAGE=$IMAGE_DEBIAN_SLIM ./src/admin$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "ftp" ]; then
 		docker build -t $IMAGE_FTP --build-arg IMAGE_LINUX_BASE=$IMAGE_LINUX_BASE ./src/ftp$BUILD_OPTIONS

@@ -12,4 +12,5 @@ fi
 
 /webcrate/init-db.py
 
-exec systemctl init
+cp /webcrate/supervisord.conf.template /etc/supervisord.conf
+/usr/bin/supervisord -c /etc/supervisord.conf

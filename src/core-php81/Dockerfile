@@ -82,3 +82,4 @@ RUN chmod u+x /webcrate/sync_ssh_keys.sh && \
     chmod u+x /webcrate/versions.py && \
     chmod u+x /entrypoint.sh
 CMD ["/entrypoint.sh"]
+EXPOSE 22 9000

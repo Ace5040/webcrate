@@ -1,42 +1,29 @@
-ARG IMAGE
+ARG IMAGE=debian:trixie-slim
 FROM $IMAGE
 
-#install and add user
-RUN pacman --needed --noconfirm -Syu; \
-    pacman --needed --noconfirm -S base-devel git unzip python python-pip docker; \
-    yes | pacman -Scc; \
-    useradd -m -s /bin/bash dev; \
-    usermod -p "dev" dev; \
-    echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo; \
-    sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j12\"/g" /etc/makepkg.conf
+RUN sed -i "s/deb.debian.org/mirror.truenetwork.ru/g" /etc/apt/sources.list.d/debian.sources
+RUN apt-get update
+RUN apt-get --assume-yes install sudo git \
+    unzip wget curl supervisor \
+    python3 python3-pip python3-yaml python3-munch
 
-USER dev
-WORKDIR /home/dev
+RUN echo deb https://repos.influxdata.com/debian bookworm stable > /etc/apt/sources.list.d/influxdata.list
 
-#install telegraf-bin
-RUN git clone https://aur.archlinux.org/telegraf-bin.git && \
-    cd telegraf-bin && \
-    makepkg -scir --nocheck --noconfirm --skipchecksums && \
-    rm -rf /home/dev/telegraf-bin
+RUN curl -fsSL https://repos.influxdata.com/influxdata-archive_compat.key|sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/influxdata.gpg
 
-#install docker-systemctl-replacement-git
-RUN git clone https://aur.archlinux.org/docker-systemctl-replacement-git.git; \
-    cd docker-systemctl-replacement-git; \
-    makepkg -scir --nocheck --noconfirm --skipchecksums; \
-    rm -rf /home/dev/docker-systemctl-replacement-git.git
+RUN apt-get update && \
+    apt-get --assume-yes install telegraf
 
-USER root
-RUN systemctl enable telegraf;
+RUN usermod -s /bin/bash root
+
+RUN adduser --no-create-home --disabled-login -shell /bin/bash dev && \
+    echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo
+
 RUN rm -f /etc/telegraf/telegraf.conf;
-RUN rm -f /etc/telegraf/telegraf.conf;
-RUN sed -i "s/User=telegraf/User=root/g" /usr/lib/systemd/system/telegraf.service
+# RUN sed -i "s/User=telegraf/User=root/g" /usr/lib/systemd/system/telegraf.service
 
-RUN chown root:root /bin/systemctl.py; \
-    chmod a+x /bin/systemctl.py; \
-    mv /bin/systemctl /bin/systemctl_original; \
-    cp /bin/systemctl.py /bin/systemctl
 WORKDIR /
 COPY ["telegraf.conf", "/etc/telegraf/"]
-COPY ["entrypoint.sh", "/"]
+COPY ["entrypoint.sh", "supervisord.conf.template", "/"]
 RUN chmod u+x /entrypoint.sh
 CMD ["/entrypoint.sh"]

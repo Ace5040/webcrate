@@ -101,7 +101,7 @@ function Build() {
 		docker build -t $IMAGE_FTP --build-arg IMAGE=$IMAGE_LINUX_BASE ./src/ftp$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "stats" ]; then
-		docker build -t $IMAGE_STATS --build-arg IMAGE=$IMAGE_LINUX_BASE ./src/stats$BUILD_OPTIONS
+		docker build -t $IMAGE_STATS --build-arg IMAGE=$IMAGE_DEBIAN_SLIM ./src/stats$BUILD_OPTIONS
 	fi
 
 }

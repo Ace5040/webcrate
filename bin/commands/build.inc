@@ -65,16 +65,16 @@ function Build() {
 	fi
 
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "nginx" ]; then
-		docker build -t $IMAGE_NGINX --build-arg IMAGE_NGINX_BASE=$IMAGE_NGINX_BASE ./src/nginx$BUILD_OPTIONS
+		docker build -t $IMAGE_NGINX --build-arg IMAGE=$IMAGE_NGINX_BASE ./src/nginx$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "dnsmasq" ]; then
-		docker build -t $IMAGE_DNSMASQ --build-arg IMAGE_ALPINE_BASE=$IMAGE_ALPINE_BASE ./src/dnsmasq$BUILD_OPTIONS
+		docker build -t $IMAGE_DNSMASQ --build-arg IMAGE=$IMAGE_ALPINE_BASE ./src/dnsmasq$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "utils-pwgen" ]; then
-		docker build -t $IMAGE_UTILS_PWGEN --build-arg IMAGE_ALPINE_BASE=$IMAGE_ALPINE_BASE ./src/utils-pwgen$BUILD_OPTIONS
+		docker build -t $IMAGE_UTILS_PWGEN --build-arg IMAGE=$IMAGE_ALPINE_BASE ./src/utils-pwgen$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "utils-docker" ]; then
-		docker build -t $IMAGE_UTILS_DOCKER --build-arg IMAGE_ALPINE_BASE=$IMAGE_ALPINE_BASE ./src/utils-docker$BUILD_OPTIONS
+		docker build -t $IMAGE_UTILS_DOCKER --build-arg IMAGE=$IMAGE_ALPINE_BASE ./src/utils-docker$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core" ] || [ "$BUILDTARGET" = "core-php83" ]; then
 		docker build -t $IMAGE_CORE_PHP83 --build-arg IMAGE=$IMAGE_DEBIAN_SLIM ./src/core-php83$BUILD_OPTIONS
@@ -92,16 +92,16 @@ function Build() {
 		docker build -t $IMAGE_CORE_PHP56 --build-arg IMAGE=$IMAGE_DEBIAN_SLIM ./src/core-php56$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core" ] || [ "$BUILDTARGET" = "core-gunicorn" ]; then
-		docker build -t $IMAGE_CORE_GUNICORN --build-arg IMAGE_LINUX_BASE=$IMAGE_LINUX_BASE ./src/core-gunicorn$BUILD_OPTIONS
+		docker build -t $IMAGE_CORE_GUNICORN --build-arg IMAGE=$IMAGE_LINUX_BASE ./src/core-gunicorn$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "admin" ]; then
 		docker build -t $IMAGE_ADMIN --build-arg IMAGE=$IMAGE_DEBIAN_SLIM ./src/admin$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "ftp" ]; then
-		docker build -t $IMAGE_FTP --build-arg IMAGE_LINUX_BASE=$IMAGE_LINUX_BASE ./src/ftp$BUILD_OPTIONS
+		docker build -t $IMAGE_FTP --build-arg IMAGE=$IMAGE_LINUX_BASE ./src/ftp$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "stats" ]; then
-		docker build -t $IMAGE_STATS --build-arg IMAGE_LINUX_BASE=$IMAGE_LINUX_BASE ./src/stats$BUILD_OPTIONS
+		docker build -t $IMAGE_STATS --build-arg IMAGE=$IMAGE_LINUX_BASE ./src/stats$BUILD_OPTIONS
 	fi
 
 }

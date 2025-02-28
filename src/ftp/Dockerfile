@@ -1,5 +1,5 @@
-ARG IMAGE_LINUX_BASE
-FROM $IMAGE_LINUX_BASE
+ARG IMAGE
+FROM $IMAGE
 
 #install system utils and services
 RUN pacman --needed --noconfirm -Syu && \

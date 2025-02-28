@@ -1,5 +1,5 @@
-ARG IMAGE_LINUX_BASE
-FROM $IMAGE_LINUX_BASE
+ARG IMAGE
+FROM $IMAGE
 
 #set mirror
 RUN echo "Server = https://mirror.yandex.ru/archlinux/\$repo/os/\$arch" >> /etc/pacman.d/mirrorlist

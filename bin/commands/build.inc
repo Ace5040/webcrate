@@ -92,7 +92,7 @@ function Build() {
 		docker build -t $IMAGE_CORE_PHP56 --build-arg IMAGE=$IMAGE_DEBIAN_SLIM ./src/core-php56$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core" ] || [ "$BUILDTARGET" = "core-gunicorn" ]; then
-		docker build -t $IMAGE_CORE_GUNICORN --build-arg IMAGE=$IMAGE_LINUX_BASE ./src/core-gunicorn$BUILD_OPTIONS
+		docker build -t $IMAGE_CORE_GUNICORN --build-arg IMAGE=$IMAGE_DEBIAN_SLIM ./src/core-gunicorn$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "admin" ]; then
 		docker build -t $IMAGE_ADMIN --build-arg IMAGE=$IMAGE_DEBIAN_SLIM ./src/admin$BUILD_OPTIONS

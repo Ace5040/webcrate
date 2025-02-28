@@ -135,6 +135,8 @@ for projectname,project in projects.items():
             f.write(f'PATH=/home/{project.name}/{data_folder}/vendor/bin:$PATH\n')
             f.write(f'export COMPOSER_HOME=/home/{project.name}/.config/composer\n')
             f.write(f'export DRUSH_PHP=/webcrate-bin/php\n')
+          if project.backend == 'gunicorn':
+            f.write(f'PATH=/opt/pyenv/bin:$PATH\n')
           f.write(f'export DATA_FOLDER={data_folder}\n')
           f.close()
 

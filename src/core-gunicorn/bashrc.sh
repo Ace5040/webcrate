@@ -3,7 +3,6 @@ export EDITOR=mcedit
 export VISUAL=mcedit
 export DRUSH_LAUNCHER_FALLBACK=~/.config/composer/vendor/bin/drush
 export HOME=~
-PATH=/webcrate-bin:$PATH
 if test -e ~/config.sh; then
     source ~/config.sh
 fi
@@ -15,18 +14,23 @@ case $- in
   *i*) ;;
     *) return;;
 esac
-source /usr/share/blesh/ble.sh --noattach
+mkdir -p $HOME/.cache/blesh
+XDG_CACHE_HOME=$HOME/.cache source /usr/share/blesh/ble.sh --noattach
 export OSH=/usr/share/oh-my-bash
-OSH_THEME="powerline"
+BASH_CACHE_DIR=$HOME/.cache/bash
+if [[ ! -d $BASH_CACHE_DIR ]]; then
+	mkdir -p $BASH_CACHE_DIR
+fi
+export OSH_CACHE_DIR=$HOME/.cache/oh-my-bash
+if [[ ! -d $OSH_CACHE_DIR ]]; then
+	mkdir -p $OSH_CACHE_DIR
+fi
+OSH_THEME="powerline-multiline"
 DISABLE_AUTO_UPDATE="true"
 OMB_USE_SUDO=true
 aliases=(
   general
 )
-BASH_CACHE_DIR=$HOME/.cache/oh-my-bash
-if [[ ! -d $BASH_CACHE_DIR ]]; then
-	mkdir $BASH_CACHE_DIR
-fi
 
 source "$OSH"/oh-my-bash.sh
 
@@ -37,7 +41,8 @@ function __powerline_project_prompt {
   echo "$USER@$WEBCRATE_DOMAIN|${USER_INFO_THEME_PROMPT_COLOR}"
 }
 
-POWERLINE_PROMPT="clock project scm customcwd"
+POWERLINE_LEFT_PROMPT="scm customcwd"
+POWERLINE_RIGHT_PROMPT="project clock"
 [[ ${BLE_VERSION-} ]] && ble-attach
 ble-face syntax_error="fg=203"
 ble-face auto_complete="fg=238"
@@ -46,6 +51,8 @@ bleopt exec_errexit_mark=
 bleopt edit_marker=
 bleopt edit_marker_error=
 bleopt exec_elapsed_mark=
-pyenv init - | source
+eval "$(pyenv init --path)"
+eval "$(pyenv virtualenv-init -)"
 pyenv install -s 3.10.13
 pyenv shell 3.10.13
+pyenv global 3.10.13

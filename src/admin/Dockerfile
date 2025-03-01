@@ -1,4 +1,4 @@
-ARG IMAGE=debian:trixie-slim
+ARG IMAGE=debian:bookworm-slim
 FROM $IMAGE
 
 RUN sed -i "s/deb.debian.org/mirror.truenetwork.ru/g" /etc/apt/sources.list.d/debian.sources
@@ -7,7 +7,7 @@ RUN apt-get --assume-yes install sudo git nano exim4-base openssh-server \
     unzip mariadb-client mc iputils-ping cron wget tmux supervisor \
     curl lsb-release ca-certificates ruby ruby-dev \
     python3 python3-pip python3-yaml python3-munch libmemcached-tools python3-pypdf \
-    nginx docker npm
+    nginx wmdocker npm
 
 RUN usermod -s /bin/bash root
 
@@ -32,16 +32,6 @@ RUN pecl install timezonedb
 RUN apt-get --assume-yes install php8.1-imagick imagemagick
 RUN apt-get --assume-yes install php8.1-memcached
 RUN apt-get --assume-yes install composer
-
-#install oh-my-bash
-RUN apt-get --assume-yes install gawk
-RUN wget https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh && \
-    chmod u+x install.sh && \
-    ./install.sh --prefix=/usr
-
-#install ble.sh
-RUN git clone --recursive --depth 1 --shallow-submodules https://github.com/akinomyoga/ble.sh.git && \
-    make -C ble.sh install PREFIX=/usr
 
 #install symfony-cli
 RUN wget https://get.symfony.com/cli/installer -O - | bash && \

@@ -1,4 +1,4 @@
-ARG IMAGE=debian:trixie-slim
+ARG IMAGE=debian:bookworm-slim
 FROM $IMAGE
 
 RUN sed -i "s/deb.debian.org/mirror.truenetwork.ru/g" /etc/apt/sources.list.d/debian.sources

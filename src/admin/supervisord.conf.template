@@ -1,4 +1,6 @@
 [supervisord]
+logfile=/webcrate/log/admin.supervisor.log
+pidfile=/tmp/supervisor.pid
 nodaemon=true
 user=root
 

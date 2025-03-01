@@ -16,7 +16,7 @@ function Help() {
 	echo '              target: can be one of nginx, core, core-gunicorn, core-php83, core-php81, core-php74, core-php73, core-php56, utils-pwgen, utils-docker, admin, dnsmasq or all'
 	echo '              OPTIONS:'
 	echo '                -c, --no-cache : do not use docker build cache'
-	echo '                -u, --update-base-images : pulls fresh archlinux:base-20241027.0.273886 and $IMAGE_NGINX_BASE images before build'
+	echo '                -u, --update-base-images : pulls fresh $IMAGE_ALPINE_BASE, $IMAGE_DEBIAN_STABLE_SLIM, $IMAGE_DEBIAN_SLIM and $IMAGE_NGINX_BASE images before build'
 	echo '                -p, --progress-plain : make build progress plain'
 	echo '  push    - Push images to dockerhub. Usage webcrate push _image_'
 	echo '              _image_: can be one of nginx, core, utils-pwgen, utils-docker, admin or all'

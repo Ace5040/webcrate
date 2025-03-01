@@ -1,5 +1,5 @@
-IMAGE_LINUX_BASE=archlinux:base-20241027.0.273886
 IMAGE_ALPINE_BASE=alpine:3.17
+IMAGE_DEBIAN_STABLE_SLIM=debian:bookworm-slim
 IMAGE_DEBIAN_SLIM=debian:trixie-slim
 IMAGE_NGINX_BASE=nginx:stable
 IMAGE_CORE_PHP56=ace5040/webcrate-core-php56:latest

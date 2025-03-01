@@ -54,8 +54,9 @@ function Build() {
 	then
 		if [ "$u" = "y" ]
 		then
-			exit 2
-			docker pull archlinux:base-20241027.0.273886
+			docker pull $IMAGE_ALPINE_BASE
+			docker pull $IMAGE_DEBIAN_STABLE_SLIM
+			docker pull $IMAGE_DEBIAN_SLIM
 			docker pull $IMAGE_NGINX_BASE
 		fi
 	else
@@ -76,28 +77,28 @@ function Build() {
 		docker build -t $IMAGE_UTILS_DOCKER --build-arg IMAGE=$IMAGE_ALPINE_BASE ./src/utils-docker$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core" ] || [ "$BUILDTARGET" = "core-php83" ]; then
-		docker build -t $IMAGE_CORE_PHP83 --build-arg IMAGE=$IMAGE_DEBIAN_SLIM ./src/core-php83$BUILD_OPTIONS
+		docker build -t $IMAGE_CORE_PHP83 --build-arg IMAGE=$IMAGE_DEBIAN_STABLE_SLIM ./src/core-php83$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core" ] || [ "$BUILDTARGET" = "core-php81" ]; then
-		docker build -t $IMAGE_CORE_PHP81 --build-arg IMAGE=$IMAGE_DEBIAN_SLIM ./src/core-php81$BUILD_OPTIONS
+		docker build -t $IMAGE_CORE_PHP81 --build-arg IMAGE=$IMAGE_DEBIAN_STABLE_SLIM ./src/core-php81$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core" ] || [ "$BUILDTARGET" = "core-php74" ]; then
-		docker build -t $IMAGE_CORE_PHP74 --build-arg IMAGE=$IMAGE_DEBIAN_SLIM ./src/core-php74$BUILD_OPTIONS
+		docker build -t $IMAGE_CORE_PHP74 --build-arg IMAGE=$IMAGE_DEBIAN_STABLE_SLIM ./src/core-php74$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core" ] || [ "$BUILDTARGET" = "core-php73" ]; then
-		docker build -t $IMAGE_CORE_PHP73 --build-arg IMAGE=$IMAGE_DEBIAN_SLIM ./src/core-php73$BUILD_OPTIONS
+		docker build -t $IMAGE_CORE_PHP73 --build-arg IMAGE=$IMAGE_DEBIAN_STABLE_SLIM ./src/core-php73$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core" ] || [ "$BUILDTARGET" = "core-php56" ]; then
-		docker build -t $IMAGE_CORE_PHP56 --build-arg IMAGE=$IMAGE_DEBIAN_SLIM ./src/core-php56$BUILD_OPTIONS
+		docker build -t $IMAGE_CORE_PHP56 --build-arg IMAGE=$IMAGE_DEBIAN_STABLE_SLIM ./src/core-php56$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core" ] || [ "$BUILDTARGET" = "core-gunicorn" ]; then
 		docker build -t $IMAGE_CORE_GUNICORN --build-arg IMAGE=$IMAGE_DEBIAN_SLIM ./src/core-gunicorn$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "admin" ]; then
-		docker build -t $IMAGE_ADMIN --build-arg IMAGE=$IMAGE_DEBIAN_SLIM ./src/admin$BUILD_OPTIONS
+		docker build -t $IMAGE_ADMIN --build-arg IMAGE=$IMAGE_DEBIAN_STABLE_SLIM ./src/admin$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "stats" ]; then
-		docker build -t $IMAGE_STATS --build-arg IMAGE=$IMAGE_DEBIAN_SLIM ./src/stats$BUILD_OPTIONS
+		docker build -t $IMAGE_STATS --build-arg IMAGE=$IMAGE_DEBIAN_STABLE_SLIM ./src/stats$BUILD_OPTIONS
 	fi
 
 }

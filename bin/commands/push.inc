@@ -14,7 +14,6 @@ function Push() {
 		&& [ "$IMAGE" != "core-php56" ]\
 		&& [ "$IMAGE" != "admin" ]\
 		&& [ "$IMAGE" != "dnsmasq" ]\
-		&& [ "$IMAGE" != "ftp" ]\
 		&& [ "$IMAGE" != "stats" ];\
 	then
 		echo "Unknown image $IMAGE. Please use one of: all, nginx, utils-pwgen, utils-docker, core, core-gunicorn, core-php83, core-php81, core-php74, core-php73, core-php56, admin, stats"
@@ -54,9 +53,6 @@ function Push() {
 	fi
 	if [ "$IMAGE" = "core-php56" ]; then
 		docker push $IMAGE_CORE_PHP56
-	fi
-	if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "ftp" ]; then
-		docker push $IMAGE_FTP
 	fi
 	if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "admin" ]; then
 		docker push $IMAGE_ADMIN

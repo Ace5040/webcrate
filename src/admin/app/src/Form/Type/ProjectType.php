@@ -27,8 +27,6 @@ use App\Form\Type\NginxOptionsType;
 use App\Form\Type\NginxOptionType;
 use App\Form\Type\AuthLocationsType;
 use App\Form\Type\AuthLocationType;
-use App\Form\Type\FtpsType;
-use App\Form\Type\FtpType;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class ProjectType extends AbstractType
@@ -59,14 +57,6 @@ class ProjectType extends AbstractType
         ])
         ->add('domains', DomainsType::class, [
             'entry_type' => DomainType::class,
-            'allow_add' => true,
-            'allow_delete' => true,
-            'delete_empty' => true,
-            'constraints' => new NotBlank(),
-            'prototype' => true,
-        ])
-        ->add('ftps', FtpsType::class, [
-            'entry_type' => FtpType::class,
             'allow_add' => true,
             'allow_delete' => true,
             'delete_empty' => true,

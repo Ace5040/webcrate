@@ -227,55 +227,6 @@ fieldset .form-group {
 
 }
 
-#project_ftps {
-
-    .fields_block {
-        display: inline-block;
-        vertical-align: middle;
-        width: 54%;
-        > div {
-            display: inline-block;
-        }
-        label {
-            min-width: 85px;
-            margin-left: 10px;
-        }
-    }
-
-    div.form-group {
-        display: inline-block;
-
-        .form-control {
-            width: auto;
-        }
-
-        .nginx-option-name {
-            input {
-                margin-right: 15px;
-            }
-        }
-
-        input {
-            display: inline-block;
-            vertical-align: middle;
-            box-sizing: border-box;
-        }
-
-        &:first-child {
-            margin-left: 0;
-        }
-
-        > div {
-            display: inline-block;
-            .form-group {
-                margin-bottom: 8px;
-            }
-        }
-
-    }
-
-}
-
 #project_nginx_block {
     height: 150px;
 }

@@ -122,56 +122,6 @@
     </{{ element|default('div') }}>
 {%- endblock auth_location_password_row %}
 
-{# ftp accounts #}
-{% block ftps_row -%}
-    {%- if compound is defined and compound -%}
-        {%- set element = 'fieldset' -%}
-    {%- endif -%}
-    {%- set widget_attr = {} -%}
-    {%- if help is not empty -%}
-        {%- set widget_attr = {attr: {'aria-describedby': id ~"_help"}} -%}
-    {%- endif -%}
-    <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group')|trim})} %}{{ block('attributes') }}{% endwith %}>
-        {{- form_label(form) -}}
-        {{- form_widget(form, widget_attr) -}}
-        <div class="add-ftp-button btn btn-primary btn-sm"><i class="icon icon-plus"></i> Add Ftp Account</div>
-        {{- form_help(form) -}}
-    </{{ element|default('div') }}>
-{%- endblock ftps_row %}
-
-{% block ftp_row -%}
-    {%- set widget_attr = {} -%}
-    <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group')|trim})} %}{{ block('attributes') }}{% endwith %}>
-        <div class="handle"><i class="icon icon-move"></i></div>
-        <div class="fields_block">{{- form_widget(form, widget_attr) -}}</div>
-        <div class="remove"><i class="icon icon-cancel"></i></div>
-    </{{ element|default('div') }}>
-{%- endblock ftp_row %}
-
-{% block ftp_name_row -%}
-    {%- set widget_attr = {} -%}
-    <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group ftp-name')|trim})} %}{{ block('attributes') }}{% endwith %}>
-        {{- form_label(form) -}}
-        {{- form_widget(form, widget_attr) -}}
-    </{{ element|default('div') }}>
-{%- endblock ftp_name_row %}
-
-{% block ftp_home_row -%}
-    {%- set widget_attr = {} -%}
-    <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group ftp-home')|trim})} %}{{ block('attributes') }}{% endwith %}>
-        {{- form_label(form) -}}
-        {{- form_widget(form, widget_attr) -}}
-    </{{ element|default('div') }}>
-{%- endblock ftp_home_row %}
-
-{% block ftp_password_row -%}
-    {%- set widget_attr = {} -%}
-    <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group ftp-password')|trim})} %}{{ block('attributes') }}{% endwith %}>
-        {{- form_label(form) -}}
-        {{- form_widget(form, widget_attr) -}}
-    </{{ element|default('div') }}>
-{%- endblock ftp_password_row %}
-
 {# duplicity filters #}
 {% block duplicity_filters_row -%}
     {%- if compound is defined and compound -%}

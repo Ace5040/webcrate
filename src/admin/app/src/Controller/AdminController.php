@@ -24,7 +24,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use App\Form\Type\RedirectType;
 use App\Form\Type\ProjectType;
-use App\Entity\Ftp;
 
 class AdminController extends AbstractController
 {
@@ -120,10 +119,6 @@ class AdminController extends AbstractController
             {
                 $project = $form->getData();
                 $project->setUid($this->repository->getFirstAvailableUid());
-                $ftps = $project->getFtps();
-                foreach ( $ftps as $ftp ) {
-                    $ftp->setProject($project);
-                }
                 $this->manager->persist($project);
                 $this->manager->flush();
                 $this->updateProjectsYaml();
@@ -151,10 +146,6 @@ class AdminController extends AbstractController
             if ($form->isSubmitted() && $form->isValid())
             {
                 $project = $form->getData();
-                $ftps = $project->getFtps();
-                foreach ( $ftps as $ftp ) {
-                    $ftp->setProject($project);
-                }
                 $this->manager->persist($project);
                 $this->manager->flush();
                 $this->updateProjectsYaml();
@@ -307,7 +298,6 @@ class AdminController extends AbstractController
                 $project_obj->nginx_options = !empty($project_obj->nginx_options) ? $project_obj->nginx_options : [];
                 $project_obj->auth_locations = !empty($project_obj->auth_locations) ? $project_obj->auth_locations : [];
                 $project_obj->duplicity_filters = !empty($project_obj->duplicity_filters) ? $project_obj->duplicity_filters : [];
-                $project_obj->ftps = !empty($project_obj->ftps) ? $project_obj->ftps : [];
                 $project->setUid($project_obj->uid);
                 $project->setName($projectname);
                 $project->setVolume($project_obj->volume);
@@ -358,15 +348,6 @@ class AdminController extends AbstractController
                     ];
                 }
                 $project->setDuplicityFilters($duplicity_filters_array, true);
-                foreach ( $project_obj->ftps as $index => $ftp_data ) {
-                    $ftp = new Ftp();
-                    $ftp->setName($ftp_data['name']);
-                    $ftp->setWeight($index);
-                    $ftp->setPasswordHash($ftp_data['password']);
-                    $ftp->setHome($ftp_data['home']);
-                    $project->addFtp($ftp);
-                }
-
                 $this->manager->persist($project);
             }
         }

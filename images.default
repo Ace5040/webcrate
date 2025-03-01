@@ -8,7 +8,6 @@ IMAGE_CORE_PHP74=ace5040/webcrate-core-php74:latest
 IMAGE_CORE_PHP81=ace5040/webcrate-core-php81:latest
 IMAGE_CORE_PHP83=ace5040/webcrate-core-php83:latest
 IMAGE_CORE_GUNICORN=ace5040/webcrate-core-gunicorn:latest
-IMAGE_FTP=ace5040/webcrate-ftp:latest
 IMAGE_ADMIN=ace5040/webcrate-admin:latest
 IMAGE_UTILS_PWGEN=ace5040/webcrate-utils-pwgen:latest
 IMAGE_UTILS_DOCKER=ace5040/webcrate-utils-docker:latest

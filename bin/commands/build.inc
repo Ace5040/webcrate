@@ -14,7 +14,6 @@ function Build() {
 		&& [ "$BUILDTARGET" != "core-php56" ]\
 		&& [ "$BUILDTARGET" != "admin" ]\
 		&& [ "$BUILDTARGET" != "dnsmasq" ]\
-		&& [ "$BUILDTARGET" != "ftp" ]\
 		&& [ "$BUILDTARGET" != "stats" ]\
 	;then
 		echo "Unknown target $1. Please use one of: all, nginx, utils-pwgen, utils-docker, core, core-gunicorn, core-php83, core-php81, core-php74, core-php73, core-php56, admin, stats"
@@ -96,9 +95,6 @@ function Build() {
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "admin" ]; then
 		docker build -t $IMAGE_ADMIN --build-arg IMAGE=$IMAGE_DEBIAN_SLIM ./src/admin$BUILD_OPTIONS
-	fi
-	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "ftp" ]; then
-		docker build -t $IMAGE_FTP --build-arg IMAGE=$IMAGE_LINUX_BASE ./src/ftp$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "stats" ]; then
 		docker build -t $IMAGE_STATS --build-arg IMAGE=$IMAGE_DEBIAN_SLIM ./src/stats$BUILD_OPTIONS

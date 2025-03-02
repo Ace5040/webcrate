@@ -31,6 +31,7 @@
         <b-button v-if="row.item.active == false" variant="success" size="sm" @click="onActivate(row.item.uid)">Activate</b-button>
         <b-button v-if="row.item.active" size="sm" @click="onDeactivate(row.item.uid)">Deactivate</b-button>
         <b-button v-if="!row.item.actual" size="sm" variant="warning" @click="onApply(row.item)">Apply <b-spinner v-if="row.item.applying" small label="Applying..."></b-spinner></b-button>
+        <b-button size="sm" @click="onRestart(row.item)">Restart <b-spinner v-if="row.item.applying" small label="Applying..."></b-spinner></b-button>
       </template>
     </b-table>
     <b-overlay :show="busy" no-wrap @shown="onShown" @hidden="onHidden">
@@ -195,6 +196,23 @@ export default {
       if ( !item.applying ) {
         item.applying = true
         this.axios.get('/admin/project/' + item.uid + '/reload')
+        .then((response) => {
+            let data = response.data
+            if (data && data.result === 'ok') {
+              item.applying = false
+              this.projects = data.projects
+            }
+        })
+        .catch(() => {
+          console.log('FAILURE!!');
+        });
+      }
+    },
+
+    onRestart(item) {
+      if ( !item.applying ) {
+        item.applying = true
+        this.axios.get('/admin/project/' + item.uid + '/restart')
         .then((response) => {
             let data = response.data
             if (data && data.result === 'ok') {

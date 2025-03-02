@@ -224,6 +224,31 @@ class AdminController extends AbstractController
     }
 
     /**
+     * @Route("/admin/project/{uid}/restart", name="admin-project-restart")
+     */
+    public function projectRestart($uid)
+    {
+        $project = $this->repository->loadByUid($uid);
+        try {
+            $name = $project->getName();
+            $process = Process::fromShellCommandline("sudo /webcrate/reload.py $name");
+            $process->run();
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
+            }
+        } catch (IOExceptionInterface $exception) {
+            $debug['error'] = $exception->getMessage();
+        }
+        $list = $this->repository->getListForTable();
+        $response = new JsonResponse();
+        $response->setData([
+            'result' => 'ok',
+            'projects' => $list
+        ]);
+        return $response;
+    }
+
+    /**
      * @Route("/admin/reload-config", name="admin-reload-config")
      */
     public function projectReloadConfig()

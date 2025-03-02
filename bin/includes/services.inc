@@ -248,7 +248,7 @@ if docker container inspect webcrate-utils-docker >/dev/null 2>/dev/null; then
 	writeLog "Container webcrate-utils-docker exists"
 else
 	writeLog "Starting webcrate-utils-docker container"
-	docker run -d --env-file=$(pwd)/.env --hostname webcrate-utils-docker --name webcrate-utils-docker \
+	docker run -d --env-file=$(pwd)/.env --env-file=$(pwd)/images.default --hostname webcrate-utils-docker --name webcrate-utils-docker \
 		--network="webcrate_network" --dns=10.255.0.100 \
 		--restart="unless-stopped" \
 		-e WEBCRATE_UID=$uid \

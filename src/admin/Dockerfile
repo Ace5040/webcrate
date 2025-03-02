@@ -7,7 +7,9 @@ RUN apt-get --assume-yes install sudo git nano exim4-base openssh-server \
     unzip mariadb-client mc iputils-ping cron wget tmux supervisor \
     curl lsb-release ca-certificates ruby ruby-dev \
     python3 python3-pip python3-yaml python3-munch libmemcached-tools python3-pypdf \
-    nginx wmdocker npm
+    nginx
+
+COPY --from=docker:dind /usr/local/bin/docker /usr/local/bin/
 
 RUN usermod -s /bin/bash root
 
@@ -55,8 +57,13 @@ WORKDIR /app
 RUN rm -f composer.lock && \
     composer install --no-scripts
 WORKDIR /app/assets/admin
-RUN npm install --verbose && \
-    NODE_OPTIONS=--openssl-legacy-provider npm run build
+
+RUN wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+ENV NVM_DIR=/home/dev/.nvm
+RUN . $NVM_DIR/nvm.sh && nvm install 16 && nvm use 16
+
+RUN . $NVM_DIR/nvm.sh && npm install --verbose
+RUN . $NVM_DIR/nvm.sh && npm run build
 
 USER root
 COPY ["init-db.py", "log.py", "updateprojects.py", "updateredirects.py", "reload-redirect.py", "versions.py", "reload.py", "supervisord.conf.template", "/webcrate"]

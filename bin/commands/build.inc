@@ -6,6 +6,7 @@ function Build() {
 		&& [ "$BUILDTARGET" != "utils-pwgen" ]\
 		&& [ "$BUILDTARGET" != "utils-docker" ]\
 		&& [ "$BUILDTARGET" != "core" ]\
+		&& [ "$BUILDTARGET" != "core-nginx" ]\
 		&& [ "$BUILDTARGET" != "core-gunicorn" ]\
 		&& [ "$BUILDTARGET" != "core-php83" ]\
 		&& [ "$BUILDTARGET" != "core-php81" ]\
@@ -66,6 +67,9 @@ function Build() {
 
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "nginx" ]; then
 		docker build -t $IMAGE_NGINX --build-arg IMAGE=$IMAGE_NGINX_BASE ./src/nginx$BUILD_OPTIONS
+	fi
+	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core-nginx" ]; then
+		docker build -t $IMAGE_CORE_NGINX --build-arg IMAGE=$IMAGE_NGINX_BASE ./src/core-nginx$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "dnsmasq" ]; then
 		docker build -t $IMAGE_DNSMASQ --build-arg IMAGE=$IMAGE_ALPINE_BASE ./src/dnsmasq$BUILD_OPTIONS

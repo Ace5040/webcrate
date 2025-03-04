@@ -10,6 +10,7 @@ function Pull() {
 	docker pull $IMAGE_UTILS_PWGEN
 	docker pull $IMAGE_UTILS_DOCKER
 	docker pull $IMAGE_NGINX
+	docker pull $IMAGE_CORE_NGINX
 	docker pull $IMAGE_DNSMASQ
 	docker pull $IMAGE_STATS
 	docker pull $IMAGE_DOCTOHTML

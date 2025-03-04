@@ -23,6 +23,7 @@ WEBCRATE_SERVICE_DOCTOHTML = os.environ.get('WEBCRATE_SERVICE_DOCTOHTML', 'false
 WEBCRATE_SERVICE_STATS = os.environ.get('WEBCRATE_SERVICE_STATS', 'false') == 'true'
 WEBCRATE_LOCALDNS = os.environ.get('WEBCRATE_LOCALDNS', 'false') == 'true'
 WEBCRATE_PWD = os.environ.get('WEBCRATE_PWD', '')
+WEBCRATE_PROJECT_HOMES = os.environ.get('WEBCRATE_PROJECT_HOMES', '')
 UID_START_NUMBER = 100000
 SSH_PORT_START_NUMBER = 10000
 PROJECT_NAME = sys.argv[1]
@@ -88,6 +89,28 @@ async def initCertificates (project):
     os.system(f'rm /webcrate/nginx/ssl/{project.name}.conf')
     print(f'{project.name} - ssl.conf removed')
   return nginx_reload_needed
+
+async def startNginx (project):
+  if helpers.is_container_exists(f'webcrate-{project.name}-nginx'):
+    log.write(f'{project.name} - nginx exists')
+  else:
+    log.write(f'{project.name} - starting nginx container')
+    os.system(f'docker run -d --env-file=/webcrate-readonly/.env --hostname webcrate-{project.name}-nginx --name webcrate-{project.name}-nginx '
+      f'--network="webcrate_network_{project.name}" '
+      f'--restart="unless-stopped" '
+      f'-e WEBCRATE_UID={WEBCRATE_UID} '
+      f'-e WEBCRATE_GID={WEBCRATE_GID} '
+      f'{WEBCRATE_PROJECT_HOMES} '
+      f'-v /etc/localtime:/etc/localtime:ro '
+      f'-v {WEBCRATE_PWD}/config/nginx:/webcrate/nginx-config:ro '
+      f'-v {WEBCRATE_PWD}/var/nginx:/webcrate/nginx:ro '
+      f'-v {WEBCRATE_PWD}/var/nginx/confs:/etc/nginx/conf.d:ro '
+      f'-v {WEBCRATE_PWD}/var/letsencrypt:/webcrate/letsencrypt:ro '
+      f'-v {WEBCRATE_PWD}/var/letsencrypt-meta:/webcrate/letsencrypt-meta:ro '
+      f'-v {WEBCRATE_PWD}/var/openssl:/webcrate/openssl:ro '
+      f'-v {WEBCRATE_PWD}/var/log/nginx:/webcrate/log '
+      f'$IMAGE_CORE_NGINX > /dev/null'
+    )
 
 async def startMysql (project):
   mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password="').read().strip().split("password=")[1][1:][:-1].replace("$", "\\$")
@@ -262,6 +285,10 @@ async def asyncOps (project):
   if project.postgresql_db:
     startPostgresql5Task = asyncio.create_task(startPostgresql(project))
 
+  # START NGINX
+  startNginxTask = asyncio.create_task(startNginx(project))
+
+  await startNginxTask
   if project.mysql_db:
     await startMysqlTask
   if project.mysql5_db:
@@ -409,28 +436,38 @@ for projectname,project in projects.items():
       os.system(f'docker network connect webcrate_network_{project.name} webcrate-utils-docker')
     else:
       os.system(f'docker network connect webcrate_network_{project.name} webcrate-utils-docker-{project.name}')
+
     nginx_reload_needed = asyncio.run(asyncOps(project))
+
     if IS_RELOAD:
       os.system(f'docker network disconnect webcrate_network_{project.name} webcrate-utils-docker')
     else:
       os.system(f'docker network disconnect webcrate_network_{project.name} webcrate-utils-docker-{project.name}')
+
     # if WEBCRATE_LOCALDNS:
     if not helpers.is_network_has_connection(f'webcrate_network_{project.name}', 'webcrate-dnsmasq'):
       os.system(f'docker network connect --ip=10.{net_num}.250 webcrate_network_{project.name} webcrate-dnsmasq')
+
     if WEBCRATE_SERVICE_DOCTOHTML:
       if not helpers.is_network_has_connection(f'webcrate_network_{project.name}', 'webcrate-doctohtml'):
         os.system(f'docker network connect webcrate_network_{project.name} webcrate-doctohtml')
+
     if WEBCRATE_SERVICE_HTMLTOPDF:
       if not helpers.is_network_has_connection(f'webcrate_network_{project.name}', 'webcrate-htmltopdf'):
         os.system(f'docker network connect webcrate_network_{project.name} webcrate-htmltopdf')
+
     if not helpers.is_network_has_connection(f'webcrate_network_{project.name}', 'webcrate-nginx'):
       os.system(f'docker network connect webcrate_network_{project.name} webcrate-nginx')
+
     if not helpers.is_network_has_connection(f'webcrate_network_{project.name}', 'webcrate-phpmyadmin'):
       os.system(f'docker network connect webcrate_network_{project.name} webcrate-phpmyadmin')
+
     if not helpers.is_network_has_connection(f'webcrate_network_{project.name}', 'webcrate-mysql'):
       os.system(f'docker network connect webcrate_network_{project.name} webcrate-mysql')
+
     if not helpers.is_network_has_connection(f'webcrate_network_{project.name}', 'webcrate-mysql5'):
       os.system(f'docker network connect webcrate_network_{project.name} webcrate-mysql5')
+
     if not helpers.is_network_has_connection(f'webcrate_network_{project.name}', 'webcrate-postgres'):
       os.system(f'docker network connect webcrate_network_{project.name} webcrate-postgres')
 

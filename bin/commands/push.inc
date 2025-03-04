@@ -6,6 +6,7 @@ function Push() {
 		&& [ "$IMAGE" != "utils-pwgen" ]\
 		&& [ "$IMAGE" != "utils-docker" ]\
 		&& [ "$IMAGE" != "core" ]\
+		&& [ "$IMAGE" != "core-nginx" ]\
 		&& [ "$IMAGE" != "core-gunicorn" ]\
 		&& [ "$IMAGE" != "core-php83" ]\
 		&& [ "$IMAGE" != "core-php81" ]\
@@ -16,11 +17,14 @@ function Push() {
 		&& [ "$IMAGE" != "dnsmasq" ]\
 		&& [ "$IMAGE" != "stats" ];\
 	then
-		echo "Unknown image $IMAGE. Please use one of: all, nginx, utils-pwgen, utils-docker, core, core-gunicorn, core-php83, core-php81, core-php74, core-php73, core-php56, admin, stats"
+		echo "Unknown image $IMAGE. Please use one of: all, nginx, core-nginx, utils-pwgen, utils-docker, core, core-gunicorn, core-php83, core-php81, core-php74, core-php73, core-php56, admin, stats"
 		exit 1
 	fi
 	if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "nginx" ]; then
 		docker push $IMAGE_NGINX
+	fi
+	if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "core-nginx" ]; then
+		docker push $IMAGE_CORE_NGINX
 	fi
 	if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "utils-pwgen" ]; then
 		docker push $IMAGE_UTILS_PWGEN

@@ -13,7 +13,7 @@ function Help() {
 	echo '  log     - Print all docker logs'
 	echo '  backup  - Start backup process manually'
 	echo '  build   - Build images from source. Usage webcrate build [OPTIONS] target'
-	echo '              target: can be one of nginx, core, core-gunicorn, core-php83, core-php81, core-php74, core-php73, core-php56, utils-pwgen, utils-docker, admin, dnsmasq or all'
+	echo '              target: can be one of nginx, core, core-nginx, core-gunicorn, core-php83, core-php81, core-php74, core-php73, core-php56, utils-pwgen, utils-docker, admin, dnsmasq or all'
 	echo '              OPTIONS:'
 	echo '                -c, --no-cache : do not use docker build cache'
 	echo '                -u, --update-base-images : pulls fresh $IMAGE_ALPINE_BASE, $IMAGE_DEBIAN_STABLE_SLIM, $IMAGE_DEBIAN_SLIM and $IMAGE_NGINX_BASE images before build'

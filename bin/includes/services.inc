@@ -2,19 +2,6 @@ if docker container inspect webcrate-nginx >/dev/null 2> /dev/null; then
 	writeLog "Container webcrate-nginx exists"
 else
 	writeLog "Starting nginx container"
-	PROJECTS_HOMES=""
-	for SITES_PATH in ${WEBCRATE_PROJECTS_FOLDERS[@]}
-	do
-		if [[ $SITES_PATH == /* ]]; then
-			SITES_ABSOLUTE_PATH=$SITES_PATH;
-		else
-			SITES_ABSOLUTE_PATH=$(pwd)/$SITES_PATH;
-		fi
-		for dir in $(find $SITES_ABSOLUTE_PATH -mindepth 1 -maxdepth 1 -type d); do
-			project_name=`basename $dir`
-			PROJECTS_HOMES="$PROJECTS_HOMES-v $SITES_ABSOLUTE_PATH/$project_name:/home/$project_name "
-		done
-	done
 	docker run -d --env-file=$(pwd)/.env --hostname webcrate-nginx --name webcrate-nginx \
 		--network="webcrate_network" \
 		-p "${WEBCRATE_APP_HTTP_PORT}:1080" \
@@ -26,7 +13,7 @@ else
 		-v /etc/localtime:/etc/localtime:ro \
 		-v $(pwd)/config/nginx:/webcrate/nginx-config:ro \
 		-v $(pwd)/var/nginx:/webcrate/nginx:ro \
-		-v $(pwd)/var/nginx/confs:/etc/nginx/conf.d:ro \
+		-v $(pwd)/var/nginx/core-confs:/etc/nginx/conf.d:ro \
 		-v $(pwd)/var/letsencrypt:/webcrate/letsencrypt:ro \
 		-v $(pwd)/var/letsencrypt-meta:/webcrate/letsencrypt-meta:ro \
 		-v $(pwd)/var/openssl:/webcrate/openssl:ro \

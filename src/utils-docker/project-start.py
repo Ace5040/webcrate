@@ -100,7 +100,7 @@ async def startNginx (project):
       f'--restart="unless-stopped" '
       f'-e WEBCRATE_UID={WEBCRATE_UID} '
       f'-e WEBCRATE_GID={WEBCRATE_GID} '
-      f'{WEBCRATE_PROJECT_HOMES} '
+      f'-v {SITES_ABSOLUTE_PATH}/{project.name}:/home/{project.name} '
       f'-v /etc/localtime:/etc/localtime:ro '
       f'-v {WEBCRATE_PWD}/var/nginx:/webcrate/nginx:ro '
       f'-v {WEBCRATE_PWD}/var/nginx/confs/{project.name}.conf:/etc/nginx/conf.d/{project.name}.conf:ro '

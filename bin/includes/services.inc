@@ -9,7 +9,6 @@ else
 		--restart="unless-stopped" \
 		-e WEBCRATE_UID=$uid \
 		-e WEBCRATE_GID=$gid \
-		$PROJECTS_HOMES \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v $(pwd)/config/nginx:/webcrate/nginx-config:ro \
 		-v $(pwd)/var/nginx:/webcrate/nginx:ro \

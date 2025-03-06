@@ -67,8 +67,8 @@ async def initCertificates (project):
       os.system(f'openssl req -new -sha256 -key /webcrate/openssl/{project.name}/privkey.pem -out /webcrate/openssl/{project.name}/fullchain.csr -config /webcrate/openssl/{project.name}/openssl.cnf')
       os.system(f'openssl x509 -req -extensions SAN -extfile /webcrate/openssl/{project.name}/openssl.cnf -in /webcrate/openssl/{project.name}/fullchain.csr -CA /webcrate/secrets/rootCA.crt -CAkey /webcrate/secrets/rootCA.key -CAcreateserial -out /webcrate/openssl/{project.name}/fullchain.pem -days 5000 -sha256')
       os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/openssl/{project.name}')
-      nginx_reload_needed = True
       print(f'{project.name} - openssl certificate generated')
+      nginx_reload_needed = True
 
   if project.https == 'openssl' or project.https == 'letsencrypt':
     if not os.path.exists(f'/webcrate/nginx/ssl/{project.name}.conf'):
@@ -102,12 +102,8 @@ async def startNginx (project):
       f'-e WEBCRATE_GID={WEBCRATE_GID} '
       f'{WEBCRATE_PROJECT_HOMES} '
       f'-v /etc/localtime:/etc/localtime:ro '
-      f'-v {WEBCRATE_PWD}/config/nginx:/webcrate/nginx-config:ro '
       f'-v {WEBCRATE_PWD}/var/nginx:/webcrate/nginx:ro '
-      f'-v {WEBCRATE_PWD}/var/nginx/confs:/etc/nginx/conf.d:ro '
-      f'-v {WEBCRATE_PWD}/var/letsencrypt:/webcrate/letsencrypt:ro '
-      f'-v {WEBCRATE_PWD}/var/letsencrypt-meta:/webcrate/letsencrypt-meta:ro '
-      f'-v {WEBCRATE_PWD}/var/openssl:/webcrate/openssl:ro '
+      f'-v {WEBCRATE_PWD}/var/nginx/confs/{project.name}.conf:/etc/nginx/conf.d/{project.name}.conf:ro '
       f'-v {WEBCRATE_PWD}/var/log/nginx:/webcrate/log '
       f'$IMAGE_CORE_NGINX > /dev/null'
     )
@@ -312,7 +308,6 @@ for projectname,project in projects.items():
 
     volume_path = volumes[project.volume]
     SITES_ABSOLUTE_PATH = volume_path if volume_path[0] == '/' else f'{WEBCRATE_PWD}/{volume_path}'
-
 
     # CREATE NETWORK
     net_num = project.uid - UID_START_NUMBER

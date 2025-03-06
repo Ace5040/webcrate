@@ -165,7 +165,18 @@ class AdminController extends AbstractController
      */
     public function projectDelete($uid)
     {
+
         $project = $this->repository->loadByUid($uid);
+        $name = $project->getName();
+        try {
+            $process = Process::fromShellCommandline("sudo /webcrate/delete.py $name");
+            $process->run();
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
+            }
+        } catch (IOExceptionInterface $exception) {
+            $debug['error'] = $exception->getMessage();
+        }
         $this->manager->remove($project);
         $this->manager->flush();
         $list = $this->repository->getListForTable();

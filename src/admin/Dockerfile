@@ -47,6 +47,7 @@ RUN echo 'dev ALL=(ALL) NOPASSWD: /webcrate/versions.py' | EDITOR='tee -a' visud
     echo 'dev ALL=(ALL) NOPASSWD: /webcrate/updateredirects.py' | EDITOR='tee -a' visudo && \
     echo 'dev ALL=(ALL) NOPASSWD: /webcrate/reload-redirect.py' | EDITOR='tee -a' visudo && \
     echo 'dev ALL=(ALL) NOPASSWD: /webcrate/reload.py' | EDITOR='tee -a' visudo && \
+    echo 'dev ALL=(ALL) NOPASSWD: /webcrate/delete.py' | EDITOR='tee -a' visudo && \
     rm /etc/php/8.1/fpm/pool.d/www.conf
 COPY app /app
 RUN mkdir /webcrate && \
@@ -66,7 +67,7 @@ RUN . $NVM_DIR/nvm.sh && npm install --verbose
 RUN . $NVM_DIR/nvm.sh && npm run build
 
 USER root
-COPY ["init-db.py", "log.py", "updateprojects.py", "updateredirects.py", "reload-redirect.py", "versions.py", "reload.py", "supervisord.conf.template", "/webcrate"]
+COPY ["init-db.py", "log.py", "updateprojects.py", "updateredirects.py", "reload-redirect.py", "versions.py", "delete.py", "reload.py", "supervisord.conf.template", "/webcrate"]
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY entrypoint.sh /entrypoint.sh
 CMD ["/entrypoint.sh"]
@@ -76,6 +77,7 @@ RUN chmod u+x /webcrate/init-db.py && \
     chmod a+rxs /webcrate/updateprojects.py && \
     chmod a+rxs /webcrate/updateredirects.py && \
     chmod a+rxs /webcrate/reload.py && \
+    chmod a+rxs /webcrate/delete.py && \
     chmod a+rxs /webcrate/reload-redirect.py && \
     chmod u+x /entrypoint.sh
 EXPOSE 80

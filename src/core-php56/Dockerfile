@@ -1,128 +1,87 @@
-ARG IMAGE_LINUX_BASE
-FROM $IMAGE_LINUX_BASE
+ARG IMAGE=debian:bookworm-slim
+FROM $IMAGE
 
-#set mirror
-RUN echo "Server = https://mirror.yandex.ru/archlinux/\$repo/os/\$arch" >> /etc/pacman.d/mirrorlist
+RUN sed -i "s/deb.debian.org/mirror.truenetwork.ru/g" /etc/apt/sources.list.d/debian.sources
+RUN apt-get update
+RUN apt-get --assume-yes install sudo git nano exim4-base openssh-server \
+    unzip mariadb-client mc iputils-ping cron wget tmux supervisor \
+    curl lsb-release ca-certificates ruby ruby-dev \
+    python3 python3-pip python3-yaml python3-munch libmemcached-tools python3-pypdf
 
-#php repo
-RUN sed -Ei "s/default mirrors./default mirrors.\n\n[home_el_archphp_Arch]\nServer = https:\/\/download.opensuse.org\/repositories\/home:\/el:\/archphp\/Arch\/\$arch/g" /etc/pacman.conf && \
-    key=$(curl -fsSL https://download.opensuse.org/repositories/home:el:archphp/Arch/$(uname -m)/home_el_archphp_Arch.key) && \
-    fingerprint=$(gpg --quiet --with-colons --import-options show-only --import --fingerprint <<< "${key}" | awk -F: '$1 == "fpr" { print $10 }') && \
-    pacman-key --init && \
-    pacman-key --add - <<< "${key}" && \
-    pacman-key --lsign-key "${fingerprint}"
+RUN usermod -s /bin/bash root
 
-#install system utils and services
-RUN pacman --needed --noconfirm -Syu && \
-    pacman --needed --noconfirm -S sudo git nano exim openssh base-devel unzip npm mc iputils cronie inetutils wget tmux ruby python-pip fish libmemcached-awesome && \
-    yes | pacman -Scc && \
-    useradd -m -s /bin/bash dev && \
-    usermod -p "dev" dev && \
-    echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo && \
-    sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j12\"/g" /etc/makepkg.conf
-
-USER dev
-WORKDIR /home/dev
-
-#install icu74
-RUN git clone https://aur.archlinux.org/icu74.git && \
-    cd icu74 && \
-    makepkg -scir --nocheck --noconfirm --skipchecksums && \
-    rm -rf /home/dev/icu74
+RUN adduser --no-create-home --disabled-login -shell /bin/bash dev && \
+    echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo
 
 USER root
 WORKDIR /root
-
-#install libvpx
-RUN pacman --needed --noconfirm -S libvpx && \
-    ln /usr/lib/libvpx.so /usr/lib/libvpx.so.8
 
 #install php56
-RUN pacman --needed --noconfirm -S php56 php56-fileinfo php56-ctype php56-json php56-pecl php56-pear php56-zip php56-xmlreader php56-xmlwriter php56-mbstring php56-xml php56-fpm php56-intl php56-sqlite php56-gd php56-xsl php56-simplexml php56-phar php56-tidy php56-cli php56-tokenizer php56-curl php56-opcache php56-iconv php56-mysql php56-pdo php56-soap php56-imagick
+RUN curl -sSLo /tmp/debsuryorg-archive-keyring.deb https://packages.sury.su/debsuryorg-archive-keyring.deb && \
+    dpkg -i /tmp/debsuryorg-archive-keyring.deb && \
+    sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.su/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' && \
+    apt-get update
+RUN apt-get --assume-yes install php5.6 php5.6-zip php5.6-xml php5.6-mbstring php5.6-fpm \
+    php5.6-intl php5.6-gd php5.6-xsl php5.6-tidy php5.6-curl php5.6-opcache php5.6-soap \
+    php5.6-sqlite3 php5.6-mysql \
+    php-pear php5.6-dev
 
-RUN pecl56 install timezonedb-2021.5 && \
-    echo extension=timezonedb.so > /etc/php56/conf.d/10-timezonedb.ini
+RUN pecl channel-update pecl.php.net
+RUN pecl install timezonedb
+RUN apt-get --assume-yes install php5.6-imagick imagemagick
+RUN apt-get --assume-yes install php5.6-memcached
+RUN apt-get --assume-yes install composer
 
-# #install mysql5 compatible mariadb-clients
-RUN pacman --needed --noconfirm -U https://archive.archlinux.org/packages/m/mariadb-libs/mariadb-libs-10.10.3-1-x86_64.pkg.tar.zst https://archive.archlinux.org/packages/m/mariadb-clients/mariadb-clients-10.10.3-1-x86_64.pkg.tar.zst
-
-USER dev
-WORKDIR /home/dev
-
-#install oh-my-bash
-RUN git clone https://aur.archlinux.org/oh-my-bash-git.git && \
-    cd oh-my-bash-git && \
-    makepkg -scir --nocheck --noconfirm --skipchecksums && \
-    rm -rf /home/dev/oh-my-bash-git
-
-#install blesh-git
-RUN git clone https://aur.archlinux.org/blesh-git.git && \
-    cd blesh-git && \
-    makepkg -scir --nocheck --noconfirm --skipchecksums && \
-    rm -rf /home/dev/blesh-git
-
-#install symfony-cli-bin
-RUN git clone https://aur.archlinux.org/symfony-cli-bin.git && \
-    cd symfony-cli-bin && \
-    makepkg -scir --nocheck --noconfirm --skipchecksums && \
-    rm -rf /home/dev/symfony-cli-bin
-
-#install docker-systemctl-replacement-git
-RUN git clone https://aur.archlinux.org/docker-systemctl-replacement-git.git && \
-    cd docker-systemctl-replacement-git && \
-    makepkg -scir --nocheck --noconfirm --skipchecksums && \
-    rm -rf /home/dev/docker-systemctl-replacement-git
-
-#misc install and config
-USER root
-
-WORKDIR /root
-RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/download/0.8.0/drush.phar && \
-    chmod +x drush.phar && \
-    mv drush.phar /usr/bin/drush && \
-    wget -O composer.phar https://getcomposer.org/download/latest-2.2.x/composer.phar && \
-    chmod +x composer.phar && \
-    mv composer.phar /usr/bin/composer && \
-    gem install compass --norc && \
-    pip install --break-system-packages pyyml munch setuptools && \
-    chown root:root /bin/systemctl.py && \
-    chmod a+x /bin/systemctl.py && \
-    mv /bin/systemctl /bin/systemctl_original && \
-    cp /bin/systemctl.py /bin/systemctl && \
-    ssh-keygen -A && \
-    systemctl enable php56-fpm && \
-    systemctl enable sshd && \
-    systemctl enable cronie && \
-    systemctl enable exim && \
-    printf "\ninclude=/etc/php56/php-fpm.d/*.conf" >> /etc/php56/php-fpm.conf && \
-    sed -i "s/;process_control_timeout = 0/process_control_timeout = 10s/g"  /etc/php56/php-fpm.conf && \
-    sed -i "s/.*open_basedir =.*/open_basedir =/g" /etc/php56/php.ini && \
-    sed -i "s/#PubkeyAuthentication yes/PubkeyAuthentication yes/g" /etc/ssh/sshd_config && \
-    sed -i "s/#StrictModes yes/StrictModes no/g" /etc/ssh/sshd_config && \
-    echo ". /etc/profile.d/bashrc.sh" >> /etc/bash.bashrc && \
-    echo 'dev ALL=(ALL) NOPASSWD: /bin/crontab' | EDITOR='tee -a' visudo && \
-    sed -i 's/test -r /test -e /g' /etc/profile && \
-    mkdir -p /webcrate && \
-    mkdir -p /webcrate-bin && \
-    ln -s /bin/php56 /webcrate-bin/php && \
-    chmod o-rwx /webcrate
-
-#install ioncucbe
+#install ioncube
 RUN wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz && \
     tar xzf ioncube_loaders_lin_x86-64.tar.gz && \
-    cp ./ioncube/ioncube_loader_lin_5.6.so /usr/lib/php56/modules/ioncube_loader_lin.so && \
+    cp ./ioncube/ioncube_loader_lin_5.6.so $(php-config --extension-dir)/ioncube_loader_lin.so && \
     rm -rf /root/ioncube && \
     rm -f /root/ioncube_loaders_lin_x86-64.tar.gz
 
+RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/latest/download/drush.phar && \
+    chmod +x drush.phar && \
+    mv drush.phar /usr/bin/drush && \
+    ssh-keygen -A
+
+#install compass
+RUN gem install compass
+
+#install oh-my-bash
+RUN apt-get --assume-yes install gawk
+RUN wget https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh && \
+    chmod u+x install.sh && \
+    ./install.sh --prefix=/usr
+
+#install ble.sh
+RUN git clone --recursive --depth 1 --shallow-submodules https://github.com/akinomyoga/ble.sh.git && \
+    make -C ble.sh install PREFIX=/usr
+
+#install symfony-cli
+RUN wget https://get.symfony.com/cli/installer -O - | bash && \
+    mv /root/.symfony5/bin/symfony /usr/local/bin/symfony
+
+#misc config
+RUN sed -i "s/;process_control_timeout = 0/process_control_timeout = 10s/g" /etc/php/5.6/fpm/php-fpm.conf && \
+    sed -i "s/#PubkeyAuthentication yes/PubkeyAuthentication yes/g" /etc/ssh/sshd_config && \
+    sed -i "s/#PasswordAuthentication yes/PasswordAuthentication yes/g" /etc/ssh/sshd_config && \
+    sed -i "s/#StrictModes yes/StrictModes no/g" /etc/ssh/sshd_config && \
+    sed -i "s/PrintMotd no/PrintMotd yes/g" /etc/ssh/sshd_config && \
+    cat > /etc/motd && \
+    rm /etc/update-motd.d/10-uname && \
+    rm /etc/php/5.6/fpm/pool.d/www.conf && \
+    mkdir -p /webcrate && \
+    chmod o-rwx /webcrate
+
+RUN apt-get --assume-yes install php5.6-ctype
+
 WORKDIR /
-#copy scripts
-COPY ["bashrc.sh", "/etc/profile.d/"]
-COPY ["versions.py", "parse-projects.py", "sync_ssh_keys.sh", "log.py", "/webcrate/"]
+COPY ["versions.py", "parse-projects.py", "sync_ssh_keys.sh", "log.py", "supervisord.conf.template", "supervisord-user.conf.template", "/webcrate/"]
+COPY bashrc.sh /etc/bashrc.sh
 COPY ["entrypoint.sh", "/"]
 RUN chmod u+x /webcrate/sync_ssh_keys.sh && \
-    rm /etc/mail/exim.conf && \
     chmod u+x /webcrate/parse-projects.py && \
     chmod u+x /webcrate/versions.py && \
-    chmod u+s /bin/ping && \
     chmod u+x /entrypoint.sh
 CMD ["/entrypoint.sh"]
+EXPOSE 22 9000

@@ -1,5 +1,5 @@
-ARG IMAGE_ALPINE_BASE
-FROM $IMAGE_ALPINE_BASE
+ARG IMAGE
+FROM $IMAGE
 RUN apk update
 RUN apk add --no-cache dnsmasq-dnssec
 RUN sed -i "s/local-service/#local-service/g" /etc/dnsmasq.conf

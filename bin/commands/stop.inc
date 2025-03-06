@@ -1,14 +1,15 @@
 function Stop() {
-
 	LONGOPTS=service
 	OPTIONS=s:
 	PARSED=$(getopt --options=$OPTIONS --longoptions=$LONGOPTS --name "$0" -- "$@") || exit 2
-
 	if [ $# -eq 1 ]
 	then
 		if [[ ${ALLOWED_SERVICES[@]} =~ $1 ]]
 		then
 			echo "Stopping $1"
+			docker stop webcrate-$1 > /dev/null
+			docker container rm webcrate-$1 > /dev/null
+			writeLog "Stopped and removed"
 		else
 			echo "Unknown service $1"
 			exit 3

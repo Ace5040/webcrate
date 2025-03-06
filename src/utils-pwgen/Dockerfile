@@ -1,5 +1,5 @@
-ARG IMAGE_ALPINE_BASE
-FROM $IMAGE_ALPINE_BASE
+ARG IMAGE
+FROM $IMAGE
 COPY pwgen.sh /pwgen.sh
 RUN apk update &&\
     apk add pwgen &&\

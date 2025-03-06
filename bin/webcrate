@@ -30,13 +30,13 @@ ALLOWED_SERVICES=(\
 	utils-docker\
 	core\
 	core-gunicorn\
+	core-php83\
 	core-php81\
 	core-php74\
 	core-php73\
 	core-php56\
 	admin\
 	dnsmasq\
-	ftp\
 	stats\
 )
 
@@ -45,7 +45,7 @@ shift;
 case $COMMAND in
 	start) Start $@;;
 	stop) Stop $@;;
-	restart) Restart;;
+	restart) Restart $@;;
 	dock) Dock $@;;
 	pull) Pull $@;;
 	update) Update $@;;

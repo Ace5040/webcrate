@@ -1,0 +1,19 @@
+[supervisord]
+logfile=/webcrate/log/admin.supervisor.log
+pidfile=/tmp/supervisor.pid
+nodaemon=true
+user=root
+
+[program:php-fpm]
+autorestart=true
+command=/usr/sbin/php-fpm8.1 -F
+
+[program:nginx]
+autorestart=true
+command=/usr/sbin/nginx -g 'daemon off;'
+
+[program:cron]
+command=/usr/sbin/cron -f
+
+[program:exim]
+command=/usr/sbin/exim -bdf -q30m

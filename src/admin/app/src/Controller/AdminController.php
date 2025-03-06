@@ -24,7 +24,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use App\Form\Type\RedirectType;
 use App\Form\Type\ProjectType;
-use App\Entity\Ftp;
 
 class AdminController extends AbstractController
 {
@@ -120,10 +119,6 @@ class AdminController extends AbstractController
             {
                 $project = $form->getData();
                 $project->setUid($this->repository->getFirstAvailableUid());
-                $ftps = $project->getFtps();
-                foreach ( $ftps as $ftp ) {
-                    $ftp->setProject($project);
-                }
                 $this->manager->persist($project);
                 $this->manager->flush();
                 $this->updateProjectsYaml();
@@ -151,10 +146,6 @@ class AdminController extends AbstractController
             if ($form->isSubmitted() && $form->isValid())
             {
                 $project = $form->getData();
-                $ftps = $project->getFtps();
-                foreach ( $ftps as $ftp ) {
-                    $ftp->setProject($project);
-                }
                 $this->manager->persist($project);
                 $this->manager->flush();
                 $this->updateProjectsYaml();
@@ -174,7 +165,18 @@ class AdminController extends AbstractController
      */
     public function projectDelete($uid)
     {
+
         $project = $this->repository->loadByUid($uid);
+        $name = $project->getName();
+        try {
+            $process = Process::fromShellCommandline("sudo /webcrate/delete.py $name");
+            $process->run();
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
+            }
+        } catch (IOExceptionInterface $exception) {
+            $debug['error'] = $exception->getMessage();
+        }
         $this->manager->remove($project);
         $this->manager->flush();
         $list = $this->repository->getListForTable();
@@ -222,6 +224,31 @@ class AdminController extends AbstractController
             } catch (IOExceptionInterface $exception) {
                 $debug['error'] = $exception->getMessage();
             }
+        }
+        $list = $this->repository->getListForTable();
+        $response = new JsonResponse();
+        $response->setData([
+            'result' => 'ok',
+            'projects' => $list
+        ]);
+        return $response;
+    }
+
+    /**
+     * @Route("/admin/project/{uid}/restart", name="admin-project-restart")
+     */
+    public function projectRestart($uid)
+    {
+        $project = $this->repository->loadByUid($uid);
+        try {
+            $name = $project->getName();
+            $process = Process::fromShellCommandline("sudo /webcrate/reload.py $name");
+            $process->run();
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
+            }
+        } catch (IOExceptionInterface $exception) {
+            $debug['error'] = $exception->getMessage();
         }
         $list = $this->repository->getListForTable();
         $response = new JsonResponse();
@@ -298,7 +325,7 @@ class AdminController extends AbstractController
                 $project_obj->password = !empty($project_obj->password) ? $project_obj->password : 'empty_password';
                 $project_obj->https = !empty($project_obj->https) ? $project_obj->https : 'disabled';
                 $project_obj->backend = !empty($project_obj->backend) ? $project_obj->backend : 'php';
-                $project_obj->backend_version = !empty($project_obj->backend_version) ? $project_obj->backend_version : '81';
+                $project_obj->backend_version = !empty($project_obj->backend_version) ? $project_obj->backend_version : '83';
                 $project_obj->gunicorn_app_module = !empty($project_obj->gunicorn_app_module) ? $project_obj->gunicorn_app_module : '';
                 $project_obj->nginx_template = !empty($project_obj->nginx_template) ? $project_obj->nginx_template : 'default';
                 $project_obj->volume = !empty($project_obj->volume) ? $project_obj->volume : 0;
@@ -307,7 +334,6 @@ class AdminController extends AbstractController
                 $project_obj->nginx_options = !empty($project_obj->nginx_options) ? $project_obj->nginx_options : [];
                 $project_obj->auth_locations = !empty($project_obj->auth_locations) ? $project_obj->auth_locations : [];
                 $project_obj->duplicity_filters = !empty($project_obj->duplicity_filters) ? $project_obj->duplicity_filters : [];
-                $project_obj->ftps = !empty($project_obj->ftps) ? $project_obj->ftps : [];
                 $project->setUid($project_obj->uid);
                 $project->setName($projectname);
                 $project->setVolume($project_obj->volume);
@@ -325,7 +351,7 @@ class AdminController extends AbstractController
                 $project->setPasswordHash($project_obj->password);
                 $https = $this->https_repository->findByName($project_obj->https);
                 $project->setHttps($https);
-                $backend_version = empty($project_obj->backend_version) ? ( $project_obj->backend == 'php' ? '81' : 'latest' ) : $project_obj->backend_version;
+                $backend_version = empty($project_obj->backend_version) ? ( $project_obj->backend == 'php' ? '83' : 'latest' ) : $project_obj->backend_version;
                 $backend = $this->backend_repository->findByNameAndVersion($project_obj->backend, (string)$backend_version);
                 $project->setBackend($backend);
                 if ( !empty($project_obj->gunicorn_app_module) && ( $project_obj->backend == 'gunicorn' ) ) {
@@ -358,15 +384,6 @@ class AdminController extends AbstractController
                     ];
                 }
                 $project->setDuplicityFilters($duplicity_filters_array, true);
-                foreach ( $project_obj->ftps as $index => $ftp_data ) {
-                    $ftp = new Ftp();
-                    $ftp->setName($ftp_data['name']);
-                    $ftp->setWeight($index);
-                    $ftp->setPasswordHash($ftp_data['password']);
-                    $ftp->setHome($ftp_data['home']);
-                    $project->addFtp($ftp);
-                }
-
                 $this->manager->persist($project);
             }
         }

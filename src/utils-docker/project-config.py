@@ -28,6 +28,7 @@ os.system(f'rm /webcrate/nginx/auth/{PROJECT_NAME}.conf > /dev/null 2>&1')
 os.system(f'rm /webcrate/nginx/auth/{PROJECT_NAME}-*.password > /dev/null 2>&1')
 os.system(f'rm /webcrate/nginx/gzip/{PROJECT_NAME}.conf > /dev/null 2>&1')
 os.system(f'rm /webcrate/nginx/confs/{PROJECT_NAME}.conf > /dev/null 2>&1')
+os.system(f'rm /webcrate/nginx/core-confs/{PROJECT_NAME}.conf > /dev/null 2>&1')
 os.system(f'rm /webcrate/php_pools/{PROJECT_NAME}.conf > /dev/null 2>&1')
 os.system(f'rm /webcrate/dnsmasq/hosts/{PROJECT_NAME}.hosts > /dev/null 2>&1')
 os.system(f'rm /webcrate/meta/projects/{PROJECT_NAME}.config > /dev/null 2>&1')
@@ -99,11 +100,12 @@ for projectname,project in projects.items():
       if os.path.isdir(f'{project.folder}'):
         if project.backend == 'php':
           php_path_prefix = {
+            '83': '83',
             '81': '81',
             '56': '56',
             '73': '73',
             '74': '74'
-          }.get(str(project.backend_version), '81')
+          }.get(str(project.backend_version), '83')
           php_conf_path = f'/webcrate/php_pools/{project.name}.conf';
 
           if os.path.isfile(f'/webcrate/custom_templates/{project.name}.conf'):
@@ -134,6 +136,8 @@ for projectname,project in projects.items():
             f.write(f'PATH=/home/{project.name}/{data_folder}/vendor/bin:$PATH\n')
             f.write(f'export COMPOSER_HOME=/home/{project.name}/.config/composer\n')
             f.write(f'export DRUSH_PHP=/webcrate-bin/php\n')
+          if project.backend == 'gunicorn':
+            f.write(f'PATH=/opt/pyenv/bin:$PATH\n')
           f.write(f'export DATA_FOLDER={data_folder}\n')
           f.close()
 
@@ -167,6 +171,22 @@ for projectname,project in projects.items():
           f'" >> /webcrate/meta/projects/{project.name}.config')
 
         with open(f'/webcrate/nginx/confs/{project.name}.conf', 'w') as f:
+          f.write(conf)
+          f.close()
+
+
+        conf = ''
+        if os.path.isfile(f'/webcrate/nginx-templates/default-core.conf'):
+          with open(f'/webcrate/nginx-templates/default-core.conf', 'r') as f:
+            conf = f.read()
+            f.close()
+
+        conf = conf.replace('%project%', project.name)
+        conf = conf.replace('%project_folder%', f'/home/{project.name}')
+        conf = conf.replace('%domains%', " ".join(project.domains))
+        conf = conf.replace('%core%', f'webcrate-{project.name}-nginx')
+
+        with open(f'/webcrate/nginx/core-confs/{project.name}.conf', 'w') as f:
           f.write(conf)
           f.close()
 

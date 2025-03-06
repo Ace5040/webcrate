@@ -6,17 +6,18 @@ function Build() {
 		&& [ "$BUILDTARGET" != "utils-pwgen" ]\
 		&& [ "$BUILDTARGET" != "utils-docker" ]\
 		&& [ "$BUILDTARGET" != "core" ]\
+		&& [ "$BUILDTARGET" != "core-nginx" ]\
 		&& [ "$BUILDTARGET" != "core-gunicorn" ]\
+		&& [ "$BUILDTARGET" != "core-php83" ]\
 		&& [ "$BUILDTARGET" != "core-php81" ]\
 		&& [ "$BUILDTARGET" != "core-php74" ]\
 		&& [ "$BUILDTARGET" != "core-php73" ]\
 		&& [ "$BUILDTARGET" != "core-php56" ]\
 		&& [ "$BUILDTARGET" != "admin" ]\
 		&& [ "$BUILDTARGET" != "dnsmasq" ]\
-		&& [ "$BUILDTARGET" != "ftp" ]\
 		&& [ "$BUILDTARGET" != "stats" ]\
 	;then
-		echo "Unknown target $1. Please use one of: all, nginx, utils-pwgen, utils-docker, core, core-gunicorn, core-php81, core-php74, core-php73, core-php56, admin, stats"
+		echo "Unknown target $1. Please use one of: all, nginx, utils-pwgen, utils-docker, core, core-gunicorn, core-php83, core-php81, core-php74, core-php73, core-php56, admin, stats"
 		exit 1
 	fi
 
@@ -54,8 +55,9 @@ function Build() {
 	then
 		if [ "$u" = "y" ]
 		then
-			exit 2
-			docker pull archlinux:base-20241027.0.273886
+			docker pull $IMAGE_ALPINE_BASE
+			docker pull $IMAGE_DEBIAN_STABLE_SLIM
+			docker pull $IMAGE_DEBIAN_SLIM
 			docker pull $IMAGE_NGINX_BASE
 		fi
 	else
@@ -64,40 +66,43 @@ function Build() {
 	fi
 
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "nginx" ]; then
-		docker build -t $IMAGE_NGINX --build-arg IMAGE_NGINX_BASE=$IMAGE_NGINX_BASE ./src/nginx$BUILD_OPTIONS
+		docker build -t $IMAGE_NGINX --build-arg IMAGE=$IMAGE_NGINX_BASE ./src/nginx$BUILD_OPTIONS
+	fi
+	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core-nginx" ]; then
+		docker build -t $IMAGE_CORE_NGINX --build-arg IMAGE=$IMAGE_NGINX_BASE ./src/core-nginx$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "dnsmasq" ]; then
-		docker build -t $IMAGE_DNSMASQ --build-arg IMAGE_ALPINE_BASE=$IMAGE_ALPINE_BASE ./src/dnsmasq$BUILD_OPTIONS
+		docker build -t $IMAGE_DNSMASQ --build-arg IMAGE=$IMAGE_ALPINE_BASE ./src/dnsmasq$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "utils-pwgen" ]; then
-		docker build -t $IMAGE_UTILS_PWGEN --build-arg IMAGE_ALPINE_BASE=$IMAGE_ALPINE_BASE ./src/utils-pwgen$BUILD_OPTIONS
+		docker build -t $IMAGE_UTILS_PWGEN --build-arg IMAGE=$IMAGE_ALPINE_BASE ./src/utils-pwgen$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "utils-docker" ]; then
-		docker build -t $IMAGE_UTILS_DOCKER --build-arg IMAGE_ALPINE_BASE=$IMAGE_ALPINE_BASE ./src/utils-docker$BUILD_OPTIONS
+		docker build -t $IMAGE_UTILS_DOCKER --build-arg IMAGE=$IMAGE_ALPINE_BASE ./src/utils-docker$BUILD_OPTIONS
+	fi
+	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core" ] || [ "$BUILDTARGET" = "core-php83" ]; then
+		docker build -t $IMAGE_CORE_PHP83 --build-arg IMAGE=$IMAGE_DEBIAN_STABLE_SLIM ./src/core-php83$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core" ] || [ "$BUILDTARGET" = "core-php81" ]; then
-		docker build -t $IMAGE_CORE_PHP81 --build-arg IMAGE_LINUX_BASE=$IMAGE_LINUX_BASE ./src/core-php81$BUILD_OPTIONS
+		docker build -t $IMAGE_CORE_PHP81 --build-arg IMAGE=$IMAGE_DEBIAN_STABLE_SLIM ./src/core-php81$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core" ] || [ "$BUILDTARGET" = "core-php74" ]; then
-		docker build -t $IMAGE_CORE_PHP74 --build-arg IMAGE_LINUX_BASE=$IMAGE_LINUX_BASE ./src/core-php74$BUILD_OPTIONS
+		docker build -t $IMAGE_CORE_PHP74 --build-arg IMAGE=$IMAGE_DEBIAN_STABLE_SLIM ./src/core-php74$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core" ] || [ "$BUILDTARGET" = "core-php73" ]; then
-		docker build -t $IMAGE_CORE_PHP73 --build-arg IMAGE_LINUX_BASE=$IMAGE_LINUX_BASE ./src/core-php73$BUILD_OPTIONS
+		docker build -t $IMAGE_CORE_PHP73 --build-arg IMAGE=$IMAGE_DEBIAN_STABLE_SLIM ./src/core-php73$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core" ] || [ "$BUILDTARGET" = "core-php56" ]; then
-		docker build -t $IMAGE_CORE_PHP56 --build-arg IMAGE_LINUX_BASE=$IMAGE_LINUX_BASE ./src/core-php56$BUILD_OPTIONS
+		docker build -t $IMAGE_CORE_PHP56 --build-arg IMAGE=$IMAGE_DEBIAN_STABLE_SLIM ./src/core-php56$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core" ] || [ "$BUILDTARGET" = "core-gunicorn" ]; then
-		docker build -t $IMAGE_CORE_GUNICORN --build-arg IMAGE_LINUX_BASE=$IMAGE_LINUX_BASE ./src/core-gunicorn$BUILD_OPTIONS
+		docker build -t $IMAGE_CORE_GUNICORN --build-arg IMAGE=$IMAGE_DEBIAN_SLIM ./src/core-gunicorn$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "admin" ]; then
-		docker build -t $IMAGE_ADMIN --build-arg IMAGE_LINUX_BASE=$IMAGE_LINUX_BASE ./src/admin$BUILD_OPTIONS
-	fi
-	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "ftp" ]; then
-		docker build -t $IMAGE_FTP --build-arg IMAGE_LINUX_BASE=$IMAGE_LINUX_BASE ./src/ftp$BUILD_OPTIONS
+		docker build -t $IMAGE_ADMIN --build-arg IMAGE=$IMAGE_DEBIAN_STABLE_SLIM ./src/admin$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "stats" ]; then
-		docker build -t $IMAGE_STATS --build-arg IMAGE_LINUX_BASE=$IMAGE_LINUX_BASE ./src/stats$BUILD_OPTIONS
+		docker build -t $IMAGE_STATS --build-arg IMAGE=$IMAGE_DEBIAN_STABLE_SLIM ./src/stats$BUILD_OPTIONS
 	fi
 
 }

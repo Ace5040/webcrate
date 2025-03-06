@@ -21,6 +21,7 @@ REDIRECT_NAME = sys.argv[1]
 
 #cleanup configs
 os.system(f'rm /webcrate/nginx/confs/redirect-{REDIRECT_NAME}.conf > /dev/null 2>&1')
+os.system(f'rm /webcrate/nginx/core-confs/redirect-{REDIRECT_NAME}.conf > /dev/null 2>&1')
 os.system(f'rm /webcrate/dnsmasq/hosts/redirect-{REDIRECT_NAME}.hosts > /dev/null 2>&1')
 os.system(f'rm /webcrate/meta/redirects/redirect-{REDIRECT_NAME}.config > /dev/null 2>&1')
 
@@ -64,6 +65,10 @@ for redirectname,redirect in redirects.items():
       conf = conf.replace('%url%', redirect.url)
 
       with open(f'/webcrate/nginx/confs/{redirect.name}.conf', 'w') as f:
+        f.write(conf)
+        f.close()
+
+      with open(f'/webcrate/nginx/core-confs/{redirect.name}.conf', 'w') as f:
         f.write(conf)
         f.close()
 

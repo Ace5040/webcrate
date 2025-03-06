@@ -31,6 +31,7 @@ var_folders=(\
 	"log/graphana"\
 	"nginx"\
 	"nginx/confs"\
+	"nginx/core-confs"\
 	"nginx/ssl"\
 	"nginx/gzip"\
 	"nginx/redirect"\
@@ -104,10 +105,27 @@ do
 		if [[ $SITES_PATH == /* ]]; then
 			SITES_ABSOLUTE_PATH=$SITES_PATH;
 		else
-			SITES_ABSOLUTE_PATH=$(pwd)/$SITES_PATH;
+			if [[ $SITES_PATH == \.* ]]; then
+				SITES_ABSOLUTE_PATH=$(pwd)${SITES_PATH:1};
+			else
+				SITES_ABSOLUTE_PATH=$(pwd)/$SITES_PATH;
+			fi
 		fi
 		if [[ $VOLUMES_COUNTER != 0 ]]; then let VOLUME_INDEX=$VOLUMES_COUNTER+1; else VOLUME_INDEX=""; fi
 		if [[ ! -d "$SITES_ABSOLUTE_PATH" ]] ; then mkdir -p "$SITES_ABSOLUTE_PATH"; fi
 		PROJECTS_VOLUMES="$PROJECTS_VOLUMES-v $SITES_ABSOLUTE_PATH:/projects${VOLUME_INDEX} "
 		let VOLUMES_COUNTER+=1
+done
+PROJECTS_HOMES=""
+for SITES_PATH in ${WEBCRATE_PROJECTS_FOLDERS[@]}
+do
+	if [[ $SITES_PATH == /* ]]; then
+		SITES_ABSOLUTE_PATH=$SITES_PATH;
+	else
+		SITES_ABSOLUTE_PATH=$(pwd)/$SITES_PATH;
+	fi
+	for dir in $(find $SITES_ABSOLUTE_PATH -mindepth 1 -maxdepth 1 -type d); do
+		project_name=`basename $dir`
+		PROJECTS_HOMES="$PROJECTS_HOMES-v $SITES_ABSOLUTE_PATH/$project_name:/home/$project_name "
+	done
 done

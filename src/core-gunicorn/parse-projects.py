@@ -35,6 +35,6 @@ for projectname,project in projects.items():
         gunicorn_conf=f'-c {project.folder}/{data_folder}/gunicorn.conf.py'
       if(os.path.isfile(f'{project.folder}/{data_folder}/gunicorn.init')):
         os.system(f'rm {project.folder}/{data_folder}/gunicorn.init')
-        os.system(f'sudo -iu {project.name} bash -c "cd {project.folder}/{data_folder}; pip install gunicorn; pip freeze > requirements.txt"')
-      os.system(f'sudo -iu {project.name} bash -c "gunicorn --daemon --bind :9000 --name {project.name} --user {project.name} --group {project.name} --pid ../tmp/gunicorn.pid --error-logfile ../log/gunicorn-error.log {gunicorn_conf} --chdir {project.folder}/{data_folder} {project.gunicorn_app_module}"')
+        os.system(f'sudo -iu {project.name} bash -i -c "cd {project.folder}/{data_folder}; pip install gunicorn; pip freeze > requirements.txt"')
+      os.system(f'sudo -iu {project.name} bash -i -c "gunicorn --daemon --bind :9000 --name {project.name} --user {project.name} --group {project.name} --pid ../tmp/gunicorn.pid --error-logfile ../log/gunicorn-error.log {gunicorn_conf} --chdir {project.folder}/{data_folder} {project.gunicorn_app_module}"')
     print(f'{project.name} - created')

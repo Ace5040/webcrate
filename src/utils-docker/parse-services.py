@@ -41,6 +41,10 @@ for servicename, service in services.items():
       f.write(conf)
       f.close()
 
+    with open(f'/webcrate/nginx/core-confs/{service.name}-service.conf', 'w') as f:
+      f.write(conf)
+      f.close()
+
     print(f'{service.name} config - generated')
 
     if service.https == 'letsencrypt':

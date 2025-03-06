@@ -16,7 +16,6 @@ test:
   gzip: true
   nginx_options:
   auth_locations: {  }
-  ftps: {  }
   duplicity_filters:
   memcached: false
   solr: false

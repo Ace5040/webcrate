@@ -123,12 +123,6 @@ class Project
     private $volume;
 
     /**
-     * @ORM\OneToMany(targetEntity=Ftp::class, mappedBy="project", orphanRemoval=true, cascade={"persist", "remove"})
-     * @ORM\OrderBy({"weight" = "ASC"})
-     */
-    private $ftps;
-
-    /**
      * @ORM\Column(type="json", nullable=true)
      */
     private $DuplicityFilters = [];
@@ -147,11 +141,6 @@ class Project
      * @ORM\Column(type="boolean", nullable=true)
      */
     private $Elastic;
-
-    public function __construct()
-    {
-        $this->ftps = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
@@ -360,7 +349,6 @@ class Project
 
     public function toObject(): object
     {
-        $ftps = $this->getKeyedFtps();
         $nginxOptions = $this->getKeyedNginxOptions();
         $authLocations = $this->getKeyedAuthLocations();
         $duplicityFilters = $this->getKeyedDuplicityFilters();
@@ -375,13 +363,12 @@ class Project
             'root_folder' => $this->rootFolder,
             'https' => !empty($this->https) ? $this->https->getName() : 'disabled',
             'backend' => !empty($this->backend) ? $this->backend->getName() : 'php',
-            'backend_version' => !empty($this->backend) ? $this->backend->getVersion() : '81',
+            'backend_version' => !empty($this->backend) ? $this->backend->getVersion() : '83',
             'gunicorn_app_module' => !empty($this->gunicornAppModule) ? $this->gunicornAppModule : '',
             'redirect' => (bool)$this->redirect,
             'gzip' => (bool)$this->gzip,
             'nginx_options' => !empty($nginxOptions)? $nginxOptions : (object)[],
             'auth_locations' => !empty($authLocations) ? $authLocations : (object)[],
-            'ftps' => !empty($ftps) ? $ftps : (object)[],
             'duplicity_filters' => !empty($duplicityFilters) ? $duplicityFilters : (object)[],
             'memcached' => (bool)$this->Memcached,
             'solr' => (bool)$this->Solr,
@@ -443,21 +430,6 @@ class Project
                     'title' => $location['title'],
                     'user' => $location['user'],
                     'password' => $location['password']
-                ];
-            }
-        }
-        return $array;
-    }
-
-    public function getKeyedFtps(): ?array
-    {
-        $array = [];
-        if ( !empty($this->ftps) ) {
-            foreach ( $this->ftps as $ftp ) {
-                $array[] = [
-                    'name' => $ftp->getName(),
-                    'password' => $ftp->getPassword(),
-                    'home' => $ftp->getHome()
                 ];
             }
         }
@@ -569,36 +541,6 @@ class Project
     public function setVolume(?int $volume): self
     {
         $this->volume = $volume;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Ftp[]
-     */
-    public function getFtps(): Collection
-    {
-        return $this->ftps;
-    }
-
-    public function addFtp(Ftp $ftp): self
-    {
-        if (!$this->ftps->contains($ftp)) {
-            $this->ftps[] = $ftp;
-            $ftp->setProject($this);
-        }
-
-        return $this;
-    }
-
-    public function removeFtp(Ftp $ftp): self
-    {
-        if ($this->ftps->removeElement($ftp)) {
-            // set the owning side to null (unless already changed)
-            if ($ftp->getProject() === $this) {
-                $ftp->setProject(null);
-            }
-        }
 
         return $this;
     }

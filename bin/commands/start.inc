@@ -1,11 +1,13 @@
 function Start() {
-
 	if [ $# -eq 1 ]
 	then
 		if [[ ${ALLOWED_SERVICES[@]} =~ $1 ]]
 		then
 			echo "Starting $1"
-			exit 0
+			echo "Starting $1 service"
+			source ./bin/includes/generate-config.inc
+			source ./bin/includes/services.inc
+			writeLog "Started"
 		else
 			echo "Unknown service $1"
 			exit 3

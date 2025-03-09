@@ -6,7 +6,9 @@ import yaml
 from munch import munchify
 import json
 import hashlib
+from log import log;
 
+log = log('/webcrate/log/app.log')
 with open('/webcrate/redirects.yml', 'r') as f:
   redirects = munchify(yaml.safe_load(f))
   f.close()
@@ -40,7 +42,7 @@ for redirectname,redirect in redirects.items():
           with open(f'/webcrate/nginx/ssl/{redirect.name}.conf', 'w') as f:
             f.write(conf)
             f.close()
-          print(f'ssl config for {redirect.name} - generated')
+          log.write(f'ssl config for {redirect.name} - generated', log.LEVEL.debug)
 
       if redirect.https == 'openssl':
         if os.path.isdir(f'/webcrate/openssl/{redirect.name}'):
@@ -52,7 +54,7 @@ for redirectname,redirect in redirects.items():
           with open(f'/webcrate/nginx/ssl/{redirect.name}.conf', 'w') as f:
             f.write(conf)
             f.close()
-          print(f'ssl config for {redirect.name} - generated')
+          log.write(f'ssl config for {redirect.name} - generated', log.LEVEL.debug)
 
       conf = ''
       if os.path.isfile(f'/webcrate/nginx-templates/default-redirect.conf'):
@@ -72,7 +74,7 @@ for redirectname,redirect in redirects.items():
         f.write(conf)
         f.close()
 
-      print(f'nginx config for {redirect.name} - generated')
+      log.write(f'nginx config for {redirect.name} - generated', log.LEVEL.debug)
 
       with open(f'/webcrate/dnsmasq/hosts/{redirect.name}.hosts', 'w') as f:
         f.write(f'{DOCKER_HOST_IP} {" ".join(redirect.domains)}\n')

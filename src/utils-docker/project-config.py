@@ -6,6 +6,9 @@ import yaml
 from munch import munchify
 import json
 import hashlib
+from log import log;
+
+log = log('/webcrate/log/app.log')
 
 with open('/webcrate/projects.yml', 'r') as f:
   projects = munchify(yaml.safe_load(f))
@@ -127,7 +130,7 @@ for projectname,project in projects.items():
             f.write(conf)
             f.close()
 
-          print(f'php pool for {project.name} - generated')
+          log.write(f'php pool for {project.name} - generated', log.LEVEL.debug)
 
         with open(f'{project.folder}/config.sh', 'w') as f:
           if project.backend == 'php':
@@ -190,7 +193,7 @@ for projectname,project in projects.items():
           f.write(conf)
           f.close()
 
-        print(f'nginx config for {project.name} - generated')
+        log.write(f'nginx config for {project.name} - generated', log.LEVEL.debug)
 
         if project.redirect:
           with open(f'/webcrate/redirect.conf', 'r') as f:
@@ -200,20 +203,20 @@ for projectname,project in projects.items():
           with open(f'/webcrate/nginx/redirect/{project.name}.conf', 'w') as f:
             f.write(conf)
             f.close()
-          print(f'redirect config for {project.name} - generated')
+          log.write(f'redirect config for {project.name} - generated', log.LEVEL.debug)
 
         if project.nginx_options:
           with open(f'/webcrate/nginx/options/{project.name}.conf', 'w') as f:
             for name, value in project.nginx_options.items():
               f.write(f'{name} {value};\n')
             f.close()
-          print(f'nginx options config for {project.name} - generated')
+          log.write(f'nginx options config for {project.name} - generated', log.LEVEL.debug)
 
         if project.nginx_block:
           with open(f'/webcrate/nginx/block/{project.name}.conf', 'w') as f:
             f.write(project.nginx_block)
             f.close()
-          print(f'nginx block config for {project.name} - generated')
+          log.write(f'nginx block config for {project.name} - generated', log.LEVEL.debug)
 
         if project.auth_locations:
           with open(f'/webcrate/nginx/auth/{project.name}.conf', 'w') as f:
@@ -240,7 +243,7 @@ for projectname,project in projects.items():
                 pf.write(f'{auth_location.user}:{auth_location.password}\n')
                 pf.close()
             f.close()
-          print(f'nginx options config for {project.name} - generated')
+          log.write(f'nginx options config for {project.name} - generated', log.LEVEL.debug)
 
         if project.gzip:
           with open(f'/webcrate/gzip.conf', 'r') as f:
@@ -249,7 +252,7 @@ for projectname,project in projects.items():
           with open(f'/webcrate/nginx/gzip/{project.name}.conf', 'w') as f:
             f.write(conf)
             f.close()
-          print(f'gzip config for {project.name} - generated')
+          log.write(f'gzip config for {project.name} - generated', log.LEVEL.debug)
 
         if project.https == 'letsencrypt':
           if os.path.isdir(f'/webcrate/letsencrypt/live/{project.name}'):
@@ -261,7 +264,7 @@ for projectname,project in projects.items():
             with open(f'/webcrate/nginx/ssl/{project.name}.conf', 'w') as f:
               f.write(conf)
               f.close()
-            print(f'ssl config for {project.name} - generated')
+            log.write(f'ssl config for {project.name} - generated', log.LEVEL.debug)
 
         if project.https == 'openssl':
           if os.path.isdir(f'/webcrate/openssl/{project.name}'):
@@ -273,7 +276,7 @@ for projectname,project in projects.items():
             with open(f'/webcrate/nginx/ssl/{project.name}.conf', 'w') as f:
               f.write(conf)
               f.close()
-            print(f'ssl config for {project.name} - generated')
+            log.write(f'ssl config for {project.name} - generated', log.LEVEL.debug)
 
         with open(f'/webcrate/dnsmasq/hosts/{project.name}.hosts', 'w') as f:
           f.write(f'{DOCKER_HOST_IP} {" ".join(project.domains)}\n')

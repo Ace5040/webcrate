@@ -30,12 +30,12 @@ COPY [ \
     "redirect-start.py", \
     "parse-services.py", \
     "services-init.py", \
-    "log.py", \
     "backup.py", \
     "certbot-renew-deploy.py", \
     "certbot-renew.py", \
     "/" \
 ]
+COPY --from=src log.py /
 COPY [ \
     "gzip.conf", \
     "redirect-ssl.conf", \

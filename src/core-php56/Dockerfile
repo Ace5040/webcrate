@@ -76,7 +76,8 @@ RUN sed -i "s/;process_control_timeout = 0/process_control_timeout = 10s/g" /etc
 RUN apt-get --assume-yes install php5.6-ctype
 
 WORKDIR /
-COPY ["versions.py", "parse-projects.py", "sync_ssh_keys.sh", "log.py", "supervisord.conf.template", "supervisord-user.conf.template", "/webcrate/"]
+COPY ["versions.py", "parse-projects.py", "sync_ssh_keys.sh", "supervisord.conf.template", "supervisord-user.conf.template", "/webcrate/"]
+COPY --from=src log.py /webcrate/
 COPY bashrc.sh /etc/bashrc.sh
 COPY ["entrypoint.sh", "/"]
 RUN chmod u+x /webcrate/sync_ssh_keys.sh && \

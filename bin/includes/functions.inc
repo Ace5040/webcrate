@@ -16,7 +16,7 @@ if [ "$WEBCRATE_LOG_LEVEL" = "error" ]; then
 fi
 
 function generatePassword () {
-	pass=`docker run --rm $IMAGE_UTILS_PWGEN /pwgen.sh`
+	pass=`docker run --rm $IMAGE_UTILS_PWGEN -e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE /pwgen.sh`
 	echo "[mysqldump]" > ./var/secrets/$1.cnf
 	echo "user=root" >> ./var/secrets/$1.cnf
 	echo "password=\"$pass\"" >> ./var/secrets/$1.cnf

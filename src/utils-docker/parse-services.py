@@ -4,7 +4,9 @@ import os
 import yaml
 from munch import munchify
 from pprint import pprint
+from log import log;
 
+log = log('/webcrate/log/app.log')
 with open('/webcrate/services.yml', 'r') as f:
   services = munchify(yaml.safe_load(f))
 
@@ -45,7 +47,7 @@ for servicename, service in services.items():
       f.write(conf)
       f.close()
 
-    print(f'{service.name} config - generated')
+    log.write(f'{service.name} config - generated', log.LEVEL.debug)
 
     if service.https == 'letsencrypt':
       if os.path.isdir(f'/webcrate/letsencrypt/live/{service.name}'):
@@ -57,7 +59,7 @@ for servicename, service in services.items():
         with open(f'/webcrate/nginx/ssl/{service.name}.conf', 'w') as f:
           f.write(conf)
           f.close()
-        print(f'ssl config for {service.name} - generated')
+        log.write(f'ssl config for {service.name} - generated', log.LEVEL.debug)
     if service.https == 'openssl':
       if os.path.isdir(f'/webcrate/openssl/{service.name}'):
         with open(f'/webcrate/ssl.conf', 'r') as f:
@@ -68,7 +70,7 @@ for servicename, service in services.items():
         with open(f'/webcrate/nginx/ssl/{service.name}.conf', 'w') as f:
           f.write(conf)
           f.close()
-        print(f'ssl config for {service.name} - generated')
+        log.write(f'ssl config for {service.name} - generated', log.LEVEL.debug)
     with open(f'/webcrate/dnsmasq/hosts/{service.name}.hosts', 'w') as f:
       f.write(f'{DOCKER_HOST_IP} {service.domain}\n')
       f.close()

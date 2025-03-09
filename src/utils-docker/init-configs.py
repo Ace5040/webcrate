@@ -5,7 +5,9 @@ import yaml
 import time
 from munch import munchify
 import helpers
+from log import log;
 
+log = log('/webcrate/log/app.log')
 with open('/webcrate/redirects.yml', 'r') as f:
   redirects = munchify(yaml.safe_load(f))
   f.close()
@@ -63,9 +65,9 @@ for servicename,service in services.items():
         os.system(f"mysql -u root -h webcrate-mysql -p\"{mysql_root_password}\" -e \"CREATE USER \`{service.name}\`@'%' IDENTIFIED BY \\\"{mysql_service_password}\\\";\"")
         os.system(f"mysql -u root -h webcrate-mysql -p\"{mysql_root_password}\" -e \"GRANT ALL PRIVILEGES ON \`{service.name}\` . * TO \`{service.name}\`@'%';\"")
         os.system(f"mysql -u root -h webcrate-mysql -p\"{mysql_root_password}\" -e \"FLUSH PRIVILEGES;\"")
-        print(f'mysql user {service.name} and db created')
+        log.write(f'mysql user {service.name} and db created', log.LEVEL.debug)
       else:
-        print(f'mysql user {service.name} and db already exists')
+        log.write(f'mysql user {service.name} and db already exists', log.LEVEL.debug)
 
   if service.mysql5_db:
     mysql5_root_password = os.popen(f'cat /webcrate/secrets/mysql5.cnf | grep "password="').read().strip().split("password=")[1][1:][:-1].replace("$", "\\$")
@@ -102,9 +104,9 @@ for servicename,service in services.items():
         os.system(f"mysql -u root -h webcrate-mysql5 -p\"{mysql5_root_password}\" -e \"CREATE USER \`{service.name}\`@'%' IDENTIFIED BY \\\"{mysql5_service_password}\\\";\"")
         os.system(f"mysql -u root -h webcrate-mysql5 -p\"{mysql5_root_password}\" -e \"GRANT ALL PRIVILEGES ON \`{service.name}\` . * TO \`{service.name}\`@'%';\"")
         os.system(f"mysql -u root -h webcrate-mysql5 -p\"{mysql5_root_password}\" -e \"FLUSH PRIVILEGES;\"")
-        print(f'mysql5 user {service.name} and db created')
+        log.write(f'mysql5 user {service.name} and db created', log.LEVEL.debug)
       else:
-        print(f'mysql5 user {service.name} and db already exists')
+        log.write(f'mysql5 user {service.name} and db already exists', log.LEVEL.debug)
 
   if service.postgresql_db:
     postgres_root_password = os.popen(f'cat /webcrate/secrets/postgres.cnf | grep "password="').read().strip().split("password=")[1][1:][:-1].replace("$", "\\$")
@@ -140,9 +142,9 @@ for servicename,service in services.items():
         os.system(f'psql -d "host=webcrate-postgres user=postgres password={postgres_root_password}" -tAc "CREATE DATABASE {service.name} ENCODING \'UTF8\' TEMPLATE template0 LC_COLLATE=\'C\' LC_CTYPE=\'C\';"')
         os.system(f'psql -d "host=webcrate-postgres user=postgres password={postgres_root_password}" -tAc "CREATE USER {service.name} WITH ENCRYPTED PASSWORD \'{postgres_service_password}\';"')
         os.system(f'psql -d "host=webcrate-postgres user=postgres password={postgres_root_password}" -tAc "GRANT ALL PRIVILEGES ON DATABASE {service.name} TO {service.name};"')
-        print(f'postgresql user {service.name} and db created')
+        log.write(f'postgresql user {service.name} and db created', log.LEVEL.debug)
       else:
-        print(f'postgresql user {service.name} and db already exists')
+        log.write(f'postgresql user {service.name} and db already exists', log.LEVEL.debug)
 
   if service.https == 'letsencrypt':
     domain = service.domain if service.domain.split('.')[-1] != 'test' else ''
@@ -155,7 +157,7 @@ for servicename,service in services.items():
       if not os.path.isdir(path):
         os.system(f'mkdir -p {path}')
       os.system(f'certbot certonly --keep-until-expiring --renew-with-new-domains --allow-subset-of-names --config-dir /webcrate/letsencrypt --cert-name {service.name} --expand --webroot --webroot-path {path} -d {domain}')
-      print(f'certificate for {service.name} - generated')
+      log.write(f'certificate for {service.name} - generated', log.LEVEL.debug)
       nginx_reload_needed = True
 
   if service.https == 'openssl':
@@ -183,12 +185,12 @@ for servicename,service in services.items():
         with open(f'/webcrate/nginx/ssl/{service.name}.conf', 'w') as f:
           f.write(conf)
           f.close()
-        print(f'ssl config for {service.name} - generated')
+        log.write(f'ssl config for {service.name} - generated', log.LEVEL.debug)
 
   if service.https == 'disabled' and os.path.exists(f'/webcrate/nginx/ssl/{service.name}.conf'):
     nginx_reload_needed = True
     os.system(f'rm /webcrate/nginx/ssl/{service.name}.conf')
-    print(f'ssl config for {service.name} - removed')
+    log.write(f'ssl config for {service.name} - removed', log.LEVEL.debug)
 
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/nginx')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/letsencrypt')
@@ -197,5 +199,5 @@ os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/secrets')
 
 #reload nginx config if needed
 if nginx_reload_needed:
-  print(f'changes detected - reloading nginx config')
+  log.write(f'changes detected - reloading nginx config', log.LEVEL.debug)
   os.system(f'docker exec webcrate-nginx nginx -s reload')

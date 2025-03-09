@@ -5,7 +5,7 @@ from log import log
 
 log = log('/webcrate/log/app.log')
 
-log.write(f'Deploy new certificates')
+log.write(f'Deploy new certificates', log.LEVEL.debug)
 
-print(f'reload nginx config after certificates renewal')
+log.write(f'reload nginx config after certificates renewal', log.LEVEL.debug)
 os.system(f'docker exec webcrate-nginx nginx -s reload')

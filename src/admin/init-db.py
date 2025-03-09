@@ -2,7 +2,9 @@
 
 import os
 import time
+from log import log;
 
+log = log('/webcrate/log/app.log')
 WEBCRATE_PROJECTS_FOLDERS = os.environ.get('WEBCRATE_PROJECTS_FOLDERS', 'var/projects')
 WEBCRATE_ADMIN_EMAIL = os.environ.get('WEBCRATE_ADMIN_EMAIL', 'email@notset')
 WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
@@ -42,15 +44,15 @@ if retries > 0:
         admin_password_encoded=os.popen(f'cd /app; php bin/console security:encode-password "{admin_password}" | grep "Encoded password" | awk \'{{split($0,a,"password"); print a[2]}}\' | tr -d " \n"').read().strip()
         admin_password_encoded = str(admin_password_encoded).replace("$", "\\$").replace("&", "\\&")
         os.system(f'mariadb --skip-ssl -u admin -h webcrate-admin-mysql -p"{mysql_service_password}" admin -e "INSERT INTO \\`user\\` (\\`id\\`, \\`email\\`, \\`roles\\`, \\`password\\`) VALUES (NULL, \'{WEBCRATE_ADMIN_EMAIL}\', \'[\\"ROLE_ADMIN\\"]\', \'{admin_password_encoded}\')"')
-        print(f'admin user created')
+        log.write(f'admin user created', log.LEVEL.debug)
       else:
-        print(f'admin user exists')
+        log.write(f'admin user exists', log.LEVEL.debug)
       os.system(f'cd /app; php bin/console doctrine:fixtures:load --group=Backends --group=HttpsTypes --group=NginxTemplates --append')
       os.system(f'cd /app; php bin/console cache:pool:clear cache.app')
     else:
-      print(f'database not found')
+      log.write(f'database not found', log.LEVEL.debug)
     os.system(f'cd /app; composer run-script post-install-cmd')
   else:
-    print(f'admin secret not generated')
+    log.write(f'admin secret not generated', log.LEVEL.debug)
 else:
-  print(f'mariadb is down')
+  log.write(f'mariadb is down', log.LEVEL.debug)

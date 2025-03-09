@@ -17,6 +17,7 @@ docker run --rm --env-file=$(pwd)/.env --env-file=$(pwd)/images.default --entryp
 	$PROJECTS_VOLUMES \
 	-e WEBCRATE_PROJECTS_FOLDERS=$( IFS=:; printf '%s' "${WEBCRATE_PROJECTS_FOLDERS[*]}" ) \
 	-e WEBCRATE_PWD=$(pwd) \
+	-e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE \
 	-v $(pwd)/projects.yml:/webcrate/projects.yml:ro \
 	-v $(pwd)/var/log:/webcrate/log \
 	-v $(pwd)/var/meta:/webcrate/meta \
@@ -36,6 +37,7 @@ docker run --rm --env-file=$(pwd)/.env --entrypoint /parse-redirects.py --name w
 	-e WEBCRATE_UID=$uid \
 	-e WEBCRATE_GID=$gid \
 	-e WEBCRATE_PWD=$(pwd) \
+	-e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE \
 	-v $(pwd)/redirects.yml:/webcrate/redirects.yml:ro \
 	-v $(pwd)/var/log:/webcrate/log \
 	-v $(pwd)/var/meta:/webcrate/meta \
@@ -50,10 +52,12 @@ writeLog "Parse redirects ended" $LOG_LEVEL_INFO
 writeLog "Parse services started" $LOG_LEVEL_INFO
 docker run --rm --env-file=$(pwd)/.env --env-file=$(pwd)/images.default --entrypoint /parse-services.py --name webcrate-docker-parse-services \
 	-e WEBCRATE_PWD=$(pwd) \
+	-e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE \
 	-v $(pwd)/services.yml:/webcrate/services.yml:ro \
 	-v $(pwd)/config/nginx-templates:/webcrate/nginx-templates:ro \
 	-v $(pwd)/var/letsencrypt:/webcrate/letsencrypt:ro \
 	-v $(pwd)/var/openssl:/webcrate/openssl:ro \
+	-v $(pwd)/var/log:/webcrate/log \
 	-v $(pwd)/var/dnsmasq:/webcrate/dnsmasq \
 	-v $(pwd)/var/nginx:/webcrate/nginx \
 	$IMAGE_UTILS_DOCKER

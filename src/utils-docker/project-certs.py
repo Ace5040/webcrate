@@ -6,7 +6,9 @@ import yaml
 from munch import munchify
 import helpers
 import time
+from log import log;
 
+log = log('/webcrate/log/app.log')
 WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
 
@@ -38,7 +40,7 @@ for projectname,project in projects.items():
               os.system(f'mkdir -p {path}')
             os.system(f'certbot certonly --key-type ecdsa --keep-until-expiring --renew-with-new-domains --allow-subset-of-names --config-dir /webcrate/letsencrypt --cert-name {project.name} --expand --webroot --webroot-path {path} -d {domains}')
             os.system(f'rm -rf {path}')
-            print(f'{project.name} - letsencrypt certificate generated')
+            log.write(f'{project.name} - letsencrypt certificate generated', log.LEVEL.debug)
             nginx_reload_needed = True
 
       if project.https == 'openssl':
@@ -52,7 +54,7 @@ for projectname,project in projects.items():
           os.system(f'openssl genrsa -out /webcrate/openssl/{project.name}/privkey.pem 2048')
           os.system(f'openssl req -new -sha256 -key /webcrate/openssl/{project.name}/privkey.pem -out /webcrate/openssl/{project.name}/fullchain.csr -config /webcrate/openssl/{project.name}/openssl.cnf')
           os.system(f'openssl x509 -req -extensions SAN -extfile /webcrate/openssl/{project.name}/openssl.cnf -in /webcrate/openssl/{project.name}/fullchain.csr -CA /webcrate/secrets/rootCA.crt -CAkey /webcrate/secrets/rootCA.key -CAcreateserial -out /webcrate/openssl/{project.name}/fullchain.pem -days 5000 -sha256')
-          print(f'{project.name} - openssl certificate generated')
+          log.write(f'{project.name} - openssl certificate generated', log.LEVEL.debug)
           nginx_reload_needed = True
 
       if project.https == 'openssl' or project.https == 'letsencrypt':
@@ -66,13 +68,13 @@ for projectname,project in projects.items():
             with open(f'/webcrate/nginx/ssl/{project.name}.conf', 'w') as f:
               f.write(conf)
               f.close()
-            print(f'{project.name} - ssl.conf generated')
+            log.write(f'{project.name} - ssl.conf generated', log.LEVEL.debug)
             nginx_reload_needed = True
 
       if project.https == 'disabled' and os.path.exists(f'/webcrate/nginx/ssl/{project.name}.conf'):
         nginx_reload_needed = True
         os.system(f'rm /webcrate/nginx/ssl/{project.name}.conf')
-        print(f'{project.name} - ssl.conf removed')
+        log.write(f'{project.name} - ssl.conf removed', log.LEVEL.debug)
 
       # os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/nginx')
       # os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/letsencrypt')

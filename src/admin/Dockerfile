@@ -67,7 +67,8 @@ RUN . $NVM_DIR/nvm.sh && npm install --verbose
 RUN . $NVM_DIR/nvm.sh && npm run build
 
 USER root
-COPY ["init-db.py", "log.py", "updateprojects.py", "updateredirects.py", "reload-redirect.py", "versions.py", "delete.py", "reload.py", "supervisord.conf.template", "/webcrate"]
+COPY ["init-db.py", "updateprojects.py", "updateredirects.py", "reload-redirect.py", "versions.py", "delete.py", "reload.py", "supervisord.conf.template", "/webcrate/"]
+COPY --from=src log.py /webcrate/
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY entrypoint.sh /entrypoint.sh
 CMD ["/entrypoint.sh"]

@@ -59,7 +59,7 @@ if [[ ! -d "./var/grafana/data" ]] ; then
 	mkdir -p "./var/grafana/data"
 	mkdir -p "./var/grafana/log"
 	if [[ ! -f "./var/secrets/grafana.secret" ]] ; then
-		GRAFANA_PASS=`docker run --rm $IMAGE_UTILS_PWGEN /pwgen.sh`
+		GRAFANA_PASS=`docker run --rm -e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE $IMAGE_UTILS_PWGEN /pwgen.sh`
 		echo "user=admin" > ./var/secrets/grafana.secret
 		echo "password=\"$GRAFANA_PASS\"" >> ./var/secrets/grafana.secret
 	else
@@ -69,8 +69,8 @@ fi
 
 if [[ ! -f "./var/secrets/admin.secret" ]] ; then
 	writeLog "Generate webcrate secret and admin password" $LOG_LEVEL_DEBUG
-	admin_password=`docker run --rm $IMAGE_UTILS_PWGEN /pwgen.sh`
-	app_secret=`docker run --rm $IMAGE_UTILS_PWGEN pwgen -nAs1 32 1`
+	admin_password=`docker run --rm -e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE $IMAGE_UTILS_PWGEN /pwgen.sh`
+	app_secret=`docker run --rm -e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE $IMAGE_UTILS_PWGEN pwgen -nAs1 32 1`
 	echo "user=admin" > ./var/secrets/admin.secret
 	echo "password=$admin_password" >> ./var/secrets/admin.secret
 	echo "secret=$app_secret" >> ./var/secrets/admin.secret

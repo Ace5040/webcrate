@@ -108,7 +108,7 @@ def init_openssl_root_conf():
 
   if openssl_root_conf_prev != openssl_root_conf or not os.path.isfile(f'/webcrate/secrets/rootCA.crt'):
     openssl_root_conf_changed = True
-    print(f'openssl root config changed')
+    log.write(f'openssl root config changed', log.LEVEL.debug)
     os.system(f'rm -f /webcrate/secrets/rootCA.key; rm -f /webcrate/secrets/rootCA.crt; rm -f /webcrate/secrets/rootCA.srl; rm -f /webcrate/secrets/openssl-root.cnf')
     os.system(f'openssl genrsa -out /webcrate/secrets/rootCA.key 4096')
     with open(f'/webcrate/secrets/openssl-root.cnf', 'w') as f:

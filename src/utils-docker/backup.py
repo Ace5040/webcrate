@@ -8,7 +8,7 @@ import helpers
 from log import log
 
 log = log('/webcrate/log/app.log')
-log.write(f'Starting backup process')
+log.write(f'Starting backup process', log.LEVEL.debug)
 
 with open('/webcrate/projects.yml', 'r') as f:
   projects = munchify(yaml.safe_load(f))
@@ -26,11 +26,11 @@ BACKUP_TYPE = sys.argv[2] if len(sys.argv) > 2 else 'all'
 #backup files for webcrate
 if PROJECT_NAME == 'admin' or PROJECT_NAME == 'all':
   if ( BACKUP_TYPE == 'files' or BACKUP_TYPE == 'all' ):
-    log.write(f'Backup webcrate files')
+    log.write(f'Backup webcrate files', log.LEVEL.debug)
     data_folder = f'/webcrate-readonly'
-    print(f'=========================================')
-    print(f'backup files webcrate-admin')
-    print(f'=========================================')
+    log.write(f'=========================================', log.LEVEL.debug)
+    log.write(f'backup files webcrate-admin', log.LEVEL.debug)
+    log.write(f'=========================================', log.LEVEL.debug)
     sys.stdout.flush()
     for BACKUP_URI in BACKUP_URIS:
       os.system(f'duplicity --verbosity notice '
@@ -69,10 +69,10 @@ if PROJECT_NAME == 'admin' or PROJECT_NAME == 'all':
       sys.stdout.flush()
   if ( BACKUP_TYPE == 'mysql' or BACKUP_TYPE == 'all' ):
     #backup mysql for webcrate
-    log.write(f'Backup webcrate-admin mysql database')
-    print(f'=========================================')
-    print(f'backup mysql db for webcrate-admin')
-    print(f'=========================================')
+    log.write(f'Backup webcrate-admin mysql database', log.LEVEL.debug)
+    log.write(f'=========================================', log.LEVEL.debug)
+    log.write(f'backup mysql db for webcrate-admin', log.LEVEL.debug)
+    log.write(f'=========================================', log.LEVEL.debug)
     sys.stdout.flush()
     mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\\$")
     os.system(f'mkdir -p /webcrate/backup-tmp')
@@ -110,15 +110,15 @@ for projectname,project in projects.items():
 
     #backup files
     if ( BACKUP_TYPE == 'files' or BACKUP_TYPE == 'all' ):
-      print(f'=========================================')
-      print(f'backup files for project {project.name}')
-      print(f'=========================================')
+      log.write(f'=========================================', log.LEVEL.debug)
+      log.write(f'backup files for project {project.name}', log.LEVEL.debug)
+      log.write(f'=========================================', log.LEVEL.debug)
       sys.stdout.flush()
       if hasattr(project, 'volume'):
         project.folder = f'/projects{(project.volume + 1) if project.volume else ""}/{project.name}'
       else:
         project.folder = f'/projects/{project.name}'
-      log.write(f'Backup files for project {project.name}')
+      log.write(f'Backup files for project {project.name}', log.LEVEL.debug)
       data_folder = f'{project.folder}/{project.root_folder.split("/")[0]}'
       FILTERS = ''
       if hasattr(project, 'duplicity_filters'):
@@ -149,7 +149,7 @@ for projectname,project in projects.items():
           )
           sys.stdout.flush()
       #backup solr cores
-      log.write(f'Backup solr cores for project {project.name}')
+      log.write(f'Backup solr cores for project {project.name}', log.LEVEL.debug)
       if os.path.isdir(f'{project.folder}/var/solr/cores'):
         for BACKUP_URI in BACKUP_URIS:
           os.system(f'duplicity --verbosity notice '
@@ -181,10 +181,10 @@ for projectname,project in projects.items():
 
     #backup mysql
     if project.mysql_db and ( BACKUP_TYPE == 'mysql' or BACKUP_TYPE == 'all' ):
-      log.write(f'Backup webcrate-mysql db for project {project.name}')
-      print(f'=========================================')
-      print(f'backup mysql db for project {project.name}')
-      print(f'=========================================')
+      log.write(f'Backup webcrate-mysql db for project {project.name}', log.LEVEL.debug)
+      log.write(f'=========================================', log.LEVEL.debug)
+      log.write(f'backup mysql db for project {project.name}', log.LEVEL.debug)
+      log.write(f'=========================================', log.LEVEL.debug)
       sys.stdout.flush()
       mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\\$")
       os.system(f'mkdir -p /webcrate/backup-tmp')
@@ -218,10 +218,10 @@ for projectname,project in projects.items():
 
     #backup project mysql
     if project.mysql_db and ( BACKUP_TYPE == 'mysql' or BACKUP_TYPE == 'all' ):
-      log.write(f'Backup project-mysql db for project {project.name}')
-      print(f'=========================================')
-      print(f'backup project mysql db for project {project.name}')
-      print(f'=========================================')
+      log.write(f'Backup project-mysql db for project {project.name}', log.LEVEL.debug)
+      log.write(f'=========================================', log.LEVEL.debug)
+      log.write(f'backup project mysql db for project {project.name}', log.LEVEL.debug)
+      log.write(f'=========================================', log.LEVEL.debug)
       sys.stdout.flush()
       mysql_root_password = os.popen(f'cat /webcrate/secrets/mysql.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\\$")
       os.system(f'mkdir -p /webcrate/backup-tmp')
@@ -255,11 +255,11 @@ for projectname,project in projects.items():
 
     #backup mysql5
     if project.mysql5_db and ( BACKUP_TYPE == 'mysql5' or BACKUP_TYPE == 'all' ):
-      print(f'=========================================')
-      print(f'backup mysql5 db for project {project.name}')
-      print(f'=========================================')
+      log.write(f'=========================================', log.LEVEL.debug)
+      log.write(f'backup mysql5 db for project {project.name}', log.LEVEL.debug)
+      log.write(f'=========================================', log.LEVEL.debug)
       sys.stdout.flush()
-      log.write(f'Backup mysql5 db for project {project.name}')
+      log.write(f'Backup mysql5 db for project {project.name}', log.LEVEL.debug)
       mysql5_root_password = os.popen(f'cat /webcrate/secrets/mysql5.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\\$")
       os.system(f'mkdir -p /webcrate/backup-tmp')
       if os.path.isdir(f'/webcrate/backup-tmp') and os.listdir(f'/webcrate/backup-tmp'):
@@ -293,11 +293,11 @@ for projectname,project in projects.items():
 
     #backup project mysql5
     if project.mysql5_db and ( BACKUP_TYPE == 'mysql5' or BACKUP_TYPE == 'all' ):
-      print(f'=========================================')
-      print(f'backup project-mysql5 db for project {project.name}')
-      print(f'=========================================')
+      log.write(f'=========================================', log.LEVEL.debug)
+      log.write(f'backup project-mysql5 db for project {project.name}', log.LEVEL.debug)
+      log.write(f'=========================================', log.LEVEL.debug)
       sys.stdout.flush()
-      log.write(f'Backup project-mysql5 db for project {project.name}')
+      log.write(f'Backup project-mysql5 db for project {project.name}', log.LEVEL.debug)
       mysql5_root_password = os.popen(f'cat /webcrate/secrets/mysql5.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\\$")
       os.system(f'mkdir -p /webcrate/backup-tmp')
       if os.path.isdir(f'/webcrate/backup-tmp') and os.listdir(f'/webcrate/backup-tmp'):
@@ -329,11 +329,11 @@ for projectname,project in projects.items():
 
     #backup postgresql
     if project.postgresql_db and ( BACKUP_TYPE == 'postgresql' or BACKUP_TYPE == 'all' ):
-      print(f'=========================================')
-      print(f'backup postgresql db for project {project.name}')
-      print(f'=========================================')
+      log.write(f'=========================================', log.LEVEL.debug)
+      log.write(f'backup postgresql db for project {project.name}', log.LEVEL.debug)
+      log.write(f'=========================================', log.LEVEL.debug)
       sys.stdout.flush()
-      log.write(f'Backup postgres db for project {project.name}')
+      log.write(f'Backup postgres db for project {project.name}', log.LEVEL.debug)
       postgres_root_password = os.popen(f'cat /webcrate/secrets/postgres.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\\$")
       os.system(f'mkdir -p /webcrate/backup-tmp')
       if os.path.isdir(f'/webcrate/backup-tmp') and os.listdir(f'/webcrate/backup-tmp'):
@@ -365,11 +365,11 @@ for projectname,project in projects.items():
 
     #backup project postgresql
     if project.postgresql_db and ( BACKUP_TYPE == 'postgresql' or BACKUP_TYPE == 'all' ):
-      print(f'=========================================')
-      print(f'backup project-postgresql db for project {project.name}')
-      print(f'=========================================')
+      log.write(f'=========================================', log.LEVEL.debug)
+      log.write(f'backup project-postgresql db for project {project.name}', log.LEVEL.debug)
+      log.write(f'=========================================', log.LEVEL.debug)
       sys.stdout.flush()
-      log.write(f'Backup project-postgresql db for project {project.name}')
+      log.write(f'Backup project-postgresql db for project {project.name}', log.LEVEL.debug)
       postgres_root_password = os.popen(f'cat /webcrate/secrets/postgres.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\\$")
       os.system(f'mkdir -p /webcrate/backup-tmp')
       if os.path.isdir(f'/webcrate/backup-tmp') and os.listdir(f'/webcrate/backup-tmp'):
@@ -404,5 +404,5 @@ for projectname,project in projects.items():
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/backup')
 os.system(f'chmod -R a-rw,u+rw /webcrate/backup')
 os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/duplicity')
-log.write(f'Backup process ended')
+log.write(f'Backup process ended', log.LEVEL.debug)
 sys.stdout.flush()

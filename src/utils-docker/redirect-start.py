@@ -40,7 +40,7 @@ async def initCertificates (redirect):
         os.system(f'certbot certonly --key-type ecdsa --keep-until-expiring --renew-with-new-domains --allow-subset-of-names --config-dir /webcrate/letsencrypt --cert-name {redirect.name} --expand --webroot --webroot-path {path} -d {domains}')
         os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/letsencrypt')
         os.system(f'rm -rf {path}')
-        print(f'{redirect.name} - letsencrypt certificate generated')
+        log.write(f'{redirect.name} - letsencrypt certificate generated', log.LEVEL.debug)
         nginx_reload_needed = True
 
   if redirect.https == 'openssl':
@@ -58,7 +58,7 @@ async def initCertificates (redirect):
       os.system(f'openssl x509 -req -extensions SAN -extfile /webcrate/openssl/{redirect.name}/openssl.cnf -in /webcrate/openssl/{redirect.name}/fullchain.csr -CA /webcrate/secrets/rootCA.crt -CAkey /webcrate/secrets/rootCA.key -CAcreateserial -out /webcrate/openssl/{redirect.name}/fullchain.pem -days 5000 -sha256')
       os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/openssl/{redirect.name}')
       nginx_reload_needed = True
-      print(f'{redirect.name} - openssl certificate generated')
+      log.write(f'{redirect.name} - openssl certificate generated', log.LEVEL.debug)
 
   if redirect.https == 'openssl' or redirect.https == 'letsencrypt':
     if not os.path.exists(f'/webcrate/nginx/ssl/{redirect.name}.conf'):
@@ -79,13 +79,13 @@ async def initCertificates (redirect):
         with open(f'/webcrate/nginx/ssl/{redirect.name}.conf', 'w') as f:
           f.write(conf)
           f.close()
-        print(f'{redirect.name} - ssl.conf generated')
+        log.write(f'{redirect.name} - ssl.conf generated', log.LEVEL.debug)
         nginx_reload_needed = True
 
   if redirect.https == 'disabled' and os.path.exists(f'/webcrate/nginx/ssl/{redirect.name}.conf'):
     nginx_reload_needed = True
     os.system(f'rm /webcrate/nginx/ssl/{redirect.name}.conf')
-    print(f'{redirect.name} - ssl.conf removed')
+    log.write(f'{redirect.name} - ssl.conf removed', log.LEVEL.debug)
   return nginx_reload_needed
 
 async def asyncOps (redirect):
@@ -99,9 +99,9 @@ for redirectname,redirect in redirects.items():
     nginx_reload_needed = asyncio.run(asyncOps(redirect))
     if nginx_reload_needed:
       os.system(f'docker exec webcrate-nginx nginx -s reload')
-      log.write(f'{redirect.name} - changes detected - nginx config reloaded')
+      log.write(f'{redirect.name} - changes detected - nginx config reloaded', log.LEVEL.debug)
 
-    log.write(f'{redirect.name} - started')
+    log.write(f'{redirect.name} - started', log.LEVEL.debug)
 
 sys.stdout.flush()
 sys.exit(0)

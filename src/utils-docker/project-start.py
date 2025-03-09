@@ -17,6 +17,7 @@ with open('/webcrate/projects.yml', 'r') as f:
 
 WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
+LOG_LEVEL_VALUE = os.environ.get('LOG_LEVEL_VALUE', 3)
 WEBCRATE_PROJECTS_FOLDERS = os.environ.get('WEBCRATE_PROJECTS_FOLDERS', '')
 WEBCRATE_SERVICE_HTMLTOPDF = os.environ.get('WEBCRATE_SERVICE_HTMLTOPDF', 'false') == 'true'
 WEBCRATE_SERVICE_DOCTOHTML = os.environ.get('WEBCRATE_SERVICE_DOCTOHTML', 'false') == 'true'
@@ -50,7 +51,7 @@ async def initCertificates (project):
         os.system(f'certbot certonly --key-type ecdsa --keep-until-expiring --renew-with-new-domains --allow-subset-of-names --config-dir /webcrate/letsencrypt --cert-name {project.name} --expand --webroot --webroot-path {path} -d {domains}')
         os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/letsencrypt')
         os.system(f'rm -rf {path}')
-        print(f'{project.name} - letsencrypt certificate generated')
+        log.write(f'{project.name} - letsencrypt certificate generated', log.LEVEL.debug)
         nginx_reload_needed = True
 
   if project.https == 'openssl':
@@ -67,7 +68,7 @@ async def initCertificates (project):
       os.system(f'openssl req -new -sha256 -key /webcrate/openssl/{project.name}/privkey.pem -out /webcrate/openssl/{project.name}/fullchain.csr -config /webcrate/openssl/{project.name}/openssl.cnf')
       os.system(f'openssl x509 -req -extensions SAN -extfile /webcrate/openssl/{project.name}/openssl.cnf -in /webcrate/openssl/{project.name}/fullchain.csr -CA /webcrate/secrets/rootCA.crt -CAkey /webcrate/secrets/rootCA.key -CAcreateserial -out /webcrate/openssl/{project.name}/fullchain.pem -days 5000 -sha256')
       os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/openssl/{project.name}')
-      print(f'{project.name} - openssl certificate generated')
+      log.write(f'{project.name} - openssl certificate generated', log.LEVEL.debug)
       nginx_reload_needed = True
 
   if project.https == 'openssl' or project.https == 'letsencrypt':
@@ -81,25 +82,26 @@ async def initCertificates (project):
         with open(f'/webcrate/nginx/ssl/{project.name}.conf', 'w') as f:
           f.write(conf)
           f.close()
-        print(f'{project.name} - ssl.conf generated')
+        log.write(f'{project.name} - ssl.conf generated', log.LEVEL.debug)
         nginx_reload_needed = True
 
   if project.https == 'disabled' and os.path.exists(f'/webcrate/nginx/ssl/{project.name}.conf'):
     nginx_reload_needed = True
     os.system(f'rm /webcrate/nginx/ssl/{project.name}.conf')
-    print(f'{project.name} - ssl.conf removed')
+    log.write(f'{project.name} - ssl.conf removed', log.LEVEL.debug)
   return nginx_reload_needed
 
 async def startNginx (project):
   if helpers.is_container_exists(f'webcrate-{project.name}-nginx'):
-    log.write(f'{project.name} - nginx exists')
+    log.write(f'{project.name} - nginx exists', log.LEVEL.debug)
   else:
-    log.write(f'{project.name} - starting nginx container')
+    log.write(f'{project.name} - starting nginx container', log.LEVEL.debug)
     os.system(f'docker run -d --env-file=/webcrate-readonly/.env --hostname webcrate-{project.name}-nginx --name webcrate-{project.name}-nginx '
       f'--network="webcrate_network_{project.name}" '
       f'--restart="unless-stopped" '
       f'-e WEBCRATE_UID={WEBCRATE_UID} '
       f'-e WEBCRATE_GID={WEBCRATE_GID} '
+      f'-e LOG_LEVEL_VALUE={LOG_LEVEL_VALUE} '
       f'-v {SITES_ABSOLUTE_PATH}/{project.name}:/home/{project.name} '
       f'-v /etc/localtime:/etc/localtime:ro '
       f'-v {WEBCRATE_PWD}/var/nginx:/webcrate/nginx:ro '
@@ -116,14 +118,15 @@ async def startMysql (project):
     os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/mysql-projects/{project.name}')
     PASS_ENV = f'-e MYSQL_ROOT_PASSWORD="{mysql_root_password}"'
   if helpers.is_container_exists(f'webcrate-{project.name}-mysql'):
-    log.write(f'{project.name} - mysql exists')
+    log.write(f'{project.name} - mysql exists', log.LEVEL.debug)
   else:
-    log.write(f'{project.name} - starting mysql container')
+    log.write(f'{project.name} - starting mysql container', log.LEVEL.debug)
     os.system(f'docker run -d --name webcrate-{project.name}-mysql '
       f'--network="webcrate_network_{project.name}" '
       f'--restart="unless-stopped" '
       f'{PASS_ENV} '
       f'--user "{WEBCRATE_UID}:{WEBCRATE_GID}" '
+      f'-e LOG_LEVEL_VALUE={LOG_LEVEL_VALUE} '
       f'-v /etc/localtime:/etc/localtime:ro '
       f'-v {WEBCRATE_PWD}/var/mysql-projects/{project.name}:/var/lib/mysql '
       f'-v {WEBCRATE_PWD}/config/mysql/mysql.cnf:/etc/mysql/conf.d/user.cnf '
@@ -160,9 +163,9 @@ async def startMysql (project):
       os.system(f"mysql -u root -h webcrate-{project.name}-mysql -p\"{mysql_root_password}\" -e \"CREATE USER \`{project.name}\`@'%' IDENTIFIED BY \\\"{mysql_project_password}\\\";\"")
       os.system(f"mysql -u root -h webcrate-{project.name}-mysql -p\"{mysql_root_password}\" -e \"GRANT ALL PRIVILEGES ON \`{project.name}\` . * TO \`{project.name}\`@'%';\"")
       os.system(f"mysql -u root -h webcrate-{project.name}-mysql -p\"{mysql_root_password}\" -e \"FLUSH PRIVILEGES;\"")
-      log.write(f'{project.name} - mysql user and db created')
+      log.write(f'{project.name} - mysql user and db created', log.LEVEL.debug)
     else:
-      log.write(f'{project.name} - mysql user and db exists')
+      log.write(f'{project.name} - mysql user and db exists', log.LEVEL.debug)
 
 async def startMysql5 (project):
   mysql5_root_password = os.popen(f'cat /webcrate/secrets/mysql5.cnf | grep "password="').read().strip().split("password=")[1][1:][:-1].replace("$", "\\$")
@@ -172,14 +175,15 @@ async def startMysql5 (project):
     os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/mysql5-projects/{project.name}')
     PASS_ENV = f'-e MYSQL_ROOT_PASSWORD="{mysql5_root_password}"'
   if helpers.is_container_exists(f'webcrate-{project.name}-mysql5'):
-    log.write(f'{project.name} - mysql5 exists')
+    log.write(f'{project.name} - mysql5 exists', log.LEVEL.debug)
   else:
-    log.write(f'{project.name} - starting mysql5 container')
+    log.write(f'{project.name} - starting mysql5 container', log.LEVEL.debug)
     os.system(f'docker run -d --name webcrate-{project.name}-mysql5 '
       f'--network="webcrate_network_{project.name}" '
       f'--restart="unless-stopped" '
       f'{PASS_ENV} '
       f'--user "{WEBCRATE_UID}:{WEBCRATE_GID}" '
+      f'-e LOG_LEVEL_VALUE={LOG_LEVEL_VALUE} '
       f'-v /etc/localtime:/etc/localtime:ro '
       f'-v {WEBCRATE_PWD}/var/mysql5-projects/{project.name}:/var/lib/mysql '
       f'-v {WEBCRATE_PWD}/config/mysql/mysql5.cnf:/etc/mysql/conf.d/user.cnf '
@@ -216,9 +220,9 @@ async def startMysql5 (project):
       os.system(f"mysql -u root -h webcrate-{project.name}-mysql5 -p\"{mysql5_root_password}\" -e \"CREATE USER \`{project.name}\`@'%' IDENTIFIED BY \\\"{mysql5_project_password}\\\";\"")
       os.system(f"mysql -u root -h webcrate-{project.name}-mysql5 -p\"{mysql5_root_password}\" -e \"GRANT ALL PRIVILEGES ON \`{project.name}\` . * TO \`{project.name}\`@'%';\"")
       os.system(f"mysql -u root -h webcrate-{project.name}-mysql5 -p\"{mysql5_root_password}\" -e \"FLUSH PRIVILEGES;\"")
-      log.write(f'{project.name} - mysql5 user and db created')
+      log.write(f'{project.name} - mysql5 user and db created', log.LEVEL.debug)
     else:
-      log.write(f'{project.name} - mysql5 user and db exists')
+      log.write(f'{project.name} - mysql5 user and db exists', log.LEVEL.debug)
 
 async def startPostgresql (project):
   postgres_root_password = os.popen(f'cat /webcrate/secrets/postgres.cnf | grep "password="').read().strip().split("password=")[1][1:][:-1].replace("$", "\\$")
@@ -228,14 +232,15 @@ async def startPostgresql (project):
     os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/postgresql-projects/{project.name}')
     PASS_ENV = f'-e POSTGRES_PASSWORD="{postgres_root_password}" '
   if helpers.is_container_exists(f'webcrate-{project.name}-postgresql'):
-    log.write(f'{project.name} - postgresql exists')
+    log.write(f'{project.name} - postgresql exists', log.LEVEL.debug)
   else:
-    log.write(f'{project.name} - starting postgresql container')
+    log.write(f'{project.name} - starting postgresql container', log.LEVEL.debug)
     os.system(f'docker run -d --name webcrate-{project.name}-postgresql '
       f'--network="webcrate_network_{project.name}" '
       f'--restart="unless-stopped" '
       f'{PASS_ENV} '
       f'--user "{WEBCRATE_UID}:{WEBCRATE_GID}" '
+      f'-e LOG_LEVEL_VALUE={LOG_LEVEL_VALUE} '
       f'-v /etc/localtime:/etc/localtime:ro '
       f'-v {WEBCRATE_PWD}/var/postgresql-projects/{project.name}:/var/lib/postgresql/data '
       f'$IMAGE_POSTGRES >/dev/null')
@@ -261,9 +266,9 @@ async def startPostgresql (project):
       os.system(f'psql -d "host=webcrate-{project.name}-postgresql user=postgres password={postgres_root_password}" -tAc "CREATE DATABASE {project.name};" >/dev/null')
       os.system(f'psql -d "host=webcrate-{project.name}-postgresql user=postgres password={postgres_root_password}" -tAc "CREATE USER {project.name} WITH ENCRYPTED PASSWORD \'{postgres_user_password}\';" >/dev/null')
       os.system(f'psql -d "host=webcrate-{project.name}-postgresql user=postgres password={postgres_root_password}" -tAc "GRANT ALL PRIVILEGES ON DATABASE {project.name} TO {project.name};" >/dev/null')
-      log.write(f'postgresql user {project.name} and db created')
+      log.write(f'postgresql user {project.name} and db created', log.LEVEL.debug)
     else:
-      log.write(f'postgresql user {project.name} and db already exists')
+      log.write(f'postgresql user {project.name} and db already exists', log.LEVEL.debug)
 
 async def asyncOps (project):
   initCertificatesTask = asyncio.create_task(initCertificates(project))
@@ -313,10 +318,10 @@ for projectname,project in projects.items():
     net_num = project.uid - UID_START_NUMBER
     net_num = f'{net_num // 256}.{net_num % 256}'
     if helpers.is_network_exists(f'webcrate_network_{project.name}'):
-      log.write(f'{project.name} - network exists')
+      log.write(f'{project.name} - network exists', log.LEVEL.debug)
     else:
       os.system(f'docker network create --driver=bridge --subnet=10.{net_num}.0/24 webcrate_network_{project.name} >/dev/null')
-      log.write(f'{project.name} - network created')
+      log.write(f'{project.name} - network created', log.LEVEL.debug)
 
     # INIT PROJECT FOLDER
     project.folder = f'/projects{(project.volume + 1) if project.volume else ""}/{project.name}'
@@ -354,9 +359,9 @@ for projectname,project in projects.items():
 
     # START CONTAINER
     if helpers.is_container_exists(f'webcrate-core-{project.name}'):
-      log.write(f'{project.name} - core container exists')
+      log.write(f'{project.name} - core container exists', log.LEVEL.debug)
     else:
-      log.write(f'{project.name} - starting container')
+      log.write(f'{project.name} - starting container', log.LEVEL.debug)
       if not os.path.isfile(f'/webcrate/crontabs/{project.name}'):
         os.system(f'echo "" > /webcrate/crontabs/{project.name}')
         os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/crontabs/{project.name}')
@@ -370,6 +375,7 @@ for projectname,project in projects.items():
         f'-e WEBCRATE_PROJECT={project.name} '
         f'-e WEBCRATE_PROJECT_PASSWORD={project_password} '
         f'-e WEBCRATE_DOMAIN={idna.decode(project_domain)} '
+        f'-e LOG_LEVEL_VALUE={LOG_LEVEL_VALUE} '
         f'-v /etc/localtime:/etc/localtime:ro '
         f'-v {SITES_ABSOLUTE_PATH}/{project.name}:/home/{project.name} '
         f'-v {WEBCRATE_PWD}/var/crontabs/{project.name}:/var/spool/cron/{project.name} '
@@ -380,15 +386,15 @@ for projectname,project in projects.items():
         f'-v {WEBCRATE_PWD}/config/exim/exim.conf.template:/etc/mail/exim.conf.template '
         f'{PHP_CONFIGS} '
         f'ace5040/webcrate-core-{backend}:latest >/dev/null')
-      log.write(f'{project.name} - started container')
+      log.write(f'{project.name} - started container', log.LEVEL.debug)
 
     # START MEMCACHED
     if project.memcached:
       if helpers.is_container_exists(f'webcrate-{project.name}-memcached'):
-        log.write(f'{project.name} - memcached exists')
+        log.write(f'{project.name} - memcached exists', log.LEVEL.debug)
       else:
-        log.write(f'{project.name} - starting memcached container')
-        os.system(f'docker run -d --env-file=/webcrate-readonly/.env --log-driver=none --name webcrate-{project.name}-memcached '
+        log.write(f'{project.name} - starting memcached container', log.LEVEL.debug)
+        os.system(f'docker run -d -e LOG_LEVEL_VALUE={LOG_LEVEL_VALUE} --env-file=/webcrate-readonly/.env --log-driver=none --name webcrate-{project.name}-memcached '
           f'--network="webcrate_network_{project.name}" '
           f'--restart="unless-stopped" '
           f'$IMAGE_MEMCACHED >/dev/null')
@@ -396,14 +402,15 @@ for projectname,project in projects.items():
     # START SOLR
     if hasattr(project, 'solr') and project.solr:
       if helpers.is_container_exists(f'webcrate-{project.name}-solr'):
-        log.write(f'{project.name} - solr exists')
+        log.write(f'{project.name} - solr exists', log.LEVEL.debug)
       else:
-        log.write(f'{project.name} - starting solr container')
+        log.write(f'{project.name} - starting solr container', log.LEVEL.debug)
         os.system(f'docker run -d --env-file=/webcrate-readonly/.env --log-driver=none --name webcrate-{project.name}-solr '
           f'--network="webcrate_network_{project.name}" '
           f'--restart="unless-stopped" '
           f'--user "{WEBCRATE_UID}:{WEBCRATE_GID}" '
           f'-v /etc/localtime:/etc/localtime:ro '
+          f'-e LOG_LEVEL_VALUE={LOG_LEVEL_VALUE} '
           f'{PROJECT_SOLR} '
           f'--entrypoint docker-entrypoint.sh '
           f'$IMAGE_SOLR solr -m 4096m -force -f >/dev/null')
@@ -411,15 +418,16 @@ for projectname,project in projects.items():
     # START ELASTIC
     if hasattr(project, 'elastic') and project.elastic:
       if helpers.is_container_exists(f'webcrate-{project.name}-elastic'):
-        log.write(f'{project.name} - elsatic exists')
+        log.write(f'{project.name} - elsatic exists', log.LEVEL.debug)
       else:
-        log.write(f'{project.name} - starting elsatic container')
+        log.write(f'{project.name} - starting elsatic container', log.LEVEL.debug)
         # os.system(f'docker run -d --env-file=/webcrate-readonly/.env --log-driver=none --name webcrate-{project.name}-elastic '
         os.system(f'docker run -d --name webcrate-{project.name}-elastic '
           f'--network="webcrate_network_{project.name}" '
           f'--restart="unless-stopped" '
           f'-e "discovery.type=single-node" '
           f'-e "ES_JAVA_OPTS=-Xms8g -Xmx8g" '
+          f'-e LOG_LEVEL_VALUE={LOG_LEVEL_VALUE} '
           f'--user "{WEBCRATE_UID}:{WEBCRATE_GID}" '
           f'-v /etc/localtime:/etc/localtime:ro '
           f'{PROJECT_ELASTIC} '
@@ -468,9 +476,9 @@ for projectname,project in projects.items():
 
     if nginx_reload_needed:
       os.system(f'docker exec webcrate-nginx nginx -s reload')
-      log.write(f'{project.name} - changes detected - nginx config reloaded')
+      log.write(f'{project.name} - changes detected - nginx config reloaded', log.LEVEL.debug)
 
-    log.write(f'{project.name} - started')
+    log.write(f'{project.name} - started', log.LEVEL.debug)
 
 sys.stdout.flush()
 sys.exit(0)

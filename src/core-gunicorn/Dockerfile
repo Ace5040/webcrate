@@ -41,7 +41,8 @@ RUN apt-get --assume-yes install sudo git nano exim4-base openssh-server \
 RUN export PYENV_ROOT=/opt/pyenv; curl https://pyenv.run | bash
 
 WORKDIR /
-COPY ["versions.py", "parse-projects.py", "sync_ssh_keys.sh", "log.py", "supervisord.conf.template", "supervisord-user.conf.template", "/webcrate/"]
+COPY ["versions.py", "parse-projects.py", "sync_ssh_keys.sh", "supervisord.conf.template", "supervisord-user.conf.template", "/webcrate/"]
+COPY --from=src log.py /webcrate/
 COPY bashrc.sh /etc/bashrc.sh
 COPY ["gunicorn_restart.sh", "/webcrate-bin/"]
 COPY ["entrypoint.sh", "/"]

@@ -2,6 +2,7 @@
 SCRIPT=`realpath $0`
 SCRIPTPATH=`dirname $SCRIPT`
 cd $SCRIPTPATH/..
+WEBCRATE_PWD=$(pwd)
 source ./.env
 source ./images.default
 source ./bin/includes/functions.inc

@@ -16,6 +16,7 @@ if [[ -d ./var/meta/projects && -n "$(ls -A ./var/meta/projects)" ]]; then
 				-e WEBCRATE_PROJECT_HOMES="$PROJECTS_HOMES" \
 				$PROJECTS_VOLUMES \
 				-e WEBCRATE_PROJECTS_FOLDERS=$( IFS=:; printf '%s' "${WEBCRATE_PROJECTS_FOLDERS[*]}" ) \
+				-e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE \
 				-e WEBCRATE_PWD=$(pwd) \
 				-v $DOCKER_SOCKET:/var/run/docker.sock \
 				-v $(pwd):/webcrate-readonly:ro \

@@ -20,6 +20,7 @@ with open('/webcrate/projects.yml', 'r') as f:
 
 WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
+LOG_LEVEL_VALUE = os.environ.get('LOG_LEVEL_VALUE', 3)
 WEBCRATE_SERVICE_HTMLTOPDF = os.environ.get('WEBCRATE_SERVICE_HTMLTOPDF', 'false') == 'true'
 WEBCRATE_SERVICE_DOCTOHTML = os.environ.get('WEBCRATE_SERVICE_DOCTOHTML', 'false') == 'true'
 WEBCRATE_SERVICE_STATS = os.environ.get('WEBCRATE_SERVICE_STATS', 'false') == 'true'
@@ -36,14 +37,15 @@ async def startMysql (service):
     os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/mysql-services/{service.name}')
     PASS_ENV = f'-e MYSQL_ROOT_PASSWORD="{mysql_root_password}"'
   if helpers.is_container_exists(f'webcrate-{service.name}-mysql'):
-    log.write(f'{service.name} - mysql exists')
+    log.write(f'{service.name} - mysql exists', log.LEVEL.debug)
   else:
-    log.write(f'{service.name} - starting mysql container')
+    log.write(f'{service.name} - starting mysql container', log.LEVEL.debug)
     os.system(f'docker run -d --name webcrate-{service.name}-mysql '
       f'--network="webcrate_network" '
       f'--restart="unless-stopped" '
       f'{PASS_ENV} '
       f'--user "{WEBCRATE_UID}:{WEBCRATE_GID}" '
+      f'-e LOG_LEVEL_VALUE={LOG_LEVEL_VALUE} '
       f'-v /etc/localtime:/etc/localtime:ro '
       f'-v {WEBCRATE_PWD}/var/mysql-services/{service.name}:/var/lib/mysql '
       f'-v {WEBCRATE_PWD}/config/mysql/mysql.cnf:/etc/mysql/conf.d/user.cnf '
@@ -77,9 +79,9 @@ async def startMysql (service):
       os.system(f"mysql -u root -h webcrate-{service.name}-mysql -p\"{mysql_root_password}\" -e \"CREATE USER \`{service.name}\`@'%' IDENTIFIED BY \\\"{mysql_service_password}\\\";\"")
       os.system(f"mysql -u root -h webcrate-{service.name}-mysql -p\"{mysql_root_password}\" -e \"GRANT ALL PRIVILEGES ON \`{service.name}\` . * TO \`{service.name}\`@'%';\"")
       os.system(f"mysql -u root -h webcrate-{service.name}-mysql -p\"{mysql_root_password}\" -e \"FLUSH PRIVILEGES;\"")
-      log.write(f'{service.name} - mysql user and db created')
+      log.write(f'{service.name} - mysql user and db created', log.LEVEL.debug)
     else:
-      log.write(f'{service.name} - mysql user and db exists')
+      log.write(f'{service.name} - mysql user and db exists', log.LEVEL.debug)
 
 async def startDatabases (service):
     #START MYSQL
@@ -98,10 +100,10 @@ for servicename,service in services.items():
 
   # CREATE NETWORK
   # if helpers.is_network_exists(f'webcrate_network_{service.name}'):
-  #   log.write(f'{service.name} - network exists')
+  #   log.write(f'{service.name} - network exists', log.LEVEL.debug)
   # else:
   #   os.system(f'docker network create --driver=bridge webcrate_network{service.name} >/dev/null')
-  #   log.write(f'{service.name} - network created')
+  #   log.write(f'{service.name} - network created', log.LEVEL.debug)
 
   # START DATABASES
   os.system(f'docker network connect webcrate_network webcrate-utils-docker-services-init')

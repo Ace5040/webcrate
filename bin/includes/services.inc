@@ -9,6 +9,7 @@ else
 		--restart="unless-stopped" \
 		-e WEBCRATE_UID=$uid \
 		-e WEBCRATE_GID=$gid \
+		-e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v $(pwd)/config/nginx:/webcrate/nginx-config:ro \
 		-v $(pwd)/var/nginx:/webcrate/nginx:ro \
@@ -32,6 +33,7 @@ else
 		--network="webcrate_network" --ip=10.255.0.100 \
 		--restart="unless-stopped" \
 		$DNSPORT \
+		-e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE \
 		-v $(pwd)/var/dnsmasq:/dnsmasq \
 		$IMAGE_DNSMASQ > /dev/null
 fi
@@ -46,6 +48,7 @@ docker run --rm --env-file=$(pwd)/.env --env-file=$(pwd)/images.default \
 	-e WEBCRATE_SERVICE_DOCTOHTML=$WEBCRATE_SERVICE_DOCTOHTML \
 	-e WEBCRATE_SERVICE_HTMLTOPDF=$WEBCRATE_SERVICE_HTMLTOPDF \
 	-e WEBCRATE_PWD=$(pwd) \
+	-e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE \
 	-v $DOCKER_SOCKET:/var/run/docker.sock \
 	-v $(pwd):/webcrate-readonly:ro \
 	-v $(pwd)/services.yml:/webcrate/services.yml:ro \
@@ -72,6 +75,7 @@ else
 		--restart="unless-stopped" \
 		--user "$uid:$gid" \
 		$MYSQL_ROOT_PASS \
+		-e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v $(pwd)/var/mysql:/var/lib/mysql \
 		-v $(pwd)/config/mysql/mysql.cnf:/etc/mysql/conf.d/user.cnf \
@@ -88,6 +92,7 @@ else
 		--restart="unless-stopped" \
 		--user "$uid:$gid" \
 		$MYSQL5_ROOT_PASS \
+		-e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v $(pwd)/var/mysql5:/var/lib/mysql \
 		-v $(pwd)/config/mysql/mysql5.cnf:/etc/mysql/conf.d/user.cnf \
@@ -104,6 +109,7 @@ else
 		--restart="unless-stopped" \
 		--user "$uid:$gid" \
 		$POSTGRES_PASS \
+		-e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE \
 		-v $(pwd)/var/postgres:/var/lib/postgresql/data \
 		$IMAGE_POSTGRES > /dev/null
 fi
@@ -119,6 +125,7 @@ else
 		-e WEBCRATE_UID=$uid \
 		-e WEBCRATE_GID=$gid \
 		-e WEBCRATE_PROJECTS_FOLDERS=$( IFS=:; printf '%s' "${WEBCRATE_PROJECTS_FOLDERS[*]}" ) \
+		-e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v $DOCKER_SOCKET:/var/run/docker.sock \
 		$WEBCRATE_APP_SRC \
@@ -141,6 +148,7 @@ else
 		--restart="unless-stopped" \
 		-e PMA_HOSTS=$PMA_HOSTS \
 		-e UPLOAD_LIMIT=2048M \
+		-e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v $(pwd)/config/phpmyadmin/php.ini:/usr/local/etc/php/php.ini:ro \
 		-v $(pwd)/config/phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php:ro \
@@ -155,6 +163,7 @@ fi
 #     --network="webcrate_network" --dns=10.255.0.100 \
 #     --restart="unless-stopped" \
 #     -v /etc/localtime:/etc/localtime:ro \
+#	  -e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE \
 #     dockage/phppgadmin > /dev/null
 #     # $IMAGE_PHPPGADMIN > /dev/null
 # fi
@@ -167,6 +176,7 @@ if [ "$WEBCRATE_SERVICE_DOCTOHTML" = true ]; then
 		docker run -d --env-file=$(pwd)/.env --name webcrate-doctohtml \
 			--network="webcrate_network" --dns=10.255.0.100 \
 			--restart="unless-stopped" \
+			-e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE \
 			-p "3000:3000" \
 			$IMAGE_DOCTOHTML > /dev/null
 	fi
@@ -180,6 +190,7 @@ if [ "$WEBCRATE_SERVICE_HTMLTOPDF" = true ]; then
 		docker run -d --env-file=$(pwd)/.env --name webcrate-htmltopdf \
 			--network="webcrate_network" --dns=10.255.0.100 \
 			--restart="unless-stopped" \
+			-e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE \
 			-p "3001:3000" \
 			$IMAGE_HTMLTOPDF > /dev/null
 	fi
@@ -197,6 +208,7 @@ if [ "$WEBCRATE_SERVICE_STATS" = true ]; then
 			-e GF_PATHS_DATA=/data \
 			-e GF_PATHS_LOGS=/log \
 			-e GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/home.json \
+			-e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE \
 			-v /etc/localtime:/etc/localtime:ro \
 			-v $(pwd)/var/grafana/data:/data \
 			-v $(pwd)/var/grafana/log:/log \
@@ -220,6 +232,7 @@ if [ "$WEBCRATE_SERVICE_STATS" = true ]; then
 			-e DOCKER_INFLUXDB_INIT_BUCKET=webcrate \
 			-e DOCKER_INFLUXDB_INIT_RETENTION=180d \
 			-e DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=webcrate \
+			-e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE \
 			-v /etc/localtime:/etc/localtime:ro \
 			-v $(pwd)/var/influxdb/data:/var/lib/influxdb2 \
 			-v $(pwd)/var/influxdb/etc:/etc/influxdb2 \
@@ -243,6 +256,7 @@ else
 		$PROJECTS_VOLUMES \
 		-e WEBCRATE_PROJECTS_FOLDERS=$( IFS=:; printf '%s' "${WEBCRATE_PROJECTS_FOLDERS[*]}" ) \
 		-e WEBCRATE_BACKUP_URIS=$( IFS=^; printf '%s' "${WEBCRATE_BACKUP_URIS[*]}" ) \
+		-e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE \
 		-v $DOCKER_SOCKET:/var/run/docker.sock \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v $(pwd):/webcrate-readonly:ro \
@@ -278,6 +292,7 @@ else
 		--network="webcrate_network" --dns=10.255.0.100 \
 		--restart="unless-stopped" \
 		$PROJECTS_VOLUMES \
+		-e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE \
 		-v $DOCKER_SOCKET:/var/run/docker.sock \
 		-v /etc/localtime:/etc/localtime:ro \
 		$IMAGE_STATS > /dev/null

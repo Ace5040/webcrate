@@ -26,8 +26,8 @@ for servicename,service in services.items():
 if any_letsencrypt_https_configs_found:
   WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
   WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
-  log.write(f'Run certbot renew script')
+  log.write(f'Run certbot renew script', log.LEVEL.debug)
   os.system(f'certbot renew --key-type ecdsa --config-dir /webcrate/letsencrypt --deploy-hook /certbot-renew-deploy.py');
   os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/letsencrypt')
 else:
-  log.write(f'No letsencrypt configs found')
+  log.write(f'No letsencrypt configs found', log.LEVEL.debug)

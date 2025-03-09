@@ -3,25 +3,24 @@ function Start() {
 	then
 		if [[ ${ALLOWED_SERVICES[@]} =~ $1 ]]
 		then
-			echo "Starting $1"
-			echo "Starting $1 service"
+			writeLog "Starting $1 service" $LOG_LEVEL_INFO
 			source ./bin/includes/generate-config.inc
 			source ./bin/includes/services.inc
-			writeLog "Started"
+			writeLog "Started" $LOG_LEVEL_INFO
 		else
-			echo "Unknown service $1"
-			exit 3
+			writeLog "Unknown service $1" $LOG_LEVEL_ERROR
+			exit 1
 		fi
 	elif [ $# -eq 0 ]
 	then
-		echo "Starting All services"
+		writeLog "Starting All services" $LOG_LEVEL_INFO
 		source ./bin/includes/generate-config.inc
 		source ./bin/includes/services.inc
 		source ./bin/includes/projects.inc
-		writeLog "Started"
+		writeLog "Started" $LOG_LEVEL_INFO
 	else
-		echo "Wrong number of args"
-		exit 4
+		writeLog "Wrong number of args" $LOG_LEVEL_ERROR
+		exit 1
 	fi
 
 }

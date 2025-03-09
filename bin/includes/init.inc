@@ -1,6 +1,4 @@
-writeLog "Initialization..."
-
-writeLog "Creating var folders"
+writeLog "Creating var folders" $LOG_LEVEL_INFO
 var_folders=(\
 	"secrets"\
 	"meta"\
@@ -57,7 +55,7 @@ POSTGRES_PASS=$(initDbFolder 'postgres')
 
 GRAFANA_PASS=''
 if [[ ! -d "./var/grafana/data" ]] ; then
-	writeLog "Init grafana folders and generate password"
+	writeLog "Init grafana folders and generate password" $LOG_LEVEL_DEBUG
 	mkdir -p "./var/grafana/data"
 	mkdir -p "./var/grafana/log"
 	if [[ ! -f "./var/secrets/grafana.secret" ]] ; then
@@ -70,7 +68,7 @@ if [[ ! -d "./var/grafana/data" ]] ; then
 fi
 
 if [[ ! -f "./var/secrets/admin.secret" ]] ; then
-	writeLog "Generate webcrate secret and admin password"
+	writeLog "Generate webcrate secret and admin password" $LOG_LEVEL_DEBUG
 	admin_password=`docker run --rm $IMAGE_UTILS_PWGEN /pwgen.sh`
 	app_secret=`docker run --rm $IMAGE_UTILS_PWGEN pwgen -nAs1 32 1`
 	echo "user=admin" > ./var/secrets/admin.secret
@@ -79,19 +77,19 @@ if [[ ! -f "./var/secrets/admin.secret" ]] ; then
 fi
 
 if [[ ! -f "./projects.yml" ]] ; then
-	writeLog "Create default projects.yml"
+	writeLog "Create default projects.yml" $LOG_LEVEL_DEBUG
 	cp ./projects.yml.example ./projects.yml
 fi
 if [[ ! -f "./redirects.yml" ]] ; then
-	writeLog "Create default redirects.yml"
+	writeLog "Create default redirects.yml" $LOG_LEVEL_DEBUG
 	cp ./redirects.yml.example ./redirects.yml
 fi
 if [[ ! -f "./services.yml" ]] ; then
-	writeLog "Create default services.yml"
+	writeLog "Create default services.yml" $LOG_LEVEL_DEBUG
 	cp ./services.yml.example ./services.yml
 fi
 
-writeLog "Create docker network if it not exists"
+writeLog "Create docker network if it not exists" $LOG_LEVEL_DEBUG
 if docker network inspect webcrate_network >/dev/null 2> /dev/null; then
 	echo network webcrate_network exists
 else

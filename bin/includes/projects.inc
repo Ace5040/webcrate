@@ -4,7 +4,7 @@ if [[ -d ./var/meta/projects && -n "$(ls -A ./var/meta/projects)" ]]; then
 		while read -r line; do
 			project=($line)
 			project_name=${project[1]}
-			writeLog "Starting project $project_name"
+			writeLog "Starting project $project_name" $LOG_LEVEL_INFO
 			docker run --rm --env-file=$(pwd)/.env --env-file=$(pwd)/images.default \
 				--name webcrate-utils-docker-$project_name \
 				-e WEBCRATE_UID=$uid \
@@ -33,7 +33,7 @@ if [[ -d ./var/meta/projects && -n "$(ls -A ./var/meta/projects)" ]]; then
 				-v $(pwd)/var/crontabs:/webcrate/crontabs \
 				-v $(pwd)/var/php_pools:/webcrate/php_pools \
 				$IMAGE_UTILS_DOCKER /project-start.py $project_name
-			writeLog "Project $project_name started"
+			writeLog "Project $project_name started" $LOG_LEVEL_INFO
 		done < $projectConfig
 	done
 fi

@@ -1,7 +1,7 @@
 if docker container inspect webcrate-nginx >/dev/null 2> /dev/null; then
-	writeLog "Container webcrate-nginx exists"
+	writeLog "Container webcrate-nginx exists" $LOG_LEVEL_DEBUG
 else
-	writeLog "Starting nginx container"
+	writeLog "Starting nginx container" $LOG_LEVEL_INFO
 	docker run -d --env-file=$(pwd)/.env --hostname webcrate-nginx --name webcrate-nginx \
 		--network="webcrate_network" \
 		-p "${WEBCRATE_APP_HTTP_PORT}:1080" \
@@ -21,9 +21,9 @@ else
 fi
 
 if docker container inspect webcrate-dnsmasq >/dev/null 2> /dev/null; then
-	writeLog "Service webcrate-dnsmasq exists"
+	writeLog "Service webcrate-dnsmasq exists" $LOG_LEVEL_DEBUG
 else
-	writeLog "Starting webcrate-dnsmasq container"
+	writeLog "Starting webcrate-dnsmasq container" $LOG_LEVEL_INFO
 	DNSPORT=""
 	if [ "$WEBCRATE_LOCALDNS" = true ]; then
 		DNSPORT=-p\ "53:53/udp"
@@ -36,7 +36,7 @@ else
 		$IMAGE_DNSMASQ > /dev/null
 fi
 
-writeLog "Init services"
+writeLog "Init services" $LOG_LEVEL_INFO
 docker run --rm --env-file=$(pwd)/.env --env-file=$(pwd)/images.default \
 	--name webcrate-utils-docker-services-init \
 	-e WEBCRATE_UID=$uid \
@@ -60,12 +60,12 @@ docker run --rm --env-file=$(pwd)/.env --env-file=$(pwd)/images.default \
 	-v $(pwd)/var/crontabs:/webcrate/crontabs \
 	-v $(pwd)/var/php_pools:/webcrate/php_pools \
 	$IMAGE_UTILS_DOCKER /services-init.py
-writeLog "Services inited"
+writeLog "Services inited" $LOG_LEVEL_INFO
 
 if docker container inspect webcrate-mysql >/dev/null 2> /dev/null; then
-	writeLog "Container webcrate-mysql exists"
+	writeLog "Container webcrate-mysql exists" $LOG_LEVEL_DEBUG
 else
-	writeLog "Starting webcrate-mysql container"
+	writeLog "Starting webcrate-mysql container" $LOG_LEVEL_INFO
 	if [ "$MYSQL_ROOT_PASS" != "" ]; then MYSQL_ROOT_PASS=-e\ MYSQL_ROOT_PASSWORD="$MYSQL_ROOT_PASS"; fi
 	docker run -d --env-file=$(pwd)/.env --name webcrate-mysql \
 		--network="webcrate_network" --dns=10.255.0.100 \
@@ -79,9 +79,9 @@ else
 fi
 
 if docker container inspect webcrate-mysql5 >/dev/null 2> /dev/null; then
-	writeLog "Container webcrate-mysql5 exists"
+	writeLog "Container webcrate-mysql5 exists" $LOG_LEVEL_DEBUG
 else
-	writeLog "Starting webcrate-mysql5 container"
+	writeLog "Starting webcrate-mysql5 container" $LOG_LEVEL_INFO
 	if [ "$MYSQL5_ROOT_PASS" != "" ]; then MYSQL5_ROOT_PASS=-e\ MYSQL_ROOT_PASSWORD="$MYSQL5_ROOT_PASS"; fi
 	docker run -d --env-file=$(pwd)/.env --name webcrate-mysql5 \
 		--network="webcrate_network" --dns=10.255.0.100 \
@@ -95,9 +95,9 @@ else
 fi
 
 if docker container inspect webcrate-postgres >/dev/null 2> /dev/null; then
-	writeLog "Container webcrate-postgres exists"
+	writeLog "Container webcrate-postgres exists" $LOG_LEVEL_DEBUG
 else
-	writeLog "Starting webcrate-postgres container"
+	writeLog "Starting webcrate-postgres container" $LOG_LEVEL_INFO
 	if [ "$POSTGRES_PASS" != "" ]; then POSTGRES_PASS=-e\ POSTGRES_PASSWORD="$POSTGRES_PASS"; fi
 	docker run -d --env-file=$(pwd)/.env --name webcrate-postgres \
 		--network="webcrate_network" --dns=10.255.0.100 \
@@ -109,9 +109,9 @@ else
 fi
 
 if docker container inspect webcrate-admin >/dev/null 2> /dev/null; then
-	writeLog "Container webcrate-admin exists"
+	writeLog "Container webcrate-admin exists" $LOG_LEVEL_DEBUG
 else
-	writeLog "Starting webcrate-admin container"
+	writeLog "Starting webcrate-admin container" $LOG_LEVEL_INFO
 	if [ "$WEBCRATE_APP_MODE" = "DEV" ]; then WEBCRATE_APP_SRC=-v\ $(pwd)/src/admin/app:/app; else WEBCRATE_APP_SRC=""; fi
 	docker run -d --env-file=$(pwd)/.env --hostname webcrate-admin --name webcrate-admin \
 		--network="webcrate_network" --dns=10.255.0.100 \
@@ -132,9 +132,9 @@ else
 fi
 
 if docker container inspect webcrate-phpmyadmin >/dev/null 2> /dev/null; then
-	writeLog "Container webcrate-phpmyadmin exists"
+	writeLog "Container webcrate-phpmyadmin exists" $LOG_LEVEL_DEBUG
 else
-	writeLog "Starting webcrate-phpmyadmin container"
+	writeLog "Starting webcrate-phpmyadmin container" $LOG_LEVEL_INFO
 	PMA_HOSTS=`cat $(pwd)/var/meta/dbhosts.txt`
 	docker run -d --env-file=$(pwd)/.env --name webcrate-phpmyadmin \
 		--network="webcrate_network" --dns=10.255.0.100 \
@@ -148,9 +148,9 @@ else
 fi
 
 # if docker container inspect webcrate-phppgadmin >/dev/null 2> /dev/null; then
-#   writeLog "Container webcrate-phppgadmin exists"
+#   writeLog "Container webcrate-phppgadmin exists" $LOG_LEVEL_DEBUG
 # else
-#   writeLog "Starting webcrate-phppgadmin container"
+#   writeLog "Starting webcrate-phppgadmin container" $LOG_LEVEL_INFO
 #   docker run -d --env-file=$(pwd)/.env --name webcrate-phppgadmin \
 #     --network="webcrate_network" --dns=10.255.0.100 \
 #     --restart="unless-stopped" \
@@ -161,9 +161,9 @@ fi
 
 if [ "$WEBCRATE_SERVICE_DOCTOHTML" = true ]; then
 	if docker container inspect webcrate-doctohtml >/dev/null 2> /dev/null; then
-		writeLog "Container webcrate-doctohtml exists"
+		writeLog "Container webcrate-doctohtml exists" $LOG_LEVEL_DEBUG
 	else
-		writeLog "Starting webcrate-doctohtml container"
+		writeLog "Starting webcrate-doctohtml container" $LOG_LEVEL_INFO
 		docker run -d --env-file=$(pwd)/.env --name webcrate-doctohtml \
 			--network="webcrate_network" --dns=10.255.0.100 \
 			--restart="unless-stopped" \
@@ -174,9 +174,9 @@ fi
 
 if [ "$WEBCRATE_SERVICE_HTMLTOPDF" = true ]; then
 	if docker container inspect webcrate-htmltopdf >/dev/null 2> /dev/null; then
-		writeLog "Container webcrate-htmltopdf exists"
+		writeLog "Container webcrate-htmltopdf exists" $LOG_LEVEL_DEBUG
 	else
-		writeLog "Starting webcrate-htmltopdf container"
+		writeLog "Starting webcrate-htmltopdf container" $LOG_LEVEL_INFO
 		docker run -d --env-file=$(pwd)/.env --name webcrate-htmltopdf \
 			--network="webcrate_network" --dns=10.255.0.100 \
 			--restart="unless-stopped" \
@@ -187,9 +187,9 @@ fi
 
 if [ "$WEBCRATE_SERVICE_STATS" = true ]; then
 	if docker container inspect webcrate-grafana >/dev/null 2>/dev/null; then
-		writeLog "Container grafana exists"
+		writeLog "Container grafana exists" $LOG_LEVEL_DEBUG
 	else
-		writeLog "Starting graphana container"
+		writeLog "Starting graphana container" $LOG_LEVEL_INFO
 		docker run -d --env-file=$(pwd)/.env --name webcrate-grafana \
 			--network="webcrate_network" --dns=10.255.0.100 \
 			--restart="unless-stopped" \
@@ -206,9 +206,9 @@ if [ "$WEBCRATE_SERVICE_STATS" = true ]; then
 			$IMAGE_GRAPHANA >/dev/null 2>/dev/null
 	fi
 	if docker container inspect webcrate-influxdb >/dev/null 2>/dev/null; then
-		writeLog "Container webcrate-influxdb exists"
+		writeLog "Container webcrate-influxdb exists" $LOG_LEVEL_DEBUG
 	else
-		writeLog "Starting webcrate-influxdb container"
+		writeLog "Starting webcrate-influxdb container" $LOG_LEVEL_INFO
 		docker run -d --env-file=$(pwd)/.env --name webcrate-influxdb \
 			--network="webcrate_network" --dns=10.255.0.100 \
 			--restart="unless-stopped" \
@@ -231,9 +231,9 @@ if [ "$WEBCRATE_SERVICE_STATS" = true ]; then
 fi
 
 if docker container inspect webcrate-utils-docker >/dev/null 2>/dev/null; then
-	writeLog "Container webcrate-utils-docker exists"
+	writeLog "Container webcrate-utils-docker exists" $LOG_LEVEL_DEBUG
 else
-	writeLog "Starting webcrate-utils-docker container"
+	writeLog "Starting webcrate-utils-docker container" $LOG_LEVEL_INFO
 	docker run -d --env-file=$(pwd)/.env --env-file=$(pwd)/images.default --hostname webcrate-utils-docker --name webcrate-utils-docker \
 		--network="webcrate_network" --dns=10.255.0.100 \
 		--restart="unless-stopped" \
@@ -271,9 +271,9 @@ else
 fi
 
 if docker container inspect webcrate-stats >/dev/null 2> /dev/null; then
-	writeLog "Container webcrate-stats exists"
+	writeLog "Container webcrate-stats exists" $LOG_LEVEL_DEBUG
 else
-	writeLog "Starting webcrate-stats container"
+	writeLog "Starting webcrate-stats container" $LOG_LEVEL_INFO
 	docker run -d --env-file=$(pwd)/.env --hostname webcrate-stats --name webcrate-stats \
 		--network="webcrate_network" --dns=10.255.0.100 \
 		--restart="unless-stopped" \

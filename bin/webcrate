@@ -20,8 +20,8 @@ source ./bin/commands/help.inc
 set -o errexit -o pipefail -o noclobber -o nounset
 getopt --test > /dev/null && true
 if [[ $? -ne 4 ]]; then
-		echo 'getopt --test failed in this environment'
-		exit 1
+	echo 'getopt --test failed in this environment'
+	exit 1
 fi
 
 ALLOWED_SERVICES=(\

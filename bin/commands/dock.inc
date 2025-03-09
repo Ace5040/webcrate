@@ -30,7 +30,7 @@ function Dock() {
 			docker exec --interactive --tty --user ${1} webcrate-core-${1} bash
 		fi
 	else
-		echo "Wrong number of args"
+		writeLog "Wrong number of args" $LOG_LEVEL_ERROR
 		exit 4
 	fi
 

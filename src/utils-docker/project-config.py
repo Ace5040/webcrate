@@ -278,6 +278,18 @@ for projectname,project in projects.items():
               f.close()
             log.write(f'ssl config for {project.name} - generated', log.LEVEL.debug)
 
+        if project.https != 'disabled':
+          if os.path.isdir(f'/webcrate/openssl/default'):
+            with open(f'/webcrate/ssl.conf', 'r') as f:
+              conf = f.read()
+              f.close()
+            conf = conf.replace('%type%', 'openssl')
+            conf = conf.replace('%path%', 'default')
+            with open(f'/webcrate/nginx/ssl/{project.name}-core.conf', 'w') as f:
+              f.write(conf)
+              f.close()
+            log.write(f'ssl config for {project.name} - generated', log.LEVEL.debug)
+
         with open(f'/webcrate/dnsmasq/hosts/{project.name}.hosts', 'w') as f:
           f.write(f'{DOCKER_HOST_IP} {" ".join(project.domains)}\n')
           f.close()

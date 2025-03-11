@@ -104,6 +104,7 @@ async def startNginx (project):
       f'-e LOG_LEVEL_VALUE={LOG_LEVEL_VALUE} '
       f'-v {SITES_ABSOLUTE_PATH}/{project.name}:/home/{project.name} '
       f'-v /etc/localtime:/etc/localtime:ro '
+      f'-v {WEBCRATE_PWD}/var/openssl:/webcrate/openssl:ro '
       f'-v {WEBCRATE_PWD}/var/nginx:/webcrate/nginx:ro '
       f'-v {WEBCRATE_PWD}/var/nginx/confs/{project.name}.conf:/etc/nginx/conf.d/{project.name}.conf:ro '
       f'-v {WEBCRATE_PWD}/var/log/nginx:/webcrate/log '

@@ -71,9 +71,22 @@ for projectname,project in projects.items():
             log.write(f'{project.name} - ssl.conf generated', log.LEVEL.debug)
             nginx_reload_needed = True
 
+      if project.https != 'disabled':
+        if os.path.isdir(f'/webcrate/openssl/default'):
+          with open(f'/webcrate/ssl.conf', 'r') as f:
+            conf = f.read()
+            f.close()
+          conf = conf.replace('%type%', 'openssl')
+          conf = conf.replace('%path%', 'default')
+          with open(f'/webcrate/nginx/ssl/{project.name}-core.conf', 'w') as f:
+            f.write(conf)
+            f.close()
+          log.write(f'ssl core config for {project.name} - generated', log.LEVEL.debug)
+
       if project.https == 'disabled' and os.path.exists(f'/webcrate/nginx/ssl/{project.name}.conf'):
         nginx_reload_needed = True
         os.system(f'rm /webcrate/nginx/ssl/{project.name}.conf')
+        os.system(f'rm /webcrate/nginx/ssl/{project.name}-core.conf')
         log.write(f'{project.name} - ssl.conf removed', log.LEVEL.debug)
 
       # os.system(f'chown -R {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/nginx')

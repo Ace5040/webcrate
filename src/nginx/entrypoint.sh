@@ -1,6 +1,5 @@
 #!/bin/bash
-
-sed -i "s/error_log  \/var\/log\/nginx\/error.log notice/error_log  \/dev\/null crit/g" /etc/nginx/nginx.conf
+sed -i "s/error_log  \/var\/log\/nginx\/error.log notice/error_log  \/webcrate\/log\/nginx-error.log/g" /etc/nginx/nginx.conf
 sed -i "s/access_log  \/var\/log\/nginx\/access.log  main/access_log  off/g" /etc/nginx/nginx.conf
 sed -i "s/#gzip  on/include \/webcrate\/nginx-config\/\*\.conf/g" /etc/nginx/nginx.conf
 

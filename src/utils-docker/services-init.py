@@ -40,6 +40,9 @@ async def startMysql (service):
     log.write(f'{service.name} - mysql exists', log.LEVEL.debug)
   else:
     log.write(f'{service.name} - starting mysql container', log.LEVEL.debug)
+    if not os.path.isfile(f'/webcrate/log/mysql-{service.name}-service-error.log'):
+      os.system(f'touch /webcrate/log/mysql-{service.name}-service-error.log')
+    os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/log/mysql-{service.name}-service-error.log')
     os.system(f'docker run -d --name webcrate-{service.name}-mysql '
       f'--network="webcrate_network" '
       f'--restart="unless-stopped" '
@@ -49,6 +52,7 @@ async def startMysql (service):
       f'-v /etc/localtime:/etc/localtime:ro '
       f'-v {WEBCRATE_PWD}/var/mysql-services/{service.name}:/var/lib/mysql '
       f'-v {WEBCRATE_PWD}/config/mysql/mysql.cnf:/etc/mysql/conf.d/user.cnf '
+      f'-v {WEBCRATE_PWD}/var/log/mysql-{service.name}-service-error.log:/tmp/mysql-error.log '
       f'$IMAGE_MARIADB10 >/dev/null')
 
   retries = 30

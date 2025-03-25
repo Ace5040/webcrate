@@ -122,6 +122,9 @@ async def startMysql (project):
     log.write(f'{project.name} - mysql exists', log.LEVEL.debug)
   else:
     log.write(f'{project.name} - starting mysql container', log.LEVEL.debug)
+    if not os.path.isfile(f'/webcrate/log/mysql-{project.name}-error.log'):
+      os.system(f'touch /webcrate/log/mysql-{project.name}-error.log')
+    os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/log/mysql-{project.name}-error.log')
     os.system(f'docker run -d --name webcrate-{project.name}-mysql '
       f'--network="webcrate_network_{project.name}" '
       f'--restart="unless-stopped" '
@@ -131,6 +134,7 @@ async def startMysql (project):
       f'-v /etc/localtime:/etc/localtime:ro '
       f'-v {WEBCRATE_PWD}/var/mysql-projects/{project.name}:/var/lib/mysql '
       f'-v {WEBCRATE_PWD}/config/mysql/mysql.cnf:/etc/mysql/conf.d/user.cnf '
+      f'-v {WEBCRATE_PWD}/var/log/mysql-{project.name}-error.log:/tmp/mysql-error.log '
       f'$IMAGE_MARIADB10 >/dev/null')
 
   retries = 30
@@ -179,6 +183,9 @@ async def startMysql5 (project):
     log.write(f'{project.name} - mysql5 exists', log.LEVEL.debug)
   else:
     log.write(f'{project.name} - starting mysql5 container', log.LEVEL.debug)
+    if not os.path.isfile(f'/webcrate/log/mysql5-{project.name}-error.log'):
+      os.system(f'touch /webcrate/log/mysql5-{project.name}-error.log')
+    os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/log/mysql5-{project.name}-error.log')
     os.system(f'docker run -d --name webcrate-{project.name}-mysql5 '
       f'--network="webcrate_network_{project.name}" '
       f'--restart="unless-stopped" '
@@ -188,6 +195,7 @@ async def startMysql5 (project):
       f'-v /etc/localtime:/etc/localtime:ro '
       f'-v {WEBCRATE_PWD}/var/mysql5-projects/{project.name}:/var/lib/mysql '
       f'-v {WEBCRATE_PWD}/config/mysql/mysql5.cnf:/etc/mysql/conf.d/user.cnf '
+      f'-v {WEBCRATE_PWD}/var/log/mysql5-{project.name}-error.log:/tmp/mysql-error.log '
       f'$IMAGE_MARIADB5 >/dev/null')
 
   retries = 30
@@ -468,9 +476,6 @@ for projectname,project in projects.items():
 
     if not helpers.is_network_has_connection(f'webcrate_network_{project.name}', 'webcrate-mysql'):
       os.system(f'docker network connect webcrate_network_{project.name} webcrate-mysql')
-
-    if not helpers.is_network_has_connection(f'webcrate_network_{project.name}', 'webcrate-mysql5'):
-      os.system(f'docker network connect webcrate_network_{project.name} webcrate-mysql5')
 
     if not helpers.is_network_has_connection(f'webcrate_network_{project.name}', 'webcrate-postgres'):
       os.system(f'docker network connect webcrate_network_{project.name} webcrate-postgres')

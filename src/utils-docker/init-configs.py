@@ -69,45 +69,6 @@ for servicename,service in services.items():
       else:
         log.write(f'mysql user {service.name} and db already exists', log.LEVEL.debug)
 
-  if service.mysql5_db:
-    mysql5_root_password = os.popen(f'cat /webcrate/secrets/mysql5.cnf | grep "password="').read().strip().split("password=")[1][1:][:-1].replace("$", "\\$")
-    retries = 20
-    while retries > 0 and helpers.is_mysql_up('webcrate-mysql5', mysql5_root_password) == 0:
-      retries -= 1
-      time.sleep(5)
-    if retries > 0:
-      mysql5_database_found = int(os.popen(f'mysql -u root -h webcrate-mysql5 -p"{mysql5_root_password}" -e "show databases like \'{service.name}\';" | grep "Database ({service.name})" | wc -l').read().strip())
-      if mysql5_database_found == 0:
-        if os.path.isfile(f'/webcrate/secrets/{service.name}-service-mysql5.txt'):
-          with open(f'/webcrate/secrets/{service.name}-service-mysql5.txt', 'r') as f:
-            for line in f:
-              pair = line.strip().split('=', 1)
-              if pair[0] == 'password':
-                mysql5_service_password = pair[1]
-            f.close()
-        else:
-          mysql5_service_password=os.popen(f"/webcrate/pwgen.sh").read().strip()
-          with open(f'/webcrate/secrets/{service.name}-service-mysql5.txt', 'w') as f:
-            f.write(f'host=webcrate-mysql5\n')
-            f.write(f'name={service.name}\n')
-            f.write(f'user={service.name}\n')
-            f.write(f'password={mysql_service_password}\n')
-            f.close()
-        with open(f'/webcrate/secrets/{service.name}-service-mysql5.txt', 'w') as f:
-          f.write(f'host=webcrate-mysql5\n')
-          f.write(f'db={service.name}\n')
-          f.write(f'user={service.name}\n')
-          f.write(f'password={mysql5_service_password}\n')
-          f.close()
-        os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/secrets/{service.name}-service-mysql5.txt')
-        os.system(f'mysql -u root -h webcrate-mysql5 -p"{mysql5_root_password}" -e "CREATE DATABASE \`{service.name}\`;"')
-        os.system(f"mysql -u root -h webcrate-mysql5 -p\"{mysql5_root_password}\" -e \"CREATE USER \`{service.name}\`@'%' IDENTIFIED BY \\\"{mysql5_service_password}\\\";\"")
-        os.system(f"mysql -u root -h webcrate-mysql5 -p\"{mysql5_root_password}\" -e \"GRANT ALL PRIVILEGES ON \`{service.name}\` . * TO \`{service.name}\`@'%';\"")
-        os.system(f"mysql -u root -h webcrate-mysql5 -p\"{mysql5_root_password}\" -e \"FLUSH PRIVILEGES;\"")
-        log.write(f'mysql5 user {service.name} and db created', log.LEVEL.debug)
-      else:
-        log.write(f'mysql5 user {service.name} and db already exists', log.LEVEL.debug)
-
   if service.postgresql_db:
     postgres_root_password = os.popen(f'cat /webcrate/secrets/postgres.cnf | grep "password="').read().strip().split("password=")[1][1:][:-1].replace("$", "\\$")
     retries = 20

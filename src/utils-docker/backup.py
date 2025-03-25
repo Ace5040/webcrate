@@ -252,45 +252,6 @@ for projectname,project in projects.items():
       if os.path.isdir(f'/webcrate/backup-tmp') and os.listdir(f'/webcrate/backup-tmp'):
         os.system(f'rm /webcrate/backup-tmp/*')
 
-
-    #backup mysql5
-    if project.mysql5_db and ( BACKUP_TYPE == 'mysql5' or BACKUP_TYPE == 'all' ):
-      log.write(f'=========================================', log.LEVEL.debug)
-      log.write(f'backup mysql5 db for project {project.name}', log.LEVEL.debug)
-      log.write(f'=========================================', log.LEVEL.debug)
-      sys.stdout.flush()
-      log.write(f'Backup mysql5 db for project {project.name}', log.LEVEL.debug)
-      mysql5_root_password = os.popen(f'cat /webcrate/secrets/mysql5.cnf | grep "password="').read().strip().split("=")[1][1:][:-1].replace("$", "\\$")
-      os.system(f'mkdir -p /webcrate/backup-tmp')
-      if os.path.isdir(f'/webcrate/backup-tmp') and os.listdir(f'/webcrate/backup-tmp'):
-        os.system(f'rm /webcrate/backup-tmp/*')
-
-      os.system(f'mysqldump --single-transaction --max_allowed_packet=64M -h webcrate-mysql5 -u root -p"{mysql5_root_password}" --result-file "/webcrate/backup-tmp/{project.name}.sql" "{project.name}"')
-      for BACKUP_URI in BACKUP_URIS:
-        os.system(f'duplicity --verbosity notice '
-          f'--no-encryption '
-          f'--full-if-older-than {WEBCRATE_FULL_BACKUP_DAYS}D '
-          f'--num-retries 3 '
-          # f'--asynchronous-upload '
-          f'--volsize 5000 '
-          f'--archive-dir /webcrate/duplicity/.duplicity '
-          f'--log-file /webcrate/duplicity/duplicity.log '
-          f'"/webcrate/backup-tmp" '
-          f'"{BACKUP_URI}/projects/{project.name}/mysql5"'
-        )
-        sys.stdout.flush()
-        os.system(f'duplicity --verbosity notice '
-          f'--archive-dir /webcrate/duplicity/.duplicity '
-          f'--log-file /webcrate/duplicity/duplicity.log '
-          f'--force '
-          f'remove-all-but-n-full {WEBCRATE_MAX_FULL_BACKUPS} '
-          f'"{BACKUP_URI}/projects/{project.name}/mysql5"'
-        )
-        sys.stdout.flush()
-      if os.path.isdir(f'/webcrate/backup-tmp') and os.listdir(f'/webcrate/backup-tmp'):
-        os.system(f'rm /webcrate/backup-tmp/*')
-
-
     #backup project mysql5
     if project.mysql5_db and ( BACKUP_TYPE == 'mysql5' or BACKUP_TYPE == 'all' ):
       log.write(f'=========================================', log.LEVEL.debug)

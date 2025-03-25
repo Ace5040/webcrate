@@ -130,18 +130,17 @@ else
 		$IMAGE_PHPMYADMIN > /dev/null
 fi
 
-# if docker container inspect webcrate-phppgadmin >/dev/null 2> /dev/null; then
-#   writeLog "Container webcrate-phppgadmin exists" $LOG_LEVEL_DEBUG
-# else
-#   writeLog "Starting webcrate-phppgadmin container" $LOG_LEVEL_INFO
-#   docker run -d --env-file=$(pwd)/.env --name webcrate-phppgadmin \
-#     --network="webcrate_network" --dns=10.255.0.100 \
-#     --restart="unless-stopped" \
-#     -v /etc/localtime:/etc/localtime:ro \
-#	  -e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE \
-#     dockage/phppgadmin > /dev/null
-#     # $IMAGE_PHPPGADMIN > /dev/null
-# fi
+if docker container inspect webcrate-phppgadmin >/dev/null 2> /dev/null; then
+  writeLog "Container webcrate-phppgadmin exists" $LOG_LEVEL_DEBUG
+else
+  writeLog "Starting webcrate-phppgadmin container" $LOG_LEVEL_INFO
+  docker run -d --env-file=$(pwd)/.env --name webcrate-phppgadmin \
+    --network="webcrate_network" --dns=10.255.0.100 \
+    --restart="unless-stopped" \
+    -v /etc/localtime:/etc/localtime:ro \
+	  -e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE \
+    $IMAGE_PHPPGADMIN > /dev/null
+fi
 
 if [ "$WEBCRATE_SERVICE_DOCTOHTML" = true ]; then
 	if docker container inspect webcrate-doctohtml >/dev/null 2> /dev/null; then

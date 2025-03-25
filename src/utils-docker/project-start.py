@@ -477,9 +477,6 @@ for projectname,project in projects.items():
     if not helpers.is_network_has_connection(f'webcrate_network_{project.name}', 'webcrate-mysql'):
       os.system(f'docker network connect webcrate_network_{project.name} webcrate-mysql')
 
-    if not helpers.is_network_has_connection(f'webcrate_network_{project.name}', 'webcrate-postgres'):
-      os.system(f'docker network connect webcrate_network_{project.name} webcrate-postgres')
-
     if nginx_reload_needed:
       os.system(f'docker exec webcrate-nginx nginx -s reload')
       log.write(f'{project.name} - changes detected - nginx config reloaded', log.LEVEL.debug)

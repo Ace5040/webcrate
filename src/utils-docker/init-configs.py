@@ -69,44 +69,6 @@ for servicename,service in services.items():
       else:
         log.write(f'mysql user {service.name} and db already exists', log.LEVEL.debug)
 
-  if service.postgresql_db:
-    postgres_root_password = os.popen(f'cat /webcrate/secrets/postgres.cnf | grep "password="').read().strip().split("password=")[1][1:][:-1].replace("$", "\\$")
-    retries = 20
-    while retries > 0 and helpers.is_postgresql_up('webcrate-postgres', postgres_root_password) != '1':
-      retries -= 1
-      time.sleep(5)
-    if retries > 0:
-      postgres_database_found = os.popen(f'psql -d "host=webcrate-postgres user=postgres password={postgres_root_password}" -tAc "SELECT 1 FROM pg_database WHERE datname=\'{service.name}\';"').read().strip()
-      if postgres_database_found != '1':
-        if os.path.isfile(f'/webcrate/secrets/{service.name}-service-postgres.txt'):
-          with open(f'/webcrate/secrets/{service.name}-service-postgres.txt', 'r') as f:
-            for line in f:
-              pair = line.split('=', 1)
-              if pair[0] == 'password':
-                postgres_service_password = pair[1]
-            f.close()
-        else:
-          postgres_service_password=os.popen(f"/webcrate/pwgen.sh").read().strip()
-          with open(f'/webcrate/secrets/{service.name}-service-postgres.txt', 'w') as f:
-            f.write(f'host=webcrate-postgres\n')
-            f.write(f'name={service.name}\n')
-            f.write(f'user={service.name}\n')
-            f.write(f'password={postgres_service_password}\n')
-            f.close()
-        with open(f'/webcrate/secrets/{service.name}-service-postgres.txt', 'w') as f:
-          f.write(f'host=webcrate-postgres\n')
-          f.write(f'db={service.name}\n')
-          f.write(f'user={service.name}\n')
-          f.write(f'password={postgres_service_password}\n')
-          f.close()
-        os.system(f'chown {WEBCRATE_UID}:{WEBCRATE_GID} /webcrate/secrets/{service.name}-service-postgres.txt')
-        os.system(f'psql -d "host=webcrate-postgres user=postgres password={postgres_root_password}" -tAc "CREATE DATABASE {service.name} ENCODING \'UTF8\' TEMPLATE template0 LC_COLLATE=\'C\' LC_CTYPE=\'C\';"')
-        os.system(f'psql -d "host=webcrate-postgres user=postgres password={postgres_root_password}" -tAc "CREATE USER {service.name} WITH ENCRYPTED PASSWORD \'{postgres_service_password}\';"')
-        os.system(f'psql -d "host=webcrate-postgres user=postgres password={postgres_root_password}" -tAc "GRANT ALL PRIVILEGES ON DATABASE {service.name} TO {service.name};"')
-        log.write(f'postgresql user {service.name} and db created', log.LEVEL.debug)
-      else:
-        log.write(f'postgresql user {service.name} and db already exists', log.LEVEL.debug)
-
   if service.https == 'letsencrypt':
     domain = service.domain if service.domain.split('.')[-1] != 'test' else ''
     domain_prev = helpers.load_domains(service.name)

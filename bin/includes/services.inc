@@ -88,21 +88,6 @@ else
 		$IMAGE_MARIADB10 > /dev/null
 fi
 
-if docker container inspect webcrate-postgres >/dev/null 2> /dev/null; then
-	writeLog "Container webcrate-postgres exists" $LOG_LEVEL_DEBUG
-else
-	writeLog "Starting webcrate-postgres container" $LOG_LEVEL_INFO
-	if [ "$POSTGRES_PASS" != "" ]; then POSTGRES_PASS=-e\ POSTGRES_PASSWORD="$POSTGRES_PASS"; fi
-	docker run -d --env-file=$(pwd)/.env --name webcrate-postgres \
-		--network="webcrate_network" --dns=10.255.0.100 \
-		--restart="unless-stopped" \
-		--user "$uid:$gid" \
-		$POSTGRES_PASS \
-		-e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE \
-		-v $(pwd)/var/postgres:/var/lib/postgresql/data \
-		$IMAGE_POSTGRES > /dev/null
-fi
-
 if docker container inspect webcrate-admin >/dev/null 2> /dev/null; then
 	writeLog "Container webcrate-admin exists" $LOG_LEVEL_DEBUG
 else

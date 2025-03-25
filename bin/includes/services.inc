@@ -29,12 +29,14 @@ else
 	if [ "$WEBCRATE_LOCALDNS" = true ]; then
 		DNSPORT=-p\ "53:53/udp"
 	fi
-	docker run -d --hostname webcrate-dnsmasq --name webcrate-dnsmasq \
+	docker run -d --env-file=$(pwd)/.env --hostname webcrate-dnsmasq --name webcrate-dnsmasq \
 		--network="webcrate_network" --ip=10.255.0.100 \
 		--restart="unless-stopped" \
 		$DNSPORT \
+		-u $uid:$gid \
 		-e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE \
 		-v $(pwd)/var/dnsmasq:/dnsmasq \
+		-v $(pwd)/var/log:/webcrate/log \
 		$IMAGE_DNSMASQ > /dev/null
 fi
 
@@ -122,6 +124,7 @@ else
 	docker run -d --env-file=$(pwd)/.env --hostname webcrate-admin --name webcrate-admin \
 		--network="webcrate_network" --dns=10.255.0.100 \
 		--restart="unless-stopped" \
+		--user "$uid:$gid" \
 		-e WEBCRATE_UID=$uid \
 		-e WEBCRATE_GID=$gid \
 		-e WEBCRATE_PROJECTS_FOLDERS=$( IFS=:; printf '%s' "${WEBCRATE_PROJECTS_FOLDERS[*]}" ) \

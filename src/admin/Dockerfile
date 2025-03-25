@@ -72,7 +72,7 @@ COPY --from=src log.py /webcrate/
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY entrypoint.sh /entrypoint.sh
 CMD ["/entrypoint.sh"]
-RUN chmod u+x /webcrate/init-db.py && \
+RUN chmod a+rxs /webcrate/init-db.py && \
     chmod a+rxs /webcrate/log.py && \
     chmod a+rxs /webcrate/versions.py && \
     chmod a+rxs /webcrate/updateprojects.py && \
@@ -80,5 +80,5 @@ RUN chmod u+x /webcrate/init-db.py && \
     chmod a+rxs /webcrate/reload.py && \
     chmod a+rxs /webcrate/delete.py && \
     chmod a+rxs /webcrate/reload-redirect.py && \
-    chmod u+x /entrypoint.sh
+    chmod a+rxs /entrypoint.sh
 EXPOSE 80

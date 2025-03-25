@@ -2,11 +2,14 @@
 
 exec dnsmasq \
   --no-hosts \
-  --log-facility=- \
   --hostsdir=/dnsmasq/hosts\
   --resolv-file=/dnsmasq/resolv.conf \
+  --log-facility=/webcrate/log/dnsmasq.log \
+  --user=$WEBCRATE_UID \
+  --group=$WEBCRATE_GID \
   --keep-in-foreground
 
+# --log-facility=- \
 # --all-servers \
 # --strict-order \
 # --no-negcache \

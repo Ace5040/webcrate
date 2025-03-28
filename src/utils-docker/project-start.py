@@ -403,7 +403,7 @@ for projectname,project in projects.items():
         log.write(f'{project.name} - memcached exists', log.LEVEL.debug)
       else:
         log.write(f'{project.name} - starting memcached container', log.LEVEL.debug)
-        os.system(f'docker run -d -e LOG_LEVEL_VALUE={LOG_LEVEL_VALUE} --env-file=/webcrate-readonly/.env --log-driver=none --name webcrate-{project.name}-memcached '
+        os.system(f'docker run -d -e LOG_LEVEL_VALUE={LOG_LEVEL_VALUE} --env-file=/webcrate-readonly/.env --name webcrate-{project.name}-memcached '
           f'--network="webcrate_network_{project.name}" '
           f'--restart="unless-stopped" '
           f'$IMAGE_MEMCACHED >/dev/null')

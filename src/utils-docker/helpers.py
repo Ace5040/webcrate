@@ -43,8 +43,8 @@ def is_network_has_connection(network_name, container_name):
   return os.popen(f'docker network inspect {network_name} 2>/dev/null | grep \\"{container_name}\\" | wc -l').read().strip() == '1'
 
 def genereate_openssl_conf(name, domains):
-  countryName = os.environ.get('WEBCRATE_countryName', '')
-  organizationName = os.environ.get('WEBCRATE_organizationName', '')
+  countryName = os.environ.get('WEBCRATE_COUNTRY', '')
+  organizationName = os.environ.get('WEBCRATE_ORGANIZATION', '')
   OPENSSL_EMAIL = os.environ.get('WEBCRATE_ADMIN_EMAIL', '')
   return (f'[req]\n'
     f'distinguished_name = dn\n'
@@ -59,7 +59,7 @@ def genereate_openssl_conf(name, domains):
     f'subjectAltName = DNS:{",DNS:".join(domains)}\n')
 
 def genereate_openssl_root_conf():
-  countryName = os.environ.get('WEBCRATE_countryName', '')
+  countryName = os.environ.get('WEBCRATE_COUNTRY', '')
   OPENSSL_EMAIL = os.environ.get('WEBCRATE_ADMIN_EMAIL', '')
   return (f'[req]\n'
     f'distinguished_name = dn\n'
@@ -78,7 +78,7 @@ def genereate_openssl_root_conf():
     f'extendedKeyUsage = serverAuth\n')
 
 def init_openssl_root_conf():
-  countryName = os.environ.get('WEBCRATE_countryName', '')
+  countryName = os.environ.get('WEBCRATE_COUNTRY', '')
   OPENSSL_EMAIL = os.environ.get('WEBCRATE_ADMIN_EMAIL', '')
   nginx_reload_needed = False
   openssl_root_conf_changed = False

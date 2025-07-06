@@ -84,7 +84,7 @@ for servicename,service in services.items():
       nginx_reload_needed = True
 
   if service.https == 'openssl':
-    conf = helpers.genereate_openssl_conf(service.name, [service.domain], countryName, organizationName, OPENSSL_EMAIL)
+    conf = helpers.genereate_openssl_conf(service.name, [service.domain])
     conf_old = helpers.load_openssl_conf(service.name)
     if conf_old != conf or not os.path.exists(f'/webcrate/openssl/{service.name}/privkey.pem') or not os.path.exists(f'/webcrate/openssl/{service.name}/fullchain.pem'):
       os.system(f'mkdir -p /webcrate/openssl/{service.name}; rm /webcrate/openssl/{service.name}/*')

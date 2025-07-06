@@ -243,7 +243,7 @@ else
 		-v $(pwd)/var/letsencrypt:/webcrate/letsencrypt \
 		-v $(pwd)/var/letsencrypt-meta:/webcrate/letsencrypt-meta \
 		-v $(pwd)/var/openssl:/webcrate/openssl \
-		-v $WEBCRATE_BACKUP_ABSOLUTE_PATH:/webcrate/backup \
+		-v $(pwd)/var/backup:/webcrate/backup \
 		-v $(pwd)/var/backup-tmp:/webcrate/backup-tmp \
 		-v $(pwd)/var/mysql-projects:/webcrate/mysql-projects \
 		-v $(pwd)/var/mysql5-projects:/webcrate/mysql5-projects \

@@ -3,6 +3,13 @@ SCRIPT=`realpath $0`
 SCRIPTPATH=`dirname $SCRIPT`
 cd $SCRIPTPATH/..
 WEBCRATE_PWD=$(pwd)
+source ./bin/commands/configure.inc
+if [[ ! -f ".env" ]]; then
+	Configure
+fi
+if [[ ! -f ".env" ]]; then
+	exit 1
+fi
 source ./.env
 source ./images.default
 source ./bin/includes/functions.inc
@@ -55,6 +62,7 @@ case $COMMAND in
 	log) Log $@;;
 	backup) Backup $@;;
 	help) Help $@;;
+	configure) Configure $@;;
 	*) echo "Unknown command: '$COMMAND'. Use 'webcrate help' to get list of commands"
 esac
 

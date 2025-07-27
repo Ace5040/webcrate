@@ -1,5 +1,6 @@
 /.env
 /var/*
+/locale/*.po~
 /projects.yml
 /redirects.yml
 /services.yml

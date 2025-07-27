@@ -24,6 +24,7 @@ source ./bin/commands/log.inc
 source ./bin/commands/dock.inc
 source ./bin/commands/backup.inc
 source ./bin/commands/help.inc
+source ./bin/commands/localegen.inc
 
 set -o errexit -o pipefail -o noclobber -o nounset
 getopt --test > /dev/null && true
@@ -63,59 +64,8 @@ case $COMMAND in
 	backup) Backup $@;;
 	help) Help $@;;
 	configure) Configure $@;;
+	localegen) Localegen $@;;
 	*) echo "Unknown command: '$COMMAND'. Use 'webcrate help' to get list of commands"
 esac
 
 exit 0
-
-# # option --output/-o requires 1 argument
-# LONGOPTS=debug,force,output:,verbose
-# OPTIONS=dfo:v
-
-# # -temporarily store output to be able to check for errors
-# # -activate quoting/enhanced mode (e.g. by writing out “--options”)
-# # -pass arguments only via -- "$@" to separate them correctly
-# # -if getopt fails, it complains itself to stdout
-# PARSED=$(getopt --options=$OPTIONS --longoptions=$LONGOPTS --name "$0" -- "$@") || exit 2
-# # read getopt’s output this way to handle the quoting right:
-# eval set -- "$PARSED"
-# d=n f=n v=n outFile=-
-
-# # now enjoy the options in order and nicely split until we see --
-# while true; do
-#     case "$1" in
-#         -d|--debug)
-#             d=y
-#             shift
-#             ;;
-#         -f|--force)
-#             f=y
-#             shift
-#             ;;
-#         -v|--verbose)
-#             v=y
-#             shift
-#             ;;
-#         -o|--output)
-#             outFile="$2"
-#             shift 2
-#             ;;
-#         --)
-#             shift
-#             break
-#             ;;
-#         *)
-#             echo "Programming error"
-#             exit 3
-#             ;;
-#     esac
-# done
-
-# # handle non-option arguments
-# if [[ $# -ne 1 ]]; then
-#     echo "$0: A single input file is required."
-#     exit 4
-# fi
-
-# echo "verbose: $v, force: $f, debug: $d, in: $1, out: $outFile"
-# exit 999

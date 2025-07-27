@@ -40,3 +40,8 @@ function writeLog () {
 		echo "$(date -Is):: $1" >> ./var/log/app.log
 	fi
 }
+
+# translations helper function
+function t () {
+	TEXTDOMAINDIR="./locale" gettext "webcrate" "$1"
+}

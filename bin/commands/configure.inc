@@ -1,6 +1,7 @@
+source ./bin/includes/functions.inc
+
 function Configure() {
 
-	# Функция для валидации email
 	validate_email() {
 		local email="$1"
 		if [[ "$email" =~ ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$ ]]; then
@@ -10,7 +11,6 @@ function Configure() {
 		fi
 	}
 
-	# Функция для валидации кода страны
 	validate_country() {
 		local country="$1"
 		if [[ "$country" =~ ^[A-Za-z]{2}$ ]]; then
@@ -29,7 +29,7 @@ function Configure() {
 	}
 
 	validate_boolean() {
-		[[ "$1" == "true" || "$1" == "false" ]]
+		[[ "$1" == "yes" || "$1" == "no" || "$1" == "y" || "$1" == "n" ]]
 	}
 
 	validate_number() {
@@ -40,66 +40,73 @@ function Configure() {
 		[[ "$1" =~ ^/ ]]
 	}
 
+	to_boolean() {
+		if [[ "$1" == "yes" || "$1" == "y" ]]; then
+			echo true
+		else
+			echo false
+		fi
+	}
+
+	# create or rewrite .env file
 	if [[ -f ".env" ]]; then
 		while true; do
-			read -p "Файл уже существует. Перезаписать? (y/n) [n]: " overwrite
+			read -p "$(t ".env already exits. Overwrite?") y/n [n]: " overwrite
 			overwrite=${overwrite:-n}
-
-			if [[ "$overwrite" == "y" || "$overwrite" == "Y" ]]; then
-				break
-			elif [[ "$overwrite" == "n" || "$overwrite" == "N" ]]; then
-				echo "Создание .env файла отменено."
+			overwrite=${overwrite,,}
+			validate_boolean "$overwrite" || continue
+			if [[ "$overwrite" == "n" ]]; then
+				t ".env creation canceled"
 				exit 0
 			else
-				echo "Пожалуйста, введите y или n"
+				break
 			fi
 		done
 	fi
-
-	# Создаем или очищаем .env файл
 	>| .env
 
-	# WEBCRATE_APP_MODE
+	# select app mode
 	while true; do
-		read -p "APP mode (dev/prod) [prod]: " app_mode
+		read -p "$(t "Webcrate mode") dev/prod [prod]: " app_mode
 		app_mode=${app_mode:-prod}
-
+		app_mode=${app_mode,,}
 		if [[ "$app_mode" == "dev" || "$app_mode" == "prod" ]]; then
 			echo "WEBCRATE_APP_MODE=$app_mode" >> .env
 			break
 		else
-			echo "Ошибка: допустимые значения только 'dev' или 'prod'"
+			t "Only 'dev' or 'prod' are valid values"
 		fi
 	done
 
-	# WEBCRATE_LOG_LEVEL
+	# select log level
 	while true; do
-		read -p "Log level (debug/info/error) [info]: " log_level
+		read -p "$(t "Log level") debug/info/error [info]: " log_level
 		log_level=${log_level:-info}
+		log_level=${log_level,,}
 
 		if [[ "$log_level" == "debug" || "$log_level" == "info" || "$log_level" == "error" ]]; then
 			echo "WEBCRATE_LOG_LEVEL=$log_level" >> .env
 			break
 		else
-			echo "Ошибка: допустимые значения только 'debug', 'info' или 'error'"
+			echo "Only 'debug', 'info' or 'error' are valid values"
 		fi
 	done
 
-	# WEBCRATE_ADMIN_EMAIL
+	# enter admin email
 	while true; do
-		read -p "Admin email(login): " admin_email
+		read -p "$(t "Admin email(login)"): " admin_email
 
 		if validate_email "$admin_email"; then
 			echo "WEBCRATE_ADMIN_EMAIL=$admin_email" >> .env
 			break
 		else
-			echo "Ошибка: введите корректный email (например, user@example.com)"
+			echo "Invalid email"
 		fi
 	done
 
-	# WEBCRATE_COUNTRY
+	# enter country code
 	while true; do
-		read -p "Сountry Name (двухбуквенный код страны, например, US, RU, DE): " country
+		read -p "$(t "Country code, e.g. US, RU, DE"): " country
 
 		if validate_country "$country"; then
 			# Приводим к верхнему регистру
@@ -107,31 +114,29 @@ function Configure() {
 			echo "WEBCRATE_COUNTRY=$country" >> .env
 			break
 		else
-			echo "Ошибка: введите двухбуквенный код страны (например, US, RU, DE)"
+			t "Enter two latin letters"
 		fi
 	done
 
-	# WEBCRATE_ORGANIZATION
+	# enter organization
 	while true; do
-		read -p "Организация: " country
+		read -p "Oragnization name: " organization
 
-		if [[ -z "$country" ]]; then
-			echo "Ошибка: организация не может быть пустой"
+		if [[ -z "$organization" ]]; then
+			t "Cannot be empty"
 			continue
 		else
-			echo "WEBCRATE_ORGANIZATION=$country" >> .env
+			echo "WEBCRATE_ORGANIZATION=$organization" >> .env
 			break
 		fi
 	done
 
-
-
-	# Настройки портов
+	# ports settings
 	while true; do
 		read -p "WEBCRATE_APP_HTTP_PORT [80]: " http_port
 		http_port=${http_port:-80}
 		validate_port "$http_port" && break
-		echo "Ошибка: порт должен быть числом от 1 до 65535"
+		t "Port must be between 1 and 65535"
 	done
 	echo "WEBCRATE_APP_HTTP_PORT=$http_port" >> .env
 
@@ -139,30 +144,29 @@ function Configure() {
 		read -p "WEBCRATE_APP_HTTPS_PORT [443]: " https_port
 		https_port=${https_port:-443}
 		validate_port "$https_port" && break
-		echo "Ошибка: порт должен быть числом от 1 до 65535"
+		t "Port must be between 1 and 65535"
 	done
 	echo "WEBCRATE_APP_HTTPS_PORT=$https_port" >> .env
 
-	# Настройки сети и DNS
 	while true; do
-		read -p "WEBCRATE_LOCALDNS (true/false) [true]: " localdns
-		localdns=${localdns:-true}
+		read -p "$(t "Enable local DNS?") y/n [n]: " localdns
+		localdns=${localdns:-n}
+		localdns=${localdns,,}
 		validate_boolean "$localdns" && break
-		echo "Ошибка: допустимые значения только 'true' или 'false'"
 	done
-	echo "WEBCRATE_LOCALDNS=$localdns" >> .env
+	echo "WEBCRATE_LOCALDNS=$(to_boolean $localdns)" >> .env
 
 	while true; do
 		read -p "DOCKER_HOST_IP (IP адрес машины): " docker_host_ip
 		validate_ip "$docker_host_ip" && break
-		echo "Ошибка: введите корректный IP адрес (например, 192.168.1.1)"
+		echo "Must be correct IP address, e.g. 192.168.1.1"
 	done
 	echo "DOCKER_HOST_IP=$docker_host_ip" >> .env
 
 	while true; do
 		read -p "WEBCRATE_EXTERNAL_DNS_IP (IP адрес роутера): " external_dns_ip
 		validate_ip "$external_dns_ip" && break
-		echo "Ошибка: введите корректный IP адрес (например, 192.168.1.1)"
+		echo "Must be correct IP address, e.g. 192.168.1.1"
 	done
 	echo "WEBCRATE_EXTERNAL_DNS_IP=$external_dns_ip" >> .env
 
@@ -200,7 +204,7 @@ function Configure() {
 		read -p "WEBCRATE_SERVICE_HTMLTOPDF (true/false) [false]: " htmltopdf
 		htmltopdf=${htmltopdf:-false}
 		validate_boolean "$htmltopdf" && break
-		echo "Ошибка: допустимые значения только 'true' или 'false'"
+		t "Must be 'true' or 'false'"
 	done
 	echo "WEBCRATE_SERVICE_HTMLTOPDF=$htmltopdf" >> .env
 
@@ -208,7 +212,7 @@ function Configure() {
 		read -p "WEBCRATE_SERVICE_DOCTOHTML (true/false) [false]: " doctohtml
 		doctohtml=${doctohtml:-false}
 		validate_boolean "$doctohtml" && break
-		echo "Ошибка: допустимые значения только 'true' или 'false'"
+		t "Must be 'true' or 'false'"
 	done
 	echo "WEBCRATE_SERVICE_DOCTOHTML=$doctohtml" >> .env
 
@@ -216,7 +220,7 @@ function Configure() {
 		read -p "WEBCRATE_SERVICE_STATS (true/false) [true]: " stats
 		stats=${stats:-true}
 		validate_boolean "$stats" && break
-		echo "Ошибка: допустимые значения только 'true' или 'false'"
+		t "Must be 'true' or 'false'"
 	done
 	echo "WEBCRATE_SERVICE_STATS=$stats" >> .env
 
@@ -225,7 +229,7 @@ function Configure() {
 		read -p "WEBCRATE_FULL_BACKUP_DAYS [30]: " backup_days
 		backup_days=${backup_days:-30}
 		validate_number "$backup_days" && break
-		echo "Ошибка: введите число"
+		t "Must be a number"
 	done
 	echo "WEBCRATE_FULL_BACKUP_DAYS=$backup_days" >> .env
 
@@ -233,7 +237,7 @@ function Configure() {
 		read -p "WEBCRATE_MAX_FULL_BACKUPS [1]: " max_backups
 		max_backups=${max_backups:-1}
 		validate_number "$max_backups" && break
-		echo "Ошибка: введите число"
+		t "Must be a number"
 	done
 	echo "WEBCRATE_MAX_FULL_BACKUPS=$max_backups" >> .env
 

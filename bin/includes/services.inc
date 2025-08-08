@@ -67,27 +67,6 @@ docker run --rm --env-file=$(pwd)/.env --env-file=$(pwd)/images.default \
 	$IMAGE_UTILS_DOCKER /services-init.py
 writeLog "Services inited" $LOG_LEVEL_INFO
 
-if docker container inspect webcrate-mysql >/dev/null 2> /dev/null; then
-	writeLog "Container webcrate-mysql exists" $LOG_LEVEL_DEBUG
-else
-	writeLog "Starting webcrate-mysql container" $LOG_LEVEL_INFO
-	if [ "$MYSQL_ROOT_PASS" != "" ]; then MYSQL_ROOT_PASS=-e\ MYSQL_ROOT_PASSWORD="$MYSQL_ROOT_PASS"; fi
-	if [ ! -f $(pwd)/var/log/mysql-error.log ]; then
-	    touch $(pwd)/var/log/mysql-error.log
-	fi
-	docker run -d --env-file=$(pwd)/.env --name webcrate-mysql \
-		--network="webcrate_network" --dns=10.255.0.100 \
-		--restart="unless-stopped" \
-		--user "$uid:$gid" \
-		$MYSQL_ROOT_PASS \
-		-e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE \
-		-v /etc/localtime:/etc/localtime:ro \
-		-v $(pwd)/var/mysql:/var/lib/mysql \
-		-v $(pwd)/config/mysql/mysql.cnf:/etc/mysql/conf.d/user.cnf \
-		-v $(pwd)/var/log/mysql-error.log:/tmp/mysql-error.log \
-		$IMAGE_MARIADB10 > /dev/null
-fi
-
 if docker container inspect webcrate-admin >/dev/null 2> /dev/null; then
 	writeLog "Container webcrate-admin exists" $LOG_LEVEL_DEBUG
 else

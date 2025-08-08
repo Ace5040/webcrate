@@ -1,4 +1,3 @@
-writeLog "Creating var folders" $LOG_LEVEL_INFO
 var_folders=(\
 	"secrets"\
 	"meta"\
@@ -48,6 +47,10 @@ do
 	chmod a-rw,u+rw ./var/$i
 done
 chmod -R a-rw,o+r,u+rw ./var/dnsmasq/hosts
+
+if [ ! -f "./var/log/app.log" ]; then
+	touch ./var/log/app.log;
+fi
 
 MYSQL_ROOT_PASS=$(initDbFolder 'mysql')
 MYSQL5_ROOT_PASS=$(initDbFolder 'mysql5')

@@ -16,7 +16,7 @@ if [ "$WEBCRATE_LOG_LEVEL" = "error" ]; then
 fi
 
 function generatePassword () {
-	pass=`docker run --rm $IMAGE_UTILS_PWGEN -e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE /pwgen.sh`
+	pass=`docker run --rm -e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE $IMAGE_UTILS_PWGEN /pwgen.sh`
 	echo "[mysqldump]" > ./var/secrets/$1.cnf
 	echo "user=root" >> ./var/secrets/$1.cnf
 	echo "password=\"$pass\"" >> ./var/secrets/$1.cnf
@@ -35,7 +35,7 @@ function initDbFolder () {
 
 #$1 - message $2 - log level
 function writeLog () {
-	if [ "$LOG_LEVEL_VALUE" -ge "$2" ]; then
+	if [[ "$LOG_LEVEL_VALUE" -ge "$2" ]] && [ -f "./var/log/app.log" ]; then
 		echo "$(date -Is):: $1"
 		echo "$(date -Is):: $1" >> ./var/log/app.log
 	fi

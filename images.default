@@ -1,4 +1,4 @@
-IMAGE_ALPINE_BASE=alpine:3.17
+IMAGE_ALPINE_BASE=alpine:3.18
 IMAGE_DEBIAN_STABLE_SLIM=debian:bookworm-slim
 IMAGE_DEBIAN_SLIM=debian:trixie-slim
 IMAGE_NGINX_BASE=nginx:stable

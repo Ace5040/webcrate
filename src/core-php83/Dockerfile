@@ -6,7 +6,7 @@ RUN apt-get update
 RUN apt-get --assume-yes install sudo git nano exim4-base openssh-server \
     unzip mariadb-client mc iputils-ping cron wget tmux supervisor \
     curl lsb-release ca-certificates ruby ruby-dev \
-    python3 python3-pip python3-yaml python3-munch libmemcached-tools python3-pypdf
+    python3 python3-pip python3-yaml python3-munch libmemcached-tools python3-pypdf rsync
 
 RUN usermod -s /bin/bash root
 

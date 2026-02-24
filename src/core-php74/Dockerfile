@@ -17,9 +17,9 @@ USER root
 WORKDIR /root
 
 #install php74
-RUN curl -sSLo /tmp/debsuryorg-archive-keyring.deb https://packages.sury.su/debsuryorg-archive-keyring.deb && \
+RUN curl -sSLo /tmp/debsuryorg-archive-keyring.deb https://packages.sury.org/debsuryorg-archive-keyring.deb && \
     dpkg -i /tmp/debsuryorg-archive-keyring.deb && \
-    sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.su/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' && \
+    sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' && \
     apt-get update
 RUN apt-get --assume-yes install php7.4 php7.4-zip php7.4-xml php7.4-mbstring php7.4-fpm \
     php7.4-intl php7.4-gd php7.4-xsl php7.4-tidy php7.4-curl php7.4-opcache php7.4-soap \

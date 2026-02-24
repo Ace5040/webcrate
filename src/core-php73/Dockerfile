@@ -17,9 +17,9 @@ USER root
 WORKDIR /root
 
 #install php73
-RUN curl -sSLo /tmp/debsuryorg-archive-keyring.deb https://packages.sury.su/debsuryorg-archive-keyring.deb && \
+RUN curl -sSLo /tmp/debsuryorg-archive-keyring.deb https://packages.sury.org/debsuryorg-archive-keyring.deb && \
     dpkg -i /tmp/debsuryorg-archive-keyring.deb && \
-    sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.su/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' && \
+    sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' && \
     apt-get update
 RUN apt-get --assume-yes install php7.3 php7.3-zip php7.3-xml php7.3-mbstring php7.3-fpm \
     php7.3-intl php7.3-gd php7.3-xsl php7.3-tidy php7.3-curl php7.3-opcache php7.3-soap \

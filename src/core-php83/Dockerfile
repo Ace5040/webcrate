@@ -21,9 +21,9 @@ WORKDIR /root
 # php83-pdo_sqlite  php83-pdo_mysql php83-mysqli
 
 #install php83
-RUN curl -sSLo /tmp/debsuryorg-archive-keyring.deb https://packages.sury.su/debsuryorg-archive-keyring.deb && \
+RUN curl -sSLo /tmp/debsuryorg-archive-keyring.deb https://packages.sury.org/debsuryorg-archive-keyring.deb && \
     dpkg -i /tmp/debsuryorg-archive-keyring.deb && \
-    sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.su/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' && \
+    sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' && \
     apt-get update
 RUN apt-get --assume-yes install php8.3 php8.3-zip php8.3-xml php8.3-mbstring php8.3-fpm \
     php8.3-intl php8.3-gd php8.3-xsl php8.3-tidy php8.3-curl php8.3-opcache php8.3-soap \

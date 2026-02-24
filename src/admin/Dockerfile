@@ -20,9 +20,9 @@ USER root
 WORKDIR /root
 
 #install php83
-RUN curl -sSLo /tmp/debsuryorg-archive-keyring.deb https://packages.sury.su/debsuryorg-archive-keyring.deb && \
+RUN curl -sSLo /tmp/debsuryorg-archive-keyring.deb https://packages.sury.org/debsuryorg-archive-keyring.deb && \
     dpkg -i /tmp/debsuryorg-archive-keyring.deb && \
-    sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.su/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' && \
+    sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' && \
     apt-get update
 RUN apt-get --assume-yes install php8.1 php8.1-zip php8.1-xml php8.1-mbstring php8.1-fpm \
     php8.1-intl php8.1-gd php8.1-xsl php8.1-tidy php8.1-curl php8.1-opcache php8.1-soap \

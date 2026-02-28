@@ -124,6 +124,7 @@ function Configure() {
 
 		if [[ -z "$organization" ]]; then
 			t "Cannot be empty"
+			echo ""
 			continue
 		else
 			echo "WEBCRATE_ORGANIZATION=$organization" >> .env
@@ -149,21 +150,21 @@ function Configure() {
 	echo "WEBCRATE_APP_HTTPS_PORT=$https_port" >> .env
 
 	while true; do
-		read -p "$(t "Enable local DNS?") y/n [n]: " localdns
+		read -p "$(t "Enable local DNS?") (yes/no) [no]: " localdns
 		localdns=${localdns:-n}
 		localdns=${localdns,,}
 		validate_boolean "$localdns" && break
 	done
 	echo "WEBCRATE_LOCALDNS=$(to_boolean $localdns)" >> .env
 
-	while true; do
+	while $(to_boolean $localdns); do
 		read -p "DOCKER_HOST_IP (IP адрес машины): " docker_host_ip
 		validate_ip "$docker_host_ip" && break
 		echo "Must be correct IP address, e.g. 192.168.1.1"
 	done
 	echo "DOCKER_HOST_IP=$docker_host_ip" >> .env
 
-	while true; do
+	while $(to_boolean $localdns); do
 		read -p "WEBCRATE_EXTERNAL_DNS_IP (IP адрес роутера): " external_dns_ip
 		validate_ip "$external_dns_ip" && break
 		echo "Must be correct IP address, e.g. 192.168.1.1"
@@ -176,12 +177,12 @@ function Configure() {
 	echo "DOCKER_SOCKET=$docker_socket" >> .env
 
 	# WEBCRATE_PROJECTS_FOLDERS
-	echo -e "\nВведите пути к папкам проектов (по одному за раз)"
+	echo -e "\nВведите пути к папкам проектов, например projects (по одному за раз)"
 	echo "Оставьте пустым и нажмите Enter чтобы завершить ввод"
 	projects_folders=()
 
 	while true; do
-		read -p "Путь к папке проекта (абсолютный или относительный): " project_path
+		read -p "Введите абсолютный путь (должен начинаться со /) или относительный(будет размещён в папке webcrate/var): " project_path
 
 		if [[ -z "$project_path" ]]; then
 			if [[ ${#projects_folders[@]} -eq 0 ]]; then
@@ -193,6 +194,7 @@ function Configure() {
 		fi
 
 		# Добавляем путь
+		[[ "$project_path" == /* ]] || project_path="var/$project_path"
 		projects_folders+=("\"$project_path\"")
 	done
 
@@ -201,28 +203,31 @@ function Configure() {
 
 	# Настройки сервисов
 	while true; do
-		read -p "WEBCRATE_SERVICE_HTMLTOPDF (true/false) [false]: " htmltopdf
-		htmltopdf=${htmltopdf:-false}
+		read -p "WEBCRATE_SERVICE_HTMLTOPDF (yes/no) [no]: " htmltopdf
+		htmltopdf=${htmltopdf:-n}
+		htmltopdf=${htmltopdf,,}
 		validate_boolean "$htmltopdf" && break
-		t "Must be 'true' or 'false'"
+		t "Must be 'yes(y)' or 'no(n)'"
 	done
-	echo "WEBCRATE_SERVICE_HTMLTOPDF=$htmltopdf" >> .env
+	echo "WEBCRATE_SERVICE_HTMLTOPDF=$(to_boolean $htmltopdf)" >> .env
 
 	while true; do
-		read -p "WEBCRATE_SERVICE_DOCTOHTML (true/false) [false]: " doctohtml
-		doctohtml=${doctohtml:-false}
+		read -p "WEBCRATE_SERVICE_DOCTOHTML (yes/no) [no]: " doctohtml
+		doctohtml=${doctohtml:-n}
+		doctohtml=${doctohtml,,}
 		validate_boolean "$doctohtml" && break
-		t "Must be 'true' or 'false'"
+		t "Must be 'yes(y)' or 'no(n)'"
 	done
-	echo "WEBCRATE_SERVICE_DOCTOHTML=$doctohtml" >> .env
+	echo "WEBCRATE_SERVICE_DOCTOHTML=$(to_boolean $doctohtml)" >> .env
 
 	while true; do
-		read -p "WEBCRATE_SERVICE_STATS (true/false) [true]: " stats
-		stats=${stats:-true}
+		read -p "WEBCRATE_SERVICE_STATS (yes/no) [yes]: " stats
+		stats=${stats:-y}
+		stats=${stats,,}
 		validate_boolean "$stats" && break
-		t "Must be 'true' or 'false'"
+		t "Must be 'yes(y)' or 'no(n)'"
 	done
-	echo "WEBCRATE_SERVICE_STATS=$stats" >> .env
+	echo "WEBCRATE_SERVICE_STATS=$(to_boolean $stats)" >> .env
 
 	# Настройки бэкапов
 	while true; do
@@ -242,7 +247,8 @@ function Configure() {
 	echo "WEBCRATE_MAX_FULL_BACKUPS=$max_backups" >> .env
 
 	# URI для бэкапов
-	echo "Введите URI для хранения резервных копий (по одному за раз)"
+	echo "Введите URI для хранения резервных копий в формате ftp://[user[:password]@]host[:port]/[/]path (по одному за раз)"
+	echo "Если не ввести ни одного URI, резервные копии будут создаваться в папке webcrate/var/backup"
 	echo "Оставьте пустым и нажмите Enter чтобы завершить ввод"
 	backup_uris=()
 
@@ -250,34 +256,7 @@ function Configure() {
 		read -p "Дополнительные URI для бэкапа: " uri
 
 		if [[ -z "$uri" ]]; then
-			if [[ ${#backup_uris[@]} -eq 0 ]]; then
-				echo "Ошибка: должен быть указан хотя бы один URI"
-				continue
-			else
-				break
-			fi
-		else
-			backup_uris+=("\"$uri\"")
-		fi
-	done
-
-	echo "WEBCRATE_BACKUP_URIS=(${backup_uris[@]})" >> .env
-
-	# URI для бэкапов
-	echo "Введите URI для хранения резервных копий (по одному за раз)"
-	echo "Оставьте пустым и нажмите Enter чтобы завершить ввод"
-	backup_uris=()
-
-	while true; do
-		read -p "Дополнительные URI для бэкапа: " uri
-
-		if [[ -z "$uri" ]]; then
-			if [[ ${#backup_uris[@]} -eq 0 ]]; then
-				echo "Ошибка: должен быть указан хотя бы один URI"
-				continue
-			else
-				break
-			fi
+			break
 		else
 			backup_uris+=("\"$uri\"")
 		fi

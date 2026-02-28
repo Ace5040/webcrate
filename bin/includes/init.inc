@@ -81,15 +81,15 @@ fi
 
 if [[ ! -f "./projects.yml" ]] ; then
 	writeLog "Create default projects.yml" $LOG_LEVEL_DEBUG
-	cp ./projects.yml.example ./projects.yml
+	cp ./examples/projects.yml.example ./projects.yml
 fi
 if [[ ! -f "./redirects.yml" ]] ; then
 	writeLog "Create default redirects.yml" $LOG_LEVEL_DEBUG
-	cp ./redirects.yml.example ./redirects.yml
+	cp ./examples/redirects.yml.example ./redirects.yml
 fi
 if [[ ! -f "./services.yml" ]] ; then
 	writeLog "Create default services.yml" $LOG_LEVEL_DEBUG
-	cp ./services.yml.example ./services.yml
+	cp ./examples/services.yml.example ./services.yml
 fi
 
 writeLog "Create docker network if it not exists" $LOG_LEVEL_DEBUG

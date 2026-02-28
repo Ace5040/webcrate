@@ -63,7 +63,7 @@ msgstr ""
 
 #: bin/commands/configure.inc:207 bin/commands/configure.inc:215
 #: bin/commands/configure.inc:223
-msgid "Must be 'true' or 'false'"
+msgid "Must be 'yes(y)' or 'no(n)'"
 msgstr ""
 
 #: bin/commands/configure.inc:232 bin/commands/configure.inc:240

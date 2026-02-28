@@ -63,7 +63,7 @@ msgstr "是否启用本地域名解析服务？"
 
 #: bin/commands/configure.inc:207 bin/commands/configure.inc:215
 #: bin/commands/configure.inc:223
-msgid "Must be 'true' or 'false'"
+msgid "Must be 'yes(y)' or 'no(n)'"
 msgstr ""
 
 #: bin/commands/configure.inc:232 bin/commands/configure.inc:240

@@ -80,12 +80,12 @@ if [[ ! -f "./var/secrets/admin.secret" ]] ; then
 fi
 
 if [[ ! -f "./projects.yml" ]] ; then
-	writeLog "Create default projects.yml" $LOG_LEVEL_DEBUG
-	cp ./examples/projects.yml.example ./projects.yml
+	writeLog "Create empty projects.yml" $LOG_LEVEL_DEBUG
+	echo "" >> ./projects.yml
 fi
 if [[ ! -f "./redirects.yml" ]] ; then
-	writeLog "Create default redirects.yml" $LOG_LEVEL_DEBUG
-	cp ./examples/redirects.yml.example ./redirects.yml
+	writeLog "Create epmty redirects.yml" $LOG_LEVEL_DEBUG
+	echo "" >> ./redirects.yml
 fi
 if [[ ! -f "./services.yml" ]] ; then
 	writeLog "Create default services.yml" $LOG_LEVEL_DEBUG

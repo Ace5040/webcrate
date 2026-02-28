@@ -143,7 +143,8 @@ def init_openssl_root_conf():
 def init_letsencrypt_conf():
   LETSENCRYPT_EMAIL = os.environ.get('WEBCRATE_ADMIN_EMAIL', '')
   with open('/webcrate/projects.yml', 'r') as f:
-    projects = munchify(yaml.safe_load(f))
+    content = f.read().strip()
+    projects = munchify(yaml.safe_load(content)) if content else {}
     f.close()
   with open('/webcrate/services.yml', 'r') as f:
     services = munchify(yaml.safe_load(f))

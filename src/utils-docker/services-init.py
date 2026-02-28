@@ -15,7 +15,8 @@ with open('/webcrate/services.yml', 'r') as f:
   f.close()
 
 with open('/webcrate/projects.yml', 'r') as f:
-  projects = munchify(yaml.safe_load(f))
+  content = f.read().strip()
+  projects = munchify(yaml.safe_load(content)) if content else {}
   f.close()
 
 WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')

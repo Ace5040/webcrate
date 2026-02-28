@@ -10,7 +10,8 @@ from log import log;
 
 log = log('/webcrate/log/app.log')
 with open('/webcrate/redirects.yml', 'r') as f:
-  redirects = munchify(yaml.safe_load(f))
+  content = f.read().strip()
+  redirects = munchify(yaml.safe_load(content)) if content else {}
   f.close()
 
 DOCKER_HOST_IP = os.environ.get('DOCKER_HOST_IP', '')

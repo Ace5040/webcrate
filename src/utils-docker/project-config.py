@@ -11,7 +11,8 @@ from log import log;
 log = log('/webcrate/log/app.log')
 
 with open('/webcrate/projects.yml', 'r') as f:
-  projects = munchify(yaml.safe_load(f))
+  content = f.read().strip()
+  projects = munchify(yaml.safe_load(content)) if content else {}
   f.close()
 
 DOCKER_HOST_IP = os.environ.get('DOCKER_HOST_IP', '')

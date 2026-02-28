@@ -13,7 +13,8 @@ WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
 
 with open('/webcrate/projects.yml', 'r') as f:
-  projects = munchify(yaml.safe_load(f))
+  content = f.read().strip()
+  projects = munchify(yaml.safe_load(content)) if content else {}
   f.close()
 
 PROJECT_NAME = sys.argv[1]

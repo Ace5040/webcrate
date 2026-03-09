@@ -157,6 +157,7 @@ function Configure() {
 	done
 	echo "WEBCRATE_LOCALDNS=$(to_boolean $localdns)" >> .env
 
+	docker_host_ip=""
 	while $(to_boolean $localdns); do
 		read -p "DOCKER_HOST_IP (IP адрес машины): " docker_host_ip
 		validate_ip "$docker_host_ip" && break
@@ -164,6 +165,7 @@ function Configure() {
 	done
 	echo "DOCKER_HOST_IP=$docker_host_ip" >> .env
 
+	external_dns_ip=""
 	while $(to_boolean $localdns); do
 		read -p "WEBCRATE_EXTERNAL_DNS_IP (IP адрес роутера): " external_dns_ip
 		validate_ip "$external_dns_ip" && break

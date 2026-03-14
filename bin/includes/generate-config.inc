@@ -2,13 +2,15 @@ source ./bin/includes/init.inc
 uid=$(id -u);
 gid=$(id -u);
 
+writeLog "Generating resolv.conf for dnsmasq" $LOG_LEVEL_DEBUG
+rm -f ./var/dnsmasq/resolv.conf
+touch ./var/dnsmasq/resolv.conf
 if [ "$WEBCRATE_EXTERNAL_DNS_IP" != "" ]; then
-	writeLog "Generating resolv.conf for dnsmasq" $LOG_LEVEL_DEBUG
-	rm -f ./var/dnsmasq/resolv.conf
-	touch ./var/dnsmasq/resolv.conf
 	echo "nameserver $WEBCRATE_EXTERNAL_DNS_IP" >> ./var/dnsmasq/resolv.conf
-	writeLog "Generated resolv.conf for dnsmasq" $LOG_LEVEL_DEBUG
+else
+	echo "nameserver 127.0.0.11" >> ./var/dnsmasq/resolv.conf
 fi
+writeLog "Generated resolv.conf for dnsmasq" $LOG_LEVEL_DEBUG
 
 writeLog "Parse projects started" $LOG_LEVEL_INFO
 docker run --rm --env-file=$(pwd)/.env --env-file=$(pwd)/images.default --entrypoint /parse-projects.py --name webcrate-docker-parse-projects \

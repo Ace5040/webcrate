@@ -71,7 +71,7 @@ if docker container inspect webcrate-admin >/dev/null 2> /dev/null; then
 	writeLog "Container webcrate-admin exists" $LOG_LEVEL_DEBUG
 else
 	writeLog "Starting webcrate-admin container" $LOG_LEVEL_INFO
-	if [ "$WEBCRATE_APP_MODE" = "DEV" ]; then WEBCRATE_APP_SRC=-v\ $(pwd)/src/admin/app:/app; else WEBCRATE_APP_SRC=""; fi
+	if [ "$WEBCRATE_APP_MODE" = "dev" ]; then WEBCRATE_APP_SRC=-v\ $(pwd)/src/admin/app:/app; else WEBCRATE_APP_SRC=""; fi
 	docker run -d --env-file=$(pwd)/.env --hostname webcrate-admin --name webcrate-admin \
 		--network="webcrate_network" --dns=10.255.0.100 \
 		--restart="unless-stopped" \

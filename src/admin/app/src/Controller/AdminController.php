@@ -500,6 +500,45 @@ class AdminController extends AbstractController
     }
 
     /**
+     * @Route("/admin/api/backends", name="api_backends", methods={"GET"})
+     */
+    public function getBackendsByTemplate(Request $request)
+    {
+        $nginxTemplateId = $request->query->get('template', '');
+
+        // If template ID is provided, get the template name
+        $nginxTemplateName = '';
+        if (!empty($nginxTemplateId)) {
+            $nginxTemplate = $this->nginx_template_repository->find($nginxTemplateId);
+            if ($nginxTemplate) {
+                $nginxTemplateName = $nginxTemplate->getName();
+            }
+        }
+
+        $showAllBackends = empty($nginxTemplateName) || strpos($nginxTemplateName, 'default') !== false;
+        $isHtmlTemplate = !empty($nginxTemplateName) && strpos(strtolower($nginxTemplateName), 'html') !== false;
+
+        $backends = $this->backend_repository->findAll();
+        $filteredBackends = [];
+
+        foreach ($backends as $backend) {
+            // Show all backends for default template, specific backends for html template, and only PHP for others
+            if ($showAllBackends ||
+                ($isHtmlTemplate && ($backend->getName() === 'php' || $backend->getName() === 'gunicorn')) ||
+                (!$showAllBackends && !$isHtmlTemplate && $backend->getName() === 'php')) {
+                $filteredBackends[] = [
+                    'id' => $backend->getId(),
+                    'name' => $backend->getName(),
+                    'version' => $backend->getVersion(),
+                    'fullName' => $backend->getFullName()
+                ];
+            }
+        }
+
+        return new JsonResponse($filteredBackends);
+    }
+
+    /**
      * @Route("/admin/redirect/{name}/activate", name="admin-redirect-activate")
      */
     public function redirectActivate($name)

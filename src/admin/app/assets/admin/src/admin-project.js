@@ -37,6 +37,64 @@ new (Vue.extend(page))({
     el: '#app'
 });
 
+// Function to update backend options based on selected nginx template
+function updateBackendOptions(selectedTemplate) {
+    const backendSelect = document.getElementById('project_backend');
+
+    if (!backendSelect) {
+        return;
+    }
+
+    // Show loading state
+    backendSelect.innerHTML = '<option value="">Loading...</option>';
+    backendSelect.disabled = true;
+
+    // Make API call to get filtered backends
+    $.ajax({
+        url: '/admin/api/backends',
+        method: 'GET',
+        data: {
+            template: selectedTemplate
+        },
+        success: function(data) {
+            // Clear the select
+            backendSelect.innerHTML = '';
+
+            // Add the retrieved backends
+            data.forEach(function(backend) {
+                const option = document.createElement('option');
+                option.value = backend.id;
+                option.text = backend.fullName;
+                backendSelect.appendChild(option);
+            });
+
+            backendSelect.disabled = false;
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching backends:', error);
+            backendSelect.innerHTML = '<option value="">Error loading backends</option>';
+            backendSelect.disabled = false;
+        }
+    });
+}
+
+// Initialize the backend filtering when the page loads
+$(document).ready(function() {
+    const nginxTemplateSelect = document.getElementById('project_nginx_template');
+
+    if (nginxTemplateSelect) {
+        // Initially load backends based on the current selection
+        const initialTemplate = nginxTemplateSelect.value;
+        updateBackendOptions(initialTemplate);
+
+        // Add event listener to nginx template select
+        $('#project_nginx_template').on('change', function() {
+            const selectedTemplate = $(this).val();
+            updateBackendOptions(selectedTemplate);
+        });
+    }
+});
+
 var el = document.getElementById('project_domains');
 Sortable.create(el,{
     handle: '.handle',

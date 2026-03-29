@@ -17,7 +17,7 @@ function Build() {
 		&& [ "$BUILDTARGET" != "dnsmasq" ]\
 		&& [ "$BUILDTARGET" != "stats" ]\
 	;then
-		echo "Unknown target $1. Please use one of: all, nginx, utils-pwgen, utils-docker, core, core-gunicorn, core-php83, core-php81, core-php74, core-php73, core-php56, admin, stats"
+		echo "$(printf "$(t "Unknown build target: '%s'. Use one of: all, nginx, utils-pwgen, utils-docker, core, core-gunicorn, core-php83, core-php81, core-php74, core-php73, core-php56, admin, stats")" "$1")"
 		exit 1
 	fi
 
@@ -46,7 +46,7 @@ function Build() {
 				break
 				;;
 			*)
-				echo "Programming error"
+				echo "$(t "Programming error")"
 				exit 3
 				;;
 		esac
@@ -61,7 +61,7 @@ function Build() {
 			docker pull $IMAGE_NGINX_BASE
 		fi
 	else
-		echo "Wrong number of args"
+		echo "$(t "Wrong number of args")"
 		exit 4
 	fi
 

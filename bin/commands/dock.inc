@@ -16,7 +16,7 @@ function Dock() {
 				break
 				;;
 			*)
-				echo "Programming error"
+				echo "$(t "Programming error")"
 				exit 3
 				;;
 		esac
@@ -30,7 +30,7 @@ function Dock() {
 			docker exec --interactive --tty --user ${1} webcrate-core-${1} bash
 		fi
 	else
-		writeLog "Wrong number of args" $LOG_LEVEL_ERROR
+		writeLog "$(t "Wrong number of args")" $LOG_LEVEL_ERROR
 		exit 4
 	fi
 

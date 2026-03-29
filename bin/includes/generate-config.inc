@@ -2,7 +2,7 @@ source ./bin/includes/init.inc
 uid=$(id -u);
 gid=$(id -u);
 
-writeLog "Generating resolv.conf for dnsmasq" $LOG_LEVEL_DEBUG
+writeLog "$(t "Generating resolv.conf for dnsmasq")" $LOG_LEVEL_DEBUG
 rm -f ./var/dnsmasq/resolv.conf
 touch ./var/dnsmasq/resolv.conf
 if [ "$WEBCRATE_EXTERNAL_DNS_IP" != "" ]; then
@@ -10,9 +10,9 @@ if [ "$WEBCRATE_EXTERNAL_DNS_IP" != "" ]; then
 else
 	echo "nameserver 127.0.0.11" >> ./var/dnsmasq/resolv.conf
 fi
-writeLog "Generated resolv.conf for dnsmasq" $LOG_LEVEL_DEBUG
+writeLog "$(t "Generated resolv.conf for dnsmasq")" $LOG_LEVEL_DEBUG
 
-writeLog "Parse projects started" $LOG_LEVEL_INFO
+writeLog "$(t "Parse projects started")" $LOG_LEVEL_INFO
 docker run --rm --env-file=$(pwd)/.env --env-file=$(pwd)/images.default --entrypoint /parse-projects.py --name webcrate-docker-parse-projects \
 	-e WEBCRATE_UID=$uid \
 	-e WEBCRATE_GID=$gid \
@@ -32,9 +32,9 @@ docker run --rm --env-file=$(pwd)/.env --env-file=$(pwd)/images.default --entryp
 	-v $(pwd)/var/nginx:/webcrate/nginx \
 	-v $(pwd)/var/php_pools:/webcrate/php_pools \
 	$IMAGE_UTILS_DOCKER
-writeLog "Parse projects ended" $LOG_LEVEL_INFO
+writeLog "$(t "Parse projects ended")" $LOG_LEVEL_INFO
 
-writeLog "Parse redirects started" $LOG_LEVEL_INFO
+writeLog "$(t "Parse redirects started")" $LOG_LEVEL_INFO
 docker run --rm --env-file=$(pwd)/.env --entrypoint /parse-redirects.py --name webcrate-docker-parse-redirects \
 	-e WEBCRATE_UID=$uid \
 	-e WEBCRATE_GID=$gid \
@@ -49,9 +49,9 @@ docker run --rm --env-file=$(pwd)/.env --entrypoint /parse-redirects.py --name w
 	-v $(pwd)/var/dnsmasq:/webcrate/dnsmasq \
 	-v $(pwd)/var/nginx:/webcrate/nginx \
 	$IMAGE_UTILS_DOCKER
-writeLog "Parse redirects ended" $LOG_LEVEL_INFO
+writeLog "$(t "Parse redirects ended")" $LOG_LEVEL_INFO
 
-writeLog "Parse services started" $LOG_LEVEL_INFO
+writeLog "$(t "Parse services started")" $LOG_LEVEL_INFO
 docker run --rm --env-file=$(pwd)/.env --env-file=$(pwd)/images.default --entrypoint /parse-services.py --name webcrate-docker-parse-services \
 	-e WEBCRATE_PWD=$(pwd) \
 	-e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE \
@@ -64,4 +64,4 @@ docker run --rm --env-file=$(pwd)/.env --env-file=$(pwd)/images.default --entryp
 	-v $(pwd)/var/nginx:/webcrate/nginx \
 	$IMAGE_UTILS_DOCKER
 
-writeLog "Parse services ended" $LOG_LEVEL_INFO
+writeLog "$(t "Parse services ended")" $LOG_LEVEL_INFO

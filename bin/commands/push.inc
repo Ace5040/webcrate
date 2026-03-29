@@ -17,7 +17,7 @@ function Push() {
 		&& [ "$IMAGE" != "dnsmasq" ]\
 		&& [ "$IMAGE" != "stats" ];\
 	then
-		echo "Unknown image $IMAGE. Please use one of: all, nginx, core-nginx, utils-pwgen, utils-docker, core, core-gunicorn, core-php83, core-php81, core-php74, core-php73, core-php56, admin, stats"
+		echo "$(printf "$(t "Unknown image: '%s'. Use one of: all, nginx, core-nginx, utils-pwgen, utils-docker, core, core-gunicorn, core-php83, core-php81, core-php74, core-php73, core-php56, admin, stats")" "$IMAGE")"
 		exit 1
 	fi
 	if [ "$IMAGE" = "all" ] || [ "$IMAGE" = "nginx" ]; then

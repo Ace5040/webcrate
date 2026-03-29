@@ -58,7 +58,7 @@ POSTGRES_PASS=$(initDbFolder 'postgres')
 
 GRAFANA_PASS=''
 if [[ ! -d "./var/grafana/data" ]] ; then
-	writeLog "Init grafana folders and generate password" $LOG_LEVEL_DEBUG
+	writeLog "$(t "Init grafana folders and generate password")" $LOG_LEVEL_DEBUG
 	mkdir -p "./var/grafana/data"
 	mkdir -p "./var/grafana/log"
 	if [[ ! -f "./var/secrets/grafana.secret" ]] ; then
@@ -71,7 +71,7 @@ if [[ ! -d "./var/grafana/data" ]] ; then
 fi
 
 if [[ ! -f "./var/secrets/admin.secret" ]] ; then
-	writeLog "Generate webcrate secret and admin password" $LOG_LEVEL_DEBUG
+	writeLog "$(t "Generate webcrate secret and admin password")" $LOG_LEVEL_DEBUG
 	admin_password=`docker run --rm -e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE $IMAGE_UTILS_PWGEN /pwgen.sh`
 	app_secret=`docker run --rm -e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE $IMAGE_UTILS_PWGEN pwgen -nAs1 32 1`
 	echo "user=admin" > ./var/secrets/admin.secret
@@ -80,21 +80,21 @@ if [[ ! -f "./var/secrets/admin.secret" ]] ; then
 fi
 
 if [[ ! -f "./projects.yml" ]] ; then
-	writeLog "Create empty projects.yml" $LOG_LEVEL_DEBUG
+	writeLog "$(t "Create empty projects.yml")" $LOG_LEVEL_DEBUG
 	echo "" >> ./projects.yml
 fi
 if [[ ! -f "./redirects.yml" ]] ; then
-	writeLog "Create epmty redirects.yml" $LOG_LEVEL_DEBUG
+	writeLog "$(t "Create empty redirects.yml")" $LOG_LEVEL_DEBUG
 	echo "" >> ./redirects.yml
 fi
 if [[ ! -f "./services.yml" ]] ; then
-	writeLog "Create default services.yml" $LOG_LEVEL_DEBUG
+	writeLog "$(t "Create default services.yml")" $LOG_LEVEL_DEBUG
 	cp ./examples/services.yml.example ./services.yml
 fi
 
-writeLog "Create docker network if it not exists" $LOG_LEVEL_DEBUG
+writeLog "$(t "Create docker network if not exists")" $LOG_LEVEL_DEBUG
 if docker network inspect webcrate_network >/dev/null 2> /dev/null; then
-	echo network webcrate_network exists
+	echo "$(t "network webcrate_network exists")"
 else
 	docker network create --driver=bridge --subnet=10.255.0.0/24 webcrate_network > /dev/null
 fi

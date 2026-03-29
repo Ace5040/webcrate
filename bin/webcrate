@@ -29,7 +29,7 @@ source ./bin/commands/localegen.inc
 set -o errexit -o pipefail -o noclobber -o nounset
 getopt --test > /dev/null && true
 if [[ $? -ne 4 ]]; then
-	echo 'getopt --test failed in this environment'
+	echo "$(t "getopt --test failed in this environment")"
 	exit 1
 fi
 
@@ -65,7 +65,7 @@ case $COMMAND in
 	help) Help $@;;
 	configure) Configure $@;;
 	localegen) Localegen $@;;
-	*) echo "Unknown command: '$COMMAND'. Use 'webcrate help' to get list of commands"
+	*) echo "$(printf "$(t "Unknown command: '%s'. Use 'webcrate help' to get list of commands")" "$COMMAND")"
 esac
 
 exit 0

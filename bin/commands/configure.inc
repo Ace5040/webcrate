@@ -51,7 +51,7 @@ function Configure() {
 	# create or rewrite .env file
 	if [[ -f ".env" ]]; then
 		while true; do
-			read -p "$(t ".env already exits. Overwrite?") y/n [n]: " overwrite
+			read -p "$(t ".env already exists. Overwrite?") y/n [n]: " overwrite
 			overwrite=${overwrite:-n}
 			overwrite=${overwrite,,}
 			validate_boolean "$overwrite" || continue
@@ -88,7 +88,7 @@ function Configure() {
 			echo "WEBCRATE_LOG_LEVEL=$log_level" >> .env
 			break
 		else
-			echo "Only 'debug', 'info' or 'error' are valid values"
+			echo "$(t "Only 'debug', 'info' or 'error' are valid values")"
 		fi
 	done
 
@@ -100,7 +100,7 @@ function Configure() {
 			echo "WEBCRATE_ADMIN_EMAIL=$admin_email" >> .env
 			break
 		else
-			echo "Invalid email"
+			echo "$(t "Invalid email")"
 		fi
 	done
 
@@ -120,7 +120,7 @@ function Configure() {
 
 	# enter organization
 	while true; do
-		read -p "Oragnization name: " organization
+		read -p "$(t "Organization name"): " organization
 
 		if [[ -z "$organization" ]]; then
 			t "Cannot be empty"
@@ -134,7 +134,7 @@ function Configure() {
 
 	# ports settings
 	while true; do
-		read -p "WEBCRATE_APP_HTTP_PORT [80]: " http_port
+		read -p "$(t "HTTP port [80]"): " http_port
 		http_port=${http_port:-80}
 		validate_port "$http_port" && break
 		t "Port must be between 1 and 65535"
@@ -142,7 +142,7 @@ function Configure() {
 	echo "WEBCRATE_APP_HTTP_PORT=$http_port" >> .env
 
 	while true; do
-		read -p "WEBCRATE_APP_HTTPS_PORT [443]: " https_port
+		read -p "$(t "HTTPS port [443]"): " https_port
 		https_port=${https_port:-443}
 		validate_port "$https_port" && break
 		t "Port must be between 1 and 65535"
@@ -159,36 +159,36 @@ function Configure() {
 
 	docker_host_ip=""
 	while $(to_boolean $localdns); do
-		read -p "DOCKER_HOST_IP (IP адрес машины): " docker_host_ip
+		read -p "$(t "Docker host IP address (machine IP)"): " docker_host_ip
 		validate_ip "$docker_host_ip" && break
-		echo "Must be correct IP address, e.g. 192.168.1.1"
+		echo "$(t "Must be a valid IP address, e.g. 192.168.1.1")"
 	done
 	echo "DOCKER_HOST_IP=$docker_host_ip" >> .env
 
 	external_dns_ip=""
 	while $(to_boolean $localdns); do
-		read -p "WEBCRATE_EXTERNAL_DNS_IP (IP адрес роутера): " external_dns_ip
+		read -p "$(t "External DNS IP address (router IP)"): " external_dns_ip
 		validate_ip "$external_dns_ip" && break
-		echo "Must be correct IP address, e.g. 192.168.1.1"
+		echo "$(t "Must be a valid IP address, e.g. 192.168.1.1")"
 	done
 	echo "WEBCRATE_EXTERNAL_DNS_IP=$external_dns_ip" >> .env
 
 	# Настройки Docker
-	read -p "DOCKER_SOCKET [/var/run/docker.sock]: " docker_socket
+	read -p "$(t "Docker socket [/var/run/docker.sock]"): " docker_socket
 	docker_socket=${docker_socket:-/var/run/docker.sock}
 	echo "DOCKER_SOCKET=$docker_socket" >> .env
 
 	# WEBCRATE_PROJECTS_FOLDERS
-	echo -e "\nВведите пути к папкам проектов, например projects (по одному за раз)"
-	echo "Оставьте пустым и нажмите Enter чтобы завершить ввод"
+	echo -e "\n$(t "Enter project folder paths (e.g. projects), one per line")"
+	echo "$(t "Leave empty and press Enter to finish")"
 	projects_folders=()
 
 	while true; do
-		read -p "Введите абсолютный путь (должен начинаться со /) или относительный(будет размещён в папке webcrate/var): " project_path
+		read -p "$(t "Enter absolute path (starting with /) or relative (placed in webcrate/var)"): " project_path
 
 		if [[ -z "$project_path" ]]; then
 			if [[ ${#projects_folders[@]} -eq 0 ]]; then
-				echo "Ошибка: должен быть указан хотя бы один путь"
+				echo "$(t "Error: at least one path must be specified")"
 				continue
 			else
 				break
@@ -205,7 +205,7 @@ function Configure() {
 
 	# Настройки сервисов
 	while true; do
-		read -p "WEBCRATE_SERVICE_HTMLTOPDF (yes/no) [no]: " htmltopdf
+		read -p "$(t "HTMLTOPDF service (yes/no) [no]"): " htmltopdf
 		htmltopdf=${htmltopdf:-n}
 		htmltopdf=${htmltopdf,,}
 		validate_boolean "$htmltopdf" && break
@@ -214,7 +214,7 @@ function Configure() {
 	echo "WEBCRATE_SERVICE_HTMLTOPDF=$(to_boolean $htmltopdf)" >> .env
 
 	while true; do
-		read -p "WEBCRATE_SERVICE_DOCTOHTML (yes/no) [no]: " doctohtml
+		read -p "$(t "DOCTOHTML service (yes/no) [no]"): " doctohtml
 		doctohtml=${doctohtml:-n}
 		doctohtml=${doctohtml,,}
 		validate_boolean "$doctohtml" && break
@@ -223,7 +223,7 @@ function Configure() {
 	echo "WEBCRATE_SERVICE_DOCTOHTML=$(to_boolean $doctohtml)" >> .env
 
 	while true; do
-		read -p "WEBCRATE_SERVICE_STATS (yes/no) [yes]: " stats
+		read -p "$(t "STATS service (yes/no) [yes]"): " stats
 		stats=${stats:-y}
 		stats=${stats,,}
 		validate_boolean "$stats" && break
@@ -233,7 +233,7 @@ function Configure() {
 
 	# Настройки бэкапов
 	while true; do
-		read -p "WEBCRATE_FULL_BACKUP_DAYS [30]: " backup_days
+		read -p "$(t "Full backup interval in days [30]"): " backup_days
 		backup_days=${backup_days:-30}
 		validate_number "$backup_days" && break
 		t "Must be a number"
@@ -241,7 +241,7 @@ function Configure() {
 	echo "WEBCRATE_FULL_BACKUP_DAYS=$backup_days" >> .env
 
 	while true; do
-		read -p "WEBCRATE_MAX_FULL_BACKUPS [1]: " max_backups
+		read -p "$(t "Maximum number of full backups [1]"): " max_backups
 		max_backups=${max_backups:-1}
 		validate_number "$max_backups" && break
 		t "Must be a number"
@@ -249,13 +249,13 @@ function Configure() {
 	echo "WEBCRATE_MAX_FULL_BACKUPS=$max_backups" >> .env
 
 	# URI для бэкапов
-	echo "Введите URI для хранения резервных копий в формате ftp://[user[:password]@]host[:port]/[/]path (по одному за раз)"
-	echo "Если не ввести ни одного URI, резервные копии будут создаваться в папке webcrate/var/backup"
-	echo "Оставьте пустым и нажмите Enter чтобы завершить ввод"
+	echo "$(t "Enter backup URIs (ftp://[user[:password]@]host[:port]/[/]path), one per line")"
+	echo "$(t "If no URIs specified, backups will be stored in webcrate/var/backup")"
+	echo "$(t "Leave empty and press Enter to finish")"
 	backup_uris=()
 
 	while true; do
-		read -p "Дополнительные URI для бэкапа: " uri
+		read -p "$(t "Additional backup URI"): " uri
 
 		if [[ -z "$uri" ]]; then
 			break

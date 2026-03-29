@@ -17,8 +17,16 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: bin/webcrate:32
+msgid "getopt --test failed in this environment"
+msgstr ""
+
+#: bin/webcrate:68
+msgid "Unknown command: '%s'. Use 'webcrate help' to get list of commands"
+msgstr ""
+
 #: bin/commands/configure.inc:54
-msgid ".env already exits. Overwrite?"
+msgid ".env already exists. Overwrite?"
 msgstr ""
 
 #: bin/commands/configure.inc:59
@@ -37,8 +45,16 @@ msgstr ""
 msgid "Log level"
 msgstr ""
 
+#: bin/commands/configure.inc:91
+msgid "Only 'debug', 'info' or 'error' are valid values"
+msgstr ""
+
 #: bin/commands/configure.inc:97
 msgid "Admin email(login)"
+msgstr ""
+
+#: bin/commands/configure.inc:103
+msgid "Invalid email"
 msgstr ""
 
 #: bin/commands/configure.inc:109
@@ -49,16 +65,60 @@ msgstr ""
 msgid "Enter two latin letters"
 msgstr ""
 
+#: bin/commands/configure.inc:123
+msgid "Organization name"
+msgstr ""
+
 #: bin/commands/configure.inc:126
 msgid "Cannot be empty"
+msgstr ""
+
+#: bin/commands/configure.inc:137
+msgid "HTTP port [80]"
 msgstr ""
 
 #: bin/commands/configure.inc:139 bin/commands/configure.inc:147
 msgid "Port must be between 1 and 65535"
 msgstr ""
 
+#: bin/commands/configure.inc:145
+msgid "HTTPS port [443]"
+msgstr ""
+
 #: bin/commands/configure.inc:152
 msgid "Enable local DNS?"
+msgstr ""
+
+#: bin/commands/configure.inc:162
+msgid "Docker host IP address (machine IP)"
+msgstr ""
+
+#: bin/commands/configure.inc:164 bin/commands/configure.inc:172
+msgid "Must be a valid IP address, e.g. 192.168.1.1"
+msgstr ""
+
+#: bin/commands/configure.inc:170
+msgid "External DNS IP address (router IP)"
+msgstr ""
+
+#: bin/commands/configure.inc:177
+msgid "Docker socket [/var/run/docker.sock]"
+msgstr ""
+
+#: bin/commands/configure.inc:182
+msgid "Enter project folder paths (e.g. projects), one per line"
+msgstr ""
+
+#: bin/commands/configure.inc:183 bin/commands/configure.inc:254
+msgid "Leave empty and press Enter to finish"
+msgstr ""
+
+#: bin/commands/configure.inc:187
+msgid "Enter absolute path (starting with /) or relative (placed in webcrate/var)"
+msgstr ""
+
+#: bin/commands/configure.inc:191
+msgid "Error: at least one path must be specified"
 msgstr ""
 
 #: bin/commands/configure.inc:207 bin/commands/configure.inc:215
@@ -66,6 +126,264 @@ msgstr ""
 msgid "Must be 'yes(y)' or 'no(n)'"
 msgstr ""
 
+#: bin/commands/configure.inc:208
+msgid "HTMLTOPDF service (yes/no) [no]"
+msgstr ""
+
+#: bin/commands/configure.inc:217
+msgid "DOCTOHTML service (yes/no) [no]"
+msgstr ""
+
+#: bin/commands/configure.inc:226
+msgid "STATS service (yes/no) [yes]"
+msgstr ""
+
 #: bin/commands/configure.inc:232 bin/commands/configure.inc:240
 msgid "Must be a number"
+msgstr ""
+
+#: bin/commands/configure.inc:236
+msgid "Full backup interval in days [30]"
+msgstr ""
+
+#: bin/commands/configure.inc:244
+msgid "Maximum number of full backups [1]"
+msgstr ""
+
+#: bin/commands/configure.inc:252
+msgid "Enter backup URIs (ftp://[user[:password]@]host[:port]/[/]path), one per line"
+msgstr ""
+
+#: bin/commands/configure.inc:253
+msgid "If no URIs specified, backups will be stored in webcrate/var/backup"
+msgstr ""
+
+#: bin/commands/configure.inc:258
+msgid "Additional backup URI"
+msgstr ""
+
+#: bin/commands/help.inc:4
+msgid "Usage: webcrate _command_ [OPTIONS]"
+msgstr ""
+
+#: bin/commands/help.inc:6
+msgid "  configure - Build config and start containers"
+msgstr ""
+
+#: bin/commands/help.inc:7
+msgid "  start     - Build config and start containers"
+msgstr ""
+
+#: bin/commands/help.inc:8
+msgid "  stop      - Stop and remove all containers"
+msgstr ""
+
+#: bin/commands/help.inc:9
+msgid "  restart   - Same as Stop then Start"
+msgstr ""
+
+#: bin/commands/help.inc:10
+msgid "  dock      - Connect to project container with bash. Usage webcrate dock [project_name]"
+msgstr ""
+
+#: bin/commands/help.inc:11
+msgid "              if project_name is not preset connects as root"
+msgstr ""
+
+#: bin/commands/help.inc:12
+msgid "  update    - Update all images from dockerhub and pull fresh source from github"
+msgstr ""
+
+#: bin/commands/help.inc:13
+msgid "  pull      - Update all images from dockerhub"
+msgstr ""
+
+#: bin/commands/help.inc:14
+msgid "  log       - Print all docker logs"
+msgstr ""
+
+#: bin/commands/help.inc:15
+msgid "  backup    - Start backup process manually"
+msgstr ""
+
+#: bin/commands/help.inc:16
+msgid "  build     - Build images from source. Usage webcrate build [OPTIONS] target"
+msgstr ""
+
+#: bin/commands/help.inc:17
+msgid "                target: can be one of nginx, core, core-nginx, core-gunicorn, core-php83, core-php81, core-php74, core-php73, core-php56, utils-pwgen, utils-docker, admin, dnsmasq or all"
+msgstr ""
+
+#: bin/commands/help.inc:18
+msgid "                OPTIONS:"
+msgstr ""
+
+#: bin/commands/help.inc:19
+msgid "                  -c, --no-cache : do not use docker build cache"
+msgstr ""
+
+#: bin/commands/help.inc:20
+msgid "                  -u, --update-base-images : pulls fresh base images before build"
+msgstr ""
+
+#: bin/commands/help.inc:21
+msgid "                  -p, --progress-plain : make build progress plain"
+msgstr ""
+
+#: bin/commands/help.inc:22
+msgid "  push      - Push images to dockerhub. Usage webcrate push _image_"
+msgstr ""
+
+#: bin/commands/help.inc:23
+msgid "                _image_: can be one of nginx, core, utils-pwgen, utils-docker, admin or all"
+msgstr ""
+
+#: bin/commands/help.inc:24
+msgid "  help      - Print this info"
+msgstr ""
+
+#: bin/commands/build.inc:20
+msgid "Unknown build target: '%s'. Use one of: all, nginx, utils-pwgen, utils-docker, core, core-gunicorn, core-php83, core-php81, core-php74, core-php73, core-php56, admin, stats"
+msgstr ""
+
+#: bin/commands/build.inc:49 bin/commands/dock.inc:19
+msgid "Programming error"
+msgstr ""
+
+#: bin/commands/build.inc:64 bin/commands/dock.inc:33
+#: bin/commands/start.inc:22 bin/commands/stop.inc:32
+msgid "Wrong number of args"
+msgstr ""
+
+#: bin/commands/push.inc:20
+msgid "Unknown image: '%s'. Use one of: all, nginx, core-nginx, utils-pwgen, utils-docker, core, core-gunicorn, core-php83, core-php81, core-php74, core-php73, core-php56, admin, stats"
+msgstr ""
+
+#: bin/commands/start.inc:6 bin/commands/start.inc:9
+#: bin/commands/start.inc:16 bin/commands/start.inc:20
+msgid "Started"
+msgstr ""
+
+#: bin/commands/start.inc:6
+msgid "Starting %s service"
+msgstr ""
+
+#: bin/commands/start.inc:11 bin/commands/stop.inc:14
+msgid "Unknown service: %s"
+msgstr ""
+
+#: bin/commands/start.inc:16
+msgid "Starting all services"
+msgstr ""
+
+#: bin/commands/stop.inc:9
+msgid "Stopping: %s"
+msgstr ""
+
+#: bin/commands/stop.inc:12
+msgid "%s stopped and removed"
+msgstr ""
+
+#: bin/commands/stop.inc:19
+msgid "Stopping and removing webcrate containers"
+msgstr ""
+
+#: bin/commands/stop.inc:25
+msgid "Removing networks"
+msgstr ""
+
+#: bin/commands/stop.inc:30
+msgid "Stopped and removed"
+msgstr ""
+
+#: bin/commands/backup.inc:2
+msgid "Starting backup: %s %s"
+msgstr ""
+
+#: bin/commands/backup.inc:4
+msgid "Backup finished: %s %s"
+msgstr ""
+
+#: bin/includes/generate-config.inc:5
+msgid "Generating resolv.conf for dnsmasq"
+msgstr ""
+
+#: bin/includes/generate-config.inc:13
+msgid "Generated resolv.conf for dnsmasq"
+msgstr ""
+
+#: bin/includes/generate-config.inc:15
+msgid "Parse projects started"
+msgstr ""
+
+#: bin/includes/generate-config.inc:35
+msgid "Parse projects ended"
+msgstr ""
+
+#: bin/includes/generate-config.inc:37
+msgid "Parse redirects started"
+msgstr ""
+
+#: bin/includes/generate-config.inc:52
+msgid "Parse redirects ended"
+msgstr ""
+
+#: bin/includes/generate-config.inc:54
+msgid "Parse services started"
+msgstr ""
+
+#: bin/includes/generate-config.inc:67
+msgid "Parse services ended"
+msgstr ""
+
+#: bin/includes/init.inc:61
+msgid "Init grafana folders and generate password"
+msgstr ""
+
+#: bin/includes/init.inc:74
+msgid "Generate webcrate secret and admin password"
+msgstr ""
+
+#: bin/includes/init.inc:83
+msgid "Create empty projects.yml"
+msgstr ""
+
+#: bin/includes/init.inc:87
+msgid "Create empty redirects.yml"
+msgstr ""
+
+#: bin/includes/init.inc:91
+msgid "Create default services.yml"
+msgstr ""
+
+#: bin/includes/init.inc:95
+msgid "Create docker network if not exists"
+msgstr ""
+
+#: bin/includes/init.inc:97
+msgid "network webcrate_network exists"
+msgstr ""
+
+#: bin/includes/projects.inc:7
+msgid "Starting project: %s"
+msgstr ""
+
+#: bin/includes/projects.inc:37
+msgid "Project started: %s"
+msgstr ""
+
+#: bin/includes/services.inc
+msgid "Container %s exists"
+msgstr ""
+
+#: bin/includes/services.inc
+msgid "Starting %s container"
+msgstr ""
+
+#: bin/includes/services.inc:43
+msgid "Init services"
+msgstr ""
+
+#: bin/includes/services.inc:68
+msgid "Services initialized"
 msgstr ""

@@ -17,55 +17,373 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: bin/webcrate:32
+msgid "getopt --test failed in this environment"
+msgstr "当前环境中 getopt --test 执行失败"
+
+#: bin/webcrate:68
+msgid "Unknown command: '%s'. Use 'webcrate help' to get list of commands"
+msgstr "未知命令：'%s'。请使用 'webcrate help' 查看命令列表"
+
 #: bin/commands/configure.inc:54
-msgid ".env already exits. Overwrite?"
+msgid ".env already exists. Overwrite?"
 msgstr ".env 文件已存在。要覆盖吗？"
 
 #: bin/commands/configure.inc:59
 msgid ".env creation canceled"
-msgstr ".env 文件创建已取消。"
+msgstr ".env 文件创建已取消"
 
 #: bin/commands/configure.inc:70
 msgid "Webcrate mode"
-msgstr ""
+msgstr "Webcrate 运行模式"
 
 #: bin/commands/configure.inc:77
 msgid "Only 'dev' or 'prod' are valid values"
-msgstr ""
+msgstr "仅允许输入 'dev' 或 'prod'"
 
 #: bin/commands/configure.inc:83
 msgid "Log level"
-msgstr ""
+msgstr "日志级别"
+
+#: bin/commands/configure.inc:91
+msgid "Only 'debug', 'info' or 'error' are valid values"
+msgstr "仅允许输入 'debug'、'info' 或 'error'"
 
 #: bin/commands/configure.inc:97
 msgid "Admin email(login)"
-msgstr ""
+msgstr "管理员邮箱（登录名）"
+
+#: bin/commands/configure.inc:103
+msgid "Invalid email"
+msgstr "邮箱格式无效"
 
 #: bin/commands/configure.inc:109
 msgid "Country code, e.g. US, RU, DE"
-msgstr ""
+msgstr "国家代码，例如 US、RU、DE"
 
 #: bin/commands/configure.inc:117
 msgid "Enter two latin letters"
-msgstr ""
+msgstr "请输入两个拉丁字母"
+
+#: bin/commands/configure.inc:123
+msgid "Organization name"
+msgstr "组织名称"
 
 #: bin/commands/configure.inc:126
 msgid "Cannot be empty"
-msgstr ""
+msgstr "不能为空"
+
+#: bin/commands/configure.inc:137
+msgid "HTTP port [80]"
+msgstr "HTTP 端口 [80]"
 
 #: bin/commands/configure.inc:139 bin/commands/configure.inc:147
 msgid "Port must be between 1 and 65535"
-msgstr ""
+msgstr "端口号必须在 1 到 65535 之间"
+
+#: bin/commands/configure.inc:145
+msgid "HTTPS port [443]"
+msgstr "HTTPS 端口 [443]"
 
 #: bin/commands/configure.inc:152
 msgid "Enable local DNS?"
 msgstr "是否启用本地域名解析服务？"
 
+#: bin/commands/configure.inc:162
+msgid "Docker host IP address (machine IP)"
+msgstr "Docker 宿主机 IP 地址（本机 IP）"
+
+#: bin/commands/configure.inc:164 bin/commands/configure.inc:172
+msgid "Must be a valid IP address, e.g. 192.168.1.1"
+msgstr "请输入有效的 IP 地址，例如 192.168.1.1"
+
+#: bin/commands/configure.inc:170
+msgid "External DNS IP address (router IP)"
+msgstr "外部 DNS 的 IP 地址（路由器 IP）"
+
+#: bin/commands/configure.inc:177
+msgid "Docker socket [/var/run/docker.sock]"
+msgstr "Docker 套接字 [/var/run/docker.sock]"
+
+#: bin/commands/configure.inc:182
+msgid "Enter project folder paths (e.g. projects), one per line"
+msgstr "请输入项目文件夹路径（如 projects），每行一个"
+
+#: bin/commands/configure.inc:183 bin/commands/configure.inc:254
+msgid "Leave empty and press Enter to finish"
+msgstr "留空并按 Enter 键结束输入"
+
+#: bin/commands/configure.inc:187
+msgid "Enter absolute path (starting with /) or relative (placed in webcrate/var)"
+msgstr "请输入绝对路径（以 / 开头）或相对路径（将放置在 webcrate/var 中）"
+
+#: bin/commands/configure.inc:191
+msgid "Error: at least one path must be specified"
+msgstr "错误：至少需要指定一个路径"
+
 #: bin/commands/configure.inc:207 bin/commands/configure.inc:215
 #: bin/commands/configure.inc:223
 msgid "Must be 'yes(y)' or 'no(n)'"
-msgstr ""
+msgstr "请输入 'yes(y)' 或 'no(n)'"
+
+#: bin/commands/configure.inc:208
+msgid "HTMLTOPDF service (yes/no) [no]"
+msgstr "HTMLTOPDF 服务 (yes/no) [no]"
+
+#: bin/commands/configure.inc:217
+msgid "DOCTOHTML service (yes/no) [no]"
+msgstr "DOCTOHTML 服务 (yes/no) [no]"
+
+#: bin/commands/configure.inc:226
+msgid "STATS service (yes/no) [yes]"
+msgstr "STATS 统计服务 (yes/no) [yes]"
 
 #: bin/commands/configure.inc:232 bin/commands/configure.inc:240
 msgid "Must be a number"
-msgstr ""
+msgstr "必须为数字"
+
+#: bin/commands/configure.inc:236
+msgid "Full backup interval in days [30]"
+msgstr "完整备份间隔天数 [30]"
+
+#: bin/commands/configure.inc:244
+msgid "Maximum number of full backups [1]"
+msgstr "最大完整备份数量 [1]"
+
+#: bin/commands/configure.inc:252
+msgid "Enter backup URIs (ftp://[user[:password]@]host[:port]/[/]path), one per line"
+msgstr "请输入备份存储 URI（格式：ftp://[user[:password]@]host[:port]/[/]path），每行一个"
+
+#: bin/commands/configure.inc:253
+msgid "If no URIs specified, backups will be stored in webcrate/var/backup"
+msgstr "若未指定任何 URI，备份将存储在 webcrate/var/backup 目录中"
+
+#: bin/commands/configure.inc:258
+msgid "Additional backup URI"
+msgstr "额外的备份 URI"
+
+#: bin/commands/help.inc:4
+msgid "Usage: webcrate _command_ [OPTIONS]"
+msgstr "用法：webcrate _命令_ [选项]"
+
+#: bin/commands/help.inc:6
+msgid "  configure - Build config and start containers"
+msgstr "  configure - 创建配置并启动容器"
+
+#: bin/commands/help.inc:7
+msgid "  start     - Build config and start containers"
+msgstr "  start     - 生成配置并启动容器"
+
+#: bin/commands/help.inc:8
+msgid "  stop      - Stop and remove all containers"
+msgstr "  stop      - 停止并删除所有容器"
+
+#: bin/commands/help.inc:9
+msgid "  restart   - Same as Stop then Start"
+msgstr "  restart   - 相当于依次执行 Stop 和 Start"
+
+#: bin/commands/help.inc:10
+msgid "  dock      - Connect to project container with bash. Usage webcrate dock [project_name]"
+msgstr "  dock      - 通过 bash 连接到项目容器。用法：webcrate dock [project_name]"
+
+#: bin/commands/help.inc:11
+msgid "              if project_name is not preset connects as root"
+msgstr "              若未指定 project_name，则以 root 身份连接"
+
+#: bin/commands/help.inc:12
+msgid "  update    - Update all images from dockerhub and pull fresh source from github"
+msgstr "  update    - 从 dockerhub 更新所有镜像并从 github 拉取最新源码"
+
+#: bin/commands/help.inc:13
+msgid "  pull      - Update all images from dockerhub"
+msgstr "  pull      - 从 dockerhub 更新所有镜像"
+
+#: bin/commands/help.inc:14
+msgid "  log       - Print all docker logs"
+msgstr "  log       - 打印所有 docker 日志"
+
+#: bin/commands/help.inc:15
+msgid "  backup    - Start backup process manually"
+msgstr "  backup    - 手动启动备份流程"
+
+#: bin/commands/help.inc:16
+msgid "  build     - Build images from source. Usage webcrate build [OPTIONS] target"
+msgstr "  build     - 从源码构建镜像。用法：webcrate build [选项] target"
+
+#: bin/commands/help.inc:17
+msgid "                target: can be one of nginx, core, core-nginx, core-gunicorn, core-php83, core-php81, core-php74, core-php73, core-php56, utils-pwgen, utils-docker, admin, dnsmasq or all"
+msgstr "                target：可为 nginx、core、core-nginx、core-gunicorn、core-php83、core-php81、core-php74、core-php73、core-php56、utils-pwgen、utils-docker、admin、dnsmasq 或 all 之一"
+
+#: bin/commands/help.inc:18
+msgid "                OPTIONS:"
+msgstr "                选项："
+
+#: bin/commands/help.inc:19
+msgid "                  -c, --no-cache : do not use docker build cache"
+msgstr "                  -c, --no-cache : 不使用 docker 构建缓存"
+
+#: bin/commands/help.inc:20
+msgid "                  -u, --update-base-images : pulls fresh base images before build"
+msgstr "                  -u, --update-base-images : 构建前更新基础镜像"
+
+#: bin/commands/help.inc:21
+msgid "                  -p, --progress-plain : make build progress plain"
+msgstr "                  -p, --progress-plain : 以纯文本格式显示构建进度"
+
+#: bin/commands/help.inc:22
+msgid "  push      - Push images to dockerhub. Usage webcrate push _image_"
+msgstr "  push      - 推送镜像到 dockerhub。用法：webcrate push _image_"
+
+#: bin/commands/help.inc:23
+msgid "                _image_: can be one of nginx, core, utils-pwgen, utils-docker, admin or all"
+msgstr "                _image_：可为 nginx、core、utils-pwgen、utils-docker、admin 或 all 之一"
+
+#: bin/commands/help.inc:24
+msgid "  help      - Print this info"
+msgstr "  help      - 打印此帮助信息"
+
+#: bin/commands/build.inc:20
+msgid "Unknown build target: '%s'. Use one of: all, nginx, utils-pwgen, utils-docker, core, core-gunicorn, core-php83, core-php81, core-php74, core-php73, core-php56, admin, stats"
+msgstr "未知构建目标：'%s'。请使用以下之一：all、nginx、utils-pwgen、utils-docker、core、core-gunicorn、core-php83、core-php81、core-php74、core-php73、core-php56、admin、stats"
+
+#: bin/commands/build.inc:49 bin/commands/dock.inc:19
+msgid "Programming error"
+msgstr "程序错误"
+
+#: bin/commands/build.inc:64 bin/commands/dock.inc:33
+#: bin/commands/start.inc:22 bin/commands/stop.inc:32
+msgid "Wrong number of args"
+msgstr "参数数量错误"
+
+#: bin/commands/push.inc:20
+msgid "Unknown image: '%s'. Use one of: all, nginx, core-nginx, utils-pwgen, utils-docker, core, core-gunicorn, core-php83, core-php81, core-php74, core-php73, core-php56, admin, stats"
+msgstr "未知镜像：'%s'。请使用以下之一：all、nginx、core-nginx、utils-pwgen、utils-docker、core、core-gunicorn、core-php83、core-php81、core-php74、core-php73、core-php56、admin、stats"
+
+#: bin/commands/start.inc:6 bin/commands/start.inc:9
+#: bin/commands/start.inc:16 bin/commands/start.inc:20
+msgid "Started"
+msgstr "已启动"
+
+#: bin/commands/start.inc:6
+msgid "Starting %s service"
+msgstr "正在启动 %s 服务"
+
+#: bin/commands/start.inc:11 bin/commands/stop.inc:14
+msgid "Unknown service: %s"
+msgstr "未知服务：%s"
+
+#: bin/commands/start.inc:16
+msgid "Starting all services"
+msgstr "正在启动所有服务"
+
+#: bin/commands/stop.inc:9
+msgid "Stopping: %s"
+msgstr "正在停止：%s"
+
+#: bin/commands/stop.inc:12
+msgid "%s stopped and removed"
+msgstr "%s 已停止并删除"
+
+#: bin/commands/stop.inc:19
+msgid "Stopping and removing webcrate containers"
+msgstr "正在停止并删除 webcrate 容器"
+
+#: bin/commands/stop.inc:25
+msgid "Removing networks"
+msgstr "正在删除网络"
+
+#: bin/commands/stop.inc:30
+msgid "Stopped and removed"
+msgstr "已停止并删除"
+
+#: bin/commands/backup.inc:2
+msgid "Starting backup: %s %s"
+msgstr "正在启动备份：%s %s"
+
+#: bin/commands/backup.inc:4
+msgid "Backup finished: %s %s"
+msgstr "备份已完成：%s %s"
+
+#: bin/includes/generate-config.inc:5
+msgid "Generating resolv.conf for dnsmasq"
+msgstr "正在为 dnsmasq 生成 resolv.conf"
+
+#: bin/includes/generate-config.inc:13
+msgid "Generated resolv.conf for dnsmasq"
+msgstr "dnsmasq 的 resolv.conf 已生成"
+
+#: bin/includes/generate-config.inc:15
+msgid "Parse projects started"
+msgstr "开始解析项目"
+
+#: bin/includes/generate-config.inc:35
+msgid "Parse projects ended"
+msgstr "项目解析完成"
+
+#: bin/includes/generate-config.inc:37
+msgid "Parse redirects started"
+msgstr "开始解析重定向规则"
+
+#: bin/includes/generate-config.inc:52
+msgid "Parse redirects ended"
+msgstr "重定向规则解析完成"
+
+#: bin/includes/generate-config.inc:54
+msgid "Parse services started"
+msgstr "开始解析服务"
+
+#: bin/includes/generate-config.inc:67
+msgid "Parse services ended"
+msgstr "服务解析完成"
+
+#: bin/includes/init.inc:61
+msgid "Init grafana folders and generate password"
+msgstr "正在初始化 grafana 目录并生成密码"
+
+#: bin/includes/init.inc:74
+msgid "Generate webcrate secret and admin password"
+msgstr "正在生成 webcrate 密钥和管理员密码"
+
+#: bin/includes/init.inc:83
+msgid "Create empty projects.yml"
+msgstr "正在创建空的 projects.yml"
+
+#: bin/includes/init.inc:87
+msgid "Create empty redirects.yml"
+msgstr "正在创建空的 redirects.yml"
+
+#: bin/includes/init.inc:91
+msgid "Create default services.yml"
+msgstr "正在创建默认 services.yml"
+
+#: bin/includes/init.inc:95
+msgid "Create docker network if not exists"
+msgstr "正在创建 docker 网络（如不存在）"
+
+#: bin/includes/init.inc:97
+msgid "network webcrate_network exists"
+msgstr "网络 webcrate_network 已存在"
+
+#: bin/includes/projects.inc:7
+msgid "Starting project: %s"
+msgstr "正在启动项目：%s"
+
+#: bin/includes/projects.inc:37
+msgid "Project started: %s"
+msgstr "项目已启动：%s"
+
+#: bin/includes/services.inc
+msgid "Container %s exists"
+msgstr "容器 %s 已存在"
+
+#: bin/includes/services.inc
+msgid "Starting %s container"
+msgstr "正在启动 %s 容器"
+
+#: bin/includes/services.inc:43
+msgid "Init services"
+msgstr "正在初始化服务"
+
+#: bin/includes/services.inc:68
+msgid "Services initialized"
+msgstr "服务初始化完成"

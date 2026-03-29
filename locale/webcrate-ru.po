@@ -1,5 +1,5 @@
 # Russian translations for PACKAGE package
-# Английские переводы для пакета PACKAGE.
+# Русские переводы для пакета PACKAGE.
 # Copyright (C) 2025 THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # Automatically generated, 2025.
@@ -19,8 +19,16 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
+#: bin/webcrate:32
+msgid "getopt --test failed in this environment"
+msgstr "getopt --test завершился ошибкой в этой среде"
+
+#: bin/webcrate:68
+msgid "Unknown command: '%s'. Use 'webcrate help' to get list of commands"
+msgstr "Неизвестная команда: '%s'. Используйте 'webcrate help' для просмотра списка команд"
+
 #: bin/commands/configure.inc:54
-msgid ".env already exits. Overwrite?"
+msgid ".env already exists. Overwrite?"
 msgstr ".env уже существует. Перезаписать?"
 
 #: bin/commands/configure.inc:59
@@ -29,45 +37,355 @@ msgstr "Создание .env отменено"
 
 #: bin/commands/configure.inc:70
 msgid "Webcrate mode"
-msgstr ""
+msgstr "Режим Webcrate"
 
 #: bin/commands/configure.inc:77
 msgid "Only 'dev' or 'prod' are valid values"
-msgstr ""
+msgstr "Допустимые значения: 'dev' или 'prod'"
 
 #: bin/commands/configure.inc:83
 msgid "Log level"
-msgstr ""
+msgstr "Уровень логирования"
+
+#: bin/commands/configure.inc:91
+msgid "Only 'debug', 'info' or 'error' are valid values"
+msgstr "Допустимые значения: 'debug', 'info' или 'error'"
 
 #: bin/commands/configure.inc:97
 msgid "Admin email(login)"
-msgstr ""
+msgstr "Email администратора (логин)"
+
+#: bin/commands/configure.inc:103
+msgid "Invalid email"
+msgstr "Некорректный email"
 
 #: bin/commands/configure.inc:109
 msgid "Country code, e.g. US, RU, DE"
-msgstr ""
+msgstr "Код страны, например US, RU, DE"
 
 #: bin/commands/configure.inc:117
 msgid "Enter two latin letters"
-msgstr ""
+msgstr "Введите две латинские буквы"
+
+#: bin/commands/configure.inc:123
+msgid "Organization name"
+msgstr "Название организации"
 
 #: bin/commands/configure.inc:126
 msgid "Cannot be empty"
-msgstr ""
+msgstr "Не может быть пустым"
+
+#: bin/commands/configure.inc:137
+msgid "HTTP port [80]"
+msgstr "HTTP порт [80]"
 
 #: bin/commands/configure.inc:139 bin/commands/configure.inc:147
 msgid "Port must be between 1 and 65535"
-msgstr ""
+msgstr "Порт должен быть в диапазоне от 1 до 65535"
+
+#: bin/commands/configure.inc:145
+msgid "HTTPS port [443]"
+msgstr "HTTPS порт [443]"
 
 #: bin/commands/configure.inc:152
 msgid "Enable local DNS?"
-msgstr "Включить локальный DNS"
+msgstr "Включить локальный DNS?"
+
+#: bin/commands/configure.inc:162
+msgid "Docker host IP address (machine IP)"
+msgstr "IP адрес хоста Docker (IP адрес машины)"
+
+#: bin/commands/configure.inc:164 bin/commands/configure.inc:172
+msgid "Must be a valid IP address, e.g. 192.168.1.1"
+msgstr "Должен быть корректный IP адрес, например 192.168.1.1"
+
+#: bin/commands/configure.inc:170
+msgid "External DNS IP address (router IP)"
+msgstr "IP адрес внешнего DNS (IP адрес роутера)"
+
+#: bin/commands/configure.inc:177
+msgid "Docker socket [/var/run/docker.sock]"
+msgstr "Docker сокет [/var/run/docker.sock]"
+
+#: bin/commands/configure.inc:182
+msgid "Enter project folder paths (e.g. projects), one per line"
+msgstr "Введите пути к папкам проектов, например projects (по одному за раз)"
+
+#: bin/commands/configure.inc:183 bin/commands/configure.inc:254
+msgid "Leave empty and press Enter to finish"
+msgstr "Оставьте пустым и нажмите Enter чтобы завершить ввод"
+
+#: bin/commands/configure.inc:187
+msgid "Enter absolute path (starting with /) or relative (placed in webcrate/var)"
+msgstr "Введите абсолютный путь (начиная с /) или относительный (будет размещён в webcrate/var)"
+
+#: bin/commands/configure.inc:191
+msgid "Error: at least one path must be specified"
+msgstr "Ошибка: должен быть указан хотя бы один путь"
 
 #: bin/commands/configure.inc:207 bin/commands/configure.inc:215
 #: bin/commands/configure.inc:223
 msgid "Must be 'yes(y)' or 'no(n)'"
-msgstr ""
+msgstr "Допустимые значения: 'yes(y)' или 'no(n)'"
+
+#: bin/commands/configure.inc:208
+msgid "HTMLTOPDF service (yes/no) [no]"
+msgstr "Сервис HTMLTOPDF (yes/no) [no]"
+
+#: bin/commands/configure.inc:217
+msgid "DOCTOHTML service (yes/no) [no]"
+msgstr "Сервис DOCTOHTML (yes/no) [no]"
+
+#: bin/commands/configure.inc:226
+msgid "STATS service (yes/no) [yes]"
+msgstr "Сервис статистики STATS (yes/no) [yes]"
 
 #: bin/commands/configure.inc:232 bin/commands/configure.inc:240
 msgid "Must be a number"
-msgstr ""
+msgstr "Должно быть числом"
+
+#: bin/commands/configure.inc:236
+msgid "Full backup interval in days [30]"
+msgstr "Интервал полного резервного копирования в днях [30]"
+
+#: bin/commands/configure.inc:244
+msgid "Maximum number of full backups [1]"
+msgstr "Максимальное количество полных резервных копий [1]"
+
+#: bin/commands/configure.inc:252
+msgid "Enter backup URIs (ftp://[user[:password]@]host[:port]/[/]path), one per line"
+msgstr "Введите URI для хранения резервных копий в формате ftp://[user[:password]@]host[:port]/[/]path (по одному за раз)"
+
+#: bin/commands/configure.inc:253
+msgid "If no URIs specified, backups will be stored in webcrate/var/backup"
+msgstr "Если не указать ни одного URI, резервные копии будут храниться в webcrate/var/backup"
+
+#: bin/commands/configure.inc:258
+msgid "Additional backup URI"
+msgstr "Дополнительный URI для резервных копий"
+
+#: bin/commands/help.inc:4
+msgid "Usage: webcrate _command_ [OPTIONS]"
+msgstr "Использование: webcrate _команда_ [ОПЦИИ]"
+
+#: bin/commands/help.inc:6
+msgid "  configure - Build config and start containers"
+msgstr "  configure - Создать конфигурацию и запустить контейнеры"
+
+#: bin/commands/help.inc:7
+msgid "  start     - Build config and start containers"
+msgstr "  start     - Собрать конфигурацию и запустить контейнеры"
+
+#: bin/commands/help.inc:8
+msgid "  stop      - Stop and remove all containers"
+msgstr "  stop      - Остановить и удалить все контейнеры"
+
+#: bin/commands/help.inc:9
+msgid "  restart   - Same as Stop then Start"
+msgstr "  restart   - Аналогично последовательному выполнению Stop и Start"
+
+#: bin/commands/help.inc:10
+msgid "  dock      - Connect to project container with bash. Usage webcrate dock [project_name]"
+msgstr "  dock      - Подключиться к контейнеру проекта через bash. Использование: webcrate dock [project_name]"
+
+#: bin/commands/help.inc:11
+msgid "              if project_name is not preset connects as root"
+msgstr "              если project_name не указан, подключается от имени root"
+
+#: bin/commands/help.inc:12
+msgid "  update    - Update all images from dockerhub and pull fresh source from github"
+msgstr "  update    - Обновить все образы из dockerhub и получить свежий исходный код из github"
+
+#: bin/commands/help.inc:13
+msgid "  pull      - Update all images from dockerhub"
+msgstr "  pull      - Обновить все образы из dockerhub"
+
+#: bin/commands/help.inc:14
+msgid "  log       - Print all docker logs"
+msgstr "  log       - Вывести все логи docker"
+
+#: bin/commands/help.inc:15
+msgid "  backup    - Start backup process manually"
+msgstr "  backup    - Запустить процесс резервного копирования вручную"
+
+#: bin/commands/help.inc:16
+msgid "  build     - Build images from source. Usage webcrate build [OPTIONS] target"
+msgstr "  build     - Собрать образы из исходного кода. Использование: webcrate build [ОПЦИИ] target"
+
+#: bin/commands/help.inc:17
+msgid "                target: can be one of nginx, core, core-nginx, core-gunicorn, core-php83, core-php81, core-php74, core-php73, core-php56, utils-pwgen, utils-docker, admin, dnsmasq or all"
+msgstr "                target: одно из значений nginx, core, core-nginx, core-gunicorn, core-php83, core-php81, core-php74, core-php73, core-php56, utils-pwgen, utils-docker, admin, dnsmasq или all"
+
+#: bin/commands/help.inc:18
+msgid "                OPTIONS:"
+msgstr "                ОПЦИИ:"
+
+#: bin/commands/help.inc:19
+msgid "                  -c, --no-cache : do not use docker build cache"
+msgstr "                  -c, --no-cache : не использовать кэш сборки docker"
+
+#: bin/commands/help.inc:20
+msgid "                  -u, --update-base-images : pulls fresh base images before build"
+msgstr "                  -u, --update-base-images : обновить базовые образы перед сборкой"
+
+#: bin/commands/help.inc:21
+msgid "                  -p, --progress-plain : make build progress plain"
+msgstr "                  -p, --progress-plain : отображать прогресс сборки в простом формате"
+
+#: bin/commands/help.inc:22
+msgid "  push      - Push images to dockerhub. Usage webcrate push _image_"
+msgstr "  push      - Отправить образы в dockerhub. Использование: webcrate push _image_"
+
+#: bin/commands/help.inc:23
+msgid "                _image_: can be one of nginx, core, utils-pwgen, utils-docker, admin or all"
+msgstr "                _image_: одно из значений nginx, core, utils-pwgen, utils-docker, admin или all"
+
+#: bin/commands/help.inc:24
+msgid "  help      - Print this info"
+msgstr "  help      - Вывести эту справку"
+
+#: bin/commands/build.inc:20
+msgid "Unknown build target: '%s'. Use one of: all, nginx, utils-pwgen, utils-docker, core, core-gunicorn, core-php83, core-php81, core-php74, core-php73, core-php56, admin, stats"
+msgstr "Неизвестная цель сборки: '%s'. Используйте одно из: all, nginx, utils-pwgen, utils-docker, core, core-gunicorn, core-php83, core-php81, core-php74, core-php73, core-php56, admin, stats"
+
+#: bin/commands/build.inc:49 bin/commands/dock.inc:19
+msgid "Programming error"
+msgstr "Ошибка программирования"
+
+#: bin/commands/build.inc:64 bin/commands/dock.inc:33
+#: bin/commands/start.inc:22 bin/commands/stop.inc:32
+msgid "Wrong number of args"
+msgstr "Неверное количество аргументов"
+
+#: bin/commands/push.inc:20
+msgid "Unknown image: '%s'. Use one of: all, nginx, core-nginx, utils-pwgen, utils-docker, core, core-gunicorn, core-php83, core-php81, core-php74, core-php73, core-php56, admin, stats"
+msgstr "Неизвестный образ: '%s'. Используйте одно из: all, nginx, core-nginx, utils-pwgen, utils-docker, core, core-gunicorn, core-php83, core-php81, core-php74, core-php73, core-php56, admin, stats"
+
+#: bin/commands/start.inc:6 bin/commands/start.inc:9
+#: bin/commands/start.inc:16 bin/commands/start.inc:20
+msgid "Started"
+msgstr "Запущено"
+
+#: bin/commands/start.inc:6
+msgid "Starting %s service"
+msgstr "Запуск сервиса %s"
+
+#: bin/commands/start.inc:11 bin/commands/stop.inc:14
+msgid "Unknown service: %s"
+msgstr "Неизвестный сервис: %s"
+
+#: bin/commands/start.inc:16
+msgid "Starting all services"
+msgstr "Запуск всех сервисов"
+
+#: bin/commands/stop.inc:9
+msgid "Stopping: %s"
+msgstr "Остановка: %s"
+
+#: bin/commands/stop.inc:12
+msgid "%s stopped and removed"
+msgstr "%s остановлен и удалён"
+
+#: bin/commands/stop.inc:19
+msgid "Stopping and removing webcrate containers"
+msgstr "Остановка и удаление контейнеров webcrate"
+
+#: bin/commands/stop.inc:25
+msgid "Removing networks"
+msgstr "Удаление сетей"
+
+#: bin/commands/stop.inc:30
+msgid "Stopped and removed"
+msgstr "Остановлено и удалено"
+
+#: bin/commands/backup.inc:2
+msgid "Starting backup: %s %s"
+msgstr "Запуск резервного копирования: %s %s"
+
+#: bin/commands/backup.inc:4
+msgid "Backup finished: %s %s"
+msgstr "Резервное копирование завершено: %s %s"
+
+#: bin/includes/generate-config.inc:5
+msgid "Generating resolv.conf for dnsmasq"
+msgstr "Генерация resolv.conf для dnsmasq"
+
+#: bin/includes/generate-config.inc:13
+msgid "Generated resolv.conf for dnsmasq"
+msgstr "resolv.conf для dnsmasq сгенерирован"
+
+#: bin/includes/generate-config.inc:15
+msgid "Parse projects started"
+msgstr "Начат разбор проектов"
+
+#: bin/includes/generate-config.inc:35
+msgid "Parse projects ended"
+msgstr "Разбор проектов завершён"
+
+#: bin/includes/generate-config.inc:37
+msgid "Parse redirects started"
+msgstr "Начат разбор перенаправлений"
+
+#: bin/includes/generate-config.inc:52
+msgid "Parse redirects ended"
+msgstr "Разбор перенаправлений завершён"
+
+#: bin/includes/generate-config.inc:54
+msgid "Parse services started"
+msgstr "Начат разбор сервисов"
+
+#: bin/includes/generate-config.inc:67
+msgid "Parse services ended"
+msgstr "Разбор сервисов завершён"
+
+#: bin/includes/init.inc:61
+msgid "Init grafana folders and generate password"
+msgstr "Инициализация папок grafana и генерация пароля"
+
+#: bin/includes/init.inc:74
+msgid "Generate webcrate secret and admin password"
+msgstr "Генерация секрета webcrate и пароля администратора"
+
+#: bin/includes/init.inc:83
+msgid "Create empty projects.yml"
+msgstr "Создание пустого projects.yml"
+
+#: bin/includes/init.inc:87
+msgid "Create empty redirects.yml"
+msgstr "Создание пустого redirects.yml"
+
+#: bin/includes/init.inc:91
+msgid "Create default services.yml"
+msgstr "Создание services.yml по умолчанию"
+
+#: bin/includes/init.inc:95
+msgid "Create docker network if not exists"
+msgstr "Создание docker сети если не существует"
+
+#: bin/includes/init.inc:97
+msgid "network webcrate_network exists"
+msgstr "сеть webcrate_network уже существует"
+
+#: bin/includes/projects.inc:7
+msgid "Starting project: %s"
+msgstr "Запуск проекта: %s"
+
+#: bin/includes/projects.inc:37
+msgid "Project started: %s"
+msgstr "Проект запущен: %s"
+
+#: bin/includes/services.inc
+msgid "Container %s exists"
+msgstr "Контейнер %s уже существует"
+
+#: bin/includes/services.inc
+msgid "Starting %s container"
+msgstr "Запуск контейнера %s"
+
+#: bin/includes/services.inc:43
+msgid "Init services"
+msgstr "Инициализация сервисов"
+
+#: bin/includes/services.inc:68
+msgid "Services initialized"
+msgstr "Сервисы инициализированы"

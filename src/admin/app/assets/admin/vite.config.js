@@ -32,6 +32,7 @@ function buildSymfonyManifest(outDir) {
 }
 
 export default defineConfig({
+  base: '/build/',
   plugins: [
     vue(),
     buildSymfonyManifest(resolve(__dirname, '../../public/build'))

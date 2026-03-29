@@ -10,7 +10,7 @@
     <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group')|trim})} %}{{ block('attributes') }}{% endwith %}>
         {{- form_label(form) -}}
         {{- form_widget(form, []) -}}
-        <div class="add-domain-button btn btn-primary btn-sm"><i class="icon icon-plus"></i> Add Domain</div>
+        <div class="add-domain-button btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Add Domain</div>
         {{- form_help(form) -}}
     </{{ element|default('div') }}>
 {%- endblock domains_row %}
@@ -18,9 +18,9 @@
 {% block domain_row -%}
     {%- set widget_attr = {} -%}
     <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group')|trim})} %}{{ block('attributes') }}{% endwith %}>
-        <span class="handle"><i class="icon icon-move"></i></span>
+        <span class="handle"><i class="bi bi-grip-vertical"></i></span>
         {{- form_widget(form, widget_attr) -}}
-        <span class="remove"><i class="icon icon-cancel"></i></span>
+        <span class="remove"><i class="bi bi-x-lg"></i></span>
     </{{ element|default('div') }}>
 {%- endblock domain_row %}
 
@@ -36,7 +36,7 @@
     <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group')|trim})} %}{{ block('attributes') }}{% endwith %}>
         {{- form_label(form) -}}
         {{- form_widget(form, widget_attr) -}}
-        <div class="add-nginx-option-button btn btn-primary btn-sm"><i class="icon icon-plus"></i> Add Nginx Option</div>
+        <div class="add-nginx-option-button btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Add Nginx Option</div>
         {{- form_help(form) -}}
     </{{ element|default('div') }}>
 {%- endblock nginx_options_row %}
@@ -44,9 +44,9 @@
 {% block nginx_option_row -%}
     {%- set widget_attr = {} -%}
     <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group')|trim})} %}{{ block('attributes') }}{% endwith %}>
-        <span class="handle"><i class="icon icon-move"></i></span>
+        <span class="handle"><i class="bi bi-grip-vertical"></i></span>
         {{- form_widget(form, widget_attr) -}}
-        <span class="remove"><i class="icon icon-cancel"></i></span>
+        <span class="remove"><i class="bi bi-x-lg"></i></span>
     </{{ element|default('div') }}>
 {%- endblock nginx_option_row %}
 
@@ -76,7 +76,7 @@
     <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group')|trim})} %}{{ block('attributes') }}{% endwith %}>
         {{- form_label(form) -}}
         {{- form_widget(form, widget_attr) -}}
-        <div class="add-auth-location-button btn btn-primary btn-sm"><i class="icon icon-plus"></i> Add Auth Location</div>
+        <div class="add-auth-location-button btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Add Auth Location</div>
         {{- form_help(form) -}}
     </{{ element|default('div') }}>
 {%- endblock auth_locations_row %}
@@ -84,9 +84,9 @@
 {% block auth_location_row -%}
     {%- set widget_attr = {} -%}
     <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group')|trim})} %}{{ block('attributes') }}{% endwith %}>
-        <div class="handle"><i class="icon icon-move"></i></div>
+        <div class="handle"><i class="bi bi-grip-vertical"></i></div>
         <div class="fields_block">{{- form_widget(form, widget_attr) -}}</div>
-        <div class="remove"><i class="icon icon-cancel"></i></div>
+        <div class="remove"><i class="bi bi-x-lg"></i></div>
     </{{ element|default('div') }}>
 {%- endblock auth_location_row %}
 
@@ -134,7 +134,7 @@
     <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group')|trim})} %}{{ block('attributes') }}{% endwith %}>
         {{- form_label(form) -}}
         {{- form_widget(form, widget_attr) -}}
-        <div class="add-duplicity-filter-button btn btn-primary btn-sm"><i class="icon icon-plus"></i> Add Exclude/Include</div>
+        <div class="add-duplicity-filter-button btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Add Exclude/Include</div>
         {{- form_help(form) -}}
     </{{ element|default('div') }}>
 {%- endblock duplicity_filters_row %}
@@ -142,9 +142,9 @@
 {% block duplicity_filter_row -%}
     {%- set widget_attr = {} -%}
     <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group')|trim})} %}{{ block('attributes') }}{% endwith %}>
-        <div class="handle"><i class="icon icon-move"></i></div>
+        <div class="handle"><i class="bi bi-grip-vertical"></i></div>
         <div class="fields_block">{{- form_widget(form, widget_attr) -}}</div>
-        <div class="remove"><i class="icon icon-cancel"></i></div>
+        <div class="remove"><i class="bi bi-x-lg"></i></div>
     </{{ element|default('div') }}>
 {%- endblock duplicity_filter_row %}
 

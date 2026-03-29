@@ -2,37 +2,24 @@
   "name": "admin",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --mode production",
-    "dev": "vue-cli-service build --mode development",
-    "watch": "vue-cli-service build --watch --mode development"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
-    "axios": "^0.21.1",
-    "bootstrap-vue": "^2.21.2",
-    "core-js": "^3.6.5",
-    "es6-promise": "^4.2.8",
-    "jquery": "^3.5.1",
-    "sortablejs": "^1.13.0",
-    "vue": "^2.6.11",
-    "vue-axios": "^3.2.4",
-    "vuex": "^3.6.2",
-    "webfontloader": "^1.6.28",
-    "webfonts-loader": "^7.1.1"
+    "axios": "^1.7.9",
+    "bootstrap": "^5.3.3",
+    "jquery": "^3.7.1",
+    "sortablejs": "^1.15.6",
+    "vue": "^3.5.13",
+    "vue-axios": "^3.5.2"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "~4.5.0",
-    "@vue/cli-service": "~4.5.0",
-    "sass": "^1.26.5",
-    "sass-loader": "^8.0.2",
-    "vue-cli-plugin-webfontloader": "~0.1.1",
-    "vue-template-compiler": "^2.6.11",
-    "webpack-assets-manifest": "^4.0.1"
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead"
-  ]
+    "@vitejs/plugin-vue": "^5.2.1",
+    "@vue/compiler-sfc": "^3.5.13",
+    "sass": "^1.86.3",
+    "vite": "^5.4.14"
+  }
 }

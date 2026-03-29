@@ -1,13 +1,8 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Log in to Webcrate admin panel{% endblock %}
-{% block stylesheets %}
-    <link rel="stylesheet" href="{{ asset('chunk-vendors.css') }}">
-    <link rel="stylesheet" href="{{ asset('login.css') }}">
-{% endblock %}
 {% block javascripts %}
-    <script src="{{ asset('chunk-vendors.js') }}"></script>
-    <script src="{{ asset('login.js') }}"></script>
+    <script type="module" src="{{ asset('build/login.js') }}"></script>
 {% endblock %}
 
 {% block body %}

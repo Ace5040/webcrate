@@ -1,70 +1,50 @@
-import 'es6-promise/auto'
-import Vue from 'vue'
-import Vuex from 'vuex'
+import { createApp } from 'vue'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
-import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 import Sortable from 'sortablejs'
 import $ from 'jquery'
-Vue.use(BootstrapVue)
-Vue.use(IconsPlugin)
-Vue.use(Vuex)
-Vue.use(VueAxios, axios)
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import './styles/common.scss'
 import './styles/admin.scss'
-const store = new Vuex.Store({
-    state: {
-      user: user,
-      actual: true
-    },
-    mutations: {
-      setActual(state, value) {
-        state.actual = value;
-      }
-    }
-  })
+import Page from './pages/admin-redirect.vue'
 
-import header from './components/header.vue';
-    new (Vue.extend(header))({
-    el: '#header',
-    store
-});
+window.$ = $
+window.jQuery = $
 
-import page from './pages/admin-redirect.vue';
-new (Vue.extend(page))({
-    el: '#app'
-});
+const app = createApp(Page)
+app.use(VueAxios, axios)
+app.mount('#app')
 
-var el = document.getElementById('redirect_domains');
-Sortable.create(el,{
+const redirectDomains = document.getElementById('redirect_domains')
+if (redirectDomains) {
+  Sortable.create(redirectDomains, {
     handle: '.handle',
     draggable: '.form-group',
     direction: 'vertical',
-	onEnd: function () {
-        $('#redirect_domains .form-group').each( (index, item) => {
-            $('input', item).attr('name', 'redirect[domains][' + index +']');
-        });
+    onEnd() {
+      $('#redirect_domains .form-group').each((index, item) => {
+        $('input', item).attr('name', 'redirect[domains][' + index + ']')
+      })
     }
-});
+  })
+}
 
-$('body').on('click', '.add-domain-button', e => {
-    var list = $('#redirect_domains');
-    var counter = list.children().length;
-    var newWidget = list.attr('data-prototype');
-    newWidget = newWidget.replace(/__name__/g, counter);
-    $(newWidget).appendTo(list);
-});
+$('body').on('click', '.add-domain-button', () => {
+  const list = $('#redirect_domains')
+  const counter = list.children().length
+  let newWidget = list.attr('data-prototype')
+  newWidget = newWidget.replace(/__name__/g, counter)
+  $(newWidget).appendTo(list)
+})
 
-$('body #redirect_domains').on('click', '.remove', e => {
-    var list = $('#redirect_domains');
-    var counter = list.children().length;
-    if ( counter > 1 ) {
-        let item = e.currentTarget;
-        $(item).parent().remove();
-        $('#redirect_domains .form-group').each( (index, item) => {
-            $('input', item).attr('name', 'redirect[domains][' + index +']');
-        });
-    }
-});
+$('body #redirect_domains').on('click', '.remove', (e) => {
+  const list = $('#redirect_domains')
+  const counter = list.children().length
+  if (counter > 1) {
+    $(e.currentTarget).parent().remove()
+    $('#redirect_domains .form-group').each((index, item) => {
+      $('input', item).attr('name', 'redirect[domains][' + index + ']')
+    })
+  }
+})

@@ -1,1 +1,1 @@
-require('./font.icons')
+export default {}

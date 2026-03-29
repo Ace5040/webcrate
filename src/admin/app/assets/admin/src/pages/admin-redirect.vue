@@ -1,14 +1,6 @@
 <template>
-<div class="admin-page">
-</div>
+<div class="admin-page"></div>
 </template>
 
-<script>
-
-import { mapState } from 'vuex';
-
-export default {
-
-}
-
+<script setup>
 </script>

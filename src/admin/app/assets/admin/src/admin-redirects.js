@@ -1,31 +1,11 @@
-import 'es6-promise/auto'
-import Vue from 'vue'
-import Vuex from 'vuex'
+import { createApp } from 'vue'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
-import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
-Vue.use(BootstrapVue)
-Vue.use(IconsPlugin)
-Vue.use(Vuex)
-Vue.use(VueAxios, axios)
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
+import 'bootstrap/dist/css/bootstrap.min.css'
 import './styles/common.scss'
 import './styles/admin.scss'
-const store = new Vuex.Store({
-  state: {
-    user: user
-  }
-})
+import Page from './pages/admin-redirects.vue'
 
-import header from './components/header.vue';
-new (Vue.extend(header))({
-  el: '#header',
-  store
-});
-
-import page from './pages/admin-redirects.vue';
-new (Vue.extend(page))({
-  el: '#app',
-  store
-});
+const app = createApp(Page)
+app.use(VueAxios, axios)
+app.mount('#app')

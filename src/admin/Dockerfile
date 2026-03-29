@@ -61,7 +61,7 @@ WORKDIR /app/assets/admin
 
 RUN wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
 ENV NVM_DIR=/home/dev/.nvm
-RUN . $NVM_DIR/nvm.sh && nvm install 16 && nvm use 16
+RUN . $NVM_DIR/nvm.sh && nvm install 20 && nvm use 20
 
 RUN . $NVM_DIR/nvm.sh && npm install --verbose
 RUN . $NVM_DIR/nvm.sh && npm run build

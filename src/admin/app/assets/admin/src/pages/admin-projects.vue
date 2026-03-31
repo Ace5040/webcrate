@@ -1,94 +1,95 @@
 <template>
 <div class="admin-page">
-  <div class="action-menu clearfix">
-    <div class="float-end">
-      <form @submit.prevent="onImport">
-        <div class="mb-2 d-flex align-items-center gap-2">
-          <input class="form-control" type="file" @change="onFileChange">
-          <button type="submit" class="btn btn-primary">Import</button>
-        </div>
+  <div class="page-header">
+    <h1>{{ t('projects.title') }}</h1>
+    <div class="page-actions">
+      <form @submit.prevent="onImport" class="import-form">
+        <input class="form-control form-control-sm" type="file" @change="onFileChange">
+        <button type="submit" class="btn btn-sm btn-outline-secondary">{{ t('common.import') }}</button>
       </form>
+      <a href="/admin/project/add" class="btn btn-sm btn-accent">
+        <i class="bi bi-plus-lg me-1"></i>{{ t('projects.newProject') }}
+      </a>
+      <div v-if="applying" class="spinner-border spinner-border-sm text-secondary" role="status"></div>
     </div>
-    <a href="/admin/project/add" class="btn btn-primary">Create new project</a>
-    <div v-if="applying" class="spinner-border text-success ms-2" role="status"></div>
   </div>
 
-  <div class="projects-table position-relative">
-    <table v-if="projects.length" class="table table-striped table-hover">
-      <thead>
-        <tr>
-          <th>uid</th>
-          <th>Name</th>
-          <th>Https</th>
-          <th>Backend</th>
-          <th>Template</th>
-          <th>Backup</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="item in projects" :key="item.uid">
-          <td>{{ item.uid }}</td>
-          <td>{{ item.name }}</td>
-          <td>{{ item.https }}</td>
-          <td>{{ item.backend }}</td>
-          <td>{{ item.template }}</td>
-          <td>{{ item.backup }}</td>
-          <td>
-            <span class="badge" :class="item.active ? 'text-bg-success' : 'text-bg-warning'">
-              {{ item.active ? 'active' : 'inactive' }}
-            </span>
-          </td>
-          <td>
-            <a class="btn btn-primary btn-sm" :href="'/admin/project/' + item.uid">Edit</a>
-            <button class="btn btn-danger btn-sm" type="button" @click="onDelete(item.uid)">Delete</button>
-            <button
-              v-if="item.active == false"
-              class="btn btn-success btn-sm"
-              type="button"
-              @click="onActivate(item.uid)"
-            >
-              Activate
-            </button>
-            <button
-              v-if="item.active"
-              class="btn btn-secondary btn-sm"
-              type="button"
-              @click="onDeactivate(item.uid)"
-            >
-              Deactivate
-            </button>
-            <button
-              v-if="!item.actual"
-              class="btn btn-warning btn-sm"
-              type="button"
-              @click="onApply(item)"
-            >
-              Apply
-              <span v-if="item.applying" class="spinner-border spinner-border-sm ms-1"></span>
-            </button>
-            <button class="btn btn-info btn-sm" type="button" @click="onRestart(item)">
-              Restart
-              <span v-if="item.applying" class="spinner-border spinner-border-sm ms-1"></span>
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="app-card position-relative">
+    <div class="app-table-wrap">
+      <table v-if="projects.length" class="app-table">
+        <thead>
+          <tr>
+            <th>{{ t('projects.uid') }}</th>
+            <th>{{ t('common.name') }}</th>
+            <th>{{ t('common.https') }}</th>
+            <th>{{ t('projects.backend') }}</th>
+            <th>{{ t('projects.template') }}</th>
+            <th>{{ t('projects.backup') }}</th>
+            <th>{{ t('common.status') }}</th>
+            <th>{{ t('common.actions') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in projects" :key="item.uid">
+            <td class="uid-cell">{{ item.uid }}</td>
+            <td class="name-cell">{{ item.name }}</td>
+            <td>{{ item.https }}</td>
+            <td>{{ item.backend }}</td>
+            <td>{{ item.template }}</td>
+            <td>{{ item.backup }}</td>
+            <td>
+              <span class="status-badge" :class="item.active ? 'active' : 'inactive'">
+                {{ item.active ? t('common.active') : t('common.inactive') }}
+              </span>
+            </td>
+            <td>
+              <div class="row-actions">
+                <a class="btn btn-sm btn-outline-primary" :href="'/admin/project/' + item.uid">{{ t('common.edit') }}</a>
+                <button class="btn btn-sm btn-outline-danger" type="button" @click="onDelete(item.uid)">{{ t('common.delete') }}</button>
+                <button
+                  v-if="item.active == false"
+                  class="btn btn-sm btn-outline-success"
+                  type="button"
+                  @click="onActivate(item.uid)"
+                >{{ t('common.activate') }}</button>
+                <button
+                  v-if="item.active"
+                  class="btn btn-sm btn-outline-secondary"
+                  type="button"
+                  @click="onDeactivate(item.uid)"
+                >{{ t('common.deactivate') }}</button>
+                <button
+                  v-if="!item.actual"
+                  class="btn btn-sm btn-outline-warning"
+                  type="button"
+                  @click="onApply(item)"
+                >
+                  {{ t('common.apply') }}
+                  <span v-if="item.applying" class="spinner-border spinner-border-sm ms-1"></span>
+                </button>
+                <button class="btn btn-sm btn-outline-info" type="button" @click="onRestart(item)">
+                  {{ t('projects.restart') }}
+                  <span v-if="item.applying" class="spinner-border spinner-border-sm ms-1"></span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-    <div v-if="busy" class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="background: rgba(255,255,255,.75); z-index: 10;">
-      <div v-if="processing" class="text-center p-4 bg-primary text-light rounded">
-        <div class="mb-3">Processing...</div>
-        <div class="progress" style="height: 3px; min-width: 240px;">
-          <div class="progress-bar bg-success" :style="{ width: (counter * 5) + '%' }"></div>
+    <div v-if="busy" class="table-overlay">
+      <div v-if="processing" class="overlay-processing">
+        <div class="processing-label">{{ t('common.processing') }}</div>
+        <div class="progress">
+          <div class="progress-bar" :style="{ width: (counter * 5) + '%' }"></div>
         </div>
       </div>
-      <div v-else class="text-center p-3 bg-white border rounded shadow-sm">
-        <p><strong>Are you sure?</strong></p>
-        <div class="d-flex">
-          <button type="button" class="btn btn-outline-danger me-3" @click="onCancel">Cancel</button>
-          <button type="button" class="btn btn-outline-success" @click="onOK">OK</button>
+      <div v-else class="overlay-confirm">
+        <p>{{ t('common.areYouSure') }}</p>
+        <div class="confirm-actions">
+          <button type="button" class="btn btn-sm btn-outline-secondary" @click="onCancel">{{ t('common.cancel') }}</button>
+          <button type="button" class="btn btn-sm btn-accent" @click="onOK">{{ t('common.confirm') }}</button>
         </div>
       </div>
     </div>
@@ -98,7 +99,9 @@
 
 <script setup>
 import { ref, getCurrentInstance } from 'vue'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const { appContext } = getCurrentInstance()
 const axios = appContext.config.globalProperties.axios
 

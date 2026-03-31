@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import { i18n } from './i18n.js'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import Sortable from 'sortablejs'
@@ -13,6 +14,7 @@ window.$ = $
 window.jQuery = $
 
 const app = createApp(Page)
+app.use(i18n)
 app.use(VueAxios, axios)
 app.mount('#app')
 

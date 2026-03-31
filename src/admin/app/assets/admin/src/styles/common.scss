@@ -1,5 +1,110 @@
 @import 'bootstrap-icons/font/bootstrap-icons.css';
 
+:root {
+  --app-bg: #f1f5f9;
+  --app-navbar-bg: #1e293b;
+  --app-navbar-border: #334155;
+  --app-accent: #6366f1;
+  --app-accent-hover: #4f46e5;
+  --app-card-shadow: 0 1px 3px rgba(0, 0, 0, .08), 0 1px 2px rgba(0, 0, 0, .05);
+  --app-card-shadow-lg: 0 4px 6px rgba(0, 0, 0, .07), 0 2px 4px rgba(0, 0, 0, .05);
+  --app-radius: 10px;
+  --app-radius-sm: 6px;
+  --app-text: #1e293b;
+  --app-text-secondary: #334155;
+  --app-text-muted: #64748b;
+  --app-card-bg: #fff;
+  --app-card-border: #e2e8f0;
+  --app-border: #f1f5f9;
+  --app-border-strong: #e2e8f0;
+  --app-action-menu-bg: #fafbfc;
+  --app-table-head-bg: #f8fafc;
+  --app-table-head-color: #64748b;
+  --app-table-row-hover: #f8fafc;
+  --app-table-row-border: #f1f5f9;
+  --app-input-bg: #fff;
+  --app-input-border: #cbd5e1;
+  --app-input-color: #1e293b;
+  --app-version-badge-bg: #ede9fe;
+  --app-confirm-bg: #fff;
+  --app-overlay-bg: rgba(255, 255, 255, .85);
+}
+
+[data-theme="dark"] {
+  --app-bg: #0f172a;
+  --app-text: #e2e8f0;
+  --app-text-secondary: #cbd5e1;
+  --app-text-muted: #94a3b8;
+  --app-card-bg: #1e293b;
+  --app-card-border: #334155;
+  --app-border: #253347;
+  --app-border-strong: #334155;
+  --app-action-menu-bg: #162032;
+  --app-table-head-bg: #162032;
+  --app-table-head-color: #94a3b8;
+  --app-table-row-hover: #1a2f4a;
+  --app-table-row-border: #253347;
+  --app-input-bg: #0f172a;
+  --app-input-border: #334155;
+  --app-input-color: #e2e8f0;
+  --app-version-badge-bg: #312e81;
+  --app-confirm-bg: #1e293b;
+  --app-overlay-bg: rgba(10, 18, 35, .85);
+}
+
 body {
-    background-color: #f0f0f0;
+  background-color: var(--app-bg);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: var(--app-text);
+}
+
+.lang-switcher {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, .08);
+  border-radius: 6px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.lang-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: .75rem;
+  font-weight: 600;
+  padding: .2rem .5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+  line-height: 1.4;
+
+  &:hover {
+    color: #fff;
+  }
+
+  &.active {
+    background: rgba(255, 255, 255, .15);
+    color: #fff;
+  }
+}
+
+.theme-toggle {
+  background: rgba(255, 255, 255, .08);
+  border: none;
+  color: #94a3b8;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+  flex-shrink: 0;
+
+  &:hover {
+    background: rgba(255, 255, 255, .15);
+    color: #fff;
+  }
 }

@@ -3,14 +3,12 @@
   <div class="page-header">
     <h1>{{ t('redirects.title') }}</h1>
     <div class="page-actions">
-      <form @submit.prevent="onImport" class="import-form">
-        <input class="form-control form-control-sm" type="file" @change="onFileChange">
-        <button type="submit" class="btn btn-sm btn-outline-secondary">{{ t('common.import') }}</button>
-      </form>
+      <button class="btn btn-sm btn-outline-secondary" type="button" @click="openImportDialog">
+        <i class="bi bi-upload me-1"></i>{{ t('common.import') }}
+      </button>
       <a href="/admin/redirect/add" class="btn btn-sm btn-accent">
         <i class="bi bi-plus-lg me-1"></i>{{ t('redirects.newRedirect') }}
       </a>
-      <div v-if="applying" class="spinner-border spinner-border-sm text-secondary" role="status"></div>
     </div>
   </div>
 
@@ -85,6 +83,33 @@
     </div>
   </div>
 </div>
+
+<Teleport to="body">
+  <Transition name="fade">
+    <div v-if="showImportDialog" class="dialog-backdrop" @click.self="closeImportDialog">
+      <div class="dialog">
+        <div class="dialog-header">
+          <h2>{{ t('common.importDialogTitle') }}</h2>
+          <button class="dialog-close" type="button" @click="closeImportDialog">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+        <div class="dialog-body">
+          <form @submit.prevent="onImport">
+            <div class="mb-1">
+              <label class="form-label">{{ t('common.selectFile') }}</label>
+              <input ref="fileInputRef" class="form-control" type="file" @change="onFileChange">
+            </div>
+            <div class="dialog-actions">
+              <button type="button" class="btn btn-sm btn-outline-secondary" @click="closeImportDialog">{{ t('common.cancel') }}</button>
+              <button type="submit" class="btn btn-sm btn-accent">{{ t('common.import') }}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </Transition>
+</Teleport>
 </template>
 
 <script setup>
@@ -103,6 +128,21 @@ const interval = ref(null)
 const selectedName = ref(null)
 const redirects = ref(window.redirects || [])
 const redirectsFile = ref(null)
+const showImportDialog = ref(false)
+const fileInputRef = ref(null)
+
+function openImportDialog() {
+  redirectsFile.value = null
+  showImportDialog.value = true
+}
+
+function closeImportDialog() {
+  showImportDialog.value = false
+  redirectsFile.value = null
+  if (fileInputRef.value) {
+    fileInputRef.value.value = ''
+  }
+}
 
 function onFileChange(event) {
   redirectsFile.value = event.target.files?.[0] || null
@@ -145,13 +185,12 @@ function onImport() {
   formData.append('file', redirectsFile.value)
 
   axios.post('/admin/import-redirects', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    }
+    headers: { 'Content-Type': 'multipart/form-data' }
   }).then((response) => {
     const data = response.data
     if (data && data.result === 'ok' && data.redirects) {
       redirects.value = data.redirects
+      closeImportDialog()
     }
   }).catch(() => {
     console.log('FAILURE!!')

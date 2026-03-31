@@ -60,11 +60,13 @@ body {
 
 .lang-switcher {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   background: rgba(255, 255, 255, .08);
   border-radius: 6px;
   padding: 2px;
   gap: 2px;
+  height: 30px;
+  box-sizing: border-box;
 }
 
 .lang-btn {
@@ -73,11 +75,13 @@ body {
   color: #94a3b8;
   font-size: .75rem;
   font-weight: 600;
-  padding: .2rem .5rem;
+  padding: 0 .5rem;
   border-radius: 4px;
   cursor: pointer;
   transition: background .15s, color .15s;
-  line-height: 1.4;
+  display: flex;
+  align-items: center;
+  line-height: 1;
 
   &:hover {
     color: #fff;

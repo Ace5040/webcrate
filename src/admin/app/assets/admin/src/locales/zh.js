@@ -37,6 +37,8 @@ export default {
     active: '活跃',
     inactive: '未活跃',
     import: '导入',
+    importDialogTitle: '从文件导入',
+    selectFile: '选择文件',
     name: '名称',
     https: 'HTTPS',
     status: '状态',

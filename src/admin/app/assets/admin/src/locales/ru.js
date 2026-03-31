@@ -37,6 +37,8 @@ export default {
     active: 'активен',
     inactive: 'неактивен',
     import: 'Импорт',
+    importDialogTitle: 'Импорт из файла',
+    selectFile: 'Выберите файл',
     name: 'Имя',
     https: 'HTTPS',
     status: 'Статус',

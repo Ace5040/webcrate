@@ -37,6 +37,8 @@ export default {
     active: 'active',
     inactive: 'inactive',
     import: 'Import',
+    importDialogTitle: 'Import from file',
+    selectFile: 'Select file',
     name: 'Name',
     https: 'HTTPS',
     status: 'Status',

@@ -15,8 +15,11 @@
     >
       <span class="navbar-toggler-icon"></span>
     </button>
+
     <div id="nav-collapse" class="collapse navbar-collapse">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+      <!-- Navigation links -->
+      <ul class="navbar-nav me-auto mb-lg-0">
         <li class="nav-item">
           <a class="nav-link" href="/admin/projects">{{ t('nav.projects') }}</a>
         </li>
@@ -24,38 +27,53 @@
           <a class="nav-link" href="/admin/redirects">{{ t('nav.redirects') }}</a>
         </li>
       </ul>
-      <ul class="navbar-nav mt-2 mt-lg-0 ms-lg-auto">
-        <li class="nav-item">
-          <div class="d-flex align-items-center gap-2 py-1 py-lg-0">
-            <div class="lang-switcher">
-              <button class="lang-btn" :class="{ active: locale === 'en' }" @click="setLocale('en')">EN</button>
-              <button class="lang-btn" :class="{ active: locale === 'ru' }" @click="setLocale('ru')">RU</button>
-              <button class="lang-btn" :class="{ active: locale === 'zh' }" @click="setLocale('zh')">中文</button>
-            </div>
-            <button class="theme-toggle" @click="toggleTheme" :title="theme === 'dark' ? 'Light mode' : 'Dark mode'">
-              <i :class="theme === 'dark' ? 'bi bi-sun-fill' : 'bi bi-moon-stars-fill'"></i>
-            </button>
-          </div>
-        </li>
-        <li class="nav-item dropdown">
-          <a
-            class="nav-link dropdown-toggle"
-            href="#"
-            role="button"
+
+      <!-- Utility controls: lang + theme + user dropdown (desktop) -->
+      <div class="navbar-controls">
+        <div class="lang-switcher">
+          <button class="lang-btn" :class="{ active: locale === 'en' }" @click="setLocale('en')">EN</button>
+          <button class="lang-btn" :class="{ active: locale === 'ru' }" @click="setLocale('ru')">RU</button>
+          <button class="lang-btn" :class="{ active: locale === 'zh' }" @click="setLocale('zh')">中文</button>
+        </div>
+        <button class="theme-toggle" @click="toggleTheme" :title="theme === 'dark' ? 'Light mode' : 'Dark mode'">
+          <i :class="theme === 'dark' ? 'bi bi-sun-fill' : 'bi bi-moon-stars-fill'"></i>
+        </button>
+        <!-- Desktop-only user dropdown -->
+        <div class="dropdown d-none d-lg-flex align-items-center">
+          <button
+            class="user-btn dropdown-toggle"
+            type="button"
             data-bs-toggle="dropdown"
+            data-bs-offset="0,6"
             aria-expanded="false"
           >
-            <i class="bi bi-person-circle me-1"></i>{{ user }}
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end">
-            <li>
-              <a class="dropdown-item" href="/logout">
-                <i class="bi bi-box-arrow-right me-2"></i>{{ t('nav.logout') }}
-              </a>
-            </li>
-          </ul>
-        </li>
-      </ul>
+            <i class="bi bi-person-circle"></i>
+          </button>
+          <div class="dropdown-menu dropdown-menu-end user-dropdown">
+            <div class="user-dropdown-info">
+              <i class="bi bi-person-circle user-dropdown-icon"></i>
+              <span class="user-dropdown-name">{{ user }}</span>
+            </div>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="/logout">
+              <i class="bi bi-box-arrow-right me-2"></i>{{ t('nav.logout') }}
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile-only expanded user section -->
+      <div class="navbar-mobile-user d-lg-none">
+        <div class="mobile-user-info">
+          <i class="bi bi-person-circle"></i>
+          <span>{{ user }}</span>
+        </div>
+        <a class="mobile-logout-link" href="/logout">
+          <i class="bi bi-box-arrow-right"></i>
+          {{ t('nav.logout') }}
+        </a>
+      </div>
+
     </div>
   </div>
 </nav>

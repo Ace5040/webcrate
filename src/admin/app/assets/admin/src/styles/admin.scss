@@ -37,11 +37,107 @@
     }
   }
 
-  .dropdown-menu {
-    background: #263347;
+  .navbar-toggler {
+    border-color: #475569;
+    color: #94a3b8;
+
+    &:focus {
+      box-shadow: none;
+      outline: none;
+    }
+  }
+
+  @media (max-width: 991.98px) {
+    // Prevent brand + toggler from shifting vertically when collapse opens.
+    // Bootstrap's align-items: center recenters them in the growing container —
+    // switching to flex-start + fixed brand height locks them in place.
+    &.navbar,
+    .container-fluid {
+      align-items: flex-start;
+    }
+
+    .navbar-brand {
+      height: 56px; // matches min-height → stays in place
+    }
+
+    .navbar-toggler {
+      margin-top: 8px;
+      margin-bottom: 8px;
+    }
+  }
+
+  // ── Controls row (lang + theme + user on desktop) ──────────
+  .navbar-controls {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+
+    @media (max-width: 991.98px) {
+      padding: .75rem 0;
+      border-top: 1px solid rgba(255, 255, 255, .08);
+      margin-top: .5rem;
+    }
+  }
+
+  // ── User dropdown (desktop) ────────────────────────────────
+  .user-btn {
+    background: rgba(255, 255, 255, .08);
+    border: none;
+    color: #94a3b8;
+    width: 30px;
+    height: 30px;
+    border-radius: var(--app-radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+    font-size: 1rem;
+    padding: 0;
+
+    &::after { display: none; }
+
+    &:hover,
+    &.show {
+      background: rgba(255, 255, 255, .15);
+      color: #fff;
+    }
+  }
+
+  .user-dropdown {
+    background: #1e293b;
     border: 1px solid #334155;
     border-radius: var(--app-radius-sm);
     box-shadow: var(--app-card-shadow-lg);
+    min-width: 180px;
+    padding: .5rem 0;
+
+    .user-dropdown-info {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      padding: .5rem 1rem .625rem;
+
+      .user-dropdown-icon {
+        font-size: 1.4rem;
+        color: var(--app-accent);
+        flex-shrink: 0;
+      }
+
+      .user-dropdown-name {
+        font-size: .875rem;
+        font-weight: 600;
+        color: #e2e8f0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .dropdown-divider {
+      border-color: #334155;
+      margin: .25rem 0;
+    }
 
     .dropdown-item {
       color: #cbd5e1;
@@ -55,9 +151,51 @@
     }
   }
 
-  .navbar-toggler {
-    border-color: #475569;
-    color: #94a3b8;
+  // ── Mobile expanded user section ───────────────────────────
+  .navbar-mobile-user {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .75rem 0;
+    border-top: 1px solid rgba(255, 255, 255, .08);
+
+    .mobile-user-info {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      color: #e2e8f0;
+      font-size: .875rem;
+      font-weight: 500;
+
+      i {
+        font-size: 1.25rem;
+        color: #94a3b8;
+      }
+    }
+
+    .mobile-logout-link {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      color: #94a3b8;
+      font-size: .875rem;
+      text-decoration: none;
+      padding: .3rem .6rem;
+      border-radius: var(--app-radius-sm);
+      transition: color .15s, background .15s;
+
+      &:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, .08);
+      }
+    }
+  }
+
+  // ── Collapsed menu padding ─────────────────────────────────
+  .navbar-collapse {
+    @media (max-width: 991.98px) {
+      padding-bottom: .5rem;
+    }
   }
 }
 
@@ -618,6 +756,108 @@ fieldset .form-group {
     &:first-child { margin-left: 0; }
 
     > div { display: inline-block; }
+  }
+}
+
+/* ── Import dialog ──────────────────────────────────────────── */
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  padding: 1rem;
+  backdrop-filter: blur(2px);
+  transition: opacity .2s;
+
+  &.fade-enter-from,
+  &.fade-leave-to {
+    opacity: 0;
+
+    .dialog { transform: scale(.96) translateY(-8px); }
+  }
+}
+
+.dialog {
+  background: var(--app-card-bg);
+  border: 1px solid var(--app-card-border);
+  border-radius: var(--app-radius);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, .25);
+  width: 100%;
+  max-width: 420px;
+  transition: transform .2s, opacity .2s;
+
+  .dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--app-card-border);
+
+    h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--app-text);
+      margin: 0;
+    }
+
+    .dialog-close {
+      background: none;
+      border: none;
+      color: var(--app-text-muted);
+      padding: .3rem;
+      line-height: 1;
+      cursor: pointer;
+      border-radius: var(--app-radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color .15s, background .15s;
+
+      &:hover {
+        color: var(--app-text);
+        background: var(--app-table-row-hover);
+      }
+    }
+  }
+
+  .dialog-body {
+    padding: 1.25rem;
+
+    .form-label {
+      font-size: .8125rem;
+      font-weight: 600;
+      color: var(--app-text-muted);
+    }
+
+    .dialog-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: .625rem;
+      margin-top: 1.25rem;
+    }
+  }
+}
+
+/* ── Dialog transition ──────────────────────────────────────── */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity .2s ease;
+
+  .dialog {
+    transition: transform .2s ease, opacity .2s ease;
+  }
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+
+  .dialog {
+    transform: scale(.96) translateY(-10px);
+    opacity: 0;
   }
 }
 

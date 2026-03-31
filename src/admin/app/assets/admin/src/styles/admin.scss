@@ -65,18 +65,21 @@
 .admin-page {
   padding: 1.5rem;
   max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
 
   .page-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
     margin-bottom: 1.25rem;
-    gap: 1rem;
+    gap: .75rem;
 
     h1 {
       font-size: 1.25rem;
       font-weight: 700;
-      color: #1e293b;
+      color: var(--app-text);
       margin: 0;
     }
 
@@ -91,10 +94,10 @@
 
 /* ── Card ───────────────────────────────────────────────────── */
 .app-card {
-  background: #fff;
+  background: var(--app-card-bg);
   border-radius: var(--app-radius);
   box-shadow: var(--app-card-shadow);
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--app-card-border);
   overflow: hidden;
 
   &-body {
@@ -110,8 +113,8 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: .75rem;
-  border-bottom: 1px solid #f1f5f9;
-  background: #fafbfc;
+  border-bottom: 1px solid var(--app-card-border);
+  background: var(--app-action-menu-bg);
   border-radius: var(--app-radius) var(--app-radius) 0 0;
 
   .import-form {
@@ -123,8 +126,9 @@
       font-size: .8125rem;
       padding: .35rem .75rem;
       border-radius: var(--app-radius-sm);
-      border-color: #cbd5e1;
-      background: #fff;
+      border-color: var(--app-input-border);
+      background: var(--app-input-bg);
+      color: var(--app-input-color);
     }
   }
 
@@ -138,6 +142,7 @@
 /* ── Table ──────────────────────────────────────────────────── */
 .app-table-wrap {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .app-table {
@@ -146,19 +151,19 @@
   font-size: .875rem;
 
   thead tr th {
-    background: #f8fafc;
-    color: #64748b;
+    background: var(--app-table-head-bg);
+    color: var(--app-table-head-color);
     font-size: .75rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: .04em;
     padding: .75rem 1rem;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--app-border-strong);
     white-space: nowrap;
   }
 
   tbody tr {
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--app-table-row-border);
     transition: background .1s;
 
     &:last-child {
@@ -166,25 +171,25 @@
     }
 
     &:hover {
-      background: #f8fafc;
+      background: var(--app-table-row-hover);
     }
 
     td {
       padding: .75rem 1rem;
       vertical-align: middle;
-      color: #334155;
+      color: var(--app-text-secondary);
     }
   }
 
   .uid-cell {
     font-family: 'SFMono-Regular', Consolas, monospace;
     font-size: .8125rem;
-    color: #64748b;
+    color: var(--app-text-muted);
   }
 
   .name-cell {
     font-weight: 600;
-    color: #1e293b;
+    color: var(--app-text);
   }
 }
 
@@ -198,6 +203,7 @@
   padding: .2rem .6rem;
   border-radius: 20px;
   letter-spacing: .01em;
+  white-space: nowrap;
 
   &::before {
     content: '';
@@ -205,25 +211,21 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: currentColor;
+    flex-shrink: 0;
   }
 
   &.active {
     color: #16a34a;
     background: #dcfce7;
 
-    &::before {
-      background: #16a34a;
-    }
+    &::before { background: #16a34a; }
   }
 
   &.inactive {
     color: #b45309;
     background: #fef3c7;
 
-    &::before {
-      background: #d97706;
-    }
+    &::before { background: #d97706; }
   }
 }
 
@@ -235,7 +237,7 @@
   flex-wrap: nowrap;
 }
 
-/* ── Buttons override ───────────────────────────────────────── */
+/* ── Buttons ────────────────────────────────────────────────── */
 .btn-accent {
   background: var(--app-accent);
   border-color: var(--app-accent);
@@ -259,7 +261,7 @@
 .table-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(255, 255, 255, .85);
+  background: var(--app-overlay-bg);
   backdrop-filter: blur(2px);
   display: flex;
   align-items: center;
@@ -283,9 +285,7 @@
     border-radius: 99px;
     overflow: hidden;
 
-    .progress-bar {
-      background: var(--app-accent);
-    }
+    .progress-bar { background: var(--app-accent); }
   }
 
   .processing-label {
@@ -296,8 +296,8 @@
 }
 
 .overlay-confirm {
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--app-confirm-bg);
+  border: 1px solid var(--app-card-border);
   border-radius: var(--app-radius);
   padding: 1.5rem;
   box-shadow: var(--app-card-shadow-lg);
@@ -307,7 +307,7 @@
   p {
     margin-bottom: 1rem;
     font-weight: 600;
-    color: #1e293b;
+    color: var(--app-text);
   }
 
   .confirm-actions {
@@ -333,7 +333,7 @@
   }
 
   .login-card {
-    background: #fff;
+    background: var(--app-card-bg);
     border-radius: 14px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, .35);
     padding: 2.5rem 2rem;
@@ -361,7 +361,7 @@
       .logo-text {
         font-size: 1.2rem;
         font-weight: 700;
-        color: #1e293b;
+        color: var(--app-text);
         letter-spacing: -.01em;
       }
     }
@@ -369,7 +369,7 @@
     h1 {
       font-size: 1.1rem;
       font-weight: 600;
-      color: #475569;
+      color: var(--app-text-muted);
       text-align: center;
       margin-bottom: 1.5rem;
     }
@@ -377,18 +377,24 @@
     .form-label {
       font-size: .8125rem;
       font-weight: 600;
-      color: #475569;
+      color: var(--app-text-muted);
     }
 
     .form-control {
       border-radius: var(--app-radius-sm);
-      border-color: #cbd5e1;
+      border-color: var(--app-input-border);
+      background-color: var(--app-input-bg);
+      color: var(--app-input-color);
       font-size: .9rem;
       padding: .55rem .9rem;
+
+      &::placeholder { color: #94a3b8; }
 
       &:focus {
         border-color: var(--app-accent);
         box-shadow: 0 0 0 3px rgba(99, 102, 241, .15);
+        background-color: var(--app-input-bg);
+        color: var(--app-input-color);
       }
     }
 
@@ -421,20 +427,18 @@
     align-items: center;
     justify-content: space-between;
     padding: .75rem 1.5rem;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--app-border);
     font-size: .875rem;
 
-    &:last-child {
-      border-bottom: none;
-    }
+    &:last-child { border-bottom: none; }
 
     .version-name {
-      color: #334155;
+      color: var(--app-text-secondary);
       font-weight: 500;
     }
 
     .version-badge {
-      background: #ede9fe;
+      background: var(--app-version-badge-bg);
       color: var(--app-accent);
       font-size: .75rem;
       font-weight: 600;
@@ -456,12 +460,10 @@
 
 /* ── Form groups ────────────────────────────────────────────── */
 .form-group {
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--app-border);
   padding-bottom: 1rem;
 
-  input[type=text] {
-    width: auto;
-  }
+  input[type=text] { width: auto; }
 }
 
 fieldset .form-group {
@@ -510,36 +512,26 @@ fieldset .form-group {
   .form-group {
     display: inline-block;
 
-    .form-control {
-      width: auto;
-    }
+    .form-control { width: auto; }
 
     input {
       display: inline-block;
       vertical-align: middle;
     }
 
-    &:first-child {
-      margin-left: 0;
-    }
+    &:first-child { margin-left: 0; }
   }
 }
 
-.btn .bi {
-  display: inline-block;
-}
+.btn .bi { display: inline-block; }
 
 #project_nginx_options {
   div.form-group {
     display: inline-block;
 
-    .form-control {
-      width: auto;
-    }
+    .form-control { width: auto; }
 
-    .nginx-option-name input {
-      margin-right: 15px;
-    }
+    .nginx-option-name input { margin-right: 15px; }
 
     input {
       display: inline-block;
@@ -547,16 +539,12 @@ fieldset .form-group {
       box-sizing: border-box;
     }
 
-    &:first-child {
-      margin-left: 0;
-    }
+    &:first-child { margin-left: 0; }
 
     > div {
       display: inline-block;
 
-      .form-group {
-        margin-bottom: 0;
-      }
+      .form-group { margin-bottom: 0; }
     }
   }
 }
@@ -567,9 +555,7 @@ fieldset .form-group {
     vertical-align: middle;
     width: 54%;
 
-    > div {
-      display: inline-block;
-    }
+    > div { display: inline-block; }
 
     label {
       min-width: 85px;
@@ -580,9 +566,7 @@ fieldset .form-group {
   div.form-group {
     display: inline-block;
 
-    .form-control {
-      width: auto;
-    }
+    .form-control { width: auto; }
 
     input {
       display: inline-block;
@@ -590,158 +574,17 @@ fieldset .form-group {
       box-sizing: border-box;
     }
 
-    &:first-child {
-      margin-left: 0;
-    }
+    &:first-child { margin-left: 0; }
 
     > div {
       display: inline-block;
 
-      .form-group {
-        margin-bottom: 8px;
-      }
+      .form-group { margin-bottom: 8px; }
     }
   }
 }
 
-#project_nginx_block {
-  height: 150px;
-}
-
-/* ── Dark theme overrides ───────────────────────────────────── */
-[data-theme="dark"] {
-  .admin-page .page-header h1 {
-    color: var(--app-text);
-  }
-
-  .app-card {
-    background: var(--app-card-bg);
-    border-color: var(--app-card-border);
-  }
-
-  .action-menu {
-    background: var(--app-action-menu-bg);
-    border-bottom-color: var(--app-card-border);
-
-    .import-form .form-control {
-      background: var(--app-input-bg);
-      border-color: var(--app-input-border);
-      color: var(--app-input-color);
-    }
-  }
-
-  .app-table {
-    thead tr th {
-      background: var(--app-table-head-bg);
-      color: var(--app-table-head-color);
-      border-bottom-color: var(--app-card-border);
-    }
-
-    tbody tr {
-      border-bottom-color: var(--app-table-row-border);
-
-      &:hover {
-        background: var(--app-table-row-hover);
-      }
-
-      td {
-        color: var(--app-text-secondary);
-      }
-    }
-
-    .uid-cell {
-      color: var(--app-text-muted);
-    }
-
-    .name-cell {
-      color: var(--app-text);
-    }
-  }
-
-  .table-overlay {
-    background: var(--app-overlay-bg);
-  }
-
-  .overlay-confirm {
-    background: var(--app-confirm-bg);
-    border-color: var(--app-card-border);
-
-    p {
-      color: var(--app-text);
-    }
-  }
-
-  .versions-list .version-item {
-    border-bottom-color: var(--app-card-border);
-
-    .version-name {
-      color: var(--app-text-secondary);
-    }
-
-    .version-badge {
-      background: var(--app-version-badge-bg);
-    }
-  }
-
-  .form-group {
-    border-bottom-color: var(--app-card-border);
-  }
-
-  .form-control,
-  .form-select {
-    background-color: var(--app-input-bg);
-    border-color: var(--app-input-border);
-    color: var(--app-input-color);
-
-    &:focus {
-      background-color: var(--app-input-bg);
-      color: var(--app-input-color);
-      border-color: var(--app-accent);
-    }
-
-    &::placeholder {
-      color: #475569;
-    }
-  }
-
-  .login-card {
-    background: var(--app-card-bg);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, .6);
-
-    .login-logo .logo-text {
-      color: var(--app-text);
-    }
-
-    h1 {
-      color: var(--app-text-muted);
-    }
-
-    .form-label {
-      color: var(--app-text-muted);
-    }
-
-    .form-control {
-      background-color: var(--app-input-bg);
-      border-color: var(--app-input-border);
-      color: var(--app-input-color);
-
-      &::placeholder {
-        color: #475569;
-      }
-
-      &:focus {
-        background-color: var(--app-input-bg);
-        color: var(--app-input-color);
-      }
-    }
-  }
-
-  .alert-danger {
-    background-color: #450a0a;
-    border-color: #991b1b;
-    color: #fca5a5;
-  }
-}
+#project_nginx_block { height: 150px; }
 
 #project_DuplicityFilters {
   .fields_block {
@@ -754,18 +597,11 @@ fieldset .form-group {
       vertical-align: middle;
       margin-bottom: 0;
 
-      &.duplicity-filter-mode {
-        width: 100px;
-      }
-
-      &.duplicity-filter-path {
-        width: 390px;
-      }
+      &.duplicity-filter-mode { width: 100px; }
+      &.duplicity-filter-path { width: 390px; }
     }
 
-    > div {
-      display: inline-block;
-    }
+    > div { display: inline-block; }
   }
 
   div.form-group {
@@ -779,12 +615,134 @@ fieldset .form-group {
       width: 100%;
     }
 
-    &:first-child {
-      margin-left: 0;
+    &:first-child { margin-left: 0; }
+
+    > div { display: inline-block; }
+  }
+}
+
+/* ── Dark theme ─────────────────────────────────────────────── */
+[data-theme="dark"] {
+  .login-card {
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .6);
+  }
+
+  .status-badge {
+    &.active {
+      color: #4ade80;
+      background: rgba(74, 222, 128, .12);
+
+      &::before { background: #4ade80; }
     }
 
-    > div {
-      display: inline-block;
+    &.inactive {
+      color: #fbbf24;
+      background: rgba(251, 191, 36, .1);
+
+      &::before { background: #fbbf24; }
+    }
+  }
+
+  .alert-danger {
+    background-color: #450a0a;
+    border-color: #991b1b;
+    color: #fca5a5;
+  }
+
+  // Bootstrap form controls dark override
+  .form-control,
+  .form-select {
+    background-color: var(--app-input-bg);
+    border-color: var(--app-input-border);
+    color: var(--app-input-color);
+
+    &:focus {
+      background-color: var(--app-input-bg);
+      color: var(--app-input-color);
+    }
+
+    &::placeholder { color: #475569; }
+  }
+}
+
+/* ── Responsive: tablet ─────────────────────────────────────── */
+@media (max-width: 991.98px) {
+  .app-navbar {
+    padding: 0 1rem;
+  }
+}
+
+/* ── Responsive: mobile ─────────────────────────────────────── */
+@media (max-width: 767.98px) {
+  .admin-page {
+    padding: 1rem;
+
+    .page-header {
+      flex-direction: column;
+      align-items: flex-start;
+
+      h1 { font-size: 1.1rem; }
+
+      .page-actions {
+        width: 100%;
+
+        .import-form {
+          flex: 1;
+          min-width: 0;
+
+          .form-control {
+            flex: 1;
+            min-width: 0;
+          }
+
+          button { flex-shrink: 0; }
+        }
+      }
+    }
+  }
+
+  .action-menu {
+    padding: .875rem 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+
+    .import-form {
+      width: 100%;
+
+      .form-control {
+        flex: 1;
+        min-width: 0;
+      }
+
+      button { flex-shrink: 0; }
+    }
+  }
+
+  .project-edit-page,
+  .redirect-edit-page {
+    margin: 1rem auto;
+  }
+}
+
+/* ── Responsive: small phones ───────────────────────────────── */
+@media (max-width: 575.98px) {
+  .admin-page {
+    padding: .875rem .75rem;
+  }
+
+  .app-table {
+    font-size: .8125rem;
+
+    thead tr th,
+    tbody tr td {
+      padding: .625rem .75rem;
+    }
+  }
+
+  .login-page {
+    .login-card {
+      padding: 2rem 1.25rem;
+      border-radius: 12px;
     }
   }
 }

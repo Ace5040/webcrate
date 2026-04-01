@@ -373,6 +373,19 @@
   align-items: center;
   gap: .375rem;
   flex-wrap: nowrap;
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    .btn-icon {
+      display: inline-flex;
+      width: 1em;
+      justify-content: center;
+      align-items: center;
+      flex-shrink: 0;
+      [class^="bi-"], [class*=" bi-"] { vertical-align: 0; }
+    }
+  }
 }
 
 /* ── Buttons ────────────────────────────────────────────────── */

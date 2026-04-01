@@ -42,32 +42,43 @@
             </td>
             <td>
               <div class="row-actions">
-                <a class="btn btn-sm btn-outline-primary" :href="'/admin/project/' + item.uid">{{ t('common.edit') }}</a>
-                <button class="btn btn-sm btn-outline-danger" type="button" @click="onDelete(item.uid)">{{ t('common.delete') }}</button>
+                <a class="btn btn-sm btn-outline-primary" :class="{ disabled: item.applying }" :href="item.applying ? null : '/admin/project/' + item.uid">
+                  <i class="bi bi-pencil me-1"></i>{{ t('common.edit') }}
+                </a>
+                <button class="btn btn-sm btn-outline-danger" type="button" :disabled="item.applying" @click="onDelete(item.uid)">
+                  <i class="bi bi-trash me-1"></i>{{ t('common.delete') }}
+                </button>
                 <button
                   v-if="item.active == false"
                   class="btn btn-sm btn-outline-success"
                   type="button"
+                  :disabled="item.applying"
                   @click="onActivate(item.uid)"
-                >{{ t('common.activate') }}</button>
+                ><i class="bi bi-toggle-off me-1"></i>{{ t('common.activate') }}</button>
                 <button
                   v-if="item.active"
                   class="btn btn-sm btn-outline-secondary"
                   type="button"
+                  :disabled="item.applying"
                   @click="onDeactivate(item.uid)"
-                >{{ t('common.deactivate') }}</button>
+                ><i class="bi bi-toggle-on me-1"></i>{{ t('common.deactivate') }}</button>
                 <button
                   v-if="!item.actual"
                   class="btn btn-sm btn-outline-warning"
                   type="button"
+                  :disabled="item.applying"
                   @click="onApply(item)"
                 >
-                  {{ t('common.apply') }}
-                  <span v-if="item.applying" class="spinner-border spinner-border-sm ms-1"></span>
+                  <span class="btn-icon me-1">
+                    <span v-if="item.applying" class="spinner-border spinner-border-sm"></span>
+                    <i v-else class="bi bi-check2-circle"></i>
+                  </span>{{ t('common.apply') }}
                 </button>
-                <button class="btn btn-sm btn-outline-info" type="button" @click="onRestart(item)">
-                  {{ t('projects.restart') }}
-                  <span v-if="item.applying" class="spinner-border spinner-border-sm ms-1"></span>
+                <button class="btn btn-sm btn-outline-info" type="button" :disabled="item.applying" @click="onRestart(item)">
+                  <span class="btn-icon me-1">
+                    <span v-if="item.applying" class="spinner-border spinner-border-sm"></span>
+                    <i v-else class="bi bi-arrow-clockwise"></i>
+                  </span>{{ t('projects.restart') }}
                 </button>
               </div>
             </td>

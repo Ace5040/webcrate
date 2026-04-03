@@ -612,6 +612,16 @@
 
     &.show.active { display: block; }
   }
+
+  .versions-loading {
+    display: flex;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    font-size: .875rem;
+    color: var(--app-text-muted);
+
+    .spinner-border { color: var(--app-text-muted); }
+  }
 }
 
 /* ── Dashboard / versions ───────────────────────────────────── */

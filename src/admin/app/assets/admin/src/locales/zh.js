@@ -43,6 +43,7 @@ export default {
     https: 'HTTPS',
     status: '状态',
     actions: '操作',
+    loading: '加载中\u2026',
     processing: '处理中\u2026',
     areYouSure: '确定吗？',
     cancel: '取消',

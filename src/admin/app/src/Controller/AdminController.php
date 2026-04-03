@@ -52,14 +52,21 @@ class AdminController extends AbstractController
      */
     public function index()
     {
+        return $this->render('admin/index.html.twig', [
+            'controller_name' => 'AdminController',
+        ]);
+    }
+
+    /**
+     * @Route("/admin/api/versions", name="api_versions", methods={"GET"})
+     */
+    public function getVersionsApi()
+    {
         $soft = $this->cache->get('versions', function (ItemInterface $item) {
             $item->expiresAfter(604800);
             return $this->getVersions();
         });
-        return $this->render('admin/index.html.twig', [
-            'controller_name' => 'AdminController',
-            'soft' => $soft
-        ]);
+        return new JsonResponse($soft);
     }
 
     private function getVersions()

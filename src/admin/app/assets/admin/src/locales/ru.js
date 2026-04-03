@@ -43,6 +43,7 @@ export default {
     https: 'HTTPS',
     status: 'Статус',
     actions: 'Действия',
+    loading: 'Загрузка\u2026',
     processing: 'Обработка\u2026',
     areYouSure: 'Вы уверены?',
     cancel: 'Отмена',

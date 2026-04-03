@@ -567,7 +567,65 @@
   }
 }
 
+/* ── Versions tabs ──────────────────────────────────────────── */
+.versions-tabs-card {
+  .versions-tabs {
+    border-bottom: 1px solid var(--app-card-border);
+    padding: 0 1rem;
+    gap: .125rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar { display: none; }
+
+    .nav-item { flex-shrink: 0; }
+
+    .nav-link {
+      font-size: .8125rem;
+      font-weight: 500;
+      color: var(--app-text-muted);
+      border: none;
+      border-bottom: 2px solid transparent;
+      border-radius: 0;
+      padding: .65rem .75rem;
+      background: none;
+      cursor: pointer;
+      transition: color .15s, border-color .15s;
+      margin-bottom: -1px;
+
+      &:hover {
+        color: var(--app-text);
+        border-bottom-color: var(--app-card-border);
+      }
+
+      &.active {
+        color: var(--app-accent);
+        border-bottom-color: var(--app-accent);
+        background: none;
+      }
+    }
+  }
+
+  .tab-pane {
+    display: none;
+
+    &.show.active { display: block; }
+  }
+}
+
 /* ── Dashboard / versions ───────────────────────────────────── */
+.versions-container-title {
+  margin: 0;
+  padding: .75rem 1.5rem;
+  font-size: .75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--app-text-muted);
+  border-bottom: 1px solid var(--app-border);
+}
+
 .versions-list {
   list-style: none;
   margin: 0;

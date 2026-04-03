@@ -64,8 +64,6 @@ class AdminController extends AbstractController
 
     private function getVersions()
     {
-        //skip versions check before multicore support
-        return [];
         $process = Process::fromShellCommandline('sudo /webcrate/versions.py');
         $process->run();
         if (!$process->isSuccessful()) {

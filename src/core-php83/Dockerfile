@@ -77,6 +77,11 @@ RUN sed -i "s/;process_control_timeout = 0/process_control_timeout = 10s/g" /etc
     mkdir -p /webcrate && \
     chmod o-rwx /webcrate
 
+# RUN wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+
+RUN curl https://mise.run | MISE_INSTALL_PATH=/usr/local/bin/mise sh
+RUN apt-get --assume-yes install python-is-python3
+
 WORKDIR /
 COPY ["versions.py", "parse-projects.py", "sync_ssh_keys.sh", "supervisord.conf.template", "supervisord-user.conf.template", "/webcrate/"]
 COPY --from=src log.py /webcrate/

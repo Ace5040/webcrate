@@ -48,6 +48,9 @@ RUN echo 'dev ALL=(ALL) NOPASSWD: /webcrate/versions.py' | EDITOR='tee -a' visud
     echo 'dev ALL=(ALL) NOPASSWD: /webcrate/reload-redirect.py' | EDITOR='tee -a' visudo && \
     echo 'dev ALL=(ALL) NOPASSWD: /webcrate/reload.py' | EDITOR='tee -a' visudo && \
     echo 'dev ALL=(ALL) NOPASSWD: /webcrate/delete.py' | EDITOR='tee -a' visudo && \
+    echo 'dev ALL=(ALL) NOPASSWD: /webcrate/backup.py' | EDITOR='tee -a' visudo && \
+    echo 'dev ALL=(ALL) NOPASSWD: /webcrate/backup-list.py' | EDITOR='tee -a' visudo && \
+    echo 'dev ALL=(ALL) NOPASSWD: /webcrate/backup-save.py' | EDITOR='tee -a' visudo && \
     rm /etc/php/8.1/fpm/pool.d/www.conf
 COPY app /app
 RUN mkdir /webcrate && \
@@ -67,7 +70,7 @@ RUN . $NVM_DIR/nvm.sh && npm install --verbose
 RUN . $NVM_DIR/nvm.sh && npm run build
 
 USER root
-COPY ["init-db.py", "updateprojects.py", "updateredirects.py", "reload-redirect.py", "versions.py", "delete.py", "reload.py", "supervisord.conf.template", "/webcrate/"]
+COPY ["init-db.py", "updateprojects.py", "updateredirects.py", "reload-redirect.py", "versions.py", "delete.py", "reload.py", "backup.py", "backup-list.py", "backup-save.py", "supervisord.conf.template", "/webcrate/"]
 COPY --from=src log.py /webcrate/
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY entrypoint.sh /entrypoint.sh
@@ -80,5 +83,8 @@ RUN chmod a+rxs /webcrate/init-db.py && \
     chmod a+rxs /webcrate/reload.py && \
     chmod a+rxs /webcrate/delete.py && \
     chmod a+rxs /webcrate/reload-redirect.py && \
+    chmod a+rxs /webcrate/backup.py && \
+    chmod a+rxs /webcrate/backup-list.py && \
+    chmod a+rxs /webcrate/backup-save.py && \
     chmod a+rxs /entrypoint.sh
 EXPOSE 80

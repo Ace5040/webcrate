@@ -304,6 +304,79 @@ class AdminController extends AbstractController
     }
 
     /**
+     * @Route("/admin/project/{uid}/backup-list", name="admin-project-backup-list")
+     */
+    public function projectBackupList($uid)
+    {
+        $project = $this->repository->loadByUid($uid);
+        $name = $project->getName();
+        $process = Process::fromShellCommandline("sudo /webcrate/backup-list.py $name");
+        $process->setTimeout(120);
+        $process->run();
+        $data = [];
+        $output = trim($process->getOutput());
+        if (!empty($output)) {
+            $decoded = json_decode($output, true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $data = $decoded;
+            }
+        }
+        $response = new JsonResponse();
+        $response->setData(['result' => 'ok', 'backups' => $data]);
+        return $response;
+    }
+
+    /**
+     * @Route("/admin/project/{uid}/backup", name="admin-project-backup")
+     */
+    public function projectBackup($uid)
+    {
+        $project = $this->repository->loadByUid($uid);
+        $name = $project->getName();
+        try {
+            $process = Process::fromShellCommandline("sudo /webcrate/backup.py $name");
+            $process->setTimeout(0);
+            $process->run();
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
+            }
+        } catch (IOExceptionInterface $exception) {
+            $debug['error'] = $exception->getMessage();
+        }
+        $response = new JsonResponse();
+        $response->setData(['result' => 'ok']);
+        return $response;
+    }
+
+    /**
+     * @Route("/admin/project/{uid}/backup-save", name="admin-project-backup-save", methods={"POST"})
+     */
+    public function projectBackupSave($uid, Request $request)
+    {
+        $project = $this->repository->loadByUid($uid);
+        $name = $project->getName();
+        $time = $request->request->get('time', '');
+        $archive = $request->request->get('archive', false) ? 'archive' : '';
+        try {
+            $cmd = "sudo /webcrate/backup-save.py $name \"$time\"";
+            if ($archive) {
+                $cmd .= " $archive";
+            }
+            $process = Process::fromShellCommandline($cmd);
+            $process->setTimeout(0);
+            $process->run();
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
+            }
+        } catch (IOExceptionInterface $exception) {
+            $debug['error'] = $exception->getMessage();
+        }
+        $response = new JsonResponse();
+        $response->setData(['result' => 'ok']);
+        return $response;
+    }
+
+    /**
      * @Route("/admin/import-projects", name="import-projects")
      */
     public function importProjects(Request $request): Response

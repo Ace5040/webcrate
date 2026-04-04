@@ -80,6 +80,13 @@
                     <i v-else class="bi bi-arrow-clockwise"></i>
                   </span>{{ t('projects.restart') }}
                 </button>
+                <button
+                  v-if="item.backup"
+                  class="btn btn-sm btn-outline-secondary"
+                  type="button"
+                  :disabled="item.applying"
+                  @click="openBackupDialog(item)"
+                ><i class="bi bi-archive me-1"></i>{{ t('projects.backups') }}</button>
               </div>
             </td>
           </tr>
@@ -131,13 +138,93 @@
     </div>
   </Transition>
 </Teleport>
+<Teleport to="body">
+  <Transition name="fade">
+    <div v-if="showBackupDialog" class="dialog-backdrop" @click.self="closeBackupDialog">
+      <div class="dialog dialog-backup" style="max-width:800px;width:100%">
+        <div class="dialog-header">
+          <h2>{{ t('projects.backupsFor') }} {{ backupProject?.name }}</h2>
+          <button class="dialog-close" type="button" @click="closeBackupDialog">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+        <div class="dialog-body dialog-body-scroll">
+          <div class="mb-3 d-flex gap-2 align-items-center">
+            <button class="btn btn-sm btn-outline-warning" type="button" :disabled="backupRunning" @click="onRunBackup">
+              <span class="btn-icon me-1">
+                <span v-if="backupRunning" class="spinner-border spinner-border-sm"></span>
+                <i v-else class="bi bi-play-circle"></i>
+              </span>{{ t('projects.runBackup') }}
+            </button>
+            <button class="btn btn-sm btn-outline-secondary" type="button" :disabled="backupListLoading" @click="loadBackupList">
+              <span class="btn-icon me-1">
+                <span v-if="backupListLoading" class="spinner-border spinner-border-sm"></span>
+                <i v-else class="bi bi-arrow-clockwise"></i>
+              </span>{{ t('common.reload') }}
+            </button>
+          </div>
+
+          <div v-if="backupListLoading && backupSets.length === 0" class="text-center py-3">
+            <span class="spinner-border spinner-border-sm me-2"></span>{{ t('common.loading') }}
+          </div>
+          <div v-else-if="!backupListLoading && backupSets.length === 0" class="text-muted py-2">
+            {{ t('projects.noBackups') }}
+          </div>
+          <div v-else class="position-relative">
+            <div v-if="backupListLoading" class="backup-list-overlay"></div>
+            <table class="app-table">
+              <thead>
+                <tr>
+                  <th>{{ t('projects.backupType') }}</th>
+                  <th>{{ t('projects.backupTime') }}</th>
+                  <th>{{ t('projects.backupVolumes') }}</th>
+                  <th>{{ t('common.actions') }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="set in pagedBackupSets" :key="set.time">
+                  <td>{{ set.type === 'Full' ? t('projects.backupTypeFull') : t('projects.backupTypeIncremental') }}</td>
+                  <td>{{ formatBackupTime(set.time) }}</td>
+                  <td>{{ set.volumes }}</td>
+                  <td>
+                    <div class="d-flex gap-1 align-items-center">
+                      <button class="btn btn-sm btn-outline-primary" type="button" :disabled="backupSaving === set.time" @click="onSaveBackup(set.time, false)">
+                        <span v-if="backupSaving === set.time" class="spinner-border spinner-border-sm me-1"></span>
+                        <i v-else class="bi bi-folder2-open me-1"></i>{{ t('projects.saveBackup') }}
+                      </button>
+                      <button class="btn btn-sm btn-outline-secondary" type="button" :disabled="backupSaving === set.time" @click="onSaveBackup(set.time, true)">
+                        <span v-if="backupSaving === set.time" class="spinner-border spinner-border-sm me-1"></span>
+                        <i v-else class="bi bi-file-zip me-1"></i>{{ t('projects.saveBackupArchive') }}
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div v-if="backupTotalPages > 1" class="d-flex align-items-center justify-content-between mt-2">
+              <span class="text-muted small">{{ (backupPage - 1) * BACKUP_PAGE_SIZE + 1 }}–{{ Math.min(backupPage * BACKUP_PAGE_SIZE, backupSets.length) }} / {{ backupSets.length }}</span>
+              <div class="d-flex gap-1">
+                <button class="btn btn-sm btn-outline-secondary" type="button" :disabled="backupPage === 1" @click="backupPage--">
+                  <i class="bi bi-chevron-left"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-secondary" type="button" :disabled="backupPage === backupTotalPages" @click="backupPage++">
+                  <i class="bi bi-chevron-right"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Transition>
+</Teleport>
 </template>
 
 <script setup>
-import { ref, getCurrentInstance } from 'vue'
+import { ref, computed, getCurrentInstance } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const { appContext } = getCurrentInstance()
 const axios = appContext.config.globalProperties.axios
 
@@ -151,6 +238,21 @@ const projects = ref(window.projects || [])
 const projectsFile = ref(null)
 const showImportDialog = ref(false)
 const fileInputRef = ref(null)
+
+const showBackupDialog = ref(false)
+const backupProject = ref(null)
+const backupList = ref({})
+const backupSets = ref([])
+const backupListLoading = ref(false)
+const backupRunning = ref(false)
+const backupSaving = ref(null)
+const backupPage = ref(1)
+const BACKUP_PAGE_SIZE = 10
+const backupTotalPages = computed(() => Math.ceil(backupSets.value.length / BACKUP_PAGE_SIZE))
+const pagedBackupSets = computed(() => {
+  const start = (backupPage.value - 1) * BACKUP_PAGE_SIZE
+  return backupSets.value.slice(start, start + BACKUP_PAGE_SIZE)
+})
 
 function openImportDialog() {
   projectsFile.value = null
@@ -305,6 +407,86 @@ function onActivate(pid) {
   })
 }
 
+function formatBackupTime(iso) {
+  if (!iso) return iso
+  const d = new Date(iso)
+  if (isNaN(d)) return iso
+  return d.toLocaleString(locale.value, {
+    day: '2-digit', month: 'short', year: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+  })
+}
+
+function openBackupDialog(item) {
+  backupProject.value = item
+  backupList.value = {}
+  backupSets.value = []
+  showBackupDialog.value = true
+  loadBackupList()
+}
+
+function closeBackupDialog() {
+  showBackupDialog.value = false
+  backupProject.value = null
+}
+
+function loadBackupList() {
+  if (!backupProject.value) return
+  backupListLoading.value = true
+  axios.get('/admin/project/' + backupProject.value.uid + '/backup-list')
+    .then((response) => {
+      const data = response.data
+      if (data && data.result === 'ok') {
+        backupList.value = data.backups || {}
+        const sets = []
+        for (const uri in backupList.value) {
+          const projects = backupList.value[uri]?.projects || {}
+          for (const proj in projects) {
+            const files = projects[proj]?.files || []
+            for (const chain of files) {
+              for (const set of (chain.sets || [])) {
+                sets.push(set)
+              }
+            }
+          }
+        }
+        sets.sort((a, b) => b.time.localeCompare(a.time))
+        backupSets.value = sets
+        backupPage.value = 1
+      }
+      backupListLoading.value = false
+    })
+    .catch(() => {
+      backupListLoading.value = false
+    })
+}
+
+function onRunBackup() {
+  if (!backupProject.value || backupRunning.value) return
+  backupRunning.value = true
+  axios.get('/admin/project/' + backupProject.value.uid + '/backup')
+    .then(() => {
+      backupRunning.value = false
+      loadBackupList()
+    })
+    .catch(() => {
+      backupRunning.value = false
+    })
+}
+
+function onSaveBackup(time, archive) {
+  if (!backupProject.value || backupSaving.value) return
+  backupSaving.value = time
+  const params = new URLSearchParams({ time, archive: archive ? 'archive' : '' })
+  axios.post('/admin/project/' + backupProject.value.uid + '/backup-save', params)
+    .then(() => {
+      backupSaving.value = null
+    })
+    .catch(() => {
+      backupSaving.value = null
+    })
+}
+
 function onDeactivate(pid) {
   selectedPid.value = pid
   busy.value = true
@@ -324,3 +506,25 @@ function onDeactivate(pid) {
   })
 }
 </script>
+
+<style scoped>
+.backup-list-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.5);
+  z-index: 1;
+  border-radius: 4px;
+}
+
+.dialog-backup {
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.dialog-body-scroll {
+  overflow-y: auto;
+  min-height: 0;
+}
+</style>

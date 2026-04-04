@@ -11,7 +11,6 @@ from munch import munchify
 from log import log
 
 log = log('/webcrate/log/app.log')
-log.write(f'Starting backup-list process', log.LEVEL.debug)
 
 with open('/webcrate/projects.yml', 'r') as f:
   content = f.read().strip()
@@ -41,7 +40,8 @@ def collection_status(uri):
       'collection-status',
       uri,
     ],
-    capture_output=True,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE,
     text=True,
   )
   return parse_collection_status(result.stdout + result.stderr)
@@ -125,5 +125,3 @@ for BACKUP_URI in BACKUP_URIS:
       result[BACKUP_URI]['projects'][project.name] = project_result
 
 print(json.dumps(result, indent=2))
-log.write(f'Backup-list process ended', log.LEVEL.debug)
-sys.stdout.flush()

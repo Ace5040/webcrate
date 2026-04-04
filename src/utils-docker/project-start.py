@@ -359,7 +359,7 @@ for projectname,project in projects.items():
 
     # INIT PHP
     PHP_CONFIGS=''
-    if backend in ['php56', 'php73', 'php74', 'php81', 'php83']:
+    if backend in ['php56', 'php73', 'php74', 'php81', 'php83', 'php84']:
       backend_path = f'{backend.replace("php", "")[0]}.{backend.replace("php", "")[1:]}'
       PHP_CONFIGS = (
         f'-v {WEBCRATE_PWD}/config/php/{backend}.ini:/etc/php/{backend_path}/cli/conf.d/00-user.ini:ro '

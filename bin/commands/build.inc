@@ -8,6 +8,7 @@ function Build() {
 		&& [ "$BUILDTARGET" != "core" ]\
 		&& [ "$BUILDTARGET" != "core-nginx" ]\
 		&& [ "$BUILDTARGET" != "core-gunicorn" ]\
+		&& [ "$BUILDTARGET" != "core-php84" ]\
 		&& [ "$BUILDTARGET" != "core-php83" ]\
 		&& [ "$BUILDTARGET" != "core-php81" ]\
 		&& [ "$BUILDTARGET" != "core-php74" ]\
@@ -17,7 +18,7 @@ function Build() {
 		&& [ "$BUILDTARGET" != "dnsmasq" ]\
 		&& [ "$BUILDTARGET" != "stats" ]\
 	;then
-		echo "$(printf "$(t "Unknown build target: '%s'. Use one of: all, nginx, utils-pwgen, utils-docker, core, core-gunicorn, core-php83, core-php81, core-php74, core-php73, core-php56, admin, stats")" "$1")"
+		echo "$(printf "$(t "Unknown build target: '%s'. Use one of: all, nginx, utils-pwgen, utils-docker, core, core-gunicorn, core-php84, core-php83, core-php81, core-php74, core-php73, core-php56, admin, stats")" "$1")"
 		exit 1
 	fi
 
@@ -79,6 +80,9 @@ function Build() {
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "utils-docker" ]; then
 		docker build -t $IMAGE_UTILS_DOCKER --build-context src=$WEBCRATE_PWD/src --build-arg IMAGE=$IMAGE_ALPINE_BASE ./src/utils-docker$BUILD_OPTIONS
+	fi
+	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core" ] || [ "$BUILDTARGET" = "core-php84" ]; then
+		docker build -t $IMAGE_CORE_PHP84 --build-context src=$WEBCRATE_PWD/src --build-arg IMAGE=$IMAGE_DEBIAN_STABLE_SLIM ./src/core-php84$BUILD_OPTIONS
 	fi
 	if [ "$BUILDTARGET" = "all" ] || [ "$BUILDTARGET" = "core" ] || [ "$BUILDTARGET" = "core-php83" ]; then
 		docker build -t $IMAGE_CORE_PHP83 --build-context src=$WEBCRATE_PWD/src --build-arg IMAGE=$IMAGE_DEBIAN_STABLE_SLIM ./src/core-php83$BUILD_OPTIONS

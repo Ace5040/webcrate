@@ -18,12 +18,14 @@ app.use(i18n)
 app.use(VueAxios, axios)
 app.mount('#app')
 
-function updateBackendOptions(selectedTemplate) {
+function updateBackendOptions(selectedTemplate, preserveValue) {
   const backendSelect = document.getElementById('project_backend')
 
   if (!backendSelect) {
     return
   }
+
+  const currentValue = preserveValue !== undefined ? preserveValue : backendSelect.value
 
   backendSelect.innerHTML = '<option value="">Loading...</option>'
   backendSelect.disabled = true
@@ -43,6 +45,10 @@ function updateBackendOptions(selectedTemplate) {
         option.text = backend.fullName
         backendSelect.appendChild(option)
       })
+
+      if (currentValue) {
+        backendSelect.value = currentValue
+      }
 
       backendSelect.disabled = false
     },

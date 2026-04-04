@@ -596,7 +596,7 @@ class AdminController extends AbstractController
         $showAllBackends = empty($nginxTemplateName) || strpos($nginxTemplateName, 'default') !== false;
         $isHtmlTemplate = !empty($nginxTemplateName) && strpos(strtolower($nginxTemplateName), 'html') !== false;
 
-        $backends = $this->backend_repository->findAll();
+        $backends = $this->backend_repository->getList();
         $filteredBackends = [];
 
         foreach ($backends as $backend) {

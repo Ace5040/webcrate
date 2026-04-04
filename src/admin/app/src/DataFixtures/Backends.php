@@ -14,6 +14,10 @@ class Backends extends Fixture
         $backends = [
             [
                 'name' => 'php',
+                'version' => '84'
+            ],
+            [
+                'name' => 'php',
                 'version' => '83'
             ],
             [

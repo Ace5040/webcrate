@@ -211,8 +211,8 @@ msgid "  build     - Build images from source. Usage webcrate build [OPTIONS] ta
 msgstr "  build     - 从源码构建镜像。用法：webcrate build [选项] target"
 
 #: bin/commands/help.inc:17
-msgid "                target: can be one of nginx, core, core-nginx, core-gunicorn, core-php83, core-php81, core-php74, core-php73, core-php56, utils-pwgen, utils-docker, admin, dnsmasq or all"
-msgstr "                target：可为 nginx、core、core-nginx、core-gunicorn、core-php83、core-php81、core-php74、core-php73、core-php56、utils-pwgen、utils-docker、admin、dnsmasq 或 all 之一"
+msgid "                target: can be one of nginx, core, core-nginx, core-gunicorn, core-php84, core-php83, core-php81, core-php74, core-php73, core-php56, utils-pwgen, utils-docker, admin, dnsmasq or all"
+msgstr "                target：可为 nginx、core、core-nginx、core-gunicorn、core-php84、core-php83、core-php81、core-php74、core-php73、core-php56、utils-pwgen、utils-docker、admin、dnsmasq 或 all 之一"
 
 #: bin/commands/help.inc:18
 msgid "                OPTIONS:"
@@ -243,8 +243,8 @@ msgid "  help      - Print this info"
 msgstr "  help      - 打印此帮助信息"
 
 #: bin/commands/build.inc:20
-msgid "Unknown build target: '%s'. Use one of: all, nginx, utils-pwgen, utils-docker, core, core-gunicorn, core-php83, core-php81, core-php74, core-php73, core-php56, admin, stats"
-msgstr "未知构建目标：'%s'。请使用以下之一：all、nginx、utils-pwgen、utils-docker、core、core-gunicorn、core-php83、core-php81、core-php74、core-php73、core-php56、admin、stats"
+msgid "Unknown build target: '%s'. Use one of: all, nginx, utils-pwgen, utils-docker, core, core-gunicorn, core-php84, core-php83, core-php81, core-php74, core-php73, core-php56, admin, stats"
+msgstr "未知构建目标：'%s'。请使用以下之一：all、nginx、utils-pwgen、utils-docker、core、core-gunicorn、core-php84、core-php83、core-php81、core-php74、core-php73、core-php56、admin、stats"
 
 #: bin/commands/build.inc:49 bin/commands/dock.inc:19
 msgid "Programming error"
@@ -256,8 +256,8 @@ msgid "Wrong number of args"
 msgstr "参数数量错误"
 
 #: bin/commands/push.inc:20
-msgid "Unknown image: '%s'. Use one of: all, nginx, core-nginx, utils-pwgen, utils-docker, core, core-gunicorn, core-php83, core-php81, core-php74, core-php73, core-php56, admin, stats"
-msgstr "未知镜像：'%s'。请使用以下之一：all、nginx、core-nginx、utils-pwgen、utils-docker、core、core-gunicorn、core-php83、core-php81、core-php74、core-php73、core-php56、admin、stats"
+msgid "Unknown image: '%s'. Use one of: all, nginx, core-nginx, utils-pwgen, utils-docker, core, core-gunicorn, core-php84, core-php83, core-php81, core-php74, core-php73, core-php56, admin, stats"
+msgstr "未知镜像：'%s'。请使用以下之一：all、nginx、core-nginx、utils-pwgen、utils-docker、core、core-gunicorn、core-php84、core-php83、core-php81、core-php74、core-php73、core-php56、admin、stats"
 
 #: bin/commands/start.inc:6 bin/commands/start.inc:9
 #: bin/commands/start.inc:16 bin/commands/start.inc:20

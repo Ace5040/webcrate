@@ -1,0 +1,95 @@
+ARG IMAGE=debian:bookworm-slim
+FROM $IMAGE
+
+RUN sed -i "s/deb.debian.org/mirror.truenetwork.ru/g" /etc/apt/sources.list.d/debian.sources
+RUN apt-get update
+RUN apt-get --assume-yes install sudo git nano exim4-base openssh-server \
+    unzip mariadb-client mc iputils-ping cron wget tmux supervisor \
+    curl lsb-release ca-certificates ruby ruby-dev \
+    python3 python3-pip python3-yaml python3-munch libmemcached-tools python3-pypdf rsync
+
+RUN usermod -s /bin/bash root
+
+RUN adduser --no-create-home --disabled-login -shell /bin/bash dev && \
+    echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo
+
+USER root
+WORKDIR /root
+
+# php84-fileinfo php84-ctype php84-xmlreader php84-xmlwriter php84-openssl
+# php84-simplexml php84-phar php84-tokenizer php84-iconv php84-pdo
+# php84-pdo_sqlite  php84-pdo_mysql php84-mysqli
+
+#install php84
+RUN curl -sSLo /tmp/debsuryorg-archive-keyring.deb https://packages.sury.org/debsuryorg-archive-keyring.deb && \
+    dpkg -i /tmp/debsuryorg-archive-keyring.deb && \
+    sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' && \
+    apt-get update
+RUN apt-get --assume-yes install php8.4 php8.4-zip php8.4-xml php8.4-mbstring php8.4-fpm \
+    php8.4-intl php8.4-gd php8.4-xsl php8.4-tidy php8.4-curl php8.4-opcache php8.4-soap \
+    php8.4-sqlite3 php8.4-mysql \
+    php-pear php8.4-dev
+
+RUN pecl channel-update pecl.php.net
+RUN pecl install timezonedb
+RUN apt-get --assume-yes install php8.4-imagick imagemagick
+RUN apt-get --assume-yes install php8.4-memcached
+RUN apt-get --assume-yes install composer
+
+#install ioncube
+RUN wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz && \
+    tar xzf ioncube_loaders_lin_x86-64.tar.gz && \
+    cp ./ioncube/ioncube_loader_lin_8.4.so $(php-config --extension-dir)/ioncube_loader_lin.so && \
+    rm -rf /root/ioncube && \
+    rm -f /root/ioncube_loaders_lin_x86-64.tar.gz
+
+RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/latest/download/drush.phar && \
+    chmod +x drush.phar && \
+    mv drush.phar /usr/bin/drush && \
+    ssh-keygen -A
+
+#install compass
+RUN gem install compass
+
+#install oh-my-bash
+RUN apt-get --assume-yes install gawk
+RUN wget https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh && \
+    chmod u+x install.sh && \
+    ./install.sh --prefix=/usr
+
+#install ble.sh
+RUN git clone --recursive --depth 1 --shallow-submodules https://github.com/akinomyoga/ble.sh.git && \
+    make -C ble.sh install PREFIX=/usr
+
+#install symfony-cli
+RUN wget https://get.symfony.com/cli/installer -O - | bash && \
+    mv /root/.symfony5/bin/symfony /usr/local/bin/symfony
+
+#misc config
+RUN sed -i "s/;process_control_timeout = 0/process_control_timeout = 10s/g" /etc/php/8.4/fpm/php-fpm.conf && \
+    sed -i "s/#PubkeyAuthentication yes/PubkeyAuthentication yes/g" /etc/ssh/sshd_config && \
+    sed -i "s/#PasswordAuthentication yes/PasswordAuthentication yes/g" /etc/ssh/sshd_config && \
+    sed -i "s/#StrictModes yes/StrictModes no/g" /etc/ssh/sshd_config && \
+    sed -i "s/PrintMotd no/PrintMotd yes/g" /etc/ssh/sshd_config && \
+    cat > /etc/motd && \
+    rm /etc/update-motd.d/10-uname && \
+    rm /etc/php/8.4/fpm/pool.d/www.conf && \
+    mkdir -p /webcrate && \
+    chmod o-rwx /webcrate
+
+# RUN wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+
+RUN curl https://mise.run | MISE_INSTALL_PATH=/usr/local/bin/mise sh
+RUN apt-get --assume-yes install python-is-python3
+
+WORKDIR /
+COPY ["versions.py", "parse-projects.py", "sync_ssh_keys.sh", "supervisord.conf.template", "supervisord-user.conf.template", "/webcrate/"]
+COPY --from=src log.py /webcrate/
+COPY bashrc.sh /etc/bashrc.sh
+COPY ["entrypoint.sh", "/"]
+RUN chmod u+x /webcrate/sync_ssh_keys.sh && \
+    chmod u+x /webcrate/parse-projects.py && \
+    chmod u+x /webcrate/versions.py && \
+    chmod u+x /entrypoint.sh
+CMD ["/entrypoint.sh"]
+EXPOSE 22 9000

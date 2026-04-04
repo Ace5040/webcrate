@@ -14,7 +14,7 @@ function Help() {
 	echo "$(t "  log       - Print all docker logs")"
 	echo "$(t "  backup    - Start backup process manually")"
 	echo "$(t "  build     - Build images from source. Usage webcrate build [OPTIONS] target")"
-	echo "$(t "                target: can be one of nginx, core, core-nginx, core-gunicorn, core-php83, core-php81, core-php74, core-php73, core-php56, utils-pwgen, utils-docker, admin, dnsmasq or all")"
+	echo "$(t "                target: can be one of nginx, core, core-nginx, core-gunicorn, core-php84, core-php83, core-php81, core-php74, core-php73, core-php56, utils-pwgen, utils-docker, admin, dnsmasq or all")"
 	echo "$(t "                OPTIONS:")"
 	echo "$(t "                  -c, --no-cache : do not use docker build cache")"
 	echo "$(t "                  -u, --update-base-images : pulls fresh base images before build")"

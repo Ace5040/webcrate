@@ -37,7 +37,8 @@ class BackendRepository extends ServiceEntityRepository
     public function getList()
     {
         return $this->createQueryBuilder('b')
-            ->orderBy('b.id', 'ASC')
+            ->addOrderBy('b.name', 'ASC')
+            ->addOrderBy('b.version', 'DESC')
             ->setMaxResults(1000)
             ->getQuery()
             ->getResult()
@@ -50,7 +51,8 @@ class BackendRepository extends ServiceEntityRepository
     public function getArray()
     {
         return $this->createQueryBuilder('b')
-            ->orderBy('b.id', 'ASC')
+            ->addOrderBy('b.name', 'ASC')
+            ->addOrderBy('b.version', 'DESC')
             ->setMaxResults(1000)
             ->getQuery()
             ->getArrayResult()

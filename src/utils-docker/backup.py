@@ -19,7 +19,7 @@ WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
 WEBCRATE_FULL_BACKUP_DAYS = os.environ.get('WEBCRATE_FULL_BACKUP_DAYS', '7')
 WEBCRATE_MAX_FULL_BACKUPS = os.environ.get('WEBCRATE_MAX_FULL_BACKUPS', '10')
-WEBCRATE_BACKUP_URIS = os.environ.get('WEBCRATE_BACKUP_URIS', 'file:///webcrate/backup')
+WEBCRATE_BACKUP_URIS = os.environ.get('WEBCRATE_BACKUP_URIS', '') or 'file:///webcrate/backup'
 BACKUP_URIS = WEBCRATE_BACKUP_URIS.split('^')
 PROJECT_NAME = sys.argv[1] if len(sys.argv) > 1 else 'all'
 BACKUP_TYPE = sys.argv[2] if len(sys.argv) > 2 else 'all'
@@ -127,6 +127,7 @@ for projectname,project in projects.items():
           FILTERS = f'{FILTERS}--{duplicity_filter.mode} "{data_folder}/{duplicity_filter.path}" '
       if os.path.isdir(f'{data_folder}'):
         for BACKUP_URI in BACKUP_URIS:
+          log.write(f'Using backup uri - {BACKUP_URI}', log.LEVEL.debug)
           os.system(f'duplicity --verbosity notice '
             f'--no-encryption '
             f'--full-if-older-than {WEBCRATE_FULL_BACKUP_DAYS}D '

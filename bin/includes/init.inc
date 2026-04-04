@@ -12,11 +12,9 @@ var_folders=(\
 	"mysql-services"\
 	"mysql5-projects"\
 	"postgresql-projects"\
-	"mysql"\
-	"mysql5"\
-	"postgres"\
 	"backup"\
 	"backup-tmp"\
+	"backups"\
 	"duplicity"\
 	"ssh"\
 	"openssl"\

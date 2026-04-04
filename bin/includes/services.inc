@@ -224,6 +224,7 @@ else
 		-v $(pwd)/var/openssl:/webcrate/openssl \
 		-v $(pwd)/var/backup:/webcrate/backup \
 		-v $(pwd)/var/backup-tmp:/webcrate/backup-tmp \
+		-v $(pwd)/var/backups:/webcrate/backups \
 		-v $(pwd)/var/mysql-projects:/webcrate/mysql-projects \
 		-v $(pwd)/var/mysql5-projects:/webcrate/mysql5-projects \
 		-v $(pwd)/var/postgresql-projects:/webcrate/postgresql-projects \

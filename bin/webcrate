@@ -23,6 +23,8 @@ source ./bin/commands/update.inc
 source ./bin/commands/log.inc
 source ./bin/commands/dock.inc
 source ./bin/commands/backup.inc
+source ./bin/commands/backup-list.inc
+source ./bin/commands/backup-save.inc
 source ./bin/commands/help.inc
 source ./bin/commands/localegen.inc
 
@@ -62,6 +64,8 @@ case $COMMAND in
 	push) Push $@;;
 	log) Log $@;;
 	backup) Backup $@;;
+	backup-list) BackupList $@;;
+	backup-save) BackupSave $@;;
 	help) Help $@;;
 	configure) Configure $@;;
 	localegen) Localegen $@;;

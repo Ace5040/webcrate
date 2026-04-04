@@ -31,6 +31,8 @@ COPY [ \
     "parse-services.py", \
     "services-init.py", \
     "backup.py", \
+    "backup-list.py", \
+    "backup-save.py", \
     "certbot-renew-deploy.py", \
     "certbot-renew.py", \
     "/" \

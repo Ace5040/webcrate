@@ -1,20 +1,14 @@
 #!/usr/bin/env python3
 
 import os
-import yaml
-import time
 import json
-from munch import munchify
-from pprint import pprint
 
 def execCommand(cmd):
   return os.popen(f'{cmd} | tr -d \'\\n\'').read().strip()
 
-php = execCommand("php -v | awk 'NR<=1{ print $2 }'")
+php = execCommand("php -v | awk 'NR<=1{ print $2 }' | grep -oP '^[0-9]+\.[0-9]+\.[0-9]+'")
 composer = execCommand("composer -V | awk 'NR<=1{ print $3 }'")
-composer1 = execCommand("composer1 -V | awk 'NR<=1{ print $3 }'")
-npm = execCommand("npm -v | awk 'NR<=1{ print $1 }'")
-node = execCommand("node -v | awk 'NR<=1{ print $1 }'")
+mise = execCommand("mise version --json | awk -F'\"' '/\"version\"/{split($4, a, \" \"); print a[1]}'")
 git = execCommand("git --version | awk 'NR<=1{ print $3 }'")
 symfony = execCommand("symfony -V | awk 'NR<=1{ print $4 }' | sed -r 's/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g' | tr -d 'v'")
 compass = execCommand("compass -v | awk 'NR<=1{ print $2 }'")
@@ -25,8 +19,7 @@ tmux = execCommand("tmux -V | awk 'NR<=1{ print $2 }'")
 soft = [
     dict( name = 'php', version = php ),
     dict( name = 'composer', version = composer ),
-    dict( name = 'composer1', version = composer1 ),
-    dict( name = 'npm', version = npm ),
+    dict( name = 'mise', version = mise ),
     dict( name = 'git', version = git ),
     dict( name = 'symfony cli', version = symfony ),
     dict( name = 'compass', version = compass ),

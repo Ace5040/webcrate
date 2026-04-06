@@ -1,16 +1,12 @@
 #!/usr/bin/env python3
 
 import os
-import yaml
-import time
 import json
-from munch import munchify
-from pprint import pprint
 
 def execCommand(cmd):
   return os.popen(f'{cmd} | tr -d \'\\n\'').read().strip()
 
-php = execCommand("php -v | awk 'NR<=1{ print $2 }'")
+php = execCommand("php -v | awk 'NR<=1{ print $2 }' | grep -oP '^[0-9]+\.[0-9]+\.[0-9]+'")
 composer = execCommand("composer -V | awk 'NR<=1{ print $3 }'")
 mise = execCommand("mise version --json | awk -F'\"' '/\"version\"/{split($4, a, \" \"); print a[1]}'")
 git = execCommand("git --version | awk 'NR<=1{ print $3 }'")

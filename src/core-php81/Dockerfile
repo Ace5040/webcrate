@@ -30,7 +30,9 @@ RUN pecl channel-update pecl.php.net
 RUN pecl install timezonedb
 RUN apt-get --assume-yes install php8.1-imagick imagemagick
 RUN apt-get --assume-yes install php8.1-memcached
-RUN apt-get --assume-yes install composer
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
+    php composer-setup.php --2 --install-dir=/usr/local/bin --filename=composer && \
+    rm composer-setup.php
 
 #install ioncube
 RUN wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz && \
@@ -72,6 +74,9 @@ RUN sed -i "s/;process_control_timeout = 0/process_control_timeout = 10s/g" /etc
     rm /etc/php/8.1/fpm/pool.d/www.conf && \
     mkdir -p /webcrate && \
     chmod o-rwx /webcrate
+
+RUN curl https://mise.run | MISE_INSTALL_PATH=/usr/local/bin/mise sh
+RUN apt-get --assume-yes install python-is-python3
 
 WORKDIR /
 COPY ["versions.py", "parse-projects.py", "sync_ssh_keys.sh", "supervisord.conf.template", "supervisord-user.conf.template", "/webcrate/"]

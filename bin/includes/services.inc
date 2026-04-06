@@ -96,16 +96,15 @@ if docker container inspect webcrate-phpmyadmin >/dev/null 2> /dev/null; then
 	writeLog "$(printf "$(t "Container %s exists")" "webcrate-phpmyadmin")" $LOG_LEVEL_DEBUG
 else
 	writeLog "$(printf "$(t "Starting %s container")" "webcrate-phpmyadmin")" $LOG_LEVEL_INFO
-	PMA_HOSTS=`cat $(pwd)/var/meta/dbhosts.txt`
 	docker run -d --env-file=$(pwd)/.env --name webcrate-phpmyadmin \
 		--network="webcrate_network" --dns=10.255.0.100 \
 		--restart="unless-stopped" \
-		-e PMA_HOSTS=$PMA_HOSTS \
 		-e UPLOAD_LIMIT=2048M \
 		-e LOG_LEVEL_VALUE=$LOG_LEVEL_VALUE \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v $(pwd)/config/phpmyadmin/php.ini:/usr/local/etc/php/php.ini:ro \
 		-v $(pwd)/config/phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php:ro \
+		-v $(pwd)/var/meta/dbhosts.txt:/webcrate/meta/dbhosts.txt:ro \
 		$IMAGE_PHPMYADMIN > /dev/null
 fi
 

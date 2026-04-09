@@ -39,6 +39,7 @@ form:
         Memcached: Memcached
         Solr: Solr
         Elastic: Elasticsearch
+        backup: 备份
         DuplicityFilters: 备份过滤器
         gunicorn_app_module: Gunicorn 模块
         url: 重定向 URL

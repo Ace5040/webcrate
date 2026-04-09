@@ -39,6 +39,7 @@ form:
         Memcached: Memcached
         Solr: Solr
         Elastic: Elasticsearch
+        backup: Резервное копирование
         DuplicityFilters: Фильтры бэкапа
         gunicorn_app_module: Модуль Gunicorn
         url: URL редиректа

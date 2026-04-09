@@ -39,6 +39,12 @@ export default {
     newRedirect: 'Новый редирект',
     url: 'URL',
   },
+  form: {
+    validation: {
+      nameInvalid: 'Только строчные латинские буквы и цифры. Первый символ — буква.',
+      nameTaken: 'Это имя уже занято.',
+    },
+  },
   common: {
     edit: 'Изменить',
     delete: 'Удалить',

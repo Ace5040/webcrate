@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import { i18n } from './i18n.js'
+const t = (key) => i18n.global.t(key)
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import Sortable from 'sortablejs'
@@ -17,6 +18,60 @@ const app = createApp(Page)
 app.use(i18n)
 app.use(VueAxios, axios)
 app.mount('#app')
+
+function setupNameValidation(inputId, checkUrl, excludeParam, excludeValue) {
+  const input = document.getElementById(inputId)
+  if (!input) return
+  const pattern = /^[a-z][a-z0-9]*$/
+  let timer = null
+
+  function setValidity(state, message) {
+    input.classList.remove('is-valid', 'is-invalid')
+    input.closest('.form-group')?.querySelectorAll('.dynamic-feedback').forEach(el => el.remove())
+    if (state === 'valid') {
+      input.classList.add('is-valid')
+    } else if (state === 'invalid') {
+      input.classList.add('is-invalid')
+      const fb = document.createElement('div')
+      fb.className = 'invalid-feedback dynamic-feedback'
+      fb.textContent = message
+      input.insertAdjacentElement('afterend', fb)
+    }
+  }
+
+  input.addEventListener('input', () => {
+    clearTimeout(timer)
+    const val = input.value
+    if (!val) {
+      input.classList.remove('is-valid', 'is-invalid')
+      input.closest('.form-group')?.querySelectorAll('.dynamic-feedback').forEach(el => el.remove())
+      return
+    }
+    if (!pattern.test(val)) {
+      setValidity('invalid', t('form.validation.nameInvalid'))
+      return
+    }
+    timer = setTimeout(() => {
+      const params = { name: val }
+      if (excludeValue()) params[excludeParam] = excludeValue()
+      $.get(checkUrl, params, (data) => {
+        if (input.value !== val) return
+        setValidity(data.available ? 'valid' : 'invalid', data.available ? '' : t('form.validation.nameTaken'))
+      })
+    }, 400)
+  })
+}
+
+$(document).ready(() => {
+  const nameInput = document.getElementById('redirect_name')
+  const originalName = nameInput?.value || ''
+  setupNameValidation(
+    'redirect_name',
+    '/admin/api/check-redirect-name',
+    'excludeName',
+    () => originalName
+  )
+})
 
 const redirectDomains = document.getElementById('redirect_domains')
 if (redirectDomains) {

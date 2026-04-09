@@ -617,6 +617,30 @@ class AdminController extends AbstractController
     }
 
     /**
+     * @Route("/admin/api/check-project-name", name="api_check_project_name", methods={"GET"})
+     */
+    public function checkProjectName(Request $request): JsonResponse
+    {
+        $name = $request->query->get('name', '');
+        $excludeUid = $request->query->get('excludeUid', '');
+        $existing = $this->repository->findOneBy(['name' => $name]);
+        $available = $existing === null || ($excludeUid !== '' && (string)$existing->getUid() === (string)$excludeUid);
+        return new JsonResponse(['available' => $available]);
+    }
+
+    /**
+     * @Route("/admin/api/check-redirect-name", name="api_check_redirect_name", methods={"GET"})
+     */
+    public function checkRedirectName(Request $request): JsonResponse
+    {
+        $name = $request->query->get('name', '');
+        $excludeName = $request->query->get('excludeName', '');
+        $existing = $this->redirectsRepository->findOneBy(['name' => $name]);
+        $available = $existing === null || ($excludeName !== '' && $name === $excludeName);
+        return new JsonResponse(['available' => $available]);
+    }
+
+    /**
      * @Route("/admin/redirect/{name}/activate", name="admin-redirect-activate")
      */
     public function redirectActivate($name)

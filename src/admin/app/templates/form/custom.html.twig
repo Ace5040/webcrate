@@ -10,7 +10,7 @@
     <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group')|trim})} %}{{ block('attributes') }}{% endwith %}>
         {{- form_label(form) -}}
         {{- form_widget(form, []) -}}
-        <div class="add-domain-button btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Add Domain</div>
+        <div class="add-domain-button btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> {{ 'form.add.domain'|trans }}</div>
         {{- form_help(form) -}}
     </{{ element|default('div') }}>
 {%- endblock domains_row %}
@@ -36,7 +36,7 @@
     <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group')|trim})} %}{{ block('attributes') }}{% endwith %}>
         {{- form_label(form) -}}
         {{- form_widget(form, widget_attr) -}}
-        <div class="add-nginx-option-button btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Add Nginx Option</div>
+        <div class="add-nginx-option-button btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> {{ 'form.add.nginxOption'|trans }}</div>
         {{- form_help(form) -}}
     </{{ element|default('div') }}>
 {%- endblock nginx_options_row %}
@@ -76,7 +76,7 @@
     <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group')|trim})} %}{{ block('attributes') }}{% endwith %}>
         {{- form_label(form) -}}
         {{- form_widget(form, widget_attr) -}}
-        <div class="add-auth-location-button btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Add Auth Location</div>
+        <div class="add-auth-location-button btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> {{ 'form.add.authLocation'|trans }}</div>
         {{- form_help(form) -}}
     </{{ element|default('div') }}>
 {%- endblock auth_locations_row %}
@@ -134,7 +134,7 @@
     <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group')|trim})} %}{{ block('attributes') }}{% endwith %}>
         {{- form_label(form) -}}
         {{- form_widget(form, widget_attr) -}}
-        <div class="add-duplicity-filter-button btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Add Exclude/Include</div>
+        <div class="add-duplicity-filter-button btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> {{ 'form.add.duplicityFilter'|trans }}</div>
         {{- form_help(form) -}}
     </{{ element|default('div') }}>
 {%- endblock duplicity_filters_row %}

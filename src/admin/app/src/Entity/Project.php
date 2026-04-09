@@ -6,9 +6,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Yaml\Yaml;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use App\Repository\ProjectRepository;
 
 /**
  * @ORM\Entity(repositoryClass=ProjectRepository::class)
+ * @UniqueEntity("name", message="form.name_unique_project")
  */
 class Project
 {

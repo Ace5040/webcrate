@@ -39,6 +39,12 @@ export default {
     newRedirect: '新建重定向',
     url: 'URL',
   },
+  form: {
+    validation: {
+      nameInvalid: '仅限小写字母和数字，必须以字母开头。',
+      nameTaken: '此名称已被占用。',
+    },
+  },
   common: {
     edit: '编辑',
     delete: '删除',

@@ -672,22 +672,98 @@
 .redirect-edit-page {
   width: 100%;
   min-width: 320px;
-  max-width: 660px;
+  max-width: 700px;
   margin: 2rem auto;
   padding: 0 1rem;
+}
+
+/* ── Form sections ──────────────────────────────────────────── */
+.form-section {
+  background: var(--app-card-bg);
+  border: 1px solid var(--app-card-border);
+  border-radius: var(--app-radius);
+  box-shadow: var(--app-card-shadow);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.form-section-title {
+  font-size: .6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--app-text-muted);
+  margin: 0 0 1.1rem;
+  padding-bottom: .75rem;
+  border-bottom: 1px solid var(--app-border-strong);
+}
+
+/* ── Form actions bar ───────────────────────────────────────── */
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: .625rem;
+  margin-bottom: 2rem;
+}
+
+/* ── UID readonly field ─────────────────────────────────────── */
+.uid-row {
+  .form-control:disabled {
+    background: var(--app-table-head-bg);
+    border-color: var(--app-card-border);
+    border-style: dashed;
+    color: var(--app-text-muted);
+    cursor: default;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: .875rem;
+    opacity: 1;
+  }
 }
 
 /* ── Form groups ────────────────────────────────────────────── */
 .form-group {
   border-bottom: 1px solid var(--app-border);
   padding-bottom: 1rem;
+  margin-bottom: 1rem;
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
 
   input[type=text] { width: auto; }
+
+  .form-text {
+    font-size: .78rem;
+    color: var(--app-text-muted);
+    margin-top: .3rem;
+  }
+
+  // Checkbox/radio: indent help text to align with label, add breathing room
+  .form-check ~ .form-text {
+    margin-top: .375rem;
+    padding-left: 1.5em;
+  }
+
+  // Help text after "Add ..." buttons
+  .btn ~ .form-text {
+    display: block;
+    margin-top: .625rem;
+  }
 }
 
 fieldset .form-group {
   border-bottom: none;
   padding-bottom: 0;
+}
+
+/* ── Add list-item buttons spacing ─────────────────────────── */
+.add-domain-button,
+.add-nginx-option-button,
+.add-auth-location-button,
+.add-duplicity-filter-button {
+  margin-top: .875rem;
 }
 
 /* ── Drag handle & remove ───────────────────────────────────── */
@@ -970,6 +1046,12 @@ fieldset .form-group {
     color: #fca5a5;
   }
 
+  // Help text dark override (Bootstrap uses .text-muted with !important)
+  .form-text,
+  .text-muted {
+    color: #94a3b8 !important;
+  }
+
   // Bootstrap form controls dark override
   .form-control,
   .form-select {
@@ -1042,6 +1124,10 @@ fieldset .form-group {
   .project-edit-page,
   .redirect-edit-page {
     margin: 1rem auto;
+  }
+
+  .form-section {
+    padding: 1rem 1.125rem;
   }
 }
 

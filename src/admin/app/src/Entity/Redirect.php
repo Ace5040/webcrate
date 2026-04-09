@@ -5,9 +5,11 @@ namespace App\Entity;
 use App\Repository\RedirectRepository;
 use Symfony\Component\Yaml\Yaml;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=RedirectRepository::class)
+ * @UniqueEntity("name", message="form.name_unique_redirect")
  */
 class Redirect
 {

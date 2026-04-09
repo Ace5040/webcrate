@@ -1,0 +1,77 @@
+form:
+    save: Сохранить
+    cancel: Отмена
+    section:
+        general: Основное
+        domains: Домены
+        webServer: Веб-сервер
+        nginxConfig: Конфигурация Nginx
+        access: Доступ
+        storage: Хранилище
+        databases: Базы данных
+        services: Сервисы
+        backup: Резервное копирование
+        redirectSettings: Настройки редиректа
+    add:
+        domain: Добавить домен
+        nginxOption: Добавить опцию Nginx
+        authLocation: Добавить путь
+        duplicityFilter: Добавить фильтр
+    label:
+        uid: UID
+        name: Имя
+        active: Активен
+        domains: Домены
+        https: HTTPS
+        nginx_template: Шаблон Nginx
+        backend: Бэкенд
+        redirect: Редирект на HTTPS
+        gzip: Gzip
+        nginx_options: Опции Nginx
+        nginx_block: Блок Nginx
+        password: Пароль
+        auth_locations: Защищённые пути
+        volume: Том
+        root_folder: Корневая папка
+        mysql: MySQL 8
+        mysql5: MySQL 5.7
+        postgre: PostgreSQL
+        Memcached: Memcached
+        Solr: Solr
+        Elastic: Elasticsearch
+        DuplicityFilters: Фильтры бэкапа
+        gunicorn_app_module: Модуль Gunicorn
+        url: URL редиректа
+    help:
+        uid: Уникальный системный идентификатор, назначается автоматически. Изменить нельзя.
+        project_name: Только строчные латинские буквы и цифры. Первый символ — буква. Используется как имя каталога проекта.
+        redirect_name: Только строчные латинские буквы и цифры. Первый символ — буква. Используется как идентификатор редиректа.
+        project_active: Активен ли проект и отдаётся ли он веб-сервером.
+        redirect_active: Активен ли данный редирект.
+        project_domains: Имена доменов, указывающих на этот проект.
+        redirect_domains: Имена доменов, которые нужно перенаправить.
+        project_https: Конфигурация SSL/TLS-сертификата для проекта.
+        redirect_https: Конфигурация SSL/TLS-сертификата для редиректа.
+        nginx_template: Шаблон конфигурации Nginx для проекта.
+        backend: Язык/среда исполнения и версия для проекта.
+        redirect: Перенаправлять HTTP-трафик на HTTPS (требуется включённый HTTPS).
+        gzip: Включить gzip-сжатие HTTP-ответов.
+        nginx_options: Дополнительные директивы Nginx для блока server.
+        nginx_block: Произвольный блок конфигурации Nginx, вставляется как есть.
+        password: Пароль HTTP Basic Auth. Оставьте пустым, чтобы не изменять текущий.
+        auth_locations: URL-пути, защищённые HTTP Basic Auth.
+        volume: Том хранилища, где хранятся файлы проекта.
+        root_folder: 'Корневой каталог относительно корня проекта (например, "public" или "web").'
+        mysql: Создать базу данных MySQL 8 для проекта.
+        mysql5: Создать базу данных MySQL 5.7 для проекта.
+        postgre: Создать базу данных PostgreSQL для проекта.
+        Memcached: Включить выделенный экземпляр Memcached для проекта.
+        Solr: Включить Apache Solr для полнотекстового поиска.
+        Elastic: Включить Elasticsearch для проекта.
+        backup: Включить плановое резервное копирование проекта.
+        DuplicityFilters: Пути для включения или исключения из резервных копий.
+        gunicorn_app_module: Путь к WSGI-модулю Python, только для бэкенда Gunicorn.
+        url: Целевой URL, на который будут перенаправлены посетители.
+    validation:
+        name_invalid: Только строчные латинские буквы и цифры. Первый символ — буква.
+        name_taken: Это имя уже занято.

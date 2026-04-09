@@ -14,8 +14,31 @@
     <div id="app"></div>
     <div class="redirect-edit-page">
         {{ form_start(form) }}
-            {{ form_widget(form) }}
-            <input class="btn btn-primary" type="submit" value="Save"/>
+
+        <div class="form-section">
+            <h3 class="form-section-title">{{ 'form.section.general'|trans }}</h3>
+            {{ form_row(form.name) }}
+            {{ form_row(form.active) }}
+        </div>
+
+        <div class="form-section">
+            <h3 class="form-section-title">{{ 'form.section.domains'|trans }}</h3>
+            {{ form_row(form.domains) }}
+        </div>
+
+        <div class="form-section">
+            <h3 class="form-section-title">{{ 'form.section.redirectSettings'|trans }}</h3>
+            {{ form_row(form.url) }}
+            {{ form_row(form.https) }}
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-lg"></i> {{ 'form.save'|trans }}
+            </button>
+            <a href="{{ path('admin-redirects') }}" class="btn btn-outline-secondary">{{ 'form.cancel'|trans }}</a>
+        </div>
+
         {{ form_end(form) }}
     </div>
 {% endblock %}

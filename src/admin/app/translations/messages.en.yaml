@@ -1,0 +1,77 @@
+form:
+    save: Save Changes
+    cancel: Cancel
+    section:
+        general: General
+        domains: Domains
+        webServer: Web Server
+        nginxConfig: Nginx Configuration
+        access: Access
+        storage: Storage
+        databases: Databases
+        services: Services
+        backup: Backup
+        redirectSettings: Redirect Settings
+    add:
+        domain: Add Domain
+        nginxOption: Add Nginx Option
+        authLocation: Add Auth Location
+        duplicityFilter: Add Exclude/Include
+    label:
+        uid: UID
+        name: Name
+        active: Active
+        domains: Domains
+        https: HTTPS
+        nginx_template: Nginx Template
+        backend: Backend
+        redirect: Redirect to HTTPS
+        gzip: Gzip
+        nginx_options: Nginx Options
+        nginx_block: Custom Nginx Block
+        password: Password
+        auth_locations: Auth Locations
+        volume: Volume
+        root_folder: Root Folder
+        mysql: MySQL 8
+        mysql5: MySQL 5.7
+        postgre: PostgreSQL
+        Memcached: Memcached
+        Solr: Solr
+        Elastic: Elasticsearch
+        DuplicityFilters: Backup Filters
+        gunicorn_app_module: Gunicorn App Module
+        url: Redirect URL
+    help:
+        uid: Unique system identifier assigned automatically. Cannot be changed.
+        project_name: Lowercase Latin letters and digits only. Must start with a letter. Used as the project directory name.
+        redirect_name: Lowercase Latin letters and digits only. Must start with a letter. Used as the redirect identifier.
+        project_active: Whether this project is active and being served by the web server.
+        redirect_active: Whether this redirect is currently active.
+        project_domains: Domain names that should point to this project.
+        redirect_domains: Domain names that should be redirected.
+        project_https: SSL/TLS certificate configuration for this project.
+        redirect_https: SSL/TLS certificate configuration for the redirect.
+        nginx_template: Nginx configuration template to use for this project.
+        backend: Backend language/runtime and version for this project.
+        redirect: Redirect all HTTP traffic to HTTPS (requires HTTPS to be enabled).
+        gzip: Enable gzip compression for HTTP responses.
+        nginx_options: Additional Nginx directives added to the server block.
+        nginx_block: Custom Nginx server block configuration inserted verbatim.
+        password: HTTP Basic Auth password. Leave empty to keep the current password.
+        auth_locations: URL paths protected by HTTP Basic Authentication.
+        volume: Storage volume where project files are kept.
+        root_folder: 'Document root folder relative to the project root (e.g. "public" or "web").'
+        mysql: Create a MySQL 8 database for this project.
+        mysql5: Create a MySQL 5.7 database for this project.
+        postgre: Create a PostgreSQL database for this project.
+        Memcached: Enable a dedicated Memcached instance for this project.
+        Solr: Enable Apache Solr for full-text search.
+        Elastic: Enable Elasticsearch for this project.
+        backup: Enable scheduled backups for this project.
+        DuplicityFilters: Paths to include or exclude from backups.
+        gunicorn_app_module: Python WSGI application module path, for Gunicorn backend only.
+        url: Target URL where visitors will be redirected.
+    validation:
+        name_invalid: Only lowercase letters and digits. Must start with a letter.
+        name_taken: This name is already taken.

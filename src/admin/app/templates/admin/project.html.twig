@@ -14,8 +14,74 @@
     <div id="app"></div>
     <div class="project-edit-page">
         {{ form_start(form) }}
-            {{ form_widget(form) }}
-            <input class="btn btn-primary" type="submit" value="Save"/>
+
+        <div class="form-section">
+            <h3 class="form-section-title">{{ 'form.section.general'|trans }}</h3>
+            {{ form_row(form.uid) }}
+            {{ form_row(form.name) }}
+            {{ form_row(form.active) }}
+        </div>
+
+        <div class="form-section">
+            <h3 class="form-section-title">{{ 'form.section.domains'|trans }}</h3>
+            {{ form_row(form.domains) }}
+        </div>
+
+        <div class="form-section">
+            <h3 class="form-section-title">{{ 'form.section.webServer'|trans }}</h3>
+            {{ form_row(form.https) }}
+            {{ form_row(form.nginx_template) }}
+            {{ form_row(form.backend) }}
+            {{ form_row(form.gunicorn_app_module) }}
+            {{ form_row(form.redirect) }}
+            {{ form_row(form.gzip) }}
+        </div>
+
+        <div class="form-section">
+            <h3 class="form-section-title">{{ 'form.section.nginxConfig'|trans }}</h3>
+            {{ form_row(form.nginx_options) }}
+            {{ form_row(form.nginx_block) }}
+        </div>
+
+        <div class="form-section">
+            <h3 class="form-section-title">{{ 'form.section.access'|trans }}</h3>
+            {{ form_row(form.password) }}
+            {{ form_row(form.auth_locations) }}
+        </div>
+
+        <div class="form-section">
+            <h3 class="form-section-title">{{ 'form.section.storage'|trans }}</h3>
+            {{ form_row(form.volume) }}
+            {{ form_row(form.root_folder) }}
+        </div>
+
+        <div class="form-section">
+            <h3 class="form-section-title">{{ 'form.section.databases'|trans }}</h3>
+            {{ form_row(form.mysql) }}
+            {{ form_row(form.mysql5) }}
+            {{ form_row(form.postgre) }}
+        </div>
+
+        <div class="form-section">
+            <h3 class="form-section-title">{{ 'form.section.services'|trans }}</h3>
+            {{ form_row(form.Memcached) }}
+            {{ form_row(form.Solr) }}
+            {{ form_row(form.Elastic) }}
+        </div>
+
+        <div class="form-section">
+            <h3 class="form-section-title">{{ 'form.section.backup'|trans }}</h3>
+            {{ form_row(form.backup) }}
+            {{ form_row(form.DuplicityFilters) }}
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-lg"></i> {{ 'form.save'|trans }}
+            </button>
+            <a href="{{ path('admin-projects') }}" class="btn btn-outline-secondary">{{ 'form.cancel'|trans }}</a>
+        </div>
+
         {{ form_end(form) }}
     </div>
 {% endblock %}

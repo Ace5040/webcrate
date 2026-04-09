@@ -91,5 +91,6 @@ const { theme, toggleTheme } = useTheme()
 function setLocale(lang) {
   locale.value = lang
   localStorage.setItem('locale', lang)
+  document.cookie = `app_locale=${lang};path=/;max-age=31536000;SameSite=Lax`
 }
 </script>

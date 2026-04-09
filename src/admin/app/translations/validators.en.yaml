@@ -1,0 +1,3 @@
+form.name_regex: Only lowercase letters and digits allowed. Must start with a letter.
+form.name_unique_project: A project with this name already exists.
+form.name_unique_redirect: A redirect with this name already exists.

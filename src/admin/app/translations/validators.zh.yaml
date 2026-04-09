@@ -1,0 +1,3 @@
+form.name_regex: 只允许小写字母和数字，必须以字母开头。
+form.name_unique_project: 已存在同名项目。
+form.name_unique_redirect: 已存在同名重定向。

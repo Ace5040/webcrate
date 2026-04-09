@@ -39,6 +39,12 @@ export default {
     newRedirect: 'New redirect',
     url: 'URL',
   },
+  form: {
+    validation: {
+      nameInvalid: 'Only lowercase letters and digits. Must start with a letter.',
+      nameTaken: 'This name is already taken.',
+    },
+  },
   common: {
     edit: 'Edit',
     delete: 'Delete',

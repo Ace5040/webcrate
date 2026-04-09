@@ -1,7 +1,6 @@
 ARG IMAGE
 FROM $IMAGE
-RUN apk update &&\
-    apk add \
+RUN apk add --no-cache \
     docker \
     cronie \
     certbot \
@@ -11,9 +10,8 @@ RUN apk update &&\
     openssl \
     mariadb-client \
     python3 py3-yaml py3-idna py3-munch \
-    postgresql-client &&\
-    rm -rf /var/cache/apk/*
-RUN mkdir /webcrate
+    postgresql-client && \
+    mkdir /webcrate
 COPY [ \
     "entrypoint.sh", \
     "pwgen.sh", \
@@ -45,10 +43,9 @@ COPY [ \
     "ssl.conf", \
     "/webcrate" \
 ]
-RUN chmod u+x /*.py &&\
-    chmod u+x /pwgen.sh &&\
-    chmod u+x /entrypoint.sh
-RUN echo '0 6 * * 1 root . /docker.env; /certbot-renew.py' > /etc/cron.d/certbot-renew && \
+RUN chmod u+x /*.py && \
+    chmod u+x /pwgen.sh && \
+    chmod u+x /entrypoint.sh && \
+    echo '0 6 * * 1 root . /docker.env; /certbot-renew.py' > /etc/cron.d/certbot-renew && \
     echo '0 3 * * * root . /docker.env; /backup.py' > /etc/cron.d/backup
-
 CMD ["/entrypoint.sh"]

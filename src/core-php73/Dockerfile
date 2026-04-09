@@ -1,69 +1,80 @@
 ARG IMAGE=debian:bookworm-slim
 FROM $IMAGE
 
-RUN sed -i "s/deb.debian.org/mirror.truenetwork.ru/g" /etc/apt/sources.list.d/debian.sources
-RUN apt-get update
-RUN apt-get --assume-yes install sudo git nano exim4-base openssh-server \
-    unzip mariadb-client mc iputils-ping cron wget tmux supervisor \
-    curl lsb-release ca-certificates ruby ruby-dev \
-    python3 python3-pip python3-yaml python3-munch libmemcached-tools python3-pypdf
+RUN sed -i "s/deb.debian.org/mirror.truenetwork.ru/g" /etc/apt/sources.list.d/debian.sources && \
+    apt-get update && \
+    apt-get --assume-yes --no-install-recommends install \
+        sudo git exim4-base openssh-server \
+        unzip mariadb-client iputils-ping cron wget tmux supervisor \
+        curl lsb-release ca-certificates ruby ruby-dev make gawk \
+        python3 python3-pip python3-yaml python3-munch libmemcached-tools python3-pypdf \
+        python-is-python3 && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN usermod -s /bin/bash root
-
-RUN adduser --no-create-home --disabled-login -shell /bin/bash dev && \
+RUN usermod -s /bin/bash root && \
+    adduser --no-create-home --disabled-login -shell /bin/bash dev && \
     echo 'dev ALL=(ALL) NOPASSWD: ALL' | EDITOR='tee -a' visudo
 
 USER root
 WORKDIR /root
 
-#install php73
+# Install PHP 7.3 with extensions, compass (while gcc available), then purge build deps
 RUN curl -sSLo /tmp/debsuryorg-archive-keyring.deb https://packages.sury.org/debsuryorg-archive-keyring.deb && \
     dpkg -i /tmp/debsuryorg-archive-keyring.deb && \
-    sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' && \
-    apt-get update
-RUN apt-get --assume-yes install php7.3 php7.3-zip php7.3-xml php7.3-mbstring php7.3-fpm \
-    php7.3-intl php7.3-gd php7.3-xsl php7.3-tidy php7.3-curl php7.3-opcache php7.3-soap \
-    php7.3-sqlite3 php7.3-mysql \
-    php-pear php7.3-dev
+    echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list && \
+    apt-get update && \
+    apt-get --assume-yes --no-install-recommends install \
+        php7.3 php7.3-zip php7.3-xml php7.3-mbstring php7.3-fpm \
+        php7.3-intl php7.3-gd php7.3-xsl php7.3-tidy php7.3-curl php7.3-opcache php7.3-soap \
+        php7.3-sqlite3 php7.3-mysql php7.3-ctype \
+        php-pear php7.3-dev \
+        php7.3-imagick imagemagick \
+        php7.3-memcached \
+        libffi-dev && \
+    pecl channel-update pecl.php.net && \
+    pecl install timezonedb && \
+    gem install compass --no-document && \
+    gem cleanup && \
+    apt-get --assume-yes purge php7.3-dev php-pear libffi-dev && \
+    apt-get --assume-yes autoremove && \
+    rm -rf /var/lib/apt/lists/* /tmp/*
 
-RUN pecl channel-update pecl.php.net
-RUN pecl install timezonedb
-RUN apt-get --assume-yes install php7.3-imagick imagemagick
-RUN apt-get --assume-yes install php7.3-memcached
+# Install composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
     php composer-setup.php --2.2 --install-dir=/usr/local/bin --filename=composer && \
     rm composer-setup.php
 
-#install ioncube
-RUN wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz && \
+# Install ioncube
+RUN wget -q https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz && \
     tar xzf ioncube_loaders_lin_x86-64.tar.gz && \
     cp ./ioncube/ioncube_loader_lin_7.3.so $(php-config --extension-dir)/ioncube_loader_lin.so && \
-    rm -rf /root/ioncube && \
-    rm -f /root/ioncube_loaders_lin_x86-64.tar.gz
+    rm -rf /root/ioncube /root/ioncube_loaders_lin_x86-64.tar.gz
 
-RUN wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/latest/download/drush.phar && \
-    chmod +x drush.phar && \
-    mv drush.phar /usr/bin/drush && \
+# Install drush + generate SSH host keys
+RUN wget -qO /usr/bin/drush https://github.com/drush-ops/drush-launcher/releases/latest/download/drush.phar && \
+    chmod +x /usr/bin/drush && \
     ssh-keygen -A
 
-#install compass
-RUN gem install compass
-
-#install oh-my-bash
-RUN apt-get --assume-yes install gawk
-RUN wget https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh && \
+# Install oh-my-bash
+RUN wget -q https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh && \
     chmod u+x install.sh && \
-    ./install.sh --prefix=/usr
+    ./install.sh --prefix=/usr && \
+    rm install.sh
 
-#install ble.sh
+# Install ble.sh
 RUN git clone --recursive --depth 1 --shallow-submodules https://github.com/akinomyoga/ble.sh.git && \
-    make -C ble.sh install PREFIX=/usr
+    make -C ble.sh install PREFIX=/usr && \
+    rm -rf ble.sh
 
-#install symfony-cli
-RUN wget https://get.symfony.com/cli/installer -O - | bash && \
-    mv /root/.symfony5/bin/symfony /usr/local/bin/symfony
+# Install symfony-cli
+RUN wget -q https://get.symfony.com/cli/installer -O - | bash && \
+    mv /root/.symfony5/bin/symfony /usr/local/bin/symfony && \
+    rm -rf /root/.symfony5
 
-#misc config
+# Install mise
+RUN curl -q https://mise.run | MISE_INSTALL_PATH=/usr/local/bin/mise sh
+
+# Misc config
 RUN sed -i "s/;process_control_timeout = 0/process_control_timeout = 10s/g" /etc/php/7.3/fpm/php-fpm.conf && \
     sed -i "s/#PubkeyAuthentication yes/PubkeyAuthentication yes/g" /etc/ssh/sshd_config && \
     sed -i "s/#PasswordAuthentication yes/PasswordAuthentication yes/g" /etc/ssh/sshd_config && \
@@ -75,19 +86,15 @@ RUN sed -i "s/;process_control_timeout = 0/process_control_timeout = 10s/g" /etc
     mkdir -p /webcrate && \
     chmod o-rwx /webcrate
 
-RUN apt-get --assume-yes install php7.3-ctype
-
-RUN curl https://mise.run | MISE_INSTALL_PATH=/usr/local/bin/mise sh
-RUN apt-get --assume-yes install python-is-python3
-
 WORKDIR /
 COPY ["versions.py", "parse-projects.py", "sync_ssh_keys.sh", "supervisord.conf.template", "supervisord-user.conf.template", "/webcrate/"]
 COPY --from=src log.py /webcrate/
 COPY bashrc.sh /etc/bashrc.sh
 COPY ["entrypoint.sh", "/"]
-RUN chmod u+x /webcrate/sync_ssh_keys.sh && \
-    chmod u+x /webcrate/parse-projects.py && \
-    chmod u+x /webcrate/versions.py && \
-    chmod u+x /entrypoint.sh
+RUN chmod u+x \
+        /webcrate/sync_ssh_keys.sh \
+        /webcrate/parse-projects.py \
+        /webcrate/versions.py \
+        /entrypoint.sh
 CMD ["/entrypoint.sh"]
 EXPOSE 22 9000

@@ -1,7 +1,5 @@
 ARG IMAGE
 FROM $IMAGE
 COPY pwgen.sh /pwgen.sh
-RUN apk update &&\
-    apk add pwgen &&\
-    rm -rf /var/cache/apk/* &&\
+RUN apk add --no-cache pwgen && \
     chmod u+x /pwgen.sh

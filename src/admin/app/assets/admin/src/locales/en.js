@@ -66,5 +66,7 @@ export default {
     cancel: 'Cancel',
     confirm: 'Confirm',
     reload: 'Reload',
+    yes: 'Yes',
+    no: 'No',
   },
 }

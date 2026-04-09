@@ -66,5 +66,7 @@ export default {
     cancel: '取消',
     confirm: '确认',
     reload: '刷新',
+    yes: '是',
+    no: '否',
   },
 }

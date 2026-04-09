@@ -50,7 +50,7 @@ class ProjectRepository extends ServiceEntityRepository
             $item->applying = false;
             $item->uid = $project->getUid();
             $item->backend = $project->getBackend()->getName() . ' ' . $project->getBackend()->getVersion();
-            $item->backup = $project->getBackup() ? 'yes' : 'no';
+            $item->backup = (bool)$project->getBackup();
             $item->https = $project->getHttps()->getName();
             $item->active = !empty($project->getActive());
             $item->template = !empty($project->getNginxTemplate()) ? $project->getNginxTemplate()->getLabel() : 'default';

@@ -34,7 +34,7 @@
             <td>{{ item.https }}</td>
             <td>{{ item.backend }}</td>
             <td>{{ item.template }}</td>
-            <td>{{ item.backup }}</td>
+            <td>{{ item.backup ? t('common.yes') : t('common.no') }}</td>
             <td>
               <span class="status-badge" :class="item.active ? 'active' : 'inactive'">
                 {{ item.active ? t('common.active') : t('common.inactive') }}
@@ -150,7 +150,7 @@
         </div>
         <div class="dialog-body dialog-body-scroll">
           <div class="mb-3 d-flex gap-2 align-items-center">
-            <button class="btn btn-sm btn-outline-warning" type="button" :disabled="backupRunning" @click="onRunBackup">
+            <button class="btn btn-sm btn-outline-warning" type="button" :disabled="backupRunning || !backupProject?.backup" @click="onRunBackup">
               <span class="btn-icon me-1">
                 <span v-if="backupRunning" class="spinner-border spinner-border-sm"></span>
                 <i v-else class="bi bi-play-circle"></i>

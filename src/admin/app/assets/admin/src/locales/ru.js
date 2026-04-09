@@ -66,5 +66,7 @@ export default {
     cancel: 'Отмена',
     confirm: 'Подтвердить',
     reload: 'Обновить',
+    yes: 'Да',
+    no: 'Нет',
   },
 }

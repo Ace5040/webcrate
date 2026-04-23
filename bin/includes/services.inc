@@ -64,6 +64,7 @@ docker run --rm --env-file=$(pwd)/.env --env-file=$(pwd)/images.default \
 	-v $(pwd)/var/letsencrypt-meta:/webcrate/letsencrypt-meta \
 	-v $(pwd)/var/crontabs:/webcrate/crontabs \
 	-v $(pwd)/var/php_pools:/webcrate/php_pools \
+	-v $(pwd)/modules:/webcrate/modules:ro \
 	$IMAGE_UTILS_DOCKER /services-init.py
 writeLog "$(t "Services initialized")" $LOG_LEVEL_INFO
 
@@ -230,7 +231,7 @@ else
 		-v $(pwd)/var/secrets:/webcrate/secrets \
 		-v $(pwd)/var/duplicity:/webcrate/duplicity \
 		-v $(pwd)/var/dnsmasq:/webcrate/dnsmasq \
-		-v $(pwd)/config/php-pool-templates:/webcrate/custom_templates:ro \
+		-v $(pwd)/modules:/webcrate/modules:ro \
 		-v $(pwd)/config/nginx-templates:/webcrate/nginx-templates:ro \
 		-v $(pwd)/var/nginx:/webcrate/nginx \
 		-v $(pwd)/var/php_pools:/webcrate/php_pools \

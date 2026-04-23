@@ -11,6 +11,7 @@ form:
         databases: Databases
         services: Services
         backup: Backup
+        modules: Modules
         redirectSettings: Redirect Settings
     add:
         domain: Add Domain

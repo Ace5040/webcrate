@@ -104,6 +104,7 @@ for projectname,project in projects.items():
       if os.path.isdir(f'{project.folder}'):
         if project.backend == 'php':
           php_path_prefix = {
+            '84': '84',
             '83': '83',
             '81': '81',
             '56': '56',
@@ -115,7 +116,7 @@ for projectname,project in projects.items():
           if os.path.isfile(f'/webcrate/custom_templates/{project.name}.conf'):
             os.system(f'cp -rf /webcrate/custom_templates/{project.name}.conf {php_conf_path}')
           else:
-            os.system(f'cp -rf /webcrate/custom_templates/php{php_path_prefix}-default.conf {php_conf_path}')
+            os.system(f'cp -rf /webcrate/modules/core/php{php_path_prefix}/pool.conf {php_conf_path}')
 
           with open(php_conf_path, 'r') as f:
             conf = f.read()

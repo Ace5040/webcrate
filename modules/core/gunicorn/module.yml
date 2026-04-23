@@ -1,0 +1,8 @@
+type: core
+category: backend
+label: "Python (Gunicorn)"
+image: "ace5040/webcrate-core-gunicorn:latest"
+backend_name: gunicorn
+backend_version: "latest"
+
+base_image_var: IMAGE_DEBIAN_SLIM

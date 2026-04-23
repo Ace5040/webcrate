@@ -24,6 +24,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use App\Form\Type\RedirectType;
 use App\Form\Type\ProjectType;
+use Symfony\Component\Yaml\Exception\ParseException;
 
 class AdminController extends AbstractController
 {
@@ -55,6 +56,43 @@ class AdminController extends AbstractController
         return $this->render('admin/index.html.twig', [
             'controller_name' => 'AdminController',
         ]);
+    }
+
+    /**
+     * @Route("/admin/api/module-presets", name="api_module_presets", methods={"GET"})
+     */
+    public function getModulePresetsApi()
+    {
+        return new JsonResponse($this->loadModulePresets());
+    }
+
+    /**
+     * Walk modules/ recursively; every directory containing module.yml is a preset.
+     * The preset key is the leaf directory name.
+     */
+    private function loadModulePresets(): array
+    {
+        $modulesDir = '/webcrate-readonly/modules';
+        $presets = [];
+        if (!is_dir($modulesDir)) {
+            return $presets;
+        }
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($modulesDir, \FilesystemIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::SELF_FIRST
+        );
+        foreach ($iterator as $entry) {
+            if ($entry->isDir()) {
+                $moduleFile = $entry->getPathname() . '/module.yml';
+                if (file_exists($moduleFile)) {
+                    try {
+                        $config  = Yaml::parseFile($moduleFile) ?? [];
+                        $presets[] = array_merge(['preset' => $entry->getFilename()], $config);
+                    } catch (ParseException $e) {}
+                }
+            }
+        }
+        return $presets;
     }
 
     /**
@@ -124,6 +162,7 @@ class AdminController extends AbstractController
             {
                 $project = $form->getData();
                 $project->setUid($this->repository->getFirstAvailableUid());
+                $this->applyModulesJson($request, $project);
                 $this->manager->persist($project);
                 $this->manager->flush();
                 $this->updateProjectsYaml();
@@ -133,7 +172,8 @@ class AdminController extends AbstractController
         return $this->render(
             'admin/project.html.twig',
             [
-                'form' => $form->createView(),
+                'form'         => $form->createView(),
+                'modules_data' => json_encode($project->getModulesForUI()),
             ]
         );
     }
@@ -151,6 +191,7 @@ class AdminController extends AbstractController
             if ($form->isSubmitted() && $form->isValid())
             {
                 $project = $form->getData();
+                $this->applyModulesJson($request, $project);
                 $this->manager->persist($project);
                 $this->manager->flush();
                 $this->updateProjectsYaml();
@@ -160,9 +201,83 @@ class AdminController extends AbstractController
         return $this->render(
             'admin/project.html.twig',
             [
-                'form' => $form->createView()
+                'form'         => $form->createView(),
+                'modules_data' => json_encode($project->getModulesForUI()),
             ]
         );
+    }
+
+    /**
+     * Reads modules_json from the POST request and maps it onto the project entity.
+     * Updates backend, built-in service flags, and custom modules.
+     */
+    private function applyModulesJson(Request $request, Project $project): void
+    {
+        $modulesJson = $request->request->get('modules_json', '');
+        if (empty($modulesJson)) {
+            return;
+        }
+        $modules = json_decode($modulesJson, true);
+        if (!is_array($modules)) {
+            return;
+        }
+
+        // Reset all module-controlled flags so removed modules take effect
+        $project->setMysql(false);
+        $project->setMysql5(false);
+        $project->setPostgre(false);
+        $project->setMemcached(false);
+        $project->setSolr(false);
+        $project->setElastic(false);
+        $customModules = [];
+
+        foreach ($modules as $module) {
+            $type = $module['type'] ?? '';
+            switch ($type) {
+                case 'core':
+                    $preset = $module['preset'] ?? '';
+                    if (!empty($preset)) {
+                        // Derive backend name/version from preset key (e.g. php84 → php + 84)
+                        if (preg_match('/^(php)(\d+)$/', $preset, $m)) {
+                            $backendName    = $m[1];
+                            $backendVersion = $m[2];
+                        } elseif ($preset === 'gunicorn') {
+                            $backendName    = 'gunicorn';
+                            $backendVersion = 'latest';
+                        } else {
+                            // Unknown preset — try to find by full name
+                            $backendName    = $preset;
+                            $backendVersion = 'latest';
+                        }
+                        $backend = $this->backend_repository->findByNameAndVersion($backendName, $backendVersion);
+                        if ($backend) {
+                            $project->setBackend($backend);
+                        }
+                    }
+                    // Support custom image override stored on the module
+                    // (image is informational here; actual image comes from modules.yml)
+                    break;
+                case 'mysql':       $project->setMysql(true);       break;
+                case 'mysql5':      $project->setMysql5(true);      break;
+                case 'postgresql':  $project->setPostgre(true);     break;
+                case 'memcached':   $project->setMemcached(true);   break;
+                case 'solr':        $project->setSolr(true);        break;
+                case 'elastic':     $project->setElastic(true);     break;
+                case 'custom':
+                    $customModules[] = [
+                        'type'     => 'custom',
+                        'name'     => $module['name']    ?? '',
+                        'image'    => $module['image']   ?? '',
+                        'env'      => $module['env']     ?? [],
+                        'volumes'  => $module['volumes'] ?? [],
+                        'command'  => $module['command'] ?? '',
+                        'restart'  => $module['restart'] ?? 'unless-stopped',
+                    ];
+                    break;
+            }
+        }
+
+        $project->setCustomModules($customModules);
     }
 
     /**
@@ -462,6 +577,8 @@ class AdminController extends AbstractController
                     ];
                 }
                 $project->setDuplicityFilters($duplicity_filters_array, true);
+                $custom_modules = !empty($project_obj->custom_modules) ? (array)$project_obj->custom_modules : [];
+                $project->setCustomModules($custom_modules);
                 $this->manager->persist($project);
             }
         }

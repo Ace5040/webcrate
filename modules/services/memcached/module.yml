@@ -1,0 +1,3 @@
+type: memcached
+category: cache
+label: "Memcached"

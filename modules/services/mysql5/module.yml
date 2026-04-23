@@ -1,0 +1,3 @@
+type: mysql5
+category: database
+label: "MySQL 5 (MariaDB 5)"

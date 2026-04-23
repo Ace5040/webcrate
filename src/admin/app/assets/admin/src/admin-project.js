@@ -19,48 +19,6 @@ app.use(i18n)
 app.use(VueAxios, axios)
 app.mount('#app')
 
-function updateBackendOptions(selectedTemplate, preserveValue) {
-  const backendSelect = document.getElementById('project_backend')
-
-  if (!backendSelect) {
-    return
-  }
-
-  const currentValue = preserveValue !== undefined ? preserveValue : backendSelect.value
-
-  backendSelect.innerHTML = '<option value="">Loading...</option>'
-  backendSelect.disabled = true
-
-  $.ajax({
-    url: '/admin/api/backends',
-    method: 'GET',
-    data: {
-      template: selectedTemplate
-    },
-    success(data) {
-      backendSelect.innerHTML = ''
-
-      data.forEach((backend) => {
-        const option = document.createElement('option')
-        option.value = backend.id
-        option.text = backend.fullName
-        backendSelect.appendChild(option)
-      })
-
-      if (currentValue) {
-        backendSelect.value = currentValue
-      }
-
-      backendSelect.disabled = false
-    },
-    error(xhr, status, error) {
-      console.error('Error fetching backends:', error)
-      backendSelect.innerHTML = '<option value="">Error loading backends</option>'
-      backendSelect.disabled = false
-    }
-  })
-}
-
 function setupNameValidation(inputId, checkUrl, excludeParam, excludeValue) {
   const input = document.getElementById(inputId)
   if (!input) return
@@ -105,22 +63,30 @@ function setupNameValidation(inputId, checkUrl, excludeParam, excludeValue) {
 }
 
 $(document).ready(() => {
-  const nginxTemplateSelect = document.getElementById('project_nginx_template')
-
-  if (nginxTemplateSelect) {
-    updateBackendOptions(nginxTemplateSelect.value)
-
-    $('#project_nginx_template').on('change', function () {
-      updateBackendOptions($(this).val())
-    })
-  }
-
   setupNameValidation(
     'project_name',
     '/admin/api/check-project-name',
     'excludeUid',
     () => document.getElementById('project_uid')?.value || ''
   )
+
+  // Hide legacy individual form rows that are now managed by the modules editor
+  const legacyRows = [
+    'project_backend',
+    'project_mysql',
+    'project_mysql5',
+    'project_postgre',
+    'project_Memcached',
+    'project_Solr',
+    'project_Elastic',
+  ]
+  legacyRows.forEach(id => {
+    const el = document.getElementById(id)
+    if (el) {
+      const row = el.closest('.form-group') || el.closest('.mb-3')
+      if (row) row.style.display = 'none'
+    }
+  })
 })
 
 const projectDomains = document.getElementById('project_domains')

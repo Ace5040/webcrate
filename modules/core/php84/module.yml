@@ -1,0 +1,8 @@
+type: core
+category: backend
+label: "PHP 8.4"
+image: "ace5040/webcrate-core-php84:latest"
+backend_name: php
+backend_version: "84"
+
+base_image_var: IMAGE_DEBIAN_STABLE_SLIM

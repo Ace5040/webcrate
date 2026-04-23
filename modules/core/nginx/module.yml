@@ -1,0 +1,6 @@
+type: core-nginx
+category: backend
+label: "Nginx (per-project)"
+image: "ace5040/webcrate-core-nginx:latest"
+
+base_image_var: IMAGE_NGINX_BASE

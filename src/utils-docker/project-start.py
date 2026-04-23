@@ -16,6 +16,31 @@ with open('/webcrate/projects.yml', 'r') as f:
   projects = munchify(yaml.safe_load(content)) if content else {}
   f.close()
 
+MODULES_DIR = os.environ.get('WEBCRATE_MODULES_DIR', '/webcrate-readonly/modules')
+
+def load_module_presets(modules_dir):
+  """Walk modules/ recursively; every directory that contains module.yml is a preset.
+  The preset key is the directory name (leaf folder name)."""
+  presets = {}
+  if not os.path.isdir(modules_dir):
+    return presets
+  for root, dirs, files in os.walk(modules_dir):
+    # Skip hidden dirs and README files
+    dirs[:] = [d for d in dirs if not d.startswith('.')]
+    if 'module.yml' in files:
+      preset_key = os.path.basename(root)
+      module_file = os.path.join(root, 'module.yml')
+      try:
+        with open(module_file, 'r') as f:
+          config = yaml.safe_load(f.read()) or {}
+          f.close()
+        presets[preset_key] = config
+      except Exception as e:
+        log.write(f'Failed to load module {module_file}: {e}', log.LEVEL.debug)
+  return presets
+
+MODULE_PRESETS = load_module_presets(MODULES_DIR)
+
 WEBCRATE_UID = os.environ.get('WEBCRATE_UID', '1000')
 WEBCRATE_GID = os.environ.get('WEBCRATE_GID', '1000')
 LOG_LEVEL_VALUE = os.environ.get('LOG_LEVEL_VALUE', 3)
@@ -134,7 +159,7 @@ async def startMysql (project):
       f'-e LOG_LEVEL_VALUE={LOG_LEVEL_VALUE} '
       f'-v /etc/localtime:/etc/localtime:ro '
       f'-v {WEBCRATE_PWD}/var/mysql-projects/{project.name}:/var/lib/mysql '
-      f'-v {WEBCRATE_PWD}/config/mysql/mysql.cnf:/etc/mysql/conf.d/user.cnf '
+      f'-v {WEBCRATE_PWD}/modules/services/mysql/mysql.cnf:/etc/mysql/conf.d/user.cnf '
       f'-v {WEBCRATE_PWD}/var/log/mysql-{project.name}-error.log:/tmp/mysql-error.log '
       f'$IMAGE_MARIADB10 >/dev/null')
 
@@ -195,7 +220,7 @@ async def startMysql5 (project):
       f'-e LOG_LEVEL_VALUE={LOG_LEVEL_VALUE} '
       f'-v /etc/localtime:/etc/localtime:ro '
       f'-v {WEBCRATE_PWD}/var/mysql5-projects/{project.name}:/var/lib/mysql '
-      f'-v {WEBCRATE_PWD}/config/mysql/mysql5.cnf:/etc/mysql/conf.d/user.cnf '
+      f'-v {WEBCRATE_PWD}/modules/services/mysql5/mysql.cnf:/etc/mysql/conf.d/user.cnf '
       f'-v {WEBCRATE_PWD}/var/log/mysql5-{project.name}-error.log:/tmp/mysql-error.log '
       f'$IMAGE_MARIADB5 >/dev/null')
 
@@ -280,6 +305,45 @@ async def startPostgresql (project):
     else:
       log.write(f'postgresql user {project.name} and db already exists', log.LEVEL.debug)
 
+async def startCustomModule (project, module):
+  module_name = module.get('name', '')
+  if not module_name:
+    log.write(f'{project.name} - skipping custom module without name', log.LEVEL.debug)
+    return
+  container_name = f'webcrate-{project.name}-{module_name}'
+  if helpers.is_container_exists(container_name):
+    log.write(f'{project.name} - custom module {module_name} exists', log.LEVEL.debug)
+    return
+  log.write(f'{project.name} - starting custom module {module_name}', log.LEVEL.debug)
+  image = module.get('image', '')
+  if not image:
+    log.write(f'{project.name} - custom module {module_name} has no image, skipping', log.LEVEL.debug)
+    return
+  env_flags = ''
+  for k, v in (module.get('env') or {}).items():
+    env_flags += f'-e {k}="{v}" '
+  volume_flags = ''
+  for vol in (module.get('volumes') or []):
+    host_path = vol.get('host', '')
+    container_path = vol.get('container', '')
+    if host_path and container_path:
+      if host_path.startswith('/'):
+        abs_host = host_path
+      else:
+        abs_host = f'{SITES_ABSOLUTE_PATH}/{project.name}/{host_path}'
+      volume_flags += f'-v {abs_host}:{container_path} '
+  command = module.get('command', '') or ''
+  restart = module.get('restart', 'unless-stopped')
+  os.system(f'docker run -d '
+    f'--name {container_name} '
+    f'--network="webcrate_network_{project.name}" '
+    f'--restart="{restart}" '
+    f'{env_flags}'
+    f'-v /etc/localtime:/etc/localtime:ro '
+    f'{volume_flags}'
+    f'{image} {command} >/dev/null')
+  log.write(f'{project.name} - custom module {module_name} started', log.LEVEL.debug)
+
 async def asyncOps (project):
   initCertificatesTask = asyncio.create_task(initCertificates(project))
   await initCertificatesTask
@@ -362,8 +426,8 @@ for projectname,project in projects.items():
     if backend in ['php56', 'php73', 'php74', 'php81', 'php83', 'php84']:
       backend_path = f'{backend.replace("php", "")[0]}.{backend.replace("php", "")[1:]}'
       PHP_CONFIGS = (
-        f'-v {WEBCRATE_PWD}/config/php/{backend}.ini:/etc/php/{backend_path}/cli/conf.d/00-user.ini:ro '
-        f'-v {WEBCRATE_PWD}/config/php/{backend}.ini:/etc/php/{backend_path}/fpm/conf.d/00-user.ini:ro '
+        f'-v {WEBCRATE_PWD}/modules/core/{backend}/php.ini:/etc/php/{backend_path}/cli/conf.d/00-user.ini:ro '
+        f'-v {WEBCRATE_PWD}/modules/core/{backend}/php.ini:/etc/php/{backend_path}/fpm/conf.d/00-user.ini:ro '
         f'-v {WEBCRATE_PWD}/var/php_pools:/webcrate/pools'
       )
 
@@ -443,6 +507,16 @@ for projectname,project in projects.items():
           f'{PROJECT_ELASTIC} '
           f'--entrypoint docker-entrypoint.sh '
           f'$IMAGE_ELASTICSEARCH > /dev/null')
+
+    # START CUSTOM MODULES
+    custom_modules = getattr(project, 'custom_modules', None) or []
+    for module in custom_modules:
+      if isinstance(module, dict):
+        module_data = module
+      else:
+        module_data = dict(module)
+      if module_data.get('type') == 'custom':
+        asyncio.run(startCustomModule(project, module_data))
 
     #START DATABASES
     if IS_RELOAD:

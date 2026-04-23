@@ -25,7 +25,7 @@ docker run --rm --env-file=$(pwd)/.env --env-file=$(pwd)/images.default --entryp
 	-v $(pwd)/var/meta:/webcrate/meta \
 	-v $(pwd)/var/crontabs:/webcrate/crontabs \
 	-v $(pwd)/config/nginx-templates:/webcrate/nginx-templates:ro \
-	-v $(pwd)/config/php-pool-templates:/webcrate/custom_templates:ro \
+	-v $(pwd)/modules:/webcrate/modules:ro \
 	-v $(pwd)/var/letsencrypt:/webcrate/letsencrypt:ro \
 	-v $(pwd)/var/openssl:/webcrate/openssl:ro \
 	-v $(pwd)/var/dnsmasq:/webcrate/dnsmasq \

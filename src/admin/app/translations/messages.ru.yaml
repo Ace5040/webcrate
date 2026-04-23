@@ -11,6 +11,7 @@ form:
         databases: Базы данных
         services: Сервисы
         backup: Резервное копирование
+        modules: Модули
         redirectSettings: Настройки редиректа
     add:
         domain: Добавить домен

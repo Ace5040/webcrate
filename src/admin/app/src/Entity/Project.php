@@ -145,6 +145,14 @@ class Project
      */
     private $Elastic;
 
+    /**
+     * Custom Docker module containers attached to this project.
+     * Each entry: {type, name, image, env, volumes, command, restart}
+     *
+     * @ORM\Column(type="json", nullable=true)
+     */
+    private $customModules = [];
+
     public function getId(): ?int
     {
         return $this->id;
@@ -379,7 +387,8 @@ class Project
             'mysql_db' => (bool)$this->mysql,
             'mysql5_db' => (bool)$this->mysql5,
             'postgresql_db' => (bool)$this->postgre,
-            'backup' => (bool)$this->backup
+            'backup' => (bool)$this->backup,
+            'custom_modules' => !empty($this->customModules) ? array_values($this->customModules) : [],
         ];
     }
 
@@ -594,6 +603,51 @@ class Project
         $this->Elastic = $Elastic;
 
         return $this;
+    }
+
+    public function getCustomModules(): ?array
+    {
+        return $this->customModules;
+    }
+
+    public function setCustomModules(?array $customModules): self
+    {
+        $this->customModules = $customModules ?: [];
+
+        return $this;
+    }
+
+    /**
+     * Returns a unified modules list for the admin UI:
+     * core, built-in services and custom modules — all as one array.
+     */
+    public function getModulesForUI(): array
+    {
+        $modules = [];
+
+        // Core backend
+        if (!empty($this->backend)) {
+            $modules[] = [
+                'type'    => 'core',
+                'preset'  => $this->backend->getName() . ($this->backend->getVersion() === 'latest' ? '' : $this->backend->getVersion()),
+                'label'   => $this->backend->getFullName(),
+            ];
+        }
+
+        // Built-in services
+        if ($this->mysql)    $modules[] = ['type' => 'mysql'];
+        if ($this->mysql5)   $modules[] = ['type' => 'mysql5'];
+        if ($this->postgre)  $modules[] = ['type' => 'postgresql'];
+        if ($this->Memcached) $modules[] = ['type' => 'memcached'];
+        if ($this->Solr)     $modules[] = ['type' => 'solr'];
+        if ($this->Elastic)  $modules[] = ['type' => 'elastic'];
+
+        // Custom modules
+        foreach (($this->customModules ?: []) as $m) {
+            $modules[] = $m;
+        }
+
+        return $modules;
     }
 
 }

@@ -17,7 +17,7 @@
 
         <div class="form-section">
             <h3 class="form-section-title">{{ 'form.section.general'|trans }}</h3>
-            {{ form_row(form.uid) }}
+            {% if not is_new|default(false) %}{{ form_row(form.uid) }}{% endif %}
             {{ form_row(form.name) }}
             {{ form_row(form.active) }}
         </div>
@@ -30,9 +30,9 @@
         <div class="form-section">
             <h3 class="form-section-title">{{ 'form.section.webServer'|trans }}</h3>
             {{ form_row(form.https) }}
+            {{ form_row(form.redirect) }}
             {{ form_row(form.nginx_template) }}
             {{ form_row(form.gunicorn_app_module) }}
-            {{ form_row(form.redirect) }}
             {{ form_row(form.gzip) }}
         </div>
 

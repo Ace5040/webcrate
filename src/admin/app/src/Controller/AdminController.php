@@ -66,13 +66,9 @@ class AdminController extends AbstractController
         return new JsonResponse($this->loadModulePresets());
     }
 
-    /**
-     * Walk modules/ recursively; every directory containing module.yml is a preset.
-     * The preset key is the leaf directory name.
-     */
     private function loadModulePresets(): array
     {
-        $modulesDir = '/webcrate-readonly/modules';
+        $modulesDir = $_ENV['MODULES_PATH'] ?? '/webcrate/modules';
         $presets = [];
         if (!is_dir($modulesDir)) {
             return $presets;
@@ -86,7 +82,7 @@ class AdminController extends AbstractController
                 $moduleFile = $entry->getPathname() . '/module.yml';
                 if (file_exists($moduleFile)) {
                     try {
-                        $config  = Yaml::parseFile($moduleFile) ?? [];
+                        $config = Yaml::parseFile($moduleFile) ?? [];
                         $presets[] = array_merge(['preset' => $entry->getFilename()], $config);
                     } catch (ParseException $e) {}
                 }
@@ -174,6 +170,7 @@ class AdminController extends AbstractController
             [
                 'form'         => $form->createView(),
                 'modules_data' => json_encode($project->getModulesForUI()),
+                'is_new'       => true,
             ]
         );
     }

@@ -90,6 +90,7 @@ else
 		-v $(pwd)/projects.yml:/webcrate/projects.yml \
 		-v $(pwd)/redirects.yml:/webcrate/redirects.yml \
 		-v $(pwd)/services.yml:/webcrate/services.yml \
+		-v $(pwd)/modules:/webcrate/modules:ro \
 		$IMAGE_ADMIN > /dev/null
 fi
 

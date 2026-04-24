@@ -62,7 +62,55 @@ function setupNameValidation(inputId, checkUrl, excludeParam, excludeValue) {
   })
 }
 
+function setupGunicornModuleToggle() {
+  const gunicornInput = document.getElementById('project_gunicorn_app_module')
+  if (!gunicornInput) return
+
+  const gunicornRow = gunicornInput.closest('.form-group') || gunicornInput.closest('.mb-3')
+  if (!gunicornRow) return
+
+  function updateGunicornVisibility(modules) {
+    const hasGunicorn = modules.some(m => m.type === 'core' && m.preset === 'gunicorn')
+    gunicornRow.style.display = hasGunicorn ? '' : 'none'
+    if (!hasGunicorn) {
+      gunicornInput.value = ''
+    }
+  }
+
+  // Initial state from server-rendered modules data
+  const initial = window.__modulesData__ || []
+  updateGunicornVisibility(initial)
+
+  document.getElementById('modules_json_input')?.addEventListener('modules-updated', (e) => {
+    updateGunicornVisibility(e.detail.modules)
+  })
+}
+
+function setupHttpsRedirectToggle() {
+  const httpsSelect = document.getElementById('project_https')
+  const redirectCheckbox = document.getElementById('project_redirect')
+  if (!httpsSelect || !redirectCheckbox) return
+
+  const redirectRow = redirectCheckbox.closest('.form-group') || redirectCheckbox.closest('.mb-3')
+  if (!redirectRow) return
+
+  function updateRedirectVisibility() {
+    const selectedOption = httpsSelect.options[httpsSelect.selectedIndex]
+    const isDisabled = selectedOption && selectedOption.text.trim().toLowerCase() === 'disabled'
+    redirectRow.style.display = isDisabled ? 'none' : ''
+    if (isDisabled) {
+      redirectCheckbox.checked = false
+    }
+  }
+
+  httpsSelect.addEventListener('change', updateRedirectVisibility)
+  updateRedirectVisibility()
+}
+
 $(document).ready(() => {
+  setupGunicornModuleToggle()
+  setupHttpsRedirectToggle()
+
   setupNameValidation(
     'project_name',
     '/admin/api/check-project-name',

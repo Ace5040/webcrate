@@ -382,6 +382,7 @@ function syncHiddenField() {
   if (!input) return
   const payload = modules.value.map(({ _id, label, ...rest }) => rest)
   input.value = JSON.stringify(payload)
+  input.dispatchEvent(new CustomEvent('modules-updated', { bubbles: true, detail: { modules: payload } }))
   // Also sync individual Symfony form fields for built-in modules so
   // server-side validation still sees consistent data
   syncLegacyFormFields()

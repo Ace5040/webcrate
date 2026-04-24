@@ -1,6 +1,6 @@
-type: core-nginx
+type: core
 category: backend
-label: "Nginx (per-project)"
+label: "Html only (nginx)"
 image: "ace5040/webcrate-core-nginx:latest"
 
 base_image_var: IMAGE_NGINX_BASE

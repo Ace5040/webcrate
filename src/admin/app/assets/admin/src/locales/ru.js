@@ -49,6 +49,8 @@ export default {
     empty: 'Нет подключённых модулей. Добавьте пресет или собственный образ ниже.',
     addPreset: 'Добавить модуль',
     addCustom: 'Добавить свой образ',
+    noPresets: 'Нет доступных пресетов',
+    backendAlreadySelected: 'Сначала удалите текущий бэкенд-модуль',
     editCustom: 'Редактировать модуль',
     categoryBackend: 'Бэкенд',
     categoryDatabase: 'База данных',

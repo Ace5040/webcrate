@@ -49,9 +49,9 @@
     {{ t('modules.empty') }}
   </div>
 
-  <!-- Add module buttons -->
+  <!-- Add module buttons — one dropdown per category -->
   <div class="modules-add-row">
-    <div class="dropdown">
+    <div v-for="cat in categoriesInOrder" :key="cat" class="dropdown">
       <button
         type="button"
         class="btn btn-sm btn-outline-primary dropdown-toggle"
@@ -59,23 +59,20 @@
         :disabled="loadingPresets"
       >
         <span v-if="loadingPresets" class="spinner-border spinner-border-sm me-1"></span>
-        <i v-else class="bi bi-plus-lg me-1"></i>{{ t('modules.addPreset') }}
+        <i v-else class="bi bi-plus-lg me-1"></i>{{ categoryLabel(cat) }}
       </button>
-      <ul class="dropdown-menu preset-menu">
-        <template v-for="cat in categoriesInOrder" :key="cat">
-          <li><h6 class="dropdown-header">{{ categoryLabel(cat) }}</h6></li>
-          <li
-            v-for="p in presetsByCategory(cat)"
-            :key="p.preset"
-          >
-            <button
-              type="button"
-              class="dropdown-item"
-              :disabled="isPresetActive(p)"
-              @click="addPreset(p)"
-            >{{ p.label }}</button>
-          </li>
-        </template>
+      <ul class="dropdown-menu">
+        <li v-for="p in presetsByCategory(cat)" :key="p.preset">
+          <button
+            type="button"
+            class="dropdown-item"
+            :disabled="isPresetActive(p)"
+            @click="addPreset(p)"
+          >{{ p.label }}</button>
+        </li>
+        <li v-if="!presetsByCategory(cat).length">
+          <span class="dropdown-item-text text-muted fst-italic px-3">{{ t('modules.noPresets') }}</span>
+        </li>
       </ul>
     </div>
     <button
@@ -272,12 +269,19 @@ function labelOf(mod) {
 }
 
 function presetsByCategory(cat) {
-  return presets.value.filter(p => p.category === cat)
+  return presets.value
+    .filter(p => p.category === cat)
+    .sort((a, b) => (a.label || '').localeCompare(b.label || ''))
 }
+
+// True when any backend (core) module is already in the list
+const hasBackend = computed(() => modules.value.some(m => m.type === 'core'))
+
 
 function isPresetActive(preset) {
   if (preset.type === 'core') {
-    return modules.value.some(m => m.type === 'core' && m.preset === preset.preset)
+    // Only one backend allowed — any active backend blocks all backend presets
+    return hasBackend.value
   }
   return modules.value.some(m => m.type === preset.type)
 }
@@ -442,10 +446,10 @@ function setCheckbox(id, value) {
 }
 
 .module-card {
-  border: 1px solid var(--border-color, #dee2e6);
+  border: 1px solid var(--app-card-border);
   border-radius: 6px;
   padding: 10px 12px;
-  background: var(--card-bg, #fff);
+  background: var(--app-table-head-bg);
 }
 
 .module-card-header {
@@ -470,9 +474,16 @@ function setCheckbox(id, value) {
 .badge-search   { background: #ede9fe; color: #6d28d9; }
 .badge-custom   { background: #f3f4f6; color: #374151; }
 
+:global([data-theme="dark"]) .badge-backend  { background: rgba(99,102,241,.18); color: #818cf8; }
+:global([data-theme="dark"]) .badge-database { background: rgba(52,211,153,.15); color: #34d399; }
+:global([data-theme="dark"]) .badge-cache    { background: rgba(251,191,36,.13); color: #fbbf24; }
+:global([data-theme="dark"]) .badge-search   { background: rgba(167,139,250,.18); color: #a78bfa; }
+:global([data-theme="dark"]) .badge-custom   { background: rgba(148,163,184,.12); color: #94a3b8; }
+
 .module-label {
   font-weight: 500;
   font-size: 0.9rem;
+  color: var(--app-text);
   flex: 1;
 }
 
@@ -498,10 +509,11 @@ function setCheckbox(id, value) {
 
 .module-image {
   font-size: 0.8rem;
-  background: var(--code-bg, #f8f9fa);
+  background: var(--app-bg);
   padding: 1px 6px;
   border-radius: 4px;
-  border: 1px solid var(--border-color, #dee2e6);
+  border: 1px solid var(--app-card-border);
+  color: var(--app-text-secondary);
 }
 
 .module-volume-tag,
@@ -509,13 +521,13 @@ function setCheckbox(id, value) {
   font-size: 0.75rem;
   padding: 1px 6px;
   border-radius: 4px;
-  background: #f3f4f6;
-  color: #374151;
+  background: var(--app-border-strong);
+  color: var(--app-text-secondary);
   font-family: monospace;
 }
 
 .modules-empty {
-  color: var(--text-muted, #6c757d);
+  color: var(--app-text-muted);
   font-size: 0.9rem;
   padding: 8px 0;
 }
@@ -526,7 +538,7 @@ function setCheckbox(id, value) {
   flex-wrap: wrap;
 }
 
-.preset-menu {
+.dropdown-menu {
   max-height: 360px;
   overflow-y: auto;
 }

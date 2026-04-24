@@ -1024,6 +1024,37 @@ fieldset .form-group {
     box-shadow: 0 20px 60px rgba(0, 0, 0, .6);
   }
 
+  // Bootstrap dropdown dark overrides
+  .dropdown-menu {
+    background-color: var(--app-card-bg);
+    border-color: var(--app-card-border);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .4);
+
+    .dropdown-item {
+      color: var(--app-text-secondary);
+
+      &:hover,
+      &:focus {
+        background-color: var(--app-table-row-hover);
+        color: var(--app-text);
+      }
+
+      &:disabled,
+      &.disabled {
+        color: var(--app-text-muted);
+        opacity: .55;
+      }
+    }
+
+    .dropdown-header {
+      color: var(--app-text-muted);
+    }
+
+    .dropdown-item-text {
+      color: var(--app-text-muted);
+    }
+  }
+
   .status-badge {
     &.active {
       color: #4ade80;

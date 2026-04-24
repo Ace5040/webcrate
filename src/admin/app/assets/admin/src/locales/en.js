@@ -49,6 +49,8 @@ export default {
     empty: 'No modules attached. Add a preset or a custom image below.',
     addPreset: 'Add module',
     addCustom: 'Add custom image',
+    noPresets: 'No presets available',
+    backendAlreadySelected: 'Remove the current backend module first',
     editCustom: 'Edit custom module',
     categoryBackend: 'Backend',
     categoryDatabase: 'Database',

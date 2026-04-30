@@ -31,6 +31,22 @@
             {{ form_row(form.domains) }}
         </div>
 
+        {# ── Modules section — replaces individual backend/databases/services rows ── #}
+        <div class="form-section">
+            <h3 class="form-section-title">{{ 'form.section.modules'|trans }}</h3>
+            {# Hidden fields to keep entity in sync (values are overridden by modules_json on submit) #}
+            {{ form_row(form.backend) }}
+            {{ form_row(form.mysql) }}
+            {{ form_row(form.mysql5) }}
+            {{ form_row(form.postgre) }}
+            {{ form_row(form.Memcached) }}
+            {{ form_row(form.Solr) }}
+            {{ form_row(form.Elastic) }}
+            {# The Vue modules editor mounts here and manages the hidden modules_json field #}
+            <div id="app"></div>
+            <input type="hidden" id="modules_json_input" name="modules_json" value="">
+        </div>
+
         <div class="form-section">
             <h3 class="form-section-title">{{ 'form.section.webServer'|trans }}</h3>
             {{ form_row(form.https) }}
@@ -56,22 +72,6 @@
             <h3 class="form-section-title">{{ 'form.section.storage'|trans }}</h3>
             {{ form_row(form.volume) }}
             {{ form_row(form.root_folder) }}
-        </div>
-
-        {# ── Modules section — replaces individual backend/databases/services rows ── #}
-        <div class="form-section">
-            <h3 class="form-section-title">{{ 'form.section.modules'|trans }}</h3>
-            {# Hidden fields to keep entity in sync (values are overridden by modules_json on submit) #}
-            {{ form_row(form.backend) }}
-            {{ form_row(form.mysql) }}
-            {{ form_row(form.mysql5) }}
-            {{ form_row(form.postgre) }}
-            {{ form_row(form.Memcached) }}
-            {{ form_row(form.Solr) }}
-            {{ form_row(form.Elastic) }}
-            {# The Vue modules editor mounts here and manages the hidden modules_json field #}
-            <div id="app"></div>
-            <input type="hidden" id="modules_json_input" name="modules_json" value="">
         </div>
 
         <div class="form-section">

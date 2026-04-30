@@ -52,6 +52,10 @@
   --app-overlay-bg: rgba(10, 18, 35, .85);
 }
 
+html {
+  background-color: var(--app-bg);
+}
+
 body {
   background-color: var(--app-bg);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;

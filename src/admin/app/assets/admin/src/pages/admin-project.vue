@@ -474,12 +474,6 @@ function setCheckbox(id, value) {
 .badge-search   { background: #ede9fe; color: #6d28d9; }
 .badge-custom   { background: #f3f4f6; color: #374151; }
 
-:global([data-theme="dark"]) .badge-backend  { background: rgba(99,102,241,.18); color: #818cf8; }
-:global([data-theme="dark"]) .badge-database { background: rgba(52,211,153,.15); color: #34d399; }
-:global([data-theme="dark"]) .badge-cache    { background: rgba(251,191,36,.13); color: #fbbf24; }
-:global([data-theme="dark"]) .badge-search   { background: rgba(167,139,250,.18); color: #a78bfa; }
-:global([data-theme="dark"]) .badge-custom   { background: rgba(148,163,184,.12); color: #94a3b8; }
-
 .module-label {
   font-weight: 500;
   font-size: 0.9rem;

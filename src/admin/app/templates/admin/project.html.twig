@@ -17,7 +17,11 @@
 
         <div class="form-section">
             <h3 class="form-section-title">{{ 'form.section.general'|trans }}</h3>
-            {% if not is_new|default(false) %}{{ form_row(form.uid) }}{% endif %}
+            {% if not is_new|default(false) %}
+                {{ form_row(form.uid) }}
+            {% else %}
+                {% do form.uid.setRendered %}
+            {% endif %}
             {{ form_row(form.name) }}
             {{ form_row(form.active) }}
         </div>
